@@ -30,90 +30,27 @@
 
 #include <SDL.h>
 
+#ifdef __native_client__
+# include <ppapi/cpp/instance.h>
+# include <ppapi/cpp/mouse_cursor.h>
+# include <ppapi_simple/ps.h>
+#endif
+
 namespace oz
 {
 
 Cursor::Cursor() :
-  images{}, nImages(0), frame(0), lastFrame(-1), frameTime(0), mode(TEXTURE)
+  images{}, nImages(0), frame(0), lastFrame(-1), frameTime(0), mode(SYSTEM)
 {}
 
 Cursor::Cursor(const File& file, Mode mode_, int size) :
   Cursor()
 {
-  load(file, mode_, size);
-}
-
-Cursor::~Cursor()
-{
-  destroy();
-}
-
-Cursor::Cursor(Cursor&& c) :
-  nImages(c.nImages), frame(c.frame), lastFrame(-1), frameTime(c.frameTime), mode(c.mode)
-{
-  Arrays::copy<Image>(c.images, MAX_IMAGES, images);
-
-  c.nImages   = 0;
-  c.frame     = 0;
-  c.lastFrame = -1;
-  c.frameTime = 0;
-  c.mode      = TEXTURE;
-}
-
-Cursor& Cursor::operator = (Cursor&& c)
-{
-  if (&c == this) {
-    return *this;
-  }
-
-  Arrays::copy<Image>(c.images, MAX_IMAGES, images);
-  nImages   = c.nImages;
-  frame     = c.frame;
-  lastFrame = c.lastFrame;
-  frameTime = c.frameTime;
-  mode      = c.mode;
-
-  c.nImages   = 0;
-  c.frame     = 0;
-  c.lastFrame = -1;
-  c.frameTime = 0;
-  c.mode      = TEXTURE;
-
-  return *this;
-}
-
-void Cursor::reset()
-{
-  frame     = 0;
-  frameTime = 0;
-}
-
-void Cursor::update(int millis)
-{
-  if (nImages == 0) {
-    return;
-  }
-
-  int delay = images[frame].delay;
-
-  frameTime += millis;
-  frame      = (frame + frameTime / delay) % nImages;
-  frameTime  = frameTime % delay;
-
-  if (mode == SYSTEM && frame != lastFrame && nImages != 0) {
-    lastFrame = frame;
-
-    SDL_SetCursor(images[frame].sdlCursor);
-  }
-}
-
-bool Cursor::load(const File& file, Mode mode_, int size)
-{
   Stream is = file.read(Endian::LITTLE);
 
   // Implementation is based on specifications from xcursor(3) manual.
   if (is.available() == 0 || !String::beginsWith(is.begin(), "Xcur")) {
-    return false;
+    return;
   }
 
   is.seek(12);
@@ -155,23 +92,43 @@ bool Cursor::load(const File& file, Mode mode_, int size)
     image.hotspotLeft = is.readInt();
     image.hotspotTop  = is.readInt();
     image.delay       = is.readInt();
-    image.sdlCursor   = nullptr;
 
-    int nBytes = image.width * image.height * 4;
-
+    int   nBytes = image.width * image.height * 4;
     char* pixels = new char[nBytes];
+
     is.read(pixels, nBytes);
 
-    if (mode == TEXTURE) {
+    if (mode == SYSTEM) {
+#ifdef __native_client__
+
+      pp::ImageData imageData(pp::InstanceHandle(PSGetInstanceId()), PP_IMAGEDATAFORMAT_BGRA_PREMUL,
+                              pp::Size(image.width, image.height), false);
+
+      for (int i = 0; i < image.height; ++i) {
+      }
+
+#else
+
+      SDL_Surface* surface = SDL_CreateRGBSurfaceFrom(pixels, image.width, image.height, 32,
+                                                      image.width * 4, 0x00ff0000, 0x0000ff00,
+                                                      0x000000ff, 0xff000000);
+
+      image.sdlCursor = SDL_CreateColorCursor(surface, image.hotspotLeft, image.hotspotTop);
+
+      SDL_FreeSurface(surface);
+
+#endif
+    }
+    else {
 #ifdef OZ_GL_ES
       GLenum srcFormat = GL_RGBA;
 
       // BGRA -> RGBA
-      char* pixel = pixels;
       for (int y = 0; y < image.height; ++y) {
         for (int x = 0; x < image.width; ++x) {
-          swap(pixel[0], pixel[2]);
-          pixel += 4;
+          int baseIndex = y * image.width + y;
+
+          swap(pixels[baseIndex + 0], pixels[baseIndex + 2]);
         }
       }
 #else
@@ -192,22 +149,85 @@ bool Cursor::load(const File& file, Mode mode_, int size)
                      GL_UNSIGNED_BYTE, pixels);
       };
     }
-    else {
-      SDL_Surface* surface = SDL_CreateRGBSurfaceFrom(pixels, image.width, image.height, 32,
-                                                      image.width * 4, 0x00ff0000, 0x0000ff00,
-                                                      0x000000ff, 0xff000000);
-
-      image.sdlCursor = SDL_CreateColorCursor(surface, image.hotspotLeft, image.hotspotTop);
-
-      SDL_FreeSurface(surface);
-    }
 
     delete[] pixels;
 
     is.seek(tablePos);
   }
+}
 
-  return nImages != 0;
+Cursor::~Cursor()
+{
+  destroy();
+}
+
+Cursor::Cursor(Cursor&& c) :
+  nImages(c.nImages), frame(c.frame), lastFrame(-1), frameTime(c.frameTime), mode(c.mode)
+{
+  Arrays::move<Image>(c.images, MAX_IMAGES, images);
+
+  c.nImages   = 0;
+  c.frame     = 0;
+  c.lastFrame = -1;
+  c.frameTime = 0;
+  c.mode      = SYSTEM;
+}
+
+Cursor& Cursor::operator = (Cursor&& c)
+{
+  if (&c == this) {
+    return *this;
+  }
+
+  destroy();
+
+  nImages   = c.nImages;
+  frame     = c.frame;
+  lastFrame = c.lastFrame;
+  frameTime = c.frameTime;
+  mode      = c.mode;
+
+  Arrays::move<Image>(c.images, MAX_IMAGES, images);
+
+  c.nImages   = 0;
+  c.frame     = 0;
+  c.lastFrame = -1;
+  c.frameTime = 0;
+  c.mode      = SYSTEM;
+
+  return *this;
+}
+
+void Cursor::reset()
+{
+  frame     = 0;
+  frameTime = 0;
+}
+
+void Cursor::update(int millis)
+{
+  if (nImages == 0) {
+    return;
+  }
+
+  int delay = images[frame].delay;
+
+  frameTime += millis;
+  frame      = (frame + frameTime / delay) % nImages;
+  frameTime  = frameTime % delay;
+
+  if (mode == SYSTEM && frame != lastFrame && nImages != 0) {
+    lastFrame = frame;
+
+#ifdef __native_client__
+    const Image& image = images[frame];
+
+    pp::MouseCursor().SetCursor(pp::InstanceHandle(PSGetInstanceId()), PP_MOUSECURSOR_TYPE_CUSTOM,
+                                *image.imageData, pp::Point(image.hotspotLeft, image.hotspotTop));
+#else
+    SDL_SetCursor(images[frame].sdlCursor);
+#endif
+  }
 }
 
 void Cursor::destroy()
@@ -216,7 +236,16 @@ void Cursor::destroy()
     return;
   }
 
-  if (mode == TEXTURE) {
+  if (mode == SYSTEM) {
+    for (int i = 0; i < nImages; ++i) {
+#ifdef __native_client__
+      delete images[i].imageData;
+#else
+      SDL_FreeCursor(images[i].sdlCursor);
+#endif
+    }
+  }
+  else {
     MainCall() << [&]
     {
       for (int i = 0; i < nImages; ++i) {
@@ -224,17 +253,12 @@ void Cursor::destroy()
       }
     };
   }
-  else {
-    for (int i = 0; i < nImages; ++i) {
-      SDL_FreeCursor(images[i].sdlCursor);
-    }
-  }
 
   nImages   = 0;
   frame     = 0;
   lastFrame = -1;
   frameTime = 0;
-  mode      = TEXTURE;
+  mode      = SYSTEM;
 }
 
 }

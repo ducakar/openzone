@@ -67,6 +67,8 @@ SharedLib::SharedLib(SharedLib&& l) :
 SharedLib& SharedLib::operator = (SharedLib&& l)
 {
   if (&l != this) {
+    close();
+
     handle = l.handle;
 
     l.handle = nullptr;

@@ -97,28 +97,23 @@ PoolAlloc::PoolAlloc(PoolAlloc&& p) :
 
 PoolAlloc& PoolAlloc::operator = (PoolAlloc&& p)
 {
-  if (&p == this) {
-    return *this;
+  if (&p != this) {
+    free();
+
+    firstBlock = p.firstBlock;
+    freeSlot   = p.freeSlot;
+    objectSize = p.objectSize;
+    nSlots     = p.nSlots;
+    count      = p.count;
+    size       = p.size;
+
+    p.firstBlock = nullptr;
+    p.freeSlot   = nullptr;
+    p.objectSize = 0;
+    p.nSlots     = 0;
+    p.count      = 0;
+    p.size       = 0;
   }
-
-  hard_assert(count == 0);
-
-  free();
-
-  firstBlock = p.firstBlock;
-  freeSlot   = p.freeSlot;
-  objectSize = p.objectSize;
-  nSlots     = p.nSlots;
-  count      = p.count;
-  size       = p.size;
-
-  p.firstBlock = nullptr;
-  p.freeSlot   = nullptr;
-  p.objectSize = 0;
-  p.nSlots     = 0;
-  p.count      = 0;
-  p.size       = 0;
-
   return *this;
 }
 

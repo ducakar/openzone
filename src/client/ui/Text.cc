@@ -136,14 +136,16 @@ void Text::setPosition(int x_, int y_)
 
 void Text::setWidth(int width_)
 {
-  width = width_;
+  width    = width_;
+  lastHash = Hash<const char*>::EMPTY;
 
   realign();
 }
 
 void Text::setAlign(int align_)
 {
-  align = align_;
+  align    = align_;
+  lastHash = Hash<const char*>::EMPTY;
 
   realign();
 }
@@ -169,6 +171,7 @@ void Text::setTextv(const char* s, va_list ap)
 
     if (newHash != lastHash) {
       lastHash = newHash;
+      texWidth = width;
 
       MainCall() << [&]
       {
@@ -180,7 +183,6 @@ void Text::setTextv(const char* s, va_list ap)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-        texWidth = width;
         style.fonts[font].upload(buffer, &texWidth, &texHeight);
 
         glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);

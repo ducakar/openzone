@@ -179,7 +179,9 @@ public:
 
     for (int i = 0; i < size; ++i) {
       for (Entry* entry = data[i]; entry != nullptr; entry = entry->next) {
-        if (!ht.contains(entry->elem.key)) {
+        const Value* value = ht.find(entry->elem.key);
+
+        if (value == nullptr || !(*value == entry->elem.value)) {
           return false;
         }
       }

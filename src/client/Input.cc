@@ -113,6 +113,11 @@ static ubyte        sdlCurrKeys[SDL_NUM_SCANCODES];
 static int          keyMap[Input::KEY_MAX][2];
 static bool         configExists = false;
 
+static int mouseEventFilter(void*, SDL_Event* event)
+{
+  return event->type != SDL_MOUSEMOTION;
+}
+
 void Input::loadDefaultKeyMap()
 {
   modifier0                         = SDL_SCANCODE_LALT;
@@ -294,6 +299,9 @@ void Input::readEvent(SDL_Event* event)
 void Input::reset()
 {
   Window::warpMouse();
+
+  SDL_PumpEvents();
+  SDL_FilterEvents(mouseEventFilter, nullptr);
 
   oldMouseX      = 0.0f;
   oldMouseY      = 0.0f;

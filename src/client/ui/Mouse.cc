@@ -137,7 +137,8 @@ void Mouse::init()
   for (int i = 0; i < CURSORS_MAX; ++i) {
     File file = String("@ui/cur/", NAMES[i]);
 
-    if (!cursors[i].load(file, Cursor::TEXTURE)) {
+    cursors[i] = Cursor(file, Cursor::TEXTURE);
+    if (!cursors[i].isValid()) {
       OZ_ERROR("Cursor loading failed");
     }
   }

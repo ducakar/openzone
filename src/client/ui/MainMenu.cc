@@ -151,10 +151,10 @@ bool MainMenu::onKeyEvent()
 void MainMenu::onDraw()
 {
   shape.colour(style.colours.background);
-  shape.fill(0, 0, camera.width, camera.height);
+  shape.fill(0, 0, width, height);
 
   shape.colour(style.colours.menuStrip);
-  shape.fill(camera.width - 240, 0, 240, camera.height);
+  shape.fill(width - 240, 0, 240, height);
 
   copyright.draw(this);
   title.draw(this);

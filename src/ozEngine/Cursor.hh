@@ -30,7 +30,11 @@
 
 #include "common.hh"
 
+#ifdef __native_client__
+namespace pp { class ImageData; }
+#else
 struct SDL_Cursor;
+#endif
 
 namespace oz
 {
@@ -70,25 +74,29 @@ private:
    */
   struct Image
   {
-    int width;               ///< Image width.
-    int height;              ///< Image height.
-    int hotspotLeft;         ///< Hotspot offset from the left.
-    int hotspotTop;          ///< Hotspot offset from the top.
-    int delay;               ///< Frame time in milliseconds.
+    int width;                  ///< Image width.
+    int height;                 ///< Image height.
+    int hotspotLeft;            ///< Hotspot offset from the left.
+    int hotspotTop;             ///< Hotspot offset from the top.
+    int delay;                  ///< Frame time in milliseconds.
 
     union
     {
-      uint        textureId; ///< GL texture id.
-      SDL_Cursor* sdlCursor; ///< SDL cursor.
+      uint           textureId; ///< GL texture id.
+#ifdef __native_client__
+      pp::ImageData* imageData; ///< PPAPI cursor image.
+#else
+      SDL_Cursor*    sdlCursor; ///< SDL cursor.
+#endif
     };
   };
 
-  Image images[MAX_IMAGES];  ///< Cursor images.
-  int   nImages;             ///< Number of images.
-  int   frame;               ///< Current animation frame.
-  int   lastFrame;           ///< Last uploaded frame for OS cursor to avoid unnecessary updates.
-  int   frameTime;           ///< Time in milliseconds of the current animation frame.
-  Mode  mode;                ///< Render mode.
+  Image images[MAX_IMAGES];     ///< Cursor images.
+  int   nImages;                ///< Number of images.
+  int   frame;                  ///< Current animation frame.
+  int   lastFrame;              ///< Last uploaded frame for OS cursor to avoid unnecessary updates.
+  int   frameTime;              ///< Time in milliseconds of the current animation frame.
+  Mode  mode;                   ///< Render mode.
 
 public:
 
@@ -120,7 +128,7 @@ public:
   /**
    * True iff loaded.
    */
-  bool isLoaded() const
+  bool isValid() const
   {
     return nImages != 0;
   }
@@ -174,11 +182,6 @@ public:
    * Advance animation and update the current texture id or the system cursor.
    */
   void update(int millis);
-
-  /**
-   * Load from file.
-   */
-  bool load(const File& file, Mode mode, int size = -1);
 
   /**
    * Destroy textures if loaded.

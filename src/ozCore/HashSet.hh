@@ -325,17 +325,17 @@ public:
   ~HashSet()
   {
     clear();
-    trim();
+    delete[] data;
   }
 
   /**
    * Copy constructor, copies elements and storage.
    */
   HashSet(const HashSet& ht) :
-    data(Arrays::reallocate<Elem*>(nullptr, 0, ht.size)), size(ht.size)
+    HashSet(ht.pool.length() * 4 / 3)
   {
-    for (int i = 0; i < ht.size; ++i) {
-      data[i] = cloneChain(ht.data[i]);
+    for (const Elem& e : ht) {
+      add(e);
     }
   }
 
@@ -356,16 +356,10 @@ public:
   {
     if (&ht != this) {
       clear();
+      ensureCapacity(ht.pool.length());
 
-      if (size < ht.pool.length()) {
-        delete[] data;
-
-        data = new Entry[ht.size];
-        size = ht.size;
-      }
-
-      for (int i = 0; i < size; ++i) {
-        data[i] = i < ht.size ? cloneChain(ht.data[i]) : nullptr;
+      for (const Elem& e : ht) {
+        add(e);
       }
     }
     return *this;

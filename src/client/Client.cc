@@ -119,12 +119,6 @@ int Client::main()
               input.mouseY -= point.y;
               break;
             }
-            case PP_INPUTEVENT_TYPE_MOUSEDOWN: {
-              Window::setGrab(true);
-
-              eventQueue.add(psEvent);
-              continue;
-            }
             default: {
               eventQueue.add(psEvent);
               continue;
@@ -209,21 +203,24 @@ int Client::main()
             else {
               Window::resize(screenWidth, screenHeight, true);
             }
+            input.reset();
 #endif
           }
+#ifndef __native_client__
           else if (keysym.sym == SDLK_F12) {
             if (keysym.mod & KMOD_CTRL) {
               isAlive = false;
             }
             else {
               Window::minimise();
+              input.reset();
             }
           }
+#endif
 
           input.readEvent(&event);
           break;
         }
-#ifndef __native_client__
         case SDL_WINDOWEVENT: {
           switch (event.window.event) {
             case SDL_WINDOWEVENT_FOCUS_GAINED: {
@@ -238,11 +235,12 @@ int Client::main()
               input.reset();
               break;
             }
-            case SDL_WINDOWEVENT_RESIZED: {
-              Window::resize(event.window.data1, event.window.data2, Window::isFullscreen());
+            case SDL_WINDOWEVENT_SIZE_CHANGED: {
+              Window::updateSize(event.window.data1, event.window.data2);
               input.reset();
               break;
             }
+#ifndef __native_client__
             case SDL_WINDOWEVENT_RESTORED: {
               input.reset();
               sound.resume();
@@ -261,10 +259,10 @@ int Client::main()
               isAlive = false;
               break;
             }
+#endif
           }
           break;
         }
-#endif
         case SDL_QUIT: {
           isAlive = false;
           break;
@@ -691,7 +689,9 @@ int Client::init(int argc, char** argv)
 
   stage->load();
 
+#ifndef __native_client__
   Window::setGrab(true);
+#endif
   input.reset();
 
   return EXIT_SUCCESS;

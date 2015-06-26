@@ -63,7 +63,7 @@ int main(int argc, char** argv)
 //  streamer.open("/usr/share/sounds/Kopete_Sent.ogg");
 //  alSourcePlay(musicSource);
 
-  if (!cursor.isLoaded()) {
+  if (!cursor.isValid()) {
     return EXIT_FAILURE;
   }
 

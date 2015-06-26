@@ -54,19 +54,20 @@ struct ScreenshotInfo
 };
 
 #ifdef __native_client__
-static const PPB_MouseLock*  ppbMouseLock     = nullptr;
-static const PPB_Fullscreen* ppbFullscreen    = nullptr;
-static pp::Graphics3D*       context          = nullptr;
+static const PPB_MouseLock*  ppbMouseLock       = nullptr;
+static const PPB_Fullscreen* ppbFullscreen      = nullptr;
+static pp::Graphics3D*       context            = nullptr;
+static Semaphore             mouseLockSemaphore;
 static Semaphore             flushSemaphore;
 #else
 static SDL_GLContext         context;
 #endif
-static SDL_Window*           descriptor       = nullptr;
+static SDL_Window*           window             = nullptr;
 static Thread                screenshotThread;
 
 #ifdef __native_client__
 
-static void flushCompleteCallback(void*, int)
+static void onFlushComplete(void*, int)
 {
   flushSemaphore.post();
 }
@@ -135,38 +136,47 @@ bool Window::isCreated()
 #ifdef __native_client__
   return !context->is_null();
 #else
-  return descriptor != nullptr;
+  return window != nullptr;
 #endif
 }
 
 void Window::setGrab(bool grab)
 {
-  windowGrab = grab;
-
-  SDL_SetRelativeMouseMode(SDL_bool(windowGrab));
-
 #ifdef __native_client__
-  MainCall() << [&]
-  {
-    if (grab) {
-      ppbMouseLock->LockMouse(PSGetInstanceId(), PP_BlockUntilComplete());
-    }
-    else {
+
+  if (grab && !windowGrab) {
+    MainCall() += []
+    {
+      ppbMouseLock->LockMouse(PSGetInstanceId(), PP_MakeCompletionCallback([](void*, int result)
+      {
+        Log() << "LOCKED";
+        windowGrab = result == PP_OK;
+        mouseLockSemaphore.post();
+      },
+      nullptr));
+    };
+    mouseLockSemaphore.wait();
+  }
+  else if (!grab && windowGrab) {
+    MainCall() << []
+    {
       ppbMouseLock->UnlockMouse(PSGetInstanceId());
-    }
-  };
+      windowGrab = false;
+    };
+  }
+
+#else
+
+  if (SDL_SetRelativeMouseMode(SDL_bool(windowGrab)) == 0) {
+    windowGrab = grab;
+  }
+
 #endif
 }
 
 void Window::warpMouse()
 {
-  if (!windowFocus || !windowGrab) {
-    return;
-  }
-
-  SDL_WarpMouseInWindow(descriptor, windowWidth / 2, windowHeight / 2);
-  SDL_PumpEvents();
-  SDL_GetRelativeMouseState(nullptr, nullptr);
+  SDL_WarpMouseInWindow(window, windowWidth / 2, windowHeight / 2);
 }
 
 void Window::swapBuffers()
@@ -175,13 +185,13 @@ void Window::swapBuffers()
 
   MainCall() << []
   {
-    context->SwapBuffers(pp::CompletionCallback(flushCompleteCallback, nullptr));
+    context->SwapBuffers(pp::CompletionCallback(onFlushComplete, nullptr));
   };
   flushSemaphore.wait();
 
 #else
 
-  SDL_GL_SwapWindow(descriptor);
+  SDL_GL_SwapWindow(window);
 
 #endif
 }
@@ -201,29 +211,13 @@ void Window::screenshot(const File& file, int quality)
   screenshotThread = Thread("screenshot", screenshotMain, info);
 }
 
-void Window::minimise()
-{
-  SDL_RestoreWindow(descriptor);
-  SDL_MinimizeWindow(descriptor);
-}
-
-bool Window::resize(int newWidth, int newHeight, bool fullscreen_)
+void Window::updateSize(int newWidth, int newHeight)
 {
   windowWidth  = windowWidth  == 0 ? screenWidth  : newWidth;
   windowHeight = windowHeight == 0 ? screenHeight : newHeight;
-  fullscreen   = fullscreen_;
 
-  Log::print("Resizing OpenGL window to %dx%d [%s] ... ",
+  Log::print("Resized OpenGL window to %dx%d [%s] ... ",
              windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed");
-
-  if (fullscreen) {
-    SDL_SetWindowSize(descriptor, windowWidth, windowHeight);
-    SDL_SetWindowFullscreen(descriptor, SDL_TRUE);
-  }
-  else {
-    SDL_SetWindowFullscreen(descriptor, SDL_FALSE);
-    SDL_SetWindowSize(descriptor, windowWidth, windowHeight);
-  }
 
 #ifdef __native_client__
 
@@ -239,7 +233,27 @@ bool Window::resize(int newWidth, int newHeight, bool fullscreen_)
 #endif
 
   Log::printEnd("OK");
-  return true;
+}
+
+void Window::resize(int newWidth, int newHeight, bool fullscreen_)
+{
+  newWidth  = newWidth  == 0 ? screenWidth  : newWidth;
+  newHeight = newHeight == 0 ? screenHeight : newHeight;
+
+  if (fullscreen) {
+    SDL_SetWindowFullscreen(window, SDL_bool(fullscreen_));
+    SDL_SetWindowSize(window, newWidth, newHeight);
+    fullscreen = false;
+  }
+  else {
+    SDL_SetWindowSize(window, newWidth, newHeight);
+    fullscreen = SDL_SetWindowFullscreen(window, SDL_bool(fullscreen_)) == 0;
+  }
+}
+
+void Window::minimise()
+{
+  SDL_MinimizeWindow(window);
 }
 
 bool Window::create(const char* title, int width, int height, bool fullscreen_)
@@ -251,7 +265,7 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
   windowHeight = height == 0 ? screenHeight : height;
   fullscreen   = fullscreen_;
   windowFocus  = true;
-  windowGrab   = true;
+  windowGrab   = false;
 
   // Don't mess with screensaver. In X11 it only makes effect for windowed mode, in fullscreen
   // mode screensaver never starts anyway. Turning off screensaver has a side effect: if the game
@@ -265,15 +279,14 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
   SDL_setenv("force_s3tc_enable", "true", true);
 #endif
 
-  uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE |
-               (fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
+  uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | (fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
 
   Log::print("Creating OpenGL window %dx%d [%s] ... ",
              windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed");
 
-  descriptor = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                windowWidth, windowHeight, flags);
-  if (descriptor == nullptr) {
+  window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                            windowWidth, windowHeight, flags);
+  if (window == nullptr) {
     Log::printEnd("Window creation failed");
     return false;
   }
@@ -312,7 +325,7 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
       glFlush();
 
-      context->SwapBuffers(pp::CompletionCallback(flushCompleteCallback, nullptr));
+      context->SwapBuffers(pp::CompletionCallback(onFlushComplete, nullptr));
     }
   };
   flushSemaphore.wait();
@@ -334,14 +347,14 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
 
   SDL_GL_SetSwapInterval(1);
 
-  context = SDL_GL_CreateContext(descriptor);
+  context = SDL_GL_CreateContext(window);
 
   glViewport(0, 0, windowWidth, windowHeight);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   glFlush();
 
-  SDL_GL_SwapWindow(descriptor);
+  SDL_GL_SwapWindow(window);
 
 #endif
 
@@ -351,7 +364,7 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
 
 void Window::destroy()
 {
-  if (descriptor != nullptr) {
+  if (window != nullptr) {
 #ifdef __native_client__
     MainCall() << []
     {
@@ -362,8 +375,8 @@ void Window::destroy()
 #else
     SDL_GL_DeleteContext(context);
 #endif
-    SDL_DestroyWindow(descriptor);
-    descriptor = nullptr;
+    SDL_DestroyWindow(window);
+    window = nullptr;
   }
 
   if (screenshotThread.isValid()) {

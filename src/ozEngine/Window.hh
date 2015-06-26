@@ -162,17 +162,21 @@ public:
   static void screenshot(const File& file, int quality = 85);
 
   /**
-   * Minimise window.
+   * Update window and OpenGL context after size change.
    */
-  static void minimise();
+  static void updateSize(int newWidth, int newHeight);
 
   /**
    * Resize window and/or toggle full-screen mode.
    *
    * If width (or height) is 0, desktop width (or height) is used.
-   * On error, window is destroyed.
    */
-  static bool resize(int newWidth, int newHeight, bool fullscreen = false);
+  static void resize(int newWidth, int newHeight, bool fullscreen);
+
+  /**
+   * Minimise window.
+   */
+  static void minimise();
 
   /**
    * Create the window.

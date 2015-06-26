@@ -187,6 +187,10 @@ Thread::Thread(Thread&& t) :
 Thread& Thread::operator = (Thread&& t)
 {
   if (&t != this) {
+    if (descriptor != nullptr) {
+      join();
+    }
+
     descriptor = t.descriptor;
 
     t.descriptor = nullptr;
