@@ -144,7 +144,7 @@ void Render::scheduleCell(int cellX, int cellY)
   const Cell& cell = orbis.cells[cellX][cellY];
 
   for (int i = 0; i < cell.structs.length(); ++i) {
-    if (!drawnStructs.get(cell.structs[i])) {
+    if (!drawnStructs[cell.structs[i]]) {
       drawnStructs.set(cell.structs[i]);
 
       Struct* str    = orbis.str(cell.structs[i]);
@@ -241,7 +241,7 @@ void Render::prepareDraw()
   caelum.update();
 
   // drawnStructs
-  drawnStructs.clearAll();
+  drawnStructs.clear();
 
   float minXCentre = float((span.minX - Orbis::CELLS / 2) * Cell::SIZE + Cell::SIZE / 2);
   float minYCentre = float((span.minY - Orbis::CELLS / 2) * Cell::SIZE + Cell::SIZE / 2);

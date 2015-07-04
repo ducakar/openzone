@@ -107,19 +107,14 @@ private:
 
   union
   {
-    bool       boolean;     ///< Boolean value storage.
-    double     number;      ///< Number value storage.
-    void*      data;        ///< Pointer to other, complex, value storage.
+    bool       boolean;             ///< Boolean value storage.
+    double     number      = 0.0;   ///< Number value storage.
+    void*      data;                ///< Pointer to other, complex, value storage.
   };
-  Type         valueType;   ///< Value type, `Json::Type`.
-  mutable bool wasAccessed; ///< For warnings about unused variables.
+  Type         valueType   = NIL;   ///< Value type, `Json::Type`.
+  mutable bool wasAccessed = false; ///< For warnings about unused variables.
 
 private:
-
-  /**
-   * Internal constructor.
-   */
-  explicit Json(void* data, Type valueType);
 
   /**
    * Internal constructor for linear algebra types.
@@ -134,12 +129,17 @@ private:
 public:
 
   /**
+   * Create null value.
+   */
+  Json() = default;
+
+  /**
    * Create an instance of a given type with a default value.
    *
    * Default value is false for a boolean, 0.0 for a number, "" for a string or an empty container
    * for an array or an object.
    */
-  Json(Type type = NIL);
+  Json(Type type);
 
   /**
    * Create null value.

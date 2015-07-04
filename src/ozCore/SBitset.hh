@@ -36,28 +36,30 @@ namespace oz
 /**
  * Bit array with static storage.
  *
- * Bits are stored in an array of `ulong`s, so the its length in bits is always a multiple of
- * `sizeof(ulong) * 8`.
+ * Bits are stored in an array of `size_t`s and its length is rounded up to a multiple of 64, so the
+ * length of the same bitset matches between 32-bit and 64-bit platforms.
  *
- * @sa `oz::Bitset`
+ * @sa `oz::SBitset`
  */
-template <int BITSIZE>
+template <int BITS>
 class SBitset
 {
-  static_assert(BITSIZE > 0, "oz::SBitset size must be at least 1");
+  static_assert(BITS > 0, "oz::SBitset length must be at least 1");
 
 private:
 
-  /// Size of unit in bytes.
-  static const int ULONG_SIZE = sizeof(ulong);
+  /// Number of bits per the internal unit.
+  static const int UNIT_BITS = sizeof(size_t) * 8;
 
-  /// Number of bits per unit.
-  static const int ULONG_BITSIZE = sizeof(ulong) * 8;
+  /// Number of bits per the platfrom-independent unit.
+  static const int PORT_BITS = sizeof(ulong64) * 8;
 
   /// Number of units.
-  static const int SIZE = (BITSIZE + ULONG_BITSIZE - 1) / ULONG_BITSIZE;
+  static const int SIZE = (BITS + PORT_BITS - 1) / PORT_BITS * (PORT_BITS / UNIT_BITS);
 
-  ulong data[SIZE] = {}; ///< Pointer to array of units that hold the data.
+private:
+
+  size_t data[SIZE] = {}; ///< Pointer to array of units that hold the data.
 
 public:
 
@@ -71,7 +73,7 @@ public:
    */
   bool operator == (const SBitset& b) const
   {
-    return Arrays::equals<ulong>(data, SIZE, b.data);
+    return Arrays::equals<size_t>(data, SIZE, b.data);
   }
 
   /**
@@ -83,21 +85,39 @@ public:
   }
 
   /**
-   * Get constant pointer to `data` array.
+   * Constant pointer to the first unit.
    */
   OZ_ALWAYS_INLINE
-  operator const ulong* () const
+  const size_t* begin() const
   {
     return data;
   }
 
   /**
-   * Get pointer to `data` array.
+   * Pointer to the first unit.
    */
   OZ_ALWAYS_INLINE
-  operator ulong* ()
+  size_t* begin()
   {
     return data;
+  }
+
+  /**
+   * Constant pointer past the last unit.
+   */
+  OZ_ALWAYS_INLINE
+  const size_t* end() const
+  {
+    return data + SIZE;
+  }
+
+  /**
+   * Pointer past the last unit.
+   */
+  OZ_ALWAYS_INLINE
+  size_t* end()
+  {
+    return data + SIZE;
   }
 
   /**
@@ -106,58 +126,18 @@ public:
   OZ_ALWAYS_INLINE
   int length() const
   {
-    return SIZE * ULONG_BITSIZE;
-  }
-
-  /**
-   * Size in units.
-   */
-  OZ_ALWAYS_INLINE
-  int unitLength() const
-  {
-    return SIZE;
-  }
-
-  /**
-   * Always false since internal static array cannot have zero size.
-   */
-  OZ_ALWAYS_INLINE
-  bool isEmpty() const
-  {
-    return false;
+    return BITS;
   }
 
   /**
    * Get the `i`-th bit.
    */
   OZ_ALWAYS_INLINE
-  bool get(int i) const
+  bool operator [] (int i) const
   {
-    hard_assert(uint(i) < uint(SIZE * ULONG_BITSIZE));
+    hard_assert(uint(i) < uint(SIZE * UNIT_BITS));
 
-    return (data[i / ULONG_BITSIZE] & (1ul << (i % ULONG_BITSIZE))) != 0ul;
-  }
-
-  /**
-   * %Set the `i`-th bit to true.
-   */
-  OZ_ALWAYS_INLINE
-  void set(int i)
-  {
-    hard_assert(uint(i) < uint(SIZE * ULONG_BITSIZE));
-
-    data[i / ULONG_BITSIZE] |= 1ul << (i % ULONG_BITSIZE);
-  }
-
-  /**
-   * %Set the `i`-th bit to false.
-   */
-  OZ_ALWAYS_INLINE
-  void clear(int i)
-  {
-    hard_assert(uint(i) < uint(SIZE * ULONG_BITSIZE));
-
-    data[i / ULONG_BITSIZE] &= ~(1ul << (i % ULONG_BITSIZE));
+    return (data[i / UNIT_BITS] & (1ul << (i % UNIT_BITS))) != 0ul;
   }
 
   /**
@@ -165,8 +145,8 @@ public:
    */
   bool isAllSet() const
   {
-    for (int i = 0; i < SIZE; ++i) {
-      if (data[i] != ~0ul) {
+    for (int i = 0; i < SIZE - 1; ++i) {
+      if (~data[i] != 0ul) {
         return false;
       }
     }
@@ -174,16 +154,24 @@ public:
   }
 
   /**
-   * True iff all bits are false.
+   * True iff at least one bit is true.
    */
-  bool isAllClear() const
+  bool isAnySet() const
   {
     for (int i = 0; i < SIZE; ++i) {
       if (data[i] != 0ul) {
-        return false;
+        return true;
       }
     }
-    return true;
+    return false;
+  }
+
+  /**
+   * True iff all bits are false.
+   */
+  bool isNoneSet() const
+  {
+    return !isAnySet();
   }
 
   /**
@@ -205,20 +193,53 @@ public:
   }
 
   /**
+   * %Set the `i`-th bit to true.
+   */
+  OZ_ALWAYS_INLINE
+  void set(int i)
+  {
+    hard_assert(uint(i) < uint(SIZE * UNIT_BITS));
+
+    data[i / UNIT_BITS] |= 1ul << (i % UNIT_BITS);
+  }
+
+  /**
+   * %Set the `i`-th bit to false.
+   */
+  OZ_ALWAYS_INLINE
+  void clear(int i)
+  {
+    hard_assert(uint(i) < uint(SIZE * UNIT_BITS));
+
+    data[i / UNIT_BITS] &= ~(1ul << (i % UNIT_BITS));
+  }
+
+  /**
+   * Flip the `i`-th bit's value.
+   */
+  OZ_ALWAYS_INLINE
+  void flip(int i)
+  {
+    hard_assert(uint(i) < uint(SIZE * UNIT_BITS));
+
+    data[i / UNIT_BITS] ^= 1ul << (i % UNIT_BITS);
+  }
+
+  /**
    * %Set bits from inclusively start to non-inclusively end to true.
    */
   void set(int start, int end)
   {
-    hard_assert(uint(start) <= uint(end) && uint(end) <= uint(SIZE * ULONG_BITSIZE));
+    hard_assert(uint(start) <= uint(end) && uint(end) <= uint(SIZE * UNIT_BITS));
 
-    int   startUnit   = start / ULONG_BITSIZE;
-    int   startOffset = start % ULONG_BITSIZE;
+    int   startUnit   = start / UNIT_BITS;
+    int   startOffset = start % UNIT_BITS;
 
-    int   endUnit     = end / ULONG_BITSIZE;
-    int   endOffset   = end % ULONG_BITSIZE;
+    int   endUnit     = end / UNIT_BITS;
+    int   endOffset   = end % UNIT_BITS;
 
-    ulong startMask   = ~0ul << startOffset;
-    ulong endMask     = ~(~0ul << endOffset);
+    size_t startMask  = ~0ul << startOffset;
+    size_t endMask    = ~(~0ul << endOffset);
 
     if (startUnit == endUnit) {
       data[startUnit] |= startMask & endMask;
@@ -238,16 +259,16 @@ public:
    */
   void clear(int start, int end)
   {
-    hard_assert(uint(start) <= uint(end) && uint(end) <= uint(SIZE * ULONG_BITSIZE));
+    hard_assert(uint(start) <= uint(end) && uint(end) <= uint(SIZE * UNIT_BITS));
 
-    int   startUnit   = start / ULONG_BITSIZE;
-    int   startOffset = start % ULONG_BITSIZE;
+    int   startUnit   = start / UNIT_BITS;
+    int   startOffset = start % UNIT_BITS;
 
-    int   endUnit     = end / ULONG_BITSIZE;
-    int   endOffset   = end % ULONG_BITSIZE;
+    int   endUnit     = end / UNIT_BITS;
+    int   endOffset   = end % UNIT_BITS;
 
-    ulong startMask   = ~(~0ul << startOffset);
-    ulong endMask     = ~0ul << endOffset;
+    size_t startMask  = ~(~0ul << startOffset);
+    size_t endMask    = ~0ul << endOffset;
 
     if (startUnit == endUnit) {
       data[startUnit] &= startMask | endMask;
@@ -263,19 +284,40 @@ public:
   }
 
   /**
-   * %Set all bits to true.
+   * Flip bits from inclusively start to non-inclusively end to false.
    */
-  void setAll()
+  void flip(int start, int end)
   {
-    Arrays::fill<ulong, ulong>(data, SIZE, ~0ul);
+    hard_assert(uint(start) <= uint(end) && uint(end) <= uint(SIZE * UNIT_BITS));
+
+    int   startUnit   = start / UNIT_BITS;
+    int   startOffset = start % UNIT_BITS;
+
+    int   endUnit     = end / UNIT_BITS;
+    int   endOffset   = end % UNIT_BITS;
+
+    size_t startMask  = ~0ul << startOffset;
+    size_t endMask    = ~(~0ul << endOffset);
+
+    if (startUnit == endUnit) {
+      data[startUnit] ^= startMask & endMask;
+    }
+    else {
+      data[startUnit] ^= startMask;
+      data[endUnit]   ^= endMask;
+
+      for (int i = startUnit + 1; i < endUnit; ++i) {
+        data[i] = ~data[i];
+      }
+    }
   }
 
   /**
    * %Set all bits to false.
    */
-  void clearAll()
+  void clear()
   {
-    Arrays::fill<ulong, ulong>(data, SIZE, 0ul);
+    Arrays::fill<size_t, size_t>(data, SIZE, 0ul);
   }
 
   /**
@@ -296,12 +338,8 @@ public:
    */
   SBitset operator & (const SBitset& b) const
   {
-    SBitset r;
-
-    for (int i = 0; i < SIZE; ++i) {
-      r.data[i] = data[i] & b.data[i];
-    }
-    return r;
+    SBitset r = *this;
+    return r &= b;
   }
 
   /**
@@ -309,12 +347,8 @@ public:
    */
   SBitset operator | (const SBitset& b) const
   {
-    SBitset r;
-
-    for (int i = 0; i < SIZE; ++i) {
-      r.data[i] = data[i] | b.data[i];
-    }
-    return r;
+    SBitset r = *this;
+    return r |= b;
   }
 
   /**
@@ -322,12 +356,8 @@ public:
    */
   SBitset operator ^ (const SBitset& b) const
   {
-    SBitset r;
-
-    for (int i = 0; i < SIZE; ++i) {
-      r.data[i] = data[i] ^ b.data[i];
-    }
-    return r;
+    SBitset r = *this;
+    return r ^= b;
   }
 
   /**

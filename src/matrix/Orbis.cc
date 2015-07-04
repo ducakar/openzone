@@ -61,9 +61,7 @@ int Orbis::allocStrIndex() const
 {
   int index = lastStructIndex + 1;
 
-  while (structs[1 + index] != nullptr || pendingStructs[0].get(index) ||
-         pendingStructs[1].get(index))
-  {
+  while (structs[1 + index] != nullptr || pendingStructs[0][index] || pendingStructs[1][index]) {
     if (index == lastStructIndex) {
       // We have wrapped around => no slots available.
       soft_assert(false);
@@ -81,9 +79,7 @@ int Orbis::allocObjIndex() const
 {
   int index = lastObjectIndex + 1;
 
-  while (objects[1 + index] != nullptr || pendingObjects[0].get(index) ||
-         pendingObjects[1].get(index))
-  {
+  while (objects[1 + index] != nullptr || pendingObjects[0][index] || pendingObjects[1][index]) {
     if (index == lastObjectIndex) {
       // We have wrapped around => no slots available.
       soft_assert(false);
@@ -101,9 +97,7 @@ int Orbis::allocFragIndex() const
 {
   int index = lastFragIndex + 1;
 
-  while (frags[1 + index] != nullptr || pendingFrags[0].get(index) ||
-         pendingFrags[1].get(index))
-  {
+  while (frags[1 + index] != nullptr || pendingFrags[0][index] || pendingFrags[1][index]) {
     if (index == lastFragIndex) {
       // We have wrapped around => no slots available.
       soft_assert(false);
@@ -349,9 +343,9 @@ void Orbis::resetLastIndices()
 
 void Orbis::update()
 {
-  pendingStructs[waiting].clearAll();
-  pendingObjects[waiting].clearAll();
-  pendingFrags[waiting].clearAll();
+  pendingStructs[waiting].clear();
+  pendingObjects[waiting].clear();
+  pendingFrags[waiting].clear();
 
   swap(freeing, waiting);
 
@@ -406,12 +400,12 @@ void Orbis::read(Stream* is)
   lastObjectIndex = is->readInt();
   lastFragIndex   = is->readInt();
 
-  is->readBitset(pendingStructs[freeing], pendingStructs[freeing].length());
-  is->readBitset(pendingStructs[waiting], pendingStructs[waiting].length());
-  is->readBitset(pendingObjects[freeing], pendingObjects[freeing].length());
-  is->readBitset(pendingObjects[waiting], pendingObjects[waiting].length());
-  is->readBitset(pendingFrags[freeing], pendingFrags[freeing].length());
-  is->readBitset(pendingFrags[waiting], pendingFrags[waiting].length());
+  is->readBitset(pendingStructs[freeing]);
+  is->readBitset(pendingStructs[waiting]);
+  is->readBitset(pendingObjects[freeing]);
+  is->readBitset(pendingObjects[waiting]);
+  is->readBitset(pendingFrags[freeing]);
+  is->readBitset(pendingFrags[waiting]);
 }
 
 void Orbis::read(const Json& json)
@@ -547,12 +541,12 @@ void Orbis::write(Stream* os) const
   os->writeInt(lastObjectIndex);
   os->writeInt(lastFragIndex);
 
-  os->writeBitset(pendingStructs[freeing], pendingStructs[freeing].length());
-  os->writeBitset(pendingStructs[waiting], pendingStructs[waiting].length());
-  os->writeBitset(pendingObjects[freeing], pendingObjects[freeing].length());
-  os->writeBitset(pendingObjects[waiting], pendingObjects[waiting].length());
-  os->writeBitset(pendingFrags[freeing], pendingFrags[freeing].length());
-  os->writeBitset(pendingFrags[waiting], pendingFrags[waiting].length());
+  os->writeBitset(pendingStructs[freeing]);
+  os->writeBitset(pendingStructs[waiting]);
+  os->writeBitset(pendingObjects[freeing]);
+  os->writeBitset(pendingObjects[waiting]);
+  os->writeBitset(pendingFrags[freeing]);
+  os->writeBitset(pendingFrags[waiting]);
 }
 
 Json Orbis::write() const
@@ -641,12 +635,12 @@ void Orbis::unload()
   lastObjectIndex = -1;
   lastFragIndex   = -1;
 
-  pendingStructs[0].clearAll();
-  pendingStructs[1].clearAll();
-  pendingObjects[0].clearAll();
-  pendingObjects[1].clearAll();
-  pendingFrags[0].clearAll();
-  pendingFrags[1].clearAll();
+  pendingStructs[0].clear();
+  pendingStructs[1].clear();
+  pendingObjects[0].clear();
+  pendingObjects[1].clear();
+  pendingFrags[0].clear();
+  pendingFrags[1].clear();
 }
 
 void Orbis::init()

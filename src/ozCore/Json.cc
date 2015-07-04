@@ -40,7 +40,7 @@ static_assert(sizeof(double) >= sizeof(void*),
 namespace oz
 {
 
-static const Json NIL_VALUE;
+static const Json NIL_VALUE = Json();
 
 struct StringData
 {
@@ -266,7 +266,7 @@ struct Json::Parser
           OZ_PARSE_ERROR(-3, "Unknown value type");
         }
 
-        return Json(nullptr, NIL);
+        return Json();
       }
       case 'f': {
         if (is->available() < 4 || readChar() != 'a' || readChar() != 'l' || readChar() != 's' ||
@@ -312,7 +312,7 @@ struct Json::Parser
         return Json(number);
       }
       case '"': {
-        return Json(new StringData{ parseString() }, STRING);
+        return Json(parseString());
       }
       case '{': {
         return parseObject();
@@ -326,7 +326,7 @@ struct Json::Parser
   OZ_INTERNAL
   Json parseArray()
   {
-    Json arrayValue(new ArrayData(), ARRAY);
+    Json arrayValue(ARRAY);
     List<Json>& list = static_cast<ArrayData*>(arrayValue.data)->list;
 
     char ch = skipBlanks();
@@ -335,8 +335,7 @@ struct Json::Parser
     }
 
     while (ch != ']') {
-      Json value = parseValue();
-      list.add(static_cast<Json&&>(value));
+      list.add(parseValue());
 
       ch = skipBlanks();
 
@@ -351,7 +350,7 @@ struct Json::Parser
   OZ_INTERNAL
   Json parseObject()
   {
-    Json objectValue(new ObjectData(), OBJECT);
+    Json objectValue(OBJECT);
     Map<String, Json>& map = static_cast<ObjectData*>(objectValue.data)->map;
 
     char ch = skipBlanks();
@@ -372,8 +371,7 @@ struct Json::Parser
         OZ_PARSE_ERROR(0, "Expected ':' after key in object entry");
       }
 
-      Json value = parseValue();
-      map.add(static_cast<String&&>(key), static_cast<Json&&>(value));
+      map.add(static_cast<String&&>(key), parseValue());
 
       ch = skipBlanks();
 
@@ -604,18 +602,13 @@ struct Json::Formatter
 const Json::Format Json::DEFAULT_FORMAT = { 2, 32, "%.9g", "\n" };
 
 OZ_INTERNAL
-Json::Json(void* data_, Type valueType_) :
-  data(data_), valueType(valueType_), wasAccessed(false)
-{}
-
-OZ_INTERNAL
 Json::Json(const float* vector, int count) :
-  data(new ArrayData()), valueType(ARRAY), wasAccessed(false)
+  data(new ArrayData{ List<Json>(count) }), valueType(ARRAY)
 {
   List<Json>& list = static_cast<ArrayData*>(data)->list;
 
   for (int i = 0; i < count; ++i) {
-    list.add(Json(vector[i]));
+    list[i].number = vector[i];
   }
 }
 
@@ -639,7 +632,7 @@ bool Json::getVector(float* vector, int count) const
 }
 
 Json::Json(Type type) :
-  number(0.0), valueType(type), wasAccessed(false)
+  valueType(type)
 {
   switch (type) {
     default: {
@@ -660,32 +653,31 @@ Json::Json(Type type) :
   }
 }
 
-Json::Json(nullptr_t) :
-  number(0.0), valueType(NIL), wasAccessed(false)
+Json::Json(nullptr_t)
 {}
 
 Json::Json(bool value) :
-  boolean(value), valueType(BOOLEAN), wasAccessed(false)
+  boolean(value), valueType(BOOLEAN)
 {}
 
 Json::Json(int value) :
-  number(value), valueType(NUMBER), wasAccessed(false)
+  Json(double(value))
 {}
 
 Json::Json(float value) :
-  number(value), valueType(NUMBER), wasAccessed(false)
+  Json(double(value))
 {}
 
 Json::Json(double value) :
-  number(value), valueType(NUMBER), wasAccessed(false)
+  number(value), valueType(NUMBER)
 {}
 
 Json::Json(const String& value) :
-  data(new StringData{ value }), valueType(STRING), wasAccessed(false)
+  data(new StringData{ value }), valueType(STRING)
 {}
 
 Json::Json(const char* value) :
-  data(new StringData{ value }), valueType(STRING), wasAccessed(false)
+  data(new StringData{ value }), valueType(STRING)
 {}
 
 Json::Json(const Vec3& v) :
@@ -778,6 +770,7 @@ Json::Json(const Json& j) :
 Json::Json(Json&& j) :
   number(j.number), valueType(j.valueType), wasAccessed(j.wasAccessed)
 {
+  j.number      = 0.0;
   j.valueType   = NIL;
   j.wasAccessed = true;
 }
@@ -829,6 +822,7 @@ Json& Json::operator = (Json&& j)
     valueType   = j.valueType;
     wasAccessed = j.wasAccessed;
 
+    j.number      = 0.0;
     j.valueType   = NIL;
     j.wasAccessed = true;
   }

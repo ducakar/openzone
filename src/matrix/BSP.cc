@@ -54,11 +54,6 @@ void BSP::load()
   fragPool         = liber.fragPool(is.readString());
   nFrags           = is.readInt();
 
-  sounds.resize(is.readInt(), true);
-  for (int i = 0; i < sounds.length(); ++i) {
-    sounds[i] = liber.soundIndex(is.readString());
-  }
-
   demolishSound = liber.soundIndex(is.readString());
   groundOffset  = is.readFloat();
 

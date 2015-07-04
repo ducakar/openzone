@@ -136,7 +136,7 @@ void Terra::drawLiquid()
 
   for (int i = span.minX; i <= span.maxX; ++i) {
     for (int j = span.minY; j <= span.maxY; ++j) {
-      if (liquidTiles.get(i * TILES + j)) {
+      if (liquidTiles[i * TILES + j]) {
         glBindBuffer(GL_ARRAY_BUFFER, vbos[i][j]);
 
         Vertex::setFormat();
@@ -240,12 +240,7 @@ void Terra::load()
     }
   }
 
-  liquidTiles.clearAll();
-  for (int i = 0; i < liquidTiles.length(); ++i) {
-    if (is.readBool()) {
-      liquidTiles.set(i);
-    }
-  }
+  is.readBitset(liquidTiles);
 
   detailTexId     = liber.textureIndex(is.readString());
   liquidTexId     = liber.textureIndex(is.readString());

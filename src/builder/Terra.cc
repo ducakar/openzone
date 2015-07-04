@@ -334,9 +334,7 @@ void Terra::saveClient()
     }
   }
 
-  for (int i = 0; i < liquidTiles.length(); ++i) {
-    os.writeBool(liquidTiles.get(i));
-  }
+  os.writeBitset(liquidTiles);
 
   os.writeString(detailTex);
   os.writeString(liquidTex);

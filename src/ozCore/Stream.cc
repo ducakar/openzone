@@ -559,42 +559,6 @@ void Stream::writeMat4(const Mat4& m)
   writeFloats(m, 16);
 }
 
-void Stream::readBitset(ulong* bitset, int nBits)
-{
-  int unitBits  = sizeof(ulong) * 8;
-  int unitCount = (nBits + unitBits - 1) / unitBits;
-
-#if OZ_SIZEOF_LONG == 4
-  for (int i = 0; i < unitCount;) {
-    bitset[i++] = readUInt();
-    if (i != unitCount) {
-      bitset[i++] = readUInt();
-    }
-  }
-#else
-  for (int i = 0; i < unitCount; ++i) {
-    bitset[i] = ulong(readULong64());
-  }
-#endif
-}
-
-void Stream::writeBitset(const ulong* bitset, int nBits)
-{
-  int unitBits  = sizeof(ulong) * 8;
-  int unitCount = (nBits + unitBits - 1) / unitBits;
-
-#if OZ_SIZEOF_LONG == 4
-  for (int i = 0; i < unitCount;) {
-    writeUInt(uint(bitset[i++]));
-    writeUInt(uint(i == unitCount ? 0 : bitset[i++]));
-  }
-#else
-  for (int i = 0; i < unitCount; ++i) {
-    writeLong64(bitset[i]);
-  }
-#endif
-}
-
 String Stream::readLine()
 {
   const char* begin = streamPos;

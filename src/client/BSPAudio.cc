@@ -132,16 +132,28 @@ void BSPAudio::playContSound(const Entity* entity, int sound) const
 BSPAudio::BSPAudio(const BSP* bsp_) :
   bsp(bsp_)
 {
-  for (int sound : bsp->sounds) {
-    context.requestSound(sound);
+  for (int i = 0; i < bsp->nEntities; ++i) {
+    const EntityClass& entityClass = bsp->entities[i];
+
+    context.requestSound(entityClass.openSound);
+    context.requestSound(entityClass.closeSound);
+    context.requestSound(entityClass.frictSound);
   }
+
+  context.requestSound(bsp->demolishSound);
 }
 
 BSPAudio::~BSPAudio()
 {
-  for (int sound : bsp->sounds) {
-    context.releaseSound(sound);
+  for (int i = 0; i < bsp->nEntities; ++i) {
+    const EntityClass& entityClass = bsp->entities[i];
+
+    context.releaseSound(entityClass.openSound);
+    context.releaseSound(entityClass.closeSound);
+    context.releaseSound(entityClass.frictSound);
   }
+
+  context.releaseSound(bsp->demolishSound);
 }
 
 void BSPAudio::play(const Struct* str) const

@@ -81,7 +81,7 @@ namespace oz
  * Memory pool consists of a linked list of memory blocks, each an array of uninitialised elements
  * of the specified data type.
  *
- * Unless `NDEBUG` macro is defined, all freed memory is rewritten with 0xee byte values.
+ * Unless `NDEBUG` macro is defined, all freed memory is rewritten with 0xee bytes.
  *
  * @sa `oz::Pool`
  */

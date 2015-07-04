@@ -332,7 +332,7 @@ void Context::unloadTexture(const Texture* texture)
 Texture Context::requestTexture(int id)
 {
   // No texture.
-  if (id == -1) {
+  if (id < 0) {
     return Texture();
   }
 
@@ -359,7 +359,7 @@ Texture Context::requestTexture(int id)
 void Context::releaseTexture(int id)
 {
   // No texture.
-  if (id == -1) {
+  if (id < 0) {
     return;
   }
 
@@ -377,6 +377,10 @@ void Context::releaseTexture(int id)
 
 uint Context::requestSound(int id)
 {
+  if (id < 0) {
+    return 0;
+  }
+
   Resource<uint>& resource = sounds[id];
 
   if (resource.nUsers >= 0) {
@@ -403,6 +407,10 @@ uint Context::requestSound(int id)
 
 void Context::releaseSound(int id)
 {
+  if (id < 0) {
+    return;
+  }
+
   Resource<uint>& resource = sounds[id];
 
   hard_assert(resource.nUsers > 0);

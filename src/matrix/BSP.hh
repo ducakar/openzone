@@ -148,7 +148,6 @@ public:
   const FragPool* fragPool;
   int             nFrags;
 
-  List<int>       sounds;        ///< Set of used sound samples.
   int             demolishSound;
   float           groundOffset;  ///< Centre offset from ground when placing a building.
 

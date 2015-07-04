@@ -42,7 +42,7 @@ Collider::Collider() :
 
 inline bool Collider::visitBrush(int index)
 {
-  bool isTested = visitedBrushes.get(index);
+  bool isTested = visitedBrushes[index];
   visitedBrushes.set(index);
   return isTested;
 }
@@ -182,7 +182,7 @@ bool Collider::overlapsAABBOrbis()
     return true;
   }
 
-  visitedStructs.clearAll();
+  visitedStructs.clear();
 
   for (int x = span.minX; x <= span.maxX; ++x) {
     for (int y = span.minY; y <= span.maxY; ++y) {
@@ -193,12 +193,12 @@ bool Collider::overlapsAABBOrbis()
 
         str = orbis.str(strIndex);
 
-        if (visitedStructs.get(strIndex) || !trace.overlaps(*str)) {
+        if (visitedStructs[strIndex] || !trace.overlaps(*str)) {
           continue;
         }
 
         visitedStructs.set(strIndex);
-        visitedBrushes.clearAll();
+        visitedBrushes.clear();
 
         startPos = str->toStructCS(aabb.p);
         localDim = str->swapDimCS(aabb.dim);
@@ -675,7 +675,7 @@ void Collider::trimAABBOrbis()
     trimAABBVoid();
   }
 
-  visitedStructs.clearAll();
+  visitedStructs.clear();
 
   for (int x = span.minX; x <= span.maxX; ++x) {
     for (int y = span.minY; y <= span.maxY; ++y) {
@@ -686,12 +686,12 @@ void Collider::trimAABBOrbis()
 
         str = orbis.str(strIndex);
 
-        if (visitedStructs.get(strIndex) || !trace.overlaps(*str)) {
+        if (visitedStructs[strIndex] || !trace.overlaps(*str)) {
           continue;
         }
 
         visitedStructs.set(strIndex);
-        visitedBrushes.clearAll();
+        visitedBrushes.clear();
 
         startPos = str->toStructCS(originalStartPos);
         endPos   = str->toStructCS(originalEndPos);
@@ -741,7 +741,7 @@ void Collider::getOrbisOverlaps(List<Struct*>* structs, List<Object*>* objects)
           str = orbis.str(cell.structs[i]);
 
           if (trace.overlaps(*str) && !structs->contains(const_cast<Struct*>(str))) {
-            visitedBrushes.clearAll();
+            visitedBrushes.clear();
 
             startPos = str->toStructCS(aabb.p);
             localDim = str->swapDimCS(aabb.dim);

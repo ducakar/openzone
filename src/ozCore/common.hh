@@ -95,12 +95,6 @@
 #endif
 
 /**
- * @def OZ_SIZEOF_LONG
- * Size of `long` type.
- */
-#define OZ_SIZEOF_LONG __SIZEOF_LONG__
-
-/**
  * @def OZ_WEAK
  * Compiler-specific attribute specifying a weak symbol.
  */
@@ -139,17 +133,17 @@ namespace oz
 /**
  * Null pointer type.
  */
-typedef std::nullptr_t nullptr_t;
+using std::nullptr_t;
 
 /**
  * Platform-dependent unsigned integer type for memory offsets and sizes.
  */
-typedef std::size_t size_t;
+using std::size_t;
 
 /**
  * Platform-dependent signed integer type for memory offsets and pointer differences.
  */
-typedef std::ptrdiff_t ptrdiff_t;
+using std::ptrdiff_t;
 
 /**
  * Initialiser list.

@@ -557,7 +557,7 @@ void Compiler::animVertex(int i)
   hard_assert(environment == POLY);
   hard_assert(nFrames > 1 && uint(i) < uint(positions.length()));
 
-  hard_assert(!normals[i] > 0.9f);
+  hard_assert(normals[i].fastN() > 0.9f);
   normal(normals[i]);
   vertex(float(i), 0.0f, 0.0f);
 }

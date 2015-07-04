@@ -157,16 +157,10 @@ void PoolAlloc::deallocate(void* ptr)
 
 void PoolAlloc::free()
 {
-  if (firstBlock == nullptr) {
-    return;
-  }
-
   soft_assert(count == 0);
 
   if (count == 0) {
-    Block* block = firstBlock;
-
-    while (block != nullptr) {
+    for (Block* block = firstBlock; block != nullptr;) {
       Block* next = block->nextBlock;
 
       block->destroy();

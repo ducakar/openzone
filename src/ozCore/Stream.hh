@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "Bitset.hh"
 #include "String.hh"
 #include "Mat4.hh"
 #include "Endian.hh"
@@ -480,12 +481,32 @@ public:
   /**
    * Fill bitset with data from a stream.
    */
-  void readBitset(ulong* bitset, int nBits);
+  template <class BitsetType>
+  void readBitset(BitsetType& b)
+  {
+    for (size_t& unit : b) {
+#if __SIZEOF_SIZE_T__ == 4
+      unit = readUInt();
+#else
+      unit = size_t(readULong64());
+#endif
+    }
+  }
 
   /**
    * Write bitset data.
    */
-  void writeBitset(const ulong* bitset, int nBits);
+  template <class BitsetType>
+  void writeBitset(const BitsetType& b)
+  {
+    for (size_t unit : b) {
+#if __SIZEOF_SIZE_T__ == 4
+      writeUInt(unit);
+#else
+      writeULong64(unit);
+#endif
+    }
+  }
 
   /**
    * Read a line.

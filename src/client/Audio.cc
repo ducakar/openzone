@@ -214,9 +214,7 @@ Audio::Audio(const Object* obj_) :
   const int* sounds = clazz->audioSounds;
 
   for (int i = 0; i < ObjectClass::MAX_SOUNDS; ++i) {
-    if (sounds[i] >= 0) {
-      context.requestSound(sounds[i]);
-    }
+    context.requestSound(sounds[i]);
   }
 
   OZ_AL_CHECK_ERROR();
@@ -227,9 +225,7 @@ Audio::~Audio()
   const int* sounds = clazz->audioSounds;
 
   for (int i = 0; i < ObjectClass::MAX_SOUNDS; ++i) {
-    if (sounds[i] >= 0) {
-      context.releaseSound(sounds[i]);
-    }
+    context.releaseSound(sounds[i]);
   }
 
   OZ_AL_CHECK_ERROR();

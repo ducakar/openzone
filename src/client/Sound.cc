@@ -455,7 +455,7 @@ void Sound::playCell(int cellX, int cellY)
   for (int i = 0; i < cell.structs.length(); ++i) {
     int strIndex = cell.structs[i];
 
-    if (!playedStructs.get(strIndex)) {
+    if (!playedStructs[strIndex]) {
       playedStructs.set(strIndex);
 
       const Struct* str = orbis.str(strIndex);
@@ -581,7 +581,7 @@ void Sound::soundRun()
     alListenerfv(AL_POSITION, camera.p);
     alListenerfv(AL_VELOCITY, camera.velocity);
 
-    playedStructs.clearAll();
+    playedStructs.clear();
 
     Span span = orbis.getInters(camera.p, SOUND_DISTANCE + Math::sqrt(3.0f) * Object::MAX_DIM);
 

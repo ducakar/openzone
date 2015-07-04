@@ -861,13 +861,13 @@ void BSP::check() const
 
   for (int i = 0; i < nodes.length(); ++i) {
     if (nodes[i].front < 0) {
-      if (usedLeaves.get(~nodes[i].front)) {
+      if (usedLeaves[~nodes[i].front]) {
         OZ_ERROR("BSP leaf %d referenced twice", ~nodes[i].front);
       }
       usedLeaves.set(~nodes[i].front);
     }
     else if (nodes[i].front != 0) {
-      if (usedNodes.get(nodes[i].front)) {
+      if (usedNodes[nodes[i].front]) {
         OZ_ERROR("BSP node %d referenced twice", nodes[i].front);
       }
       usedNodes.set(nodes[i].front);
@@ -877,13 +877,13 @@ void BSP::check() const
     }
 
     if (nodes[i].back < 0) {
-      if (usedLeaves.get(~nodes[i].back)) {
+      if (usedLeaves[~nodes[i].back]) {
         OZ_ERROR("BSP leaf %d referenced twice", ~nodes[i].back);
       }
       usedLeaves.set(~nodes[i].back);
     }
     else if (nodes[i].back != 0) {
-      if (usedNodes.get(nodes[i].back)) {
+      if (usedNodes[nodes[i].back]) {
         OZ_ERROR("BSP node %d referenced twice", nodes[i].back);
       }
       usedNodes.set(nodes[i].back);
@@ -897,14 +897,15 @@ void BSP::check() const
     for (int j = 0; j < models[i].nBrushes; ++j) {
       int index = models[i].firstBrush + j;
 
-      if (usedBrushes.get(index)) {
+      if (usedBrushes[index]) {
         OZ_ERROR("BSP brush %d referenced by two models", index);
       }
       usedBrushes.set(index);
     }
   }
 
-  usedBrushes.clearAll();
+  usedBrushes.clear();
+
   for (int i = 0; i < leaves.length(); ++i) {
     for (int j = 0; j < leaves[i].nBrushes; ++j) {
       int index = leafBrushes[leaves[i].firstBrush + j];
@@ -916,28 +917,28 @@ void BSP::check() const
     for (int j = 0; j < models[i].nBrushes; ++j) {
       int index = models[i].firstBrush + j;
 
-      if (usedBrushes.get(index)) {
+      if (usedBrushes[index]) {
         OZ_ERROR("BSP model brush %d referenced by static tree", index);
       }
       usedBrushes.set(index);
     }
   }
 
-  if (usedNodes.get(0)) {
+  if (usedNodes[0]) {
     OZ_ERROR("BSP root node referenced");
   }
   for (int i = 1; i < nodes.length(); ++i) {
-    if (!usedNodes.get(i)) {
+    if (!usedNodes[i]) {
       OZ_ERROR("BSP node %d not referenced", i);
     }
   }
   for (int i = 0; i < leaves.length(); ++i) {
-    if (!usedLeaves.get(i)) {
+    if (!usedLeaves[i]) {
       OZ_ERROR("BSP leaf %d not referenced", i);
     }
   }
   for (int i = 0; i < brushes.length(); ++i) {
-    if (!usedBrushes.get(i)) {
+    if (!usedBrushes[i]) {
       OZ_ERROR("BSP brush %d not referenced", i);
     }
   }
@@ -970,23 +971,6 @@ void BSP::saveMatrix()
 
   Log::print("Writing BSP structure to '%s' ...", destFile.c());
 
-  Set<String> usedSounds;
-
-  for (const Model& model : models) {
-    if (!model.openSound.isEmpty()) {
-      usedSounds.include(model.openSound);
-    }
-    if (!model.closeSound.isEmpty()) {
-      usedSounds.include(model.closeSound);
-    }
-    if (!model.frictSound.isEmpty()) {
-      usedSounds.include(model.frictSound);
-    }
-  }
-  if (!demolishSound.isEmpty()) {
-    usedSounds.include(demolishSound);
-  }
-
   Stream os(0, Endian::LITTLE);
 
   os.writePoint(mins);
@@ -1000,13 +984,6 @@ void BSP::saveMatrix()
 
   os.writeString(fragPool);
   os.writeInt(nFrags);
-
-  os.writeInt(usedSounds.length());
-  for (const String& sound : usedSounds) {
-    os.writeString(sound);
-  }
-  usedSounds.clear();
-  usedSounds.trim();
 
   os.writeString(demolishSound);
   os.writeFloat(groundOffset);
