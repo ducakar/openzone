@@ -69,6 +69,19 @@ public:
   SBitset() = default;
 
   /**
+   * Initialise from a string of zeros and ones.
+   *
+   * Characters other than '0' are treated as ones. The rest of the bitset is initialised to zeros
+   * if the string is shorter than the bitset.
+   */
+  explicit SBitset(const char* s)
+  {
+    for (int i = 0; i < BITS && s[i] != '\0'; ++i) {
+      data[i / UNIT_BITS] |= size_t(s[i] != '0') << (i % UNIT_BITS);
+    }
+  }
+
+  /**
    * True iff all bits are equal.
    */
   bool operator == (const SBitset& b) const
@@ -126,18 +139,7 @@ public:
   OZ_ALWAYS_INLINE
   int length() const
   {
-    return BITS;
-  }
-
-  /**
-   * Get the `i`-th bit.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator [] (int i) const
-  {
-    hard_assert(uint(i) < uint(SIZE * UNIT_BITS));
-
-    return (data[i / UNIT_BITS] & (1ul << (i % UNIT_BITS))) != 0ul;
+    return SIZE * UNIT_BITS;
   }
 
   /**
@@ -146,7 +148,7 @@ public:
   bool isAllSet() const
   {
     for (int i = 0; i < SIZE - 1; ++i) {
-      if (~data[i] != 0ul) {
+      if (~data[i] != 0) {
         return false;
       }
     }
@@ -159,7 +161,7 @@ public:
   bool isAnySet() const
   {
     for (int i = 0; i < SIZE; ++i) {
-      if (data[i] != 0ul) {
+      if (data[i] != 0) {
         return true;
       }
     }
@@ -185,11 +187,22 @@ public:
   bool isSubset(const SBitset& b) const
   {
     for (int i = 0; i < SIZE; ++i) {
-      if ((data[i] & ~b.data[i]) != 0ul) {
+      if ((data[i] & ~b.data[i]) != 0) {
         return false;
       }
     }
     return true;
+  }
+
+  /**
+   * Get the `i`-th bit.
+   */
+  OZ_ALWAYS_INLINE
+  bool get(int i) const
+  {
+    hard_assert(uint(i) < uint(SIZE * UNIT_BITS));
+
+    return (data[i / UNIT_BITS] & (1ul << (i % UNIT_BITS))) != 0ul;
   }
 
   /**
@@ -226,98 +239,11 @@ public:
   }
 
   /**
-   * %Set bits from inclusively start to non-inclusively end to true.
-   */
-  void set(int start, int end)
-  {
-    hard_assert(uint(start) <= uint(end) && uint(end) <= uint(SIZE * UNIT_BITS));
-
-    int   startUnit   = start / UNIT_BITS;
-    int   startOffset = start % UNIT_BITS;
-
-    int   endUnit     = end / UNIT_BITS;
-    int   endOffset   = end % UNIT_BITS;
-
-    size_t startMask  = ~0ul << startOffset;
-    size_t endMask    = ~(~0ul << endOffset);
-
-    if (startUnit == endUnit) {
-      data[startUnit] |= startMask & endMask;
-    }
-    else {
-      data[startUnit] |= startMask;
-      data[endUnit]   |= endMask;
-
-      for (int i = startUnit + 1; i < endUnit; ++i) {
-        data[i] = ~0ul;
-      }
-    }
-  }
-
-  /**
-   * %Set bits from inclusively start to non-inclusively end to false.
-   */
-  void clear(int start, int end)
-  {
-    hard_assert(uint(start) <= uint(end) && uint(end) <= uint(SIZE * UNIT_BITS));
-
-    int   startUnit   = start / UNIT_BITS;
-    int   startOffset = start % UNIT_BITS;
-
-    int   endUnit     = end / UNIT_BITS;
-    int   endOffset   = end % UNIT_BITS;
-
-    size_t startMask  = ~(~0ul << startOffset);
-    size_t endMask    = ~0ul << endOffset;
-
-    if (startUnit == endUnit) {
-      data[startUnit] &= startMask | endMask;
-    }
-    else {
-      data[startUnit] &= startMask;
-      data[endUnit]   &= endMask;
-
-      for (int i = startUnit + 1; i < endUnit; ++i) {
-        data[i] = 0ul;
-      }
-    }
-  }
-
-  /**
-   * Flip bits from inclusively start to non-inclusively end to false.
-   */
-  void flip(int start, int end)
-  {
-    hard_assert(uint(start) <= uint(end) && uint(end) <= uint(SIZE * UNIT_BITS));
-
-    int   startUnit   = start / UNIT_BITS;
-    int   startOffset = start % UNIT_BITS;
-
-    int   endUnit     = end / UNIT_BITS;
-    int   endOffset   = end % UNIT_BITS;
-
-    size_t startMask  = ~0ul << startOffset;
-    size_t endMask    = ~(~0ul << endOffset);
-
-    if (startUnit == endUnit) {
-      data[startUnit] ^= startMask & endMask;
-    }
-    else {
-      data[startUnit] ^= startMask;
-      data[endUnit]   ^= endMask;
-
-      for (int i = startUnit + 1; i < endUnit; ++i) {
-        data[i] = ~data[i];
-      }
-    }
-  }
-
-  /**
    * %Set all bits to false.
    */
   void clear()
   {
-    Arrays::fill<size_t, size_t>(data, SIZE, 0ul);
+    Arrays::fill<size_t, size_t>(data, SIZE, 0);
   }
 
   /**

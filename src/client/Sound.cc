@@ -455,7 +455,7 @@ void Sound::playCell(int cellX, int cellY)
   for (int i = 0; i < cell.structs.length(); ++i) {
     int strIndex = cell.structs[i];
 
-    if (!playedStructs[strIndex]) {
+    if (!playedStructs.get(strIndex)) {
       playedStructs.set(strIndex);
 
       const Struct* str = orbis.str(strIndex);

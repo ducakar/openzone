@@ -32,10 +32,8 @@ namespace client
 namespace ui
 {
 
-class Area
+class Area : public DChainNode<Area>
 {
-  friend class Chain<Area>;
-  friend class DChain<Area>;
   friend class UI;
 
 public:
@@ -60,9 +58,6 @@ public:
   static const int ALIGN_CENTRE    = ALIGN_HCENTRE | ALIGN_VCENTRE;
 
 protected:
-
-  Area*        prev[1]  = { nullptr };
-  Area*        next[1]  = { nullptr };
 
   int          flags    = 0;
 

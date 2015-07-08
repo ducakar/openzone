@@ -42,7 +42,7 @@ Collider::Collider() :
 
 inline bool Collider::visitBrush(int index)
 {
-  bool isTested = visitedBrushes[index];
+  bool isTested = visitedBrushes.get(index);
   visitedBrushes.set(index);
   return isTested;
 }
@@ -193,7 +193,7 @@ bool Collider::overlapsAABBOrbis()
 
         str = orbis.str(strIndex);
 
-        if (visitedStructs[strIndex] || !trace.overlaps(*str)) {
+        if (visitedStructs.get(strIndex) || !trace.overlaps(*str)) {
           continue;
         }
 
@@ -686,7 +686,7 @@ void Collider::trimAABBOrbis()
 
         str = orbis.str(strIndex);
 
-        if (visitedStructs[strIndex] || !trace.overlaps(*str)) {
+        if (visitedStructs.get(strIndex) || !trace.overlaps(*str)) {
           continue;
         }
 

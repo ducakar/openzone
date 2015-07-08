@@ -61,7 +61,9 @@ int Orbis::allocStrIndex() const
 {
   int index = lastStructIndex + 1;
 
-  while (structs[1 + index] != nullptr || pendingStructs[0][index] || pendingStructs[1][index]) {
+  while (structs[1 + index] != nullptr || pendingStructs[0].get(index) ||
+         pendingStructs[1].get(index))
+  {
     if (index == lastStructIndex) {
       // We have wrapped around => no slots available.
       soft_assert(false);
@@ -79,7 +81,9 @@ int Orbis::allocObjIndex() const
 {
   int index = lastObjectIndex + 1;
 
-  while (objects[1 + index] != nullptr || pendingObjects[0][index] || pendingObjects[1][index]) {
+  while (objects[1 + index] != nullptr || pendingObjects[0].get(index) ||
+         pendingObjects[1].get(index))
+  {
     if (index == lastObjectIndex) {
       // We have wrapped around => no slots available.
       soft_assert(false);
@@ -97,7 +101,7 @@ int Orbis::allocFragIndex() const
 {
   int index = lastFragIndex + 1;
 
-  while (frags[1 + index] != nullptr || pendingFrags[0][index] || pendingFrags[1][index]) {
+  while (frags[1 + index] != nullptr || pendingFrags[0].get(index) || pendingFrags[1].get(index)) {
     if (index == lastFragIndex) {
       // We have wrapped around => no slots available.
       soft_assert(false);
@@ -176,7 +180,7 @@ void Orbis::unposition(Object* obj)
     obj->next[0]->prev[0] = obj->prev[0];
   }
 
-  cell->objects.erase(obj, obj->prev[0]);
+  cell->objects.eraseAfter(obj, obj->prev[0]);
 }
 
 void Orbis::position(Frag* frag)
@@ -207,7 +211,7 @@ void Orbis::unposition(Frag* frag)
     frag->next[0]->prev[0] = frag->prev[0];
   }
 
-  cell->frags.erase(frag, frag->prev[0]);
+  cell->frags.eraseAfter(frag, frag->prev[0]);
 }
 
 Struct* Orbis::add(const BSP* bsp, const Point& p, Heading heading)
@@ -296,7 +300,7 @@ void Orbis::reposition(Object* obj)
       obj->next[0]->prev[0] = obj->prev[0];
     }
 
-    oldCell->objects.erase(obj, obj->prev[0]);
+    oldCell->objects.eraseAfter(obj, obj->prev[0]);
 
     obj->cell = newCell;
     obj->prev[0] = nullptr;
@@ -321,7 +325,7 @@ void Orbis::reposition(Frag* frag)
       frag->next[0]->prev[0] = frag->prev[0];
     }
 
-    oldCell->frags.erase(frag, frag->prev[0]);
+    oldCell->frags.eraseAfter(frag, frag->prev[0]);
 
     frag->cell = newCell;
     frag->prev[0] = nullptr;

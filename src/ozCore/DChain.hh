@@ -34,17 +34,34 @@ namespace oz
 {
 
 /**
- * Double-linked list.
+ * Base class for chain nodes, implementing `prev[]` and `next[]` members.
+ */
+template <class Elem, int INDICES = 1>
+struct DChainNode
+{
+  Elem* next[INDICES]; ///< Pointer to the next element in the chain.
+  Elem* prev[INDICES]; ///< Pointer to the previous element in the chain.
+};
+
+/**
+ * Double-linked list with external storage.
  *
  * This is not a real container but a way of binding existing elements into a linked list.
  *
- * It can only be applied on classes that have `prev[]` and `next[]` members.
+ * It can only be applied on classes that have `prev[]` and `next[]` members. These can also be
+ * provided by extending `DChain::Node` struct.
  * Example:
  * @code
  * struct C
  * {
  *   C*  prev[2];
  *   C*  next[2];
+ *   int value;
+ * };
+ *
+ * // Alternatively, by extending DChain::Node
+ * struct C : DChainNode<C, 2>
+ * {
  *   int value;
  * };
  *
@@ -55,14 +72,12 @@ namespace oz
  * chain1.add(c);
  * chain2.add(c);
  * @endcode
- * That way an objects can be in two separate chains at once;
+ * That way an objects can exist in two separate chains at once;
  * `prev[0]` and `next[0]` point to previous and next element respectively in `chain1` while
  * `prev[1]` and `next[1]` point to previous and next element respectively in `chain2`.
  *
  * @note
- * - Copy operations do not copy elements, to make a copy of a chain including its elements, use
- *   `clone()` instead.
- * - Removal operations (except for `free()` do not actually remove elements but only decouples them
+ * - Removal operations (except for `free()` do not actually remove elements but only decouple them
  *   from the chain.
  * - `prev[INDEX]` and `next[INDEX]` pointers are not cleared when an element is removed from the
  *   chain, they may still point to elements in the chain or to invalid locations.
@@ -122,35 +137,6 @@ public:
       c.lastElem  = nullptr;
     }
     return *this;
-  }
-
-  /**
-   * Create a copy of the chain and all its elements.
-   */
-  DChain clone() const
-  {
-    DChain clone;
-
-    Elem* original = firstElem;
-    Elem* prevCopy = nullptr;
-
-    while (original != nullptr) {
-      Elem* copy = new Elem(*original);
-
-      if (prevCopy == nullptr) {
-        clone.firstElem = copy;
-      }
-      else {
-        prevCopy->next[INDEX] = copy;
-      }
-      copy->prev[INDEX] = prevCopy;
-
-      original = original->next[INDEX];
-      prevCopy = copy;
-    }
-    clone.lastElem = prevCopy;
-
-    return clone;
   }
 
   /**
@@ -338,7 +324,7 @@ public:
    */
   void free()
   {
-    Chain<Elem>::free();
+    Chain<Elem, INDEX>::free();
     lastElem = nullptr;
   }
 

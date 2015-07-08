@@ -30,7 +30,7 @@ namespace oz
 
 struct Cell;
 
-class Frag
+class Frag : public DChainNode<Frag>
 {
 private:
 
@@ -43,9 +43,6 @@ public:
   /*
    *  FIELDS
    */
-
-  Frag*           prev[1];
-  Frag*           next[1];
 
   Cell*           cell;
   int             index;         // position in world.objects vector

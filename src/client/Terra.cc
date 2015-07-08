@@ -136,7 +136,7 @@ void Terra::drawLiquid()
 
   for (int i = span.minX; i <= span.maxX; ++i) {
     for (int j = span.minY; j <= span.maxY; ++j) {
-      if (liquidTiles[i * TILES + j]) {
+      if (liquidTiles.get(i * TILES + j)) {
         glBindBuffer(GL_ARRAY_BUFFER, vbos[i][j]);
 
         Vertex::setFormat();

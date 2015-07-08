@@ -34,12 +34,26 @@ class BSPImago
 {
 private:
 
-  Model model;
+  struct Leaf
+  {
+    int cluster;
+    int firstFace;
+    int nFaces;
+  };
+
+private:
+
+  Model      model;
+
+  List<Leaf> leafClusters;
+  int        nClusters;
+  int        nClusterBits;
+  Bitset     clusters;
 
 public:
 
-  Vec4 waterFogColour;
-  Vec4 lavaFogColour;
+  Vec4       waterFogColour;
+  Vec4       lavaFogColour;
 
 public:
 

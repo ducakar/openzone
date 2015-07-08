@@ -8,6 +8,7 @@
     * RTS interface
     * tutorial tips
 - client
+    * BSP rendering per partes
     * decals
     * particle model (smoke, fire ...)
 - missions
@@ -23,7 +24,6 @@
     * advanced HUD for mechanic units and vehicles
     * conversations
 - client
-    * BSP rendering per partes
     * animated textures
     * better sky, weather
 - missions

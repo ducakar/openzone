@@ -72,11 +72,10 @@ private:
     PreloadData* preloadData = nullptr;
   };
 
-  struct Source
+  struct Source : ChainNode<Source>
   {
     uint    id;
     int     sound;
-    Source* next[1] = { nullptr };
 
     explicit Source(uint sourceId, int sound_) :
       id(sourceId), sound(sound_)

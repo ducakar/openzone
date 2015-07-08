@@ -78,6 +78,14 @@ void BSPImago::preload()
   Stream      is   = file->read(Endian::LITTLE);
 
   is.seek(is.available() - 2 * sizeof(float[4]));
+
+  nClusters      = is.readInt();
+  nClusterBits   = is.readInt();
+
+  clusters.resize(nClusters * nClusterBits);
+
+  is.readBitset(clusters);
+
   waterFogColour = is.readVec4();
   lavaFogColour  = is.readVec4();
 }

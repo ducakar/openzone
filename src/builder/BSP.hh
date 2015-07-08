@@ -285,6 +285,11 @@ private:
   List<int>            indices;
   List<Face>           faces;
 
+  List<int>            leafClusters;
+  Bitset               clusters;
+  int                  nClusters;
+  int                  nClusterBytes;
+
   String               fragPool;
   int                  nFrags;
 

@@ -50,7 +50,7 @@ inline bool iEquals(CIteratorA iterA, CIteratorB iterB)
 
 extern bool hasPassed;
 
-struct Foo
+struct Foo : oz::DChainNode<Foo>
 {
   static bool allowCopy;
   static bool allowMove;
@@ -58,9 +58,6 @@ struct Foo
   static bool allowLessOp;
 
   int value;
-
-  Foo* prev[1];
-  Foo* next[1];
 
   Foo() :
     value(-1)

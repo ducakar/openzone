@@ -144,7 +144,7 @@ void Render::scheduleCell(int cellX, int cellY)
   const Cell& cell = orbis.cells[cellX][cellY];
 
   for (int i = 0; i < cell.structs.length(); ++i) {
-    if (!drawnStructs[cell.structs[i]]) {
+    if (!drawnStructs.get(cell.structs[i])) {
       drawnStructs.set(cell.structs[i]);
 
       Struct* str    = orbis.str(cell.structs[i]);

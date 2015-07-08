@@ -30,7 +30,7 @@ namespace oz
 
 class Mind;
 
-class Task
+class Task : public DChainNode<Task>
 {
 public:
 
@@ -38,9 +38,6 @@ public:
 
   typedef Task* CreateFunc(const Task* parent);
   typedef Task* ReadFunc(Stream* is, const Task* parent);
-
-  Task*       prev[1];
-  Task*       next[1];
 
   int         flags;
 

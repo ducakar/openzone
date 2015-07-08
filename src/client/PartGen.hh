@@ -30,10 +30,8 @@ namespace oz
 namespace client
 {
 
-class PartGen
+class PartGen : public ChainNode<PartGen>
 {
-  friend class Chain<PartGen>;
-
 public:
 
   static const int UPDATED_BIT = 0x01;
@@ -43,8 +41,6 @@ private:
   struct Part;
 
 private:
-
-  PartGen*   next[1];
 
   Mat4       transf;
   PartClass* clazz;

@@ -36,7 +36,7 @@ class Bot;
 /**
  * Static object class and base class for other object classes.
  */
-class Object : public AABB
+class Object : public AABB, public DChainNode<Object>
 {
 public:
 
@@ -194,13 +194,12 @@ public:
   static const int EVENT_USE      = 7;
   static const int EVENT_FAIL     = 8;
 
-  class Event
+  class Event : public ChainNode<Event>
   {
   public:
 
     static Pool<Event> pool;
 
-    Event* next[1]   = { nullptr };
     int    id;
     float  intensity;
 
@@ -221,9 +220,6 @@ public:
   /*
    * FIELDS
    */
-
-  Object*            prev[1]    = { nullptr }; // the previous object in cell.objects chains
-  Object*            next[1]    = { nullptr }; // the next object in cell.objects chains
 
   Cell*              cell       = nullptr;     // parent cell, nullptr if not positioned in world
   int                index      = -1;          // index in orbis.objects

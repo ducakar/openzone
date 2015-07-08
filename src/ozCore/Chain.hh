@@ -34,16 +34,32 @@ namespace oz
 {
 
 /**
- * Linked list.
+ * Base class for chain nodes, implementing `next[]` member.
+ */
+template <class Elem, int INDICES = 1>
+struct ChainNode
+{
+  Elem* next[INDICES]; ///< Pointer to the next element in the chain.
+};
+
+/**
+ * Linked list with external storage.
  *
  * This is not a real container but a way of binding existing elements into a linked list.
  *
- * It can only be applied on classes that have a `next[]` member.
+ * It can only be applied on classes that have a `next[]` member. This can also be provided by
+ * extending `Chain::Node` struct.
  * Example:
  * @code
  * struct C
  * {
  *   C*  next[2];
+ *   int value;
+ * };
+ *
+ * // Alternatively, by extending DChain::Node
+ * struct C : ChainNode<C, 2>
+ * {
  *   int value;
  * };
  *
@@ -54,13 +70,11 @@ namespace oz
  * chain1.add(c);
  * chain2.add(c);
  * @endcode
- * That way an objects can be in two separate chains at once;
+ * That way an objects can exist in two separate chains at once;
  * `next[0]` points to next element in `chain1` and `next[1]` points to next element in `chain2`.
  *
  * @note
- * - Copy operations do not copy elements, to make a copy of a chain including its elements, use
- *   `clone()` instead.
- * - Removal operations (except for `free()` do not actually remove elements but only decouples them
+ * - Removal operations (except for `free()` do not actually remove elements but only decouple them
  *   from the chain.
  * - `next[INDEX]` pointer is not cleared when an element is removed from the chain, it may still
  *   point to elements in the chain or to invalid locations.
@@ -175,29 +189,6 @@ public:
   }
 
   /**
-   * Create a copy of the chain and all its elements.
-   */
-  Chain clone() const
-  {
-    Chain clone;
-
-    if (firstElem != nullptr) {
-      clone.firstElem = new Elem(*firstElem);
-
-      const Elem* original = firstElem->next;
-      Elem*       prevCopy = clone.firstElem;
-
-      while (original != nullptr) {
-        prevCopy->next = new Elem(*original);
-
-        prevCopy = prevCopy->next ;
-        original = original->next;
-      }
-    }
-    return clone;
-  }
-
-  /**
    * True iff same size and respective elements are equal.
    *
    * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
@@ -303,20 +294,9 @@ public:
   }
 
   /**
-   * Pointer to the last element.
-   */
-  Elem* last() const
-  {
-    Elem* last = firstElem;
-
-    while (last != nullptr) {
-      last = last->next[INDEX];
-    }
-    return last;
-  }
-
-  /**
    * Pointer to the element before a given one.
+   *
+   * Passing `nullptr` as the parameter returns the last element in the chain.
    */
   Elem* before(const Elem* elem) const
   {
@@ -394,7 +374,7 @@ public:
    * Since this chain is not double-linked, a pointer to the preceding element (or `nullptr` if the
    * first element) must be provided.
    */
-  void erase(Elem* elem, Elem* prev)
+  void eraseAfter(Elem* elem, Elem* prev)
   {
     hard_assert(prev == nullptr || prev->next[INDEX] == elem);
 

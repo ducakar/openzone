@@ -27,12 +27,9 @@
 
 using namespace oz;
 
-struct Elem
+struct Elem : DChainNode<Elem>
 {
   int value;
-
-  Elem* prev[1];
-  Elem* next[1];
 
   explicit Elem(int value_) :
     value(value_)

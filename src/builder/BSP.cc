@@ -168,13 +168,14 @@ void BSP::load()
   }
 
   leaves.resize(lumps[QBSPLump::LEAFS].length / sizeof(QBSPLeaf));
+  leafClusters.resize(leaves.length());
 
   is.rewind();
   is.readSkip(lumps[QBSPLump::LEAFS].offset);
 
   for (int i = 0; i < leaves.length(); ++i) {
     // int cluster
-    is.readInt();
+    leafClusters[i] = is.readInt();
     // int area
     is.readInt();
     // int bb[2][3]
@@ -221,24 +222,25 @@ void BSP::load()
 
   for (int i = 0; i < models.length(); ++i) {
     const Json& entityConfig = modelsConfig[i];
+    Model&      model        = models[i];
 
-    models[i].mins.x = is.readFloat() * scale - 4.0f * EPSILON;
-    models[i].mins.y = is.readFloat() * scale - 4.0f * EPSILON;
-    models[i].mins.z = is.readFloat() * scale - 4.0f * EPSILON;
+    model.mins.x = is.readFloat() * scale - 4.0f * EPSILON;
+    model.mins.y = is.readFloat() * scale - 4.0f * EPSILON;
+    model.mins.z = is.readFloat() * scale - 4.0f * EPSILON;
 
-    models[i].maxs.x = is.readFloat() * scale + 4.0f * EPSILON;
-    models[i].maxs.y = is.readFloat() * scale + 4.0f * EPSILON;
-    models[i].maxs.z = is.readFloat() * scale + 4.0f * EPSILON;
+    model.maxs.x = is.readFloat() * scale + 4.0f * EPSILON;
+    model.maxs.y = is.readFloat() * scale + 4.0f * EPSILON;
+    model.maxs.z = is.readFloat() * scale + 4.0f * EPSILON;
 
     // int firstFace
     is.readInt();
     // int nFaces
     is.readInt();
 
-    models[i].firstBrush = is.readInt();
-    models[i].nBrushes   = is.readInt();
-    models[i].title      = entityConfig["title"].get("");
-    models[i].move       = entityConfig["move"].get(Vec3::ZERO);
+    model.firstBrush = is.readInt();
+    model.nBrushes   = is.readInt();
+    model.title      = entityConfig["title"].get("");
+    model.move       = entityConfig["move"].get(Vec3::ZERO);
 
     static const EnumMap<EntityClass::Type> entityMap = {
       { EntityClass::STATIC,         "STATIC"         },
@@ -250,40 +252,38 @@ void BSP::load()
       { EntityClass::TELEPORT,       "TELEPORT"       }
     };
 
-    models[i].type       = entityMap[entityConfig["type"].get("")];
-    models[i].margin     = entityConfig["margin"].get(DEFAULT_MARGIN);
-    models[i].timeout    = entityConfig["timeout"].get(Math::INF);
-    models[i].ratioInc   = Timer::TICK_TIME / entityConfig["slideTime"].get(1.0f);
+    model.type       = entityMap[entityConfig["type"].get("")];
+    model.margin     = entityConfig["margin"].get(DEFAULT_MARGIN);
+    model.timeout    = entityConfig["timeout"].get(Math::INF);
+    model.ratioInc   = Timer::TICK_TIME / entityConfig["slideTime"].get(1.0f);
 
-    models[i].target     = entityConfig["target"].get(-1);
-    models[i].key        = entityConfig["key"].get(0);
+    model.target     = entityConfig["target"].get(-1);
+    model.key        = entityConfig["key"].get(0);
 
-    models[i].openSound  = entityConfig["openSound"].get("");
-    models[i].closeSound = entityConfig["closeSound"].get("");
-    models[i].frictSound = entityConfig["frictSound"].get("");
+    model.openSound  = entityConfig["openSound"].get("");
+    model.closeSound = entityConfig["closeSound"].get("");
+    model.frictSound = entityConfig["frictSound"].get("");
 
-    if (models[i].type == EntityClass::ELEVATOR &&
-        (models[i].move.x != 0.0f || models[i].move.y != 0.0f))
-    {
+    if (model.type == EntityClass::ELEVATOR && (model.move.x != 0.0f || model.move.y != 0.0f)) {
       OZ_ERROR("Elevator can only move vertically, but entities[%d].move = (%g %g %g)",
-               i, models[i].move.x, models[i].move.y, models[i].move.z);
+               i, model.move.x, model.move.y, model.move.z);
     }
 
     const Json& modelConfig = entityConfig["model"];
 
     if (!modelConfig.isNull()) {
-      models[i].modelName = modelConfig["name"].get("");
-      if (models[i].modelName.isEmpty()) {
+      model.modelName = modelConfig["name"].get("");
+      if (model.modelName.isEmpty()) {
         OZ_ERROR("entities[%d].model.name is empty", i);
       }
 
       Vec3 translation = modelConfig["translation"].get(Vec3::ZERO);
       Vec3 rotation    = modelConfig["rotation"].get(Vec3::ZERO);
 
-      models[i].modelTransf = Mat4::translation(models[i].p() + translation - Point::ORIGIN);
-      models[i].modelTransf.rotateY(Math::rad(rotation.y));
-      models[i].modelTransf.rotateX(Math::rad(rotation.x));
-      models[i].modelTransf.rotateZ(Math::rad(rotation.z));
+      model.modelTransf = Mat4::translation(models[i].p() + translation - Point::ORIGIN);
+      model.modelTransf.rotateY(Math::rad(rotation.y));
+      model.modelTransf.rotateX(Math::rad(rotation.x));
+      model.modelTransf.rotateZ(Math::rad(rotation.z));
     }
   }
 
@@ -444,6 +444,21 @@ void BSP::load()
     // int size[2]
     is.readInt();
     is.readInt();
+  }
+
+  if (lumps[QBSPLump::VISUALDATA].length != 0) {
+    is.rewind();
+    is.readSkip(lumps[QBSPLump::VISUALDATA].offset);
+
+    nClusters     = is.readInt();
+    nClusterBytes = is.readInt();
+
+    clusters.resize(nClusters * nClusterBytes * 8);
+    is.read(reinterpret_cast<char*>(clusters.begin()), nClusters * nClusterBytes);
+  }
+  else {
+    is.writeInt(0);
+    is.writeInt(0);
   }
 
   const Json& objectsConfig = config["boundObjects"];
@@ -861,13 +876,13 @@ void BSP::check() const
 
   for (int i = 0; i < nodes.length(); ++i) {
     if (nodes[i].front < 0) {
-      if (usedLeaves[~nodes[i].front]) {
+      if (usedLeaves.get(~nodes[i].front)) {
         OZ_ERROR("BSP leaf %d referenced twice", ~nodes[i].front);
       }
       usedLeaves.set(~nodes[i].front);
     }
     else if (nodes[i].front != 0) {
-      if (usedNodes[nodes[i].front]) {
+      if (usedNodes.get(nodes[i].front)) {
         OZ_ERROR("BSP node %d referenced twice", nodes[i].front);
       }
       usedNodes.set(nodes[i].front);
@@ -877,13 +892,13 @@ void BSP::check() const
     }
 
     if (nodes[i].back < 0) {
-      if (usedLeaves[~nodes[i].back]) {
+      if (usedLeaves.get(~nodes[i].back)) {
         OZ_ERROR("BSP leaf %d referenced twice", ~nodes[i].back);
       }
       usedLeaves.set(~nodes[i].back);
     }
     else if (nodes[i].back != 0) {
-      if (usedNodes[nodes[i].back]) {
+      if (usedNodes.get(nodes[i].back)) {
         OZ_ERROR("BSP node %d referenced twice", nodes[i].back);
       }
       usedNodes.set(nodes[i].back);
@@ -897,7 +912,7 @@ void BSP::check() const
     for (int j = 0; j < models[i].nBrushes; ++j) {
       int index = models[i].firstBrush + j;
 
-      if (usedBrushes[index]) {
+      if (usedBrushes.get(index)) {
         OZ_ERROR("BSP brush %d referenced by two models", index);
       }
       usedBrushes.set(index);
@@ -917,28 +932,28 @@ void BSP::check() const
     for (int j = 0; j < models[i].nBrushes; ++j) {
       int index = models[i].firstBrush + j;
 
-      if (usedBrushes[index]) {
+      if (usedBrushes.get(index)) {
         OZ_ERROR("BSP model brush %d referenced by static tree", index);
       }
       usedBrushes.set(index);
     }
   }
 
-  if (usedNodes[0]) {
+  if (usedNodes.get(0)) {
     OZ_ERROR("BSP root node referenced");
   }
   for (int i = 1; i < nodes.length(); ++i) {
-    if (!usedNodes[i]) {
+    if (!usedNodes.get(i)) {
       OZ_ERROR("BSP node %d not referenced", i);
     }
   }
   for (int i = 0; i < leaves.length(); ++i) {
-    if (!usedLeaves[i]) {
+    if (!usedLeaves.get(i)) {
       OZ_ERROR("BSP leaf %d not referenced", i);
     }
   }
   for (int i = 0; i < brushes.length(); ++i) {
-    if (!usedBrushes[i]) {
+    if (!usedBrushes.get(i)) {
       OZ_ERROR("BSP brush %d not referenced", i);
     }
   }
@@ -1154,6 +1169,15 @@ void BSP::saveClient()
   Stream os(0, Endian::LITTLE);
 
   compiler.writeModel(&os, true);
+
+  for (int i = 0; i < leafClusters.length(); ++i) {
+    os.writeInt(leafClusters[i]);
+  }
+
+  os.writeInt(nClusters);
+  os.writeInt(nClusterBytes * 8);
+  os.writeBitset(clusters);
+
   os.writeVec4(waterFogColour);
   os.writeVec4(lavaFogColour);
 

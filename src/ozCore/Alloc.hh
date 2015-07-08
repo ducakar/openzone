@@ -61,9 +61,8 @@ public:
    * Internal list of all memory allocations is held to detect memory leaks and `new`/`delete`
    * mismatches.
    */
-  struct ChunkInfo
+  struct ChunkInfo : ChainNode<ChunkInfo>
   {
-    ChunkInfo* next[1];    ///< Pointer to the next chunk.
     size_t     size;       ///< Size (including meta data).
     StackTrace stackTrace; ///< Stack trace for the `new` call that allocated it.
   };

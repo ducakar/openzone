@@ -72,6 +72,13 @@ public:
   explicit Bitset(int nBits);
 
   /**
+   * Initialise from a string of zeros and ones.
+   *
+   * Characters other than '0' are treated as ones.
+   */
+  explicit Bitset(const char* s);
+
+  /**
    * Destructor.
    */
   ~Bitset();
@@ -163,17 +170,6 @@ public:
   }
 
   /**
-   * Get the `i`-th bit.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator [] (int i) const
-  {
-    hard_assert(uint(i) < uint(size * UNIT_BITS));
-
-    return (data[i / UNIT_BITS] & (1ul << (i % UNIT_BITS))) != 0ul;
-  }
-
-  /**
    * True iff all bits are true.
    */
   bool isAllSet() const;
@@ -191,14 +187,20 @@ public:
   /**
    * True iff this bitset is a subset of a given bitset.
    *
-   * Let say two bitsets are characteristic vectors of two sets. Return true if first set is a
-   * subset of the second one. Other explanation: the result is true iff the following statement is
-   * true: if first bitset has true on the i-th position then the second bitset also has true on the
-   * i-th position.
-   *
    * Both bitsets must be the same size.
    */
   bool isSubset(const Bitset& b) const;
+
+  /**
+   * Get the `i`-th bit.
+   */
+  OZ_ALWAYS_INLINE
+  bool get(int i) const
+  {
+    hard_assert(uint(i) < uint(size * UNIT_BITS));
+
+    return (data[i / UNIT_BITS] & (1ul << (i % UNIT_BITS))) != 0ul;
+  }
 
   /**
    * %Set the `i`-th bit to true.
@@ -232,21 +234,6 @@ public:
 
     data[i / UNIT_BITS] ^= 1ul << (i % UNIT_BITS);
   }
-
-  /**
-   * %Set bits from inclusively start to non-inclusively end to true.
-   */
-  void set(int start, int end);
-
-  /**
-   * %Set bits from inclusively start to non-inclusively end to false.
-   */
-  void clear(int start, int end);
-
-  /**
-   * Flip bits from inclusively start to non-inclusively end to false.
-   */
-  void flip(int start, int end);
 
   /**
    * %Set all bits to false.

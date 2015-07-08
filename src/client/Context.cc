@@ -211,7 +211,7 @@ void Context::removeSource(Source* source, Source* prev)
   alDeleteSources(1, &source->id);
 
   --sounds[sound].nUsers;
-  sources.erase(source, prev);
+  sources.eraseAfter(source, prev);
   delete source;
 }
 
