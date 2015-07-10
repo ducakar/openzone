@@ -36,10 +36,9 @@ namespace oz
 /**
  * Bit array with static storage.
  *
- * Bits are stored in an array of `size_t`s and its length is rounded up to a multiple of 64, so the
- * length of the same bitset matches between 32-bit and 64-bit platforms.
+ * Bits are stored in an array of `size_t`s, size of which if a multiple of 64 bits.
  *
- * @sa `oz::SBitset`
+ * @sa `oz::Bitset`
  */
 template <int BITS>
 class SBitset
@@ -139,7 +138,7 @@ public:
   OZ_ALWAYS_INLINE
   int length() const
   {
-    return SIZE * UNIT_BITS;
+    return BITS;
   }
 
   /**
@@ -152,7 +151,7 @@ public:
         return false;
       }
     }
-    return true;
+    return data[SIZE - 1] == ~(size_t(-1) << (BITS % UNIT_BITS));
   }
 
   /**
@@ -200,9 +199,9 @@ public:
   OZ_ALWAYS_INLINE
   bool get(int i) const
   {
-    hard_assert(uint(i) < uint(SIZE * UNIT_BITS));
+    hard_assert(uint(i) < uint(BITS));
 
-    return (data[i / UNIT_BITS] & (1ul << (i % UNIT_BITS))) != 0ul;
+    return (data[i / UNIT_BITS] & (size_t(1) << (i % UNIT_BITS))) != 0;
   }
 
   /**
@@ -211,9 +210,9 @@ public:
   OZ_ALWAYS_INLINE
   void set(int i)
   {
-    hard_assert(uint(i) < uint(SIZE * UNIT_BITS));
+    hard_assert(uint(i) < uint(BITS));
 
-    data[i / UNIT_BITS] |= 1ul << (i % UNIT_BITS);
+    data[i / UNIT_BITS] |= size_t(1) << (i % UNIT_BITS);
   }
 
   /**
@@ -222,9 +221,9 @@ public:
   OZ_ALWAYS_INLINE
   void clear(int i)
   {
-    hard_assert(uint(i) < uint(SIZE * UNIT_BITS));
+    hard_assert(uint(i) < uint(BITS));
 
-    data[i / UNIT_BITS] &= ~(1ul << (i % UNIT_BITS));
+    data[i / UNIT_BITS] &= ~(size_t(1) << (i % UNIT_BITS));
   }
 
   /**
@@ -233,9 +232,9 @@ public:
   OZ_ALWAYS_INLINE
   void flip(int i)
   {
-    hard_assert(uint(i) < uint(SIZE * UNIT_BITS));
+    hard_assert(uint(i) < uint(BITS));
 
-    data[i / UNIT_BITS] ^= 1ul << (i % UNIT_BITS);
+    data[i / UNIT_BITS] ^= size_t(1) << (i % UNIT_BITS);
   }
 
   /**
@@ -251,12 +250,8 @@ public:
    */
   SBitset operator ~ () const
   {
-    SBitset r;
-
-    for (int i = 0; i < SIZE; ++i) {
-      r.data[i] = ~data[i];
-    }
-    return r;
+    SBitset r = *this;
+    return r.flip();
   }
 
   /**
@@ -284,6 +279,18 @@ public:
   {
     SBitset r = *this;
     return r ^= b;
+  }
+
+  /**
+   * NOT of the bitset.
+   */
+  SBitset& flip()
+  {
+    for (int i = 0; i < SIZE - 1; ++i) {
+      data[i] = ~data[i];
+    }
+    data[SIZE - 1] ^= ~(size_t(-1) << (BITS % UNIT_BITS));
+    return *this;
   }
 
   /**

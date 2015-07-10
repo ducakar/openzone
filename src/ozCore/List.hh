@@ -116,7 +116,7 @@ public:
    * Initialise from a C++ array.
    */
   explicit List(const Elem* array, int count_) :
-    data(Arrays::reallocate<Elem>(nullptr, 0, count_)), count(count_), size(count_)
+    List(count_)
   {
     Arrays::copy<Elem>(array, count, data);
   }

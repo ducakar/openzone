@@ -187,29 +187,6 @@ protected:
 protected:
 
   /**
-   * Allocate and make a copy of a given bucket chain.
-   */
-  Entry* cloneChain(const Entry* entry)
-  {
-    Entry* clone = nullptr;
-
-    if (entry != nullptr) {
-      clone = new(pool) Entry{ clone, entry->hash, entry->elem };
-
-      const Entry* original = entry->next;
-      Entry*       prevCopy = clone;
-
-      while (original != nullptr) {
-        prevCopy->next = new(pool) Entry{ clone, original->hash, original->elem };
-
-        prevCopy = prevCopy->next ;
-        original = original->next;
-      }
-    }
-    return clone;
-  }
-
-  /**
    * Resize bucket array and rebuild hashtable.
    */
   void resize(int newSize)
@@ -329,7 +306,7 @@ public:
   }
 
   /**
-   * Copy constructor, copies elements and storage.
+   * Copy constructor, copies elements but does not preserve bucket array length.
    */
   HashSet(const HashSet& ht) :
     HashSet(ht.pool.length() * 4 / 3)
@@ -350,13 +327,13 @@ public:
   }
 
   /**
-   * Copy operator, copies elements and storage.
+   * Copy operator, copies elements but does not preserve bucket array length.
    */
   HashSet& operator = (const HashSet& ht)
   {
     if (&ht != this) {
       clear();
-      ensureCapacity(ht.pool.length());
+      ensureCapacity(ht.pool.length() * 4 / 3);
 
       for (const Elem& e : ht) {
         add(e);
@@ -390,7 +367,7 @@ public:
   HashSet& operator = (InitialiserList<Elem> l)
   {
     clear();
-    ensureCapacity(int(l.size()));
+    ensureCapacity(int(l.size()) * 4 / 3);
 
     for (const Elem& e : l) {
       add(e);

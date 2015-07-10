@@ -363,7 +363,7 @@ int Client::init(int argc, char** argv)
 
   // Standalone. Executable is ./bin/<platform>/openzone.
   if (prefixDir.isEmpty()) {
-    prefixDir = File::executable().directory() / "../..";
+    prefixDir = File::EXECUTABLE.directory() / "../..";
   }
 
   optind = 1;

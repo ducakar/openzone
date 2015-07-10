@@ -89,12 +89,17 @@ public:
    * Initialise from a C++ array.
    */
   explicit SList(const Elem* array, int count_) :
-    count(count_)
+    SList(count_)
   {
-    hard_assert(count <= SIZE);
-
     Arrays::copy<Elem>(array, count, data);
   }
+
+  /**
+   * Initialise from an initialiser list.
+   */
+  SList(InitialiserList<Elem> l) :
+    SList(l.begin(), int(l.size()))
+  {}
 
   /**
    * Assign from an initialiser list.

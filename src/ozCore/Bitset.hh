@@ -36,8 +36,7 @@ namespace oz
 /**
  * Bit array with dynamically allocated storage.
  *
- * Bits are stored in an array of `size_t`s and its length is rounded up to a multiple of 64, so the
- * length of the same bitset matches between 32-bit and 64-bit platforms.
+ * Bits are stored in an array of `size_t`s, size of which if a multiple of 64 bits.
  *
  * @sa `oz::SBitset`
  */
@@ -53,8 +52,9 @@ private:
 
 private:
 
-  size_t* data = nullptr; ///< Pointer to array of units that holds the data.
-  int     size = 0;       ///< Size of data array (in units, not in bits).
+  size_t* data    = nullptr; ///< Pointer to array of units that holds the data.
+  int     size    = 0;       ///< Size of data array in units.
+  int     bitSize = 0;       ///< Size in bits.
 
 public:
 
@@ -157,7 +157,7 @@ public:
   OZ_ALWAYS_INLINE
   int length() const
   {
-    return size * UNIT_BITS;
+    return bitSize;
   }
 
   /**
@@ -197,9 +197,9 @@ public:
   OZ_ALWAYS_INLINE
   bool get(int i) const
   {
-    hard_assert(uint(i) < uint(size * UNIT_BITS));
+    hard_assert(uint(i) < uint(bitSize));
 
-    return (data[i / UNIT_BITS] & (1ul << (i % UNIT_BITS))) != 0ul;
+    return (data[i / UNIT_BITS] & (size_t(1) << (i % UNIT_BITS))) != 0;
   }
 
   /**
@@ -208,9 +208,9 @@ public:
   OZ_ALWAYS_INLINE
   void set(int i)
   {
-    hard_assert(uint(i) < uint(size * UNIT_BITS));
+    hard_assert(uint(i) < uint(bitSize));
 
-    data[i / UNIT_BITS] |= 1ul << (i % UNIT_BITS);
+    data[i / UNIT_BITS] |= size_t(1) << (i % UNIT_BITS);
   }
 
   /**
@@ -219,9 +219,9 @@ public:
   OZ_ALWAYS_INLINE
   void clear(int i)
   {
-    hard_assert(uint(i) < uint(size * UNIT_BITS));
+    hard_assert(uint(i) < uint(bitSize));
 
-    data[i / UNIT_BITS] &= ~(1ul << (i % UNIT_BITS));
+    data[i / UNIT_BITS] &= ~(size_t(1) << (i % UNIT_BITS));
   }
 
   /**
@@ -230,9 +230,9 @@ public:
   OZ_ALWAYS_INLINE
   void flip(int i)
   {
-    hard_assert(uint(i) < uint(size * UNIT_BITS));
+    hard_assert(uint(i) < uint(bitSize));
 
-    data[i / UNIT_BITS] ^= 1ul << (i % UNIT_BITS);
+    data[i / UNIT_BITS] ^= size_t(1) << (i % UNIT_BITS);
   }
 
   /**
@@ -259,6 +259,11 @@ public:
    * Return XOR of two same-length bitsets.
    */
   Bitset operator ^ (const Bitset& b) const;
+
+  /**
+   * NOT of the bitset.
+   */
+  Bitset& flip();
 
   /**
    * AND of two same-length bitsets.

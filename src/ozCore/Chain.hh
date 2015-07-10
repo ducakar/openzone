@@ -194,7 +194,7 @@ public:
    * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
    * copies always differ in `prev[INDEX]` and `next[INDEX]` members.
    */
-  bool equals(const Chain& c) const
+  bool operator == (const Chain& c) const
   {
     const Elem* e1 = firstElem;
     const Elem* e2 = c.firstElem;

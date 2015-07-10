@@ -190,7 +190,7 @@ bool Gettext::import(const File& file)
   stringsSize += newStringsSize;
 
   // Rebuild hashtable.
-  nBuckets = (4 * nMessages) / 3;
+  nBuckets = nMessages * 4 / 3;
 
   delete[] table;
   table = new Message*[nBuckets] {};

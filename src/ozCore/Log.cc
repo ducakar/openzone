@@ -72,8 +72,7 @@ static inline const char* getIndent()
 
 Log::Log()
 {
-  // Indent.
-  print("");
+  print();
 }
 
 Log::~Log()
@@ -134,6 +133,15 @@ void Log::print(const char* s, ...)
   OZ_PRINT_BOTH(
     fputs(indent, stream);
     fputs(buffer, stream);
+  );
+}
+
+void Log::print()
+{
+  const char* indent = getIndent();
+
+  OZ_PRINT_BOTH(
+    fputs(indent, stream);
   );
 }
 
@@ -441,10 +449,7 @@ const Log& Log::operator << (const Mat4& m) const
 
 const Log& Log::operator << (const Stream& is) const
 {
-  const char* indent = getIndent();
-
   OZ_PRINT_BOTH(
-    fputs(indent, stream);
     fwrite(is.begin(), 1, is.capacity(), stream);
   );
   return *this;

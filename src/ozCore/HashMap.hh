@@ -135,7 +135,7 @@ public:
   }
 
   /**
-   * Copy constructor, copies elements and storage.
+   * Copy constructor, copies elements but does not preserve bucket array length.
    */
   HashMap(const HashMap& ht) = default;
 
@@ -145,7 +145,7 @@ public:
   HashMap(HashMap&& ht) = default;
 
   /**
-   * Copy operator, copies elements and storage.
+   * Copy operator, copies elements but does not preserve bucket array length.
    */
   HashMap& operator = (const HashMap& ht) = default;
 
@@ -160,7 +160,7 @@ public:
   HashMap& operator = (InitialiserList<Pair> l)
   {
     clear();
-    ensureCapacity(int(l.size()));
+    ensureCapacity(int(l.size()) * 4 / 3);
 
     for (const Pair& p : l) {
       add(p.key, p.value);

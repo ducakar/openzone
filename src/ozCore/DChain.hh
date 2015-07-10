@@ -145,7 +145,7 @@ public:
    * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
    * copies always differ in `prev[INDEX]` and `next[INDEX]` members.
    */
-  bool equals(const DChain& c) const
+  bool operator == (const DChain& c) const
   {
     return Chain<Elem, INDEX>::equals(c);
   }

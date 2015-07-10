@@ -72,6 +72,9 @@ public:
   /// User's directory for videos.
   static const File& VIDEOS;
 
+  /// Application's executable path ("/" on NaCl).
+  static const File& EXECUTABLE;
+
 private:
 
   using String::String;
@@ -372,13 +375,6 @@ public:
    * @param append true to append to the end instead to the beginning of the search path.
    */
   bool mountLocalAt(bool append = true) const;
-
-  /**
-   * Get executable file path.
-   *
-   * On NaCl or on an error, an empty string is returned.
-   */
-  static const File& executable();
 
   /**
    * Initialise VFS, determine user directories and executable path.

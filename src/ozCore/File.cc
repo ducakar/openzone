@@ -101,24 +101,19 @@ struct Stat
   }
 };
 
-static File specialDirs[10];
-static File executableFile;
+static File specialFiles[10];
 
 #ifdef __native_client__
 
 static void initSpecialDirs()
 {
-  specialDirs[0] = "/";
-  specialDirs[1] = "/config";
-  specialDirs[2] = "/data";
+  specialFiles[0] = "/";
+  specialFiles[1] = "/config";
+  specialFiles[2] = "/data";
+  specialFiles[9] = "/";
 
   File::CONFIG.mkdir();
   File::DATA.mkdir();
-}
-
-static void initExecutablePath()
-{
-  executableFile = "/";
 }
 
 #elif defined(_WIN32)
@@ -130,7 +125,7 @@ static void setSpecialDir(int id, int csidl)
 
   SHGetSpecialFolderPath(nullptr, path, csidl, false);
 
-  specialDirs[id] = String(path).replace('\\', '/');
+  specialFiles[id] = String(path).replace('\\', '/');
 }
 
 static void initSpecialDirs()
@@ -144,17 +139,14 @@ static void initSpecialDirs()
   setSpecialDir(6, CSIDL_MYMUSIC);
   setSpecialDir(7, CSIDL_MYPICTURES);
   setSpecialDir(8, CSIDL_MYVIDEO);
-}
 
-static void initExecutablePath()
-{
   char path[MAX_PATH];
 
   HMODULE module = GetModuleHandle(nullptr);
   int     length = GetModuleFileName(module, path, MAX_PATH);
 
   if (length == 0 || length == MAX_PATH) {
-    executableFile = String(path, length).replace('\\', '/');
+    specialFiles[9] = String(path, length).replace('\\', '/');
   }
 }
 
@@ -165,12 +157,12 @@ static void setSpecialDir(Map<String, File>* vars, int id, const char* name, con
   const char* value = getenv(name);
 
   if (value != nullptr) {
-    specialDirs[id] = value;
+    specialFiles[id] = value;
   }
   else {
     const File* configValue = vars->find(name);
 
-    specialDirs[id] = configValue == nullptr ? defValue : *configValue;
+    specialFiles[id] = configValue == nullptr ? defValue : *configValue;
   }
 }
 
@@ -208,7 +200,7 @@ static void loadXDGSettings(Map<String, File>* vars, const File& file)
   }
 }
 
-static void initSpecialDirs()
+static void initSpecialFiles()
 {
   Map<String, File> vars;
 
@@ -235,10 +227,8 @@ static void initSpecialDirs()
   setSpecialDir(&vars, 6, "XDG_MUSIC_DIR",     File::HOME / "Music");
   setSpecialDir(&vars, 7, "XDG_PICTURES_DIR",  File::HOME / "Pictures");
   setSpecialDir(&vars, 8, "XDG_VIDEOS_DIR",    File::HOME / "Videos");
-}
 
-static void initExecutablePath()
-{
+  // Get executable path.
   char pidPathBuffer[PATH_MAX];
   char exePathBuffer[PATH_MAX];
 
@@ -246,20 +236,21 @@ static void initExecutablePath()
   snprintf(pidPathBuffer, PATH_MAX, "/proc/%d/exe", pid);
 
   ptrdiff_t length = readlink(pidPathBuffer, exePathBuffer, PATH_MAX);
-  executableFile = File(exePathBuffer, length < 0 ? 0 : int(length));
+  specialFiles[9] = File(exePathBuffer, length < 0 ? 0 : int(length));
 }
 
 #endif
 
-const File& File::HOME      = specialDirs[0];
-const File& File::CONFIG    = specialDirs[1];
-const File& File::DATA      = specialDirs[2];
-const File& File::DESKTOP   = specialDirs[3];
-const File& File::DOCUMENTS = specialDirs[4];
-const File& File::DOWNLOAD  = specialDirs[5];
-const File& File::MUSIC     = specialDirs[6];
-const File& File::PICTURES  = specialDirs[7];
-const File& File::VIDEOS    = specialDirs[8];
+const File& File::HOME       = specialFiles[0];
+const File& File::CONFIG     = specialFiles[1];
+const File& File::DATA       = specialFiles[2];
+const File& File::DESKTOP    = specialFiles[3];
+const File& File::DOCUMENTS  = specialFiles[4];
+const File& File::DOWNLOAD   = specialFiles[5];
+const File& File::MUSIC      = specialFiles[6];
+const File& File::PICTURES   = specialFiles[7];
+const File& File::VIDEOS     = specialFiles[8];
+const File& File::EXECUTABLE = specialFiles[9];
 
 File::File(const String& path) :
   String(path)
@@ -723,17 +714,11 @@ bool File::mountLocalAt(bool append) const
   return true;
 }
 
-const File& File::executable()
-{
-  return executableFile;
-}
-
 void File::init()
 {
-  initSpecialDirs();
-  initExecutablePath();
+  initSpecialFiles();
 
-  if (PHYSFS_init(executableFile) == 0) {
+  if (PHYSFS_init(EXECUTABLE) == 0) {
     OZ_ERROR("oz::File: PhysicsFS initialisation failed: %s", PHYSFS_getLastError());
   }
 }
@@ -742,8 +727,7 @@ void File::destroy()
 {
   PHYSFS_deinit();
 
-  Arrays::clear<File>(specialDirs, Arrays::length<File>(specialDirs));
-  executableFile = "";
+  Arrays::clear<File>(specialFiles, Arrays::length<File>(specialFiles));
 }
 
 }
