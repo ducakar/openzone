@@ -755,9 +755,7 @@ void BSP::optimise()
   // remove unused planes
   Log::print("Removing unused planes ");
 
-  List<bool> usedPlanes;
-  usedPlanes.resize(planes.length());
-  Arrays::fill(usedPlanes.begin(), planes.length(), false);
+  List<bool> usedPlanes(planes.length());
 
   for (int i = 0; i < nodes.length(); ++i) {
     usedPlanes[nodes[i].plane] = true;

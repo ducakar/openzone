@@ -404,8 +404,7 @@ public:
   OZ_ALWAYS_INLINE
   static uint toBits(float x)
   {
-    FloatToBits fb = { x };
-    return fb.bits;
+    return FloatToBits{ x }.bits;
   }
 
   /**
@@ -414,8 +413,7 @@ public:
   OZ_ALWAYS_INLINE
   static float fromBits(uint b)
   {
-    BitsToFloat bf = { b };
-    return bf.value;
+    return BitsToFloat{ b }.value;
   }
 
   /**

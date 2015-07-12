@@ -25,6 +25,26 @@ mark_as_advanced(OZ_BUNDLE)
 
 set(OZ_PLATFORM_NAME ${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR})
 
+# Emscripten uses stock toolchain file, we have to set these things manually.
+if(EMSCRIPTEN)
+  set(PLATFORM_NAME         "Emscripten")
+  set(PLATFORM_EMBEDDED     ON)
+  set(PLATFORM_PORTS_PREFIX ${CMAKE_SOURCE_DIR}/ports/Emscripten/usr)
+
+  set(CMAKE_FIND_ROOT_PATH  ${CMAKE_FIND_ROOT_PATH};${PLATFORM_PORTS_PREFIX})
+  set(CMAKE_INCLUDE_PATH    ${PLATFORM_PORTS_PREFIX}/include)
+  set(CMAKE_LIBRARY_PATH    ${PLATFORM_PORTS_PREFIX}/lib)
+  set(CMAKE_CXX_FLAGS       "${CMAKE_CXX_FLAGS} -s USE_PTHREADS=1 -Wno-disabled-macro-expansion")
+
+  set(ZLIB_ROOT             ${PLATFORM_PORTS_PREFIX})
+  set(LUA_MATH_LIBRARY      "-lm")
+
+  # For QtCreator to find headers.
+  include_directories(SYSTEM /usr/lib/emscripten/system/include/libcxx)
+  include_directories(SYSTEM /usr/lib/emscripten/system/include/compat)
+  add_definitions(-D__EMSCRIPTEN__)
+endif()
+
 if(PLATFORM_EMBEDDED)
   set(OZ_PLATFORM_NAME ${PLATFORM_NAME}-${CMAKE_SYSTEM_PROCESSOR})
   set(OZ_GL_ES ON)
@@ -49,7 +69,9 @@ include(FindPkgConfig)
 #
 
 # Set-up include and library directories for different toolchains.
-if(ANDROID)
+if(EMSCRIPTEN)
+  set(ENV{PKG_CONFIG_PATH} ${PLATFORM_PORTS_PREFIX}/lib/pkgconfig)
+elseif(ANDROID)
 elseif(NACL)
   set(ENV{PKG_CONFIG_PATH} ${CMAKE_FIND_ROOT_PATH}/usr/lib/pkgconfig)
 elseif(WIN32)
@@ -67,15 +89,25 @@ if(OZ_LUAJIT)
   pkg_check_modules(LUAJIT REQUIRED luajit)
   set(LUA_LIBRARIES ${LUAJIT_LIBRARIES})
   include_directories(SYSTEM ${LUAJIT_INCLUDE_DIRS})
+elseif(EMSCRIPTEN)
+  find_package(Lua REQUIRED)
+  set(LUA_LIBRARIES ${LUA_LIBRARY})
+  include_directories(SYSTEM ${LUA_INCLUDE_DIR})
 else()
   pkg_check_modules(LUA REQUIRED lua)
   include_directories(SYSTEM ${LUA_INCLUDE_DIRS})
 endif()
 
-pkg_check_modules(SDL REQUIRED sdl2)
-pkg_check_modules(SDL_TTF REQUIRED SDL2_ttf)
-list(REMOVE_ITEM SDL_LIBRARIES ppapi_simple)
-list(REMOVE_ITEM SDL_TTF_LIBRARIES ppapi_simple)
+if (EMSCRIPTEN)
+  pkg_check_modules(SDL REQUIRED sdl)
+  set(SDL_TTF_LIBRARIES "")
+else()
+  pkg_check_modules(SDL REQUIRED sdl2)
+  pkg_check_modules(SDL_TTF REQUIRED SDL2_ttf)
+  list(REMOVE_ITEM SDL_LIBRARIES ppapi_simple)
+  list(REMOVE_ITEM SDL_TTF_LIBRARIES ppapi_simple)
+endif()
+
 include_directories(SYSTEM ${SDL_INCLUDE_DIRS})
 
 if(OZ_GL_ES)
@@ -83,6 +115,8 @@ if(OZ_GL_ES)
   # or platform directory, no need to explicitly check existence or to detect library names.
   if(ANDROID)
     set(GL_LIBRARIES GLESv2)
+  elseif(EMSCRIPTEN)
+    set(GL_LIBRARIES "")
   elseif(NACL)
     set(GL_LIBRARIES ppapi_gles2)
   else()
@@ -99,12 +133,17 @@ pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 
 # On embedded platforms, linking is mostly static, so indirect dependencies must be linked too.
 if(PLATFORM_EMBEDDED)
-  find_package(PNG REQUIRED)                # required by FreeType
-  find_package(Freetype REQUIRED)           # required by SDL_ttf
+  # Emscripten has SDL_ttf built-in and doesn't need Freetype.
+  if(NOT EMSCRIPTEN)
+    find_package(PNG REQUIRED)              # required by FreeType
+    find_package(Freetype REQUIRED)         # required by SDL_ttf
+
+    list(APPEND SDL_TTF_LIBRARIES ${FREETYPE_LIBRARIES} ${PNG_LIBRARY})
+  endif()
+
   pkg_check_modules(OGG REQUIRED ogg)       # required by vorbisfile
   pkg_check_modules(VORBIS REQUIRED vorbis) # required by vorbisfile
 
-  list(APPEND SDL_TTF_LIBRARIES ${FREETYPE_LIBRARIES} ${PNG_LIBRARY})
   list(APPEND VORBISFILE_LIBRARIES ${VORBIS_LIBRARIES} ${OGG_LIBRARIES})
 endif()
 

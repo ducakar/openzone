@@ -96,6 +96,9 @@ public:
    */
   static void push(const char* message);
 
+  /**
+   * Initialise PPAPI interfaces required for messaging to work.
+   */
   static void init();
 
 };

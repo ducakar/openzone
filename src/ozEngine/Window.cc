@@ -94,8 +94,8 @@ static void screenshotMain(void* data)
     cinfo.in_color_space   = JCS_RGB;
 
     jpeg_set_defaults(&cinfo);
-    jpeg_set_quality(&cinfo, info->quality, true);
-    jpeg_start_compress(&cinfo, true);
+    jpeg_set_quality(&cinfo, info->quality, boolean(true));
+    jpeg_start_compress(&cinfo, boolean(true));
 
     int pitch = ((info->width * 3 + 3) / 4) * 4;
 
@@ -333,7 +333,9 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
 #else
 
 # ifdef OZ_GL_ES
+# ifndef __EMSCRIPTEN__
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_ES);
+# endif
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 # else

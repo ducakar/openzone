@@ -1,0 +1,25 @@
+diff -Naur libogg-1.3.2.orig/configure libogg-1.3.2/configure
+--- libogg-1.3.2.orig/configure	2014-05-27 21:52:46.000000000 +0200
++++ libogg-1.3.2/configure	2015-07-12 18:09:53.376754218 +0200
+@@ -11727,8 +11727,8 @@
+         case $host in
+         *-*-linux*)
+                 DEBUG="-g -Wall -fsigned-char"
+-                CFLAGS="-O20 -Wall -ffast-math -fsigned-char"
+-                PROFILE="-Wall -W -pg -g -O20 -ffast-math -fsigned-char"
++                CFLAGS="-O3 -Wall -ffast-math -fsigned-char"
++                PROFILE="-Wall -W -pg -g -O3 -ffast-math -fsigned-char"
+ 		;;
+         sparc-sun-*)
+                 DEBUG="-g -Wall -fsigned-char"
+@@ -11742,8 +11742,8 @@
+ 		;;
+         *)
+                 DEBUG="-g -Wall -fsigned-char"
+-                CFLAGS="-O20 -fsigned-char"
+-                PROFILE="-O20 -g -pg -fsigned-char"
++                CFLAGS="-O3 -fsigned-char"
++                PROFILE="-O3 -g -pg -fsigned-char"
+ 		;;
+         esac
+ fi

@@ -3,7 +3,7 @@
 - ozCore
     * full use of C++11
         + null replaced by nullptr keyword
-        + use of constexpr for functions
+        + constexpr used for functions too
         + member initialisers used where feasible
         + initialiser list constructors for containers
     * larger and non-performance-critical inline functions moved to .cc files

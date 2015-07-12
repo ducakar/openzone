@@ -42,6 +42,9 @@
 # include <SLES/OpenSLES.h>
 # include <unistd.h>
 # define _Exit(c) _exit(c)
+#elif defined(__EMSCRIPTEN__)
+# include <pthread.h>
+# include <SDL/SDL.h>
 #elif defined(__native_client__)
 # include <ppapi/cpp/audio.h>
 # include <ppapi/cpp/completion_callback.h>
@@ -278,6 +281,13 @@ static void* bellMain(void*)
   (*engine)->Destroy(engine);
 
   bellState = FINISHED;
+  return nullptr;
+}
+
+#elif defined(__EMSCRIPTEN__)
+
+static void* bellMain(void*)
+{
   return nullptr;
 }
 

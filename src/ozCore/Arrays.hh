@@ -395,11 +395,11 @@ public:
   }
 
   /**
-   * Reallocate an array moving its elements.
+   * Reallocate an array to a different size, moving its elements.
    *
-   * Allocate a new array of `newCount` elements, move first `min(count, newCount)` elements of the
-   * source array to the newly created one and free the source array. Similar to `realloc()`, the
-   * given array is deleted and `nullptr` is returned if `newCount` is 0.
+   * Allocate a new zero-initialised array of `newCount` elements, move first `min(count, newCount)`
+   * elements of the source array to the newly created one and free the source array. Similar to
+   * `realloc()`, the given array is deleted and `nullptr` is returned if `newCount` is 0.
    *
    * @return Newly allocated array.
    */

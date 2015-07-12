@@ -18,6 +18,7 @@
 platforms=(
 #  Android14-i686
 #  Android14-ARMv7a
+  Emscripten
 )
 
 buildTriplet="`uname -m`-`uname -i`-linux-gnu"
@@ -37,6 +38,7 @@ ndkARMPlatform="$ANDROID_NDK/platforms/android-14/arch-arm"
 function setup_ndk_i686()
 {
   platform="Android14-i686"                               # Platform name.
+
   buildDir="$topDir/$platform"                            # Build and install directory.
   triplet="i686-linux-android"                            # Platform triplet (tools prefix).
   hostTriplet="$triplet"                                  # Host triplet for autotools configure.
@@ -96,6 +98,32 @@ function setup_ndk_ARMv7a()
   return 1
 }
 
+function setup_emscripten()
+{
+  platform="Emscripten"
+  buildDir="$topDir/$platform"
+
+  export CPP=""
+  export CC=""
+  export CXX=""
+  export AR=""
+  export RANLIB=""
+  export STRIP=""
+  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
+  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
+  export PATH="$originalPath"
+
+  export CPPFLAGS=""
+  export CFLAGS="-O3"
+  export CXXFLAGS="-O3"
+  export LDFLAGS=""
+
+  for p in ${platforms[@]}; do
+    [[ $p == $platform ]] && return 0
+  done
+  return 1
+}
+
 function clean()
 {
   for platform in ${platforms[@]}; do
@@ -124,8 +152,14 @@ function download()
 
 function fetch()
 {
+  # zlib
+  download 'http://zlib.net/zlib-1.2.8.tar.xz'
+
   # libpng
   download 'http://downloads.sourceforge.net/sourceforge/libpng/libpng-1.6.16.tar.xz'
+
+  # jpeglib
+  download 'http://www.ijg.org/files/jpegsrc.v9a.tar.gz'
 
   # libogg
   download 'http://downloads.xiph.org/releases/ogg/libogg-1.3.2.tar.xz'
@@ -179,15 +213,25 @@ function cmakeBuild()
 {
   mkdir -p build && cd build
 
-  cmake \
-    -G Ninja \
-    -D CMAKE_MODULE_PATH="$projectDir/cmake" \
-    -D CMAKE_TOOLCHAIN_FILE="$toolchain" \
-    -D CMAKE_BUILD_TYPE="Release" \
-    -D CMAKE_INSTALL_PREFIX="/usr" \
-    -D PLATFORM_PORTS_PREFIX="$buildDir" \
-    $@ \
-    .. || return 1
+  if [[ $platform == Emscripten ]]; then
+    emcmake cmake \
+      -G Ninja \
+      -D CMAKE_MODULE_PATH="$projectDir/cmake" \
+      -D CMAKE_BUILD_TYPE="Release" \
+      -D CMAKE_INSTALL_PREFIX="/usr" \
+      $@ \
+      .. || return 1
+  else
+    cmake \
+      -G Ninja \
+      -D CMAKE_MODULE_PATH="$projectDir/cmake" \
+      -D CMAKE_TOOLCHAIN_FILE="$toolchain" \
+      -D CMAKE_BUILD_TYPE="Release" \
+      -D CMAKE_INSTALL_PREFIX="/usr" \
+      -D PLATFORM_PORTS_PREFIX="$buildDir" \
+      $@ \
+      .. || return 1
+  fi
 
   ninja || exit 1
   cmake -DCMAKE_INSTALL_PREFIX="$buildDir/usr" -P cmake_install.cmake
@@ -195,8 +239,11 @@ function cmakeBuild()
 
 function autotoolsBuild()
 {
-  mkdir -p build && cd build
-  ../configure --build=$buildTriplet --host=$hostTriplet --prefix=/usr --disable-shared $@ || exit 1
+  if [[ $platform == Emscripten ]]; then
+    emconfigure ./configure --prefix=/usr $@ || exit 1
+  else
+    ./configure --build=$buildTriplet --host=$hostTriplet --prefix=/usr $@ || exit 1
+  fi
 
   make -j4 || exit 1
   make install DESTDIR="$buildDir"
@@ -212,6 +259,17 @@ function finish()
   done
 }
 
+function build_zlib()
+{
+  prepare zlib-1.2.8 zlib-1.2.8.tar.xz || return
+
+  autotoolsBuild --static
+
+  rm -rf "$buildDir"/usr/lib/libz.so*
+
+  finish
+}
+
 function build_libpng()
 {
   prepare libpng-1.6.16 libpng-1.6.16.tar.xz || return
@@ -223,11 +281,21 @@ function build_libpng()
   finish
 }
 
+function build_jpeglib()
+{
+  prepare jpeg-9a jpegsrc.v9a.tar.gz || return
+
+  autotoolsBuild --disable-shared
+
+  finish
+}
+
 function build_libogg()
 {
   prepare libogg-1.3.2 libogg-1.3.2.tar.xz || return
+  applyPatches libogg-1.3.2.patch
 
-  autotoolsBuild
+  autotoolsBuild --disable-shared
 
   finish
 }
@@ -236,7 +304,7 @@ function build_libvorbis()
 {
   prepare libvorbis-1.3.5 libvorbis-1.3.5.tar.xz || return
 
-  autotoolsBuild
+  autotoolsBuild --disable-shared --with-ogg="$buildDir/usr"
 
   finish
 }
@@ -245,7 +313,7 @@ function build_freetype()
 {
   prepare freetype-2.5.5 freetype-2.5.5.tar.bz2 || return
 
-  autotoolsBuild --without-bzip2 --without-png
+  autotoolsBuild --without-bzip2 --without-png --disable-shared
 
   finish
 }
@@ -254,7 +322,8 @@ function build_physfs()
 {
   prepare physfs-2.0.3 physfs-2.0.3.tar.bz2 || return
 
-  cmakeBuild -D PHYSFS_BUILD_SHARED=0 -D PHYSFS_BUILD_TEST=0
+  cmakeBuild -D PHYSFS_BUILD_SHARED=0 -D PHYSFS_BUILD_TEST=0 \
+	     -D ZLIB_INCLUDE_DIR="$buildDir/usr/include" -D ZLIB_LIBRARY="$buldDir/usr/lib/zlib.a"
 
   finish
 }
@@ -262,10 +331,15 @@ function build_physfs()
 function build_lua()
 {
   prepare lua-5.3.1 lua-5.3.1.tar.gz || return
-  applyPatches lua-5.3.0.patch
+  #applyPatches lua-5.3.0.patch
 
-  make -j4 CC="$CC" AR="$AR rcu" RANLIB="$RANLIB" CFLAGS="$CFLAGS" PLAT="generic" MYLIBS="$LDFLAGS"
-  make INSTALL_TOP="$buildDir/usr" install
+  if [[ $platform == Emscripten ]]; then
+    emmake make -j4 CFLAGS="$CFLAGS" PLAT="generic" MYLIBS="$LDFLAGS"
+    emmake make INSTALL_TOP="$buildDir/usr" install
+  else
+    make -j4 CC="$CC" AR="$AR rcu" RANLIB="$RANLIB" CFLAGS="$CFLAGS" PLAT="generic" MYLIBS="$LDFLAGS"
+    make INSTALL_TOP="$buildDir/usr" install
+  fi
 
   finish
 }
@@ -297,24 +371,33 @@ function build_sdl2_ttf()
   autotoolsBuild \
     --with-freetype-prefix="$buildDir/usr" \
     --with-sdl-prefix="$buildDir/usr" \
-    --without-x
+    --without-x \
+    --disable-shared
 
   finish
 }
 
 function build()
 {
+  # zlib
+  setup_emscripten  && build_zlib
+
   # libpng
   setup_ndk_i686    && build_libpng
   setup_ndk_ARMv7a  && build_libpng
 
+  # jpeglib
+  setup_emscripten  && build_jpeglib
+
   # libogg
   setup_ndk_i686    && build_libogg
   setup_ndk_ARMv7a  && build_libogg
+  setup_emscripten  && build_libogg
 
   # libvorbis
   setup_ndk_i686    && build_libvorbis
   setup_ndk_ARMv7a  && build_libvorbis
+  setup_emscripten  && build_libvorbis
 
   # FreeType
   setup_ndk_i686    && build_freetype
@@ -323,10 +406,12 @@ function build()
   # PhysicsFS
   setup_ndk_i686    && build_physfs
   setup_ndk_ARMv7a  && build_physfs
+  setup_emscripten  && build_physfs
 
   # Lua
   setup_ndk_i686    && build_lua
   setup_ndk_ARMv7a  && build_lua
+  setup_emscripten  && build_lua
 
   # OpenAL Soft
   setup_ndk_i686    && build_openal

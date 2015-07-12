@@ -17,6 +17,7 @@ buildType=Debug
 platforms=(
 #  Android14-i686
 #  Android14-ARMv7a
+  Emscripten
   Linux-i686
   Linux-i686-Clang
   Linux-x86_64
@@ -39,7 +40,7 @@ function clean()
 function build()
 {
   for platform in ${platforms[@]}; do
-    if [[ ! -f cmake/$platform.Toolchain.cmake ]]; then
+    if [[ $platform != Emscripten && ! -f cmake/$platform.Toolchain.cmake ]]; then
       echo Unknown platform: $platform
       continue
     fi
@@ -49,12 +50,20 @@ function build()
     (( $1 )) && rm -rf build/$platform
     if [[ ! -d build/$platform ]]; then
       mkdir -p build/$platform
-      ( cd build/$platform && cmake -Wdev --warn-uninitialized \
-        -G Ninja \
-        -D CMAKE_TOOLCHAIN_FILE=../../cmake/$platform.Toolchain.cmake \
-        -D CMAKE_BUILD_TYPE=$buildType \
-        -D CMAKE_EXPORT_COMPILE_COMMANDS=ON \
-        ../.. )
+      if [[ $platform == Emscripten ]]; then
+	( cd build/$platform && emcmake cmake -Wdev --warn-uninitialized \
+	  -G Ninja \
+	  -D CMAKE_BUILD_TYPE=$buildType \
+	  -D CMAKE_EXPORT_COMPILE_COMMANDS=ON \
+	  ../.. )
+      else
+	( cd build/$platform && cmake -Wdev --warn-uninitialized \
+	  -G Ninja \
+	  -D CMAKE_TOOLCHAIN_FILE=../../cmake/$platform.Toolchain.cmake \
+	  -D CMAKE_BUILD_TYPE=$buildType \
+	  -D CMAKE_EXPORT_COMPILE_COMMANDS=ON \
+	  ../.. )
+      fi
     fi
     (( $1 )) || ( cd build/$platform && time ninja )
   done
