@@ -159,6 +159,7 @@ public:
   float mouseSensY;
   float mouseSensW;
   float mouseSmoothing;
+  bool  mouseRawInput;
 
   float keySensX;
   float keySensY;

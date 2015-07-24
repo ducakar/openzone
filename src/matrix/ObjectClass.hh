@@ -26,19 +26,13 @@
 #include <matrix/common.hh>
 
 #define OZ_CLASS_ATTRIB(attribBit, varName, defValue) \
-  if (config[varName].get(defValue)) { \
-    attributes |= attribBit; \
-  }
+  attributes |= attribBit & -config[varName].get(defValue)
 
 #define OZ_CLASS_FLAG(flagBit, varName, defValue) \
-  if (config[varName].get(defValue)) { \
-    flags |= flagBit; \
-  }
+  flags |= flagBit & -config[varName].get(defValue)
 
 #define OZ_CLASS_STATE(stateBit, varName, defValue) \
-  if (config[varName].get(defValue)) { \
-    state |= stateBit; \
-  }
+  state |= stateBit & -config[varName].get(defValue)
 
 namespace oz
 {

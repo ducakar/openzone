@@ -35,10 +35,12 @@ void BSPAudio::playDemolish(const Struct* str, int sound) const
 {
   hard_assert(uint(sound) < uint(liber.sounds.length()));
 
-  uint srcId = context.addSource(sound);
-  if (srcId == Context::INVALID_SOURCE) {
+  Context::Source* source = context.addSource(sound);
+  if (source == nullptr) {
     return;
   }
+
+  uint srcId = source->id;
 
   alSourcef(srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE);
   alSourcef(srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR);
@@ -64,10 +66,12 @@ void BSPAudio::playSound(const Entity* entity, int sound) const
   Point         p        = str->toAbsoluteCS(entity->clazz->p() + entity->offset);
   Vec3          velocity = str->toAbsoluteCS(entity->velocity);
 
-  uint srcId = context.addSource(sound);
-  if (srcId == Context::INVALID_SOURCE) {
+  Context::Source* source = context.addSource(sound);
+  if (source == nullptr) {
     return;
   }
+
+  uint srcId = source->id;
 
   alSourcef(srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE);
   alSourcef(srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR);
@@ -99,10 +103,12 @@ void BSPAudio::playContSound(const Entity* entity, int sound) const
   uint                 srcId;
 
   if (contSource == nullptr) {
-    srcId = context.addContSource(sound, key);
-    if (srcId == Context::INVALID_SOURCE) {
+    contSource = context.addContSource(sound, key);
+    if (contSource == nullptr) {
       return;
     }
+
+    srcId = contSource->id;
 
     alSourcef(srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE);
     alSourcef(srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR);

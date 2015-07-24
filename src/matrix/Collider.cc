@@ -86,26 +86,6 @@ bool Collider::overlapsAABBBrush(const BSP::Brush* brush) const
   return result;
 }
 
-bool Collider::overlapsAABBEntity()
-{
-  startPos = str->toStructCS(aabb.p) - entity->offset;
-  localDim = str->swapDimCS(aabb.dim);
-
-  Bounds localTrace = str->toStructCS(trace);
-
-  if (localTrace.overlaps(*entity->clazz + entity->offset)) {
-    for (int j = 0; j < entity->clazz->nBrushes; ++j) {
-      int index = entity->clazz->firstBrush + j;
-      const BSP::Brush& brush = bsp->brushes[index];
-
-      if ((brush.flags & Material::STRUCT_BIT) && overlapsAABBBrush(&brush)) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 bool Collider::overlapsAABBNode(int nodeIndex)
 {
   if (nodeIndex < 0) {
@@ -115,9 +95,7 @@ bool Collider::overlapsAABBNode(int nodeIndex)
       int index = bsp->leafBrushes[leaf.firstBrush + i];
       const BSP::Brush& brush = bsp->brushes[index];
 
-      if (!visitBrush(index) && (brush.flags & Material::STRUCT_BIT) &&
-          overlapsAABBBrush(&brush))
-      {
+      if (!visitBrush(index) && (brush.flags & Material::STRUCT_BIT) && overlapsAABBBrush(&brush)) {
         return true;
       }
     }
@@ -223,7 +201,7 @@ bool Collider::overlapsAABBOrbis()
 //*        STATIC ENTITY CD         *
 //***********************************
 
-bool Collider::overlapsEntityOrbis()
+bool Collider::overlapsEntityObjects()
 {
   for (int x = span.minX; x <= span.maxX; ++x) {
     for (int y = span.minY; y <= span.maxY; ++y) {
@@ -556,14 +534,14 @@ void Collider::trimAABBEntities()
     entity = &str->entities[i];
 
     if (localTrace.overlaps(*entity->clazz + entity->offset)) {
+      startPos = originalStartPos - entity->offset;
+      endPos   = originalEndPos   - entity->offset;
+
       for (int j = 0; j < entity->clazz->nBrushes; ++j) {
         int index = entity->clazz->firstBrush + j;
         const BSP::Brush& brush = bsp->brushes[index];
 
         hard_assert(!visitBrush(index));
-
-        startPos = originalStartPos - entity->offset;
-        endPos   = originalEndPos   - entity->offset;
 
         trimAABBBrush(&brush);
       }
@@ -724,6 +702,42 @@ void Collider::trimAABBOrbis()
   hard_assert(hit.depth >= 0.0f);
 }
 
+void Collider::trimEntityObjects()
+{
+  hit.obj       = nullptr;
+  hit.str       = nullptr;
+  hit.entity    = nullptr;
+  hit.mediumStr = nullptr;
+  hit.ratio     = 1.0f;
+  hit.material  = 0;
+  hit.medium    = 0;
+  hit.depth     = 0.0f;
+
+  for (int x = span.minX; x <= span.maxX; ++x) {
+    for (int y = span.minY; y <= span.maxY; ++y) {
+      const Cell& cell = orbis.cells[x][y];
+
+      for (const Object* sObj = cell.objects.first(); sObj != nullptr; sObj = sObj->next[0]) {
+        if ((sObj->flags & mask) && trace.overlaps(*sObj)) {
+          startPos = str->toStructCS(sObj->p) - entity->offset;
+          endPos   = startPos - move;
+
+          for (int j = 0; j < entity->clazz->nBrushes; ++j) {
+            int index = entity->clazz->firstBrush + j;
+            const BSP::Brush& brush = bsp->brushes[index];
+
+            trimAABBBrush(&brush);
+          }
+        }
+      }
+    }
+  }
+
+  hard_assert(0.0f <= hit.ratio && hit.ratio <= 1.0f);
+  hard_assert(((hit.material & Material::OBJECT_BIT) != 0) == (hit.obj != nullptr));
+  hard_assert(hit.depth >= 0.0f);
+}
+
 //***********************************
 //*          OVERLAPPING            *
 //***********************************
@@ -759,41 +773,6 @@ void Collider::getOrbisOverlaps(List<Struct*>* structs, List<Object*>* objects)
           if ((sObj->flags & mask) && trace.overlaps(*sObj)) {
             objects->add(sObj);
           }
-        }
-      }
-    }
-  }
-}
-
-void Collider::getOrbisIncludes(List<Object*>* objects) const
-{
-  hard_assert(objects != nullptr);
-
-  for (int x = span.minX; x <= span.maxX; ++x) {
-    for (int y = span.minY; y <= span.maxY; ++y) {
-      const Cell& cell = orbis.cells[x][y];
-
-      for (Object* sObj = cell.objects.first(); sObj != nullptr; sObj = sObj->next[0]) {
-        if ((sObj->flags & mask) && trace.includes(*sObj)) {
-          objects->add(sObj);
-        }
-      }
-    }
-  }
-}
-
-void Collider::touchOrbisOverlaps() const
-{
-  for (int x = span.minX; x <= span.maxX; ++x) {
-    for (int y = span.minY; y <= span.maxY; ++y) {
-      const Cell& cell = orbis.cells[x][y];
-
-      for (Object* sObj = cell.objects.first(); sObj != nullptr; sObj = sObj->next[0]) {
-        if ((sObj->flags & Object::DYNAMIC_BIT) && trace.overlaps(*sObj)) {
-          Dynamic* sDyn = static_cast<Dynamic*>(sObj);
-
-          sDyn->flags &= ~Object::DISABLED_BIT;
-          sDyn->flags |= Object::ENABLE_BIT;
         }
       }
     }
@@ -847,7 +826,7 @@ bool Collider::overlaps(const AABB& aabb_, const Object* exclObj_)
   exclObj = exclObj_;
   flags   = 0;
 
-  trace   = Bounds(aabb, 4.0f * EPSILON);
+  trace   = Bounds(aabb, 2.0f * EPSILON);
   span    = orbis.getInters(trace, Object::MAX_DIM);
 
   return overlapsAABBOrbis();
@@ -859,7 +838,7 @@ bool Collider::overlaps(const Object* obj_)
   exclObj = obj_;
   flags   = obj_->flags;
 
-  trace   = Bounds(aabb, 4.0f * EPSILON);
+  trace   = Bounds(aabb, 2.0f * EPSILON);
   span    = orbis.getInters(trace, Object::MAX_DIM);
 
   return overlapsAABBOrbis();
@@ -872,70 +851,10 @@ bool Collider::overlaps(const Entity* entity_, float margin_)
   bsp    = entity_->clazz->bsp;
   margin = margin_;
 
-  trace  = Bounds(str->toAbsoluteCS(*entity->clazz + entity->offset), 4.0f * EPSILON + margin);
+  trace  = Bounds(str->toAbsoluteCS(*entity->clazz + entity->offset), 2.0f * EPSILON + margin);
   span   = orbis.getInters(trace, Object::MAX_DIM);
 
-  return overlapsEntityOrbis();
-}
-
-bool Collider::overlapsEntity(const AABB& aabb_, const Entity* entity_, float margin_)
-{
-  aabb   = aabb_;
-  str    = entity_->str;
-  entity = entity_;
-  bsp    = entity_->clazz->bsp;
-
-  trace  = Bounds(aabb, 4.0f * EPSILON + margin_);
-  span   = orbis.getInters(trace);
-
-  return overlapsAABBEntity();
-}
-
-void Collider::getOverlaps(const AABB& aabb_, List<Struct*>* structs, List<Object*>* objects,
-                           float eps)
-{
-  aabb    = aabb_;
-  exclObj = nullptr;
-
-  trace   = Bounds(aabb, eps);
-  span    = orbis.getInters(trace, Object::MAX_DIM);
-
-  getOrbisOverlaps(structs, objects);
-}
-
-void Collider::getIncludes(const AABB& aabb_, List<Object*>* objects, float eps)
-{
-  aabb    = aabb_;
-  exclObj = nullptr;
-
-  trace   = Bounds(aabb, eps);
-  span    = orbis.getInters(trace, Object::MAX_DIM);
-
-  getOrbisIncludes(objects);
-}
-
-void Collider::touchOverlaps(const AABB& aabb_, float eps)
-{
-  aabb    = aabb_;
-  exclObj = nullptr;
-
-  trace   = Bounds(aabb, eps);
-  span    = orbis.getInters(trace, Object::MAX_DIM);
-
-  touchOrbisOverlaps();
-}
-
-void Collider::getOverlaps(const Entity* entity_, List<Object*>* objects, float margin_)
-{
-  str    = entity_->str;
-  entity = entity_;
-  bsp    = entity_->clazz->bsp;
-  margin = margin_;
-
-  trace  = Bounds(str->toAbsoluteCS(*entity->clazz + entity->offset), 4.0f * EPSILON + margin);
-  span   = orbis.getInters(trace, Object::MAX_DIM);
-
-  getEntityOverlaps(objects);
+  return overlapsEntityObjects();
 }
 
 void Collider::translate(const Point& point, const Vec3& move_, const Object* exclObj_)
@@ -945,7 +864,7 @@ void Collider::translate(const Point& point, const Vec3& move_, const Object* ex
   exclObj = exclObj_;
   flags   = Object::CYLINDER_BIT;
 
-  trace   = Bounds(point, move, 4.0f * EPSILON);
+  trace   = Bounds(point, move, 2.0f * EPSILON);
   span    = orbis.getInters(trace, Object::MAX_DIM);
 
   trimAABBOrbis();
@@ -959,7 +878,7 @@ void Collider::translate(const AABB& aabb_, const Vec3& move_, const Object* exc
   exclObj = exclObj_;
   flags   = 0;
 
-  trace   = Bounds(aabb, move, 4.0f * EPSILON);
+  trace   = Bounds(aabb, move, 2.0f * EPSILON);
   span    = orbis.getInters(trace, Object::MAX_DIM);
 
   trimAABBOrbis();
@@ -975,10 +894,47 @@ void Collider::translate(const Dynamic* obj_, const Vec3& move_)
   exclObj = obj_;
   flags   = obj_->flags;
 
-  trace   = Bounds(aabb, move, 4.0f * EPSILON);
+  trace   = Bounds(aabb, move, 2.0f * EPSILON);
   span    = orbis.getInters(trace, Object::MAX_DIM);
 
   trimAABBOrbis();
+}
+
+void Collider::translate(const Entity* entity_, const Vec3& move_)
+{
+  str    = entity_->str;
+  entity = entity_;
+  move   = move_;
+  flags  = 0;
+
+  trace  = Bounds(str->toAbsoluteCS(*entity->clazz + entity->offset), 2.0f * EPSILON);
+  span   = orbis.getInters(trace, Object::MAX_DIM);
+
+  trimEntityObjects();
+}
+
+void Collider::getOverlaps(const AABB& aabb_, List<Struct*>* structs, List<Object*>* objects,
+                           float margin_)
+{
+  aabb    = AABB(aabb_, margin_);
+
+  trace   = Bounds(aabb);
+  span    = orbis.getInters(trace, Object::MAX_DIM);
+
+  getOrbisOverlaps(structs, objects);
+}
+
+void Collider::getOverlaps(const Entity* entity_, List<Object*>* objects, float margin_)
+{
+  str    = entity_->str;
+  entity = entity_;
+  bsp    = entity_->clazz->bsp;
+  margin = margin_;
+
+  trace  = Bounds(str->toAbsoluteCS(*entity->clazz + entity->offset), margin);
+  span   = orbis.getInters(trace, Object::MAX_DIM);
+
+  getEntityOverlaps(objects);
 }
 
 Collider collider;

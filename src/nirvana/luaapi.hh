@@ -520,7 +520,7 @@ static int ozSelfBindOverlaps(lua_State* l)
     collider.mask = ~0;
   }
 
-  collider.getOverlaps(aabb, structs, objects);
+  collider.getOverlaps(aabb, structs, objects, 0.0f);
   collider.mask = Object::SOLID_BIT;
 
   if (objects != nullptr) {

@@ -44,10 +44,12 @@ void Audio::playSound(int sound, float volume, const Object* parent) const
 
   const Dynamic* dynParent = static_cast<const Dynamic*>(parent);
 
-  uint srcId = context.addSource(sound);
-  if (srcId == Context::INVALID_SOURCE) {
+  Context::Source* source = context.addSource(sound);
+  if (source == nullptr) {
     return;
   }
+
+  uint srcId = source->id;
 
   alSourcef(srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE);
   alSourcef(srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR);
@@ -92,10 +94,12 @@ void Audio::playContSound(int sound, float volume, const Object* parent) const
   uint                 srcId;
 
   if (contSource == nullptr) {
-    srcId = context.addContSource(sound, key);
-    if (srcId == Context::INVALID_SOURCE) {
+    contSource = context.addContSource(sound, key);
+    if (contSource == nullptr) {
       return;
     }
+
+    srcId = contSource->id;
 
     alSourcei(srcId, AL_LOOPING, AL_TRUE);
     alSourcef(srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE);
@@ -132,10 +136,12 @@ bool Audio::playSpeak(const char* text, float volume, const Object* parent) cons
       return false;
     }
 
-    srcId = context.requestSpeakSource(text, obj->index);
-    if (srcId == Context::INVALID_SOURCE) {
+    Context::SpeakSource* speakSource = context.requestSpeakSource(text, obj->index);
+    if (speakSource == nullptr) {
       return false;
     }
+
+    srcId = speakSource->id;
 
     alSourcef(srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE);
     alSourcef(srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR);
@@ -179,10 +185,12 @@ void Audio::playEngineSound(int sound, float volume, float pitch, const Object* 
   uint                 srcId;
 
   if (contSource == nullptr) {
-    srcId = context.addContSource(sound, key);
-    if (srcId == Context::INVALID_SOURCE) {
+    contSource = context.addContSource(sound, key);
+    if (contSource == nullptr) {
       return;
     }
+
+    srcId = contSource->id;
 
     alSourcei(srcId, AL_LOOPING, AL_TRUE);
     alSourcef(srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE);

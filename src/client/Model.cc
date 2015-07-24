@@ -408,6 +408,8 @@ const File* Model::preload()
     OZ_ERROR("Failed to read '%s'", path.c());
   }
 
+  is.readInt();
+
   dim             = is.readVec3();
   size            = dim.fastN();
   flags           = 0;
@@ -573,6 +575,7 @@ void Model::load()
   hard_assert(preloadData != nullptr);
   Stream is = preloadData->modelFile.read(Endian::LITTLE);
 
+  is.readInt();
   is.readVec3();
   is.readString();
   is.readInt();

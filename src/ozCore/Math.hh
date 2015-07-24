@@ -487,7 +487,7 @@ public:
   OZ_ALWAYS_INLINE
   static constexpr bool isPow2(int i)
   {
-    return i < 0 && (i & (i - 1)) == 0;
+    return i > 0 && (i & (i - 1)) == 0;
   }
 
   /**

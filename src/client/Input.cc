@@ -373,6 +373,12 @@ void Input::update()
     return;
   }
 
+  mouseX = Math::mix(mouseX, oldMouseX, mouseSmoothing);
+  mouseY = Math::mix(mouseY, oldMouseY, mouseSmoothing);
+
+  oldMouseX = mouseX;
+  oldMouseY = mouseY;
+
   int pressedButtons  = input.buttons & ~input.oldButtons;
   int releasedButtons = ~input.buttons & input.oldButtons;
 
@@ -494,7 +500,8 @@ void Input::init()
   mouseSensX     = mouseConfig["sensitivity.x"].get(0.003f);
   mouseSensY     = mouseConfig["sensitivity.y"].get(0.003f);
   mouseSensW     = mouseConfig["sensitivity.w"].get(3.0f);
-  mouseSmoothing = mouseConfig["smoothing"].get(true) ? 0.5f : 0.0f;
+  mouseSmoothing = mouseConfig["smoothing"].get(0.3f);
+  mouseRawInput  = mouseConfig["rawInput"].get(false);
 
   keySensX       = keyboardConfig["sensitivity.x"].get(0.04f);
   keySensY       = keyboardConfig["sensitivity.y"].get(0.04f);
@@ -502,7 +509,7 @@ void Input::init()
   memset(keys, 0, sizeof(keys));
   memset(oldKeys, 0, sizeof(oldKeys));
 
-  SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_WARP, "1");
+  SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_WARP, mouseRawInput ? "0" : "1");
 
   inputConfig.clear(true);
 
@@ -527,7 +534,8 @@ void Input::destroy()
   mouseConfig.add("sensitivity.x", mouseSensX);
   mouseConfig.add("sensitivity.y", mouseSensY);
   mouseConfig.add("sensitivity.w", mouseSensW);
-  mouseConfig.add("smoothing", mouseSmoothing != 0.0f);
+  mouseConfig.add("smoothing", mouseSmoothing);
+  mouseConfig.add("rawInput", mouseRawInput);
 
   Json& keyboardConfig = inputConfig.add("keyboard", Json::OBJECT);
   keyboardConfig.add("sensitivity.x", keySensX);

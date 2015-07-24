@@ -38,39 +38,57 @@ struct EntityClass : Bounds
   enum Type
   {
     STATIC,
-    MANUAL_DOOR,
-    AUTO_DOOR,
-    IGNORING_BLOCK,
-    CRUSHING_BLOCK,
-    ELEVATOR,
-    TELEPORT
+    MOVER,
+    DOOR,
+    PORTAL
   };
 
-  String title;       ///< %Entity title.
+  /// Don't check for collisions with objects when moving, just go through objects.
+  static const int IGNORANT = 0x01;
 
-  Vec3   move;        ///< Move vector (destination - original position), in %BSP.
-                      ///< coordinate system.
+  /// Push obstacles on the way when moving.
+  static const int PUSHER = 0x02;
 
-  BSP*   bsp;         ///< Pointer to the parent %BSP.
+  /// If pushing obstacles fails, crush them.
+  static const int CRUSHER = 0x04;
 
-  int    firstBrush;  ///< Index of the first brush in `brushes` array.
-  int    nBrushes;    ///< Number of brushes.
+  /// Revert motion instead of stopping when an obstacle is detected (and cannot be pushed).
+  static const int REVERTER = 0x08;
 
-  Type   type;        ///< %Entity type.
-  float  margin;      ///< Margin around entity inside which triggers door opening.
-  float  timeout;     ///< Timeout after which entity starts opening/closing.
-  float  ratioInc;    ///< Step in ratio for each frame.
+  /// Automatically open (after openTimeout) when an object overlaps with the margin.
+  static const int AUTO_OPEN = 0x10;
 
-  int    target;      ///< Target model index for triggers, -1 otherwise.
-  int    key;         ///< Default key code or 0 if door is unlocked by default.
+  /// Automatically close (after closeTimeout) when an object overlaps with the margin.
+  static const int AUTO_CLOSE = 0x20;
 
-  int    openSound;   ///< Open sound sample, played when an entity starts moving or - for static
-                      ///< entities - when activated (as a trigger not as a target).
-  int    closeSound;  ///< Close sound sample, played when an entity stops moving.
-  int    frictSound;  ///< Friction sound sample, played while the entity is moving.
+  int    firstBrush;   ///< Index of the first brush in `brushes` array.
+  int    nBrushes;     ///< Number of brushes.
 
-  int    model;       ///< %Model index, -1 if none.
-  Mat4   modelTransf; ///< %Model transformation.
+  BSP*   bsp;          ///< Pointer to the parent %BSP.
+  String title;        ///< %Entity title.
+
+  Type   type;         ///< %Entity type.
+  int    flags;
+
+  float  closeTimeout; ///< Timeout after which entity starts opening.
+  float  openTimeout;  ///< Timeout after which entity starts closing.
+
+  Vec3   moveDir;      ///< Move direction vector in %BSP's CS.
+  float  moveLength;   ///< Length of move vector.
+  float  moveStep;     ///< Move step distance in each frame.
+
+  float  margin;       ///< Margin around entity inside which door opening is triggered.
+
+  int    openSound;    ///< Open sound sample, played when an entity starts moving or - for static
+                       ///< entities - when activated (as a trigger not as a target).
+  int    closeSound;   ///< Close sound sample, played when an entity stops moving.
+  int    frictSound;   ///< Friction sound sample, played while the entity is moving.
+
+  int    target;       ///< Target entity's index in the same BSP for triggers, -1 otherwise.
+  int    key;          ///< Default key code or 0 if door is unlocked by default.
+
+  int    model;        ///< %Model index, -1 if none.
+  Mat4   modelTransf;  ///< %Model transformation.
 };
 
 /**

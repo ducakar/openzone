@@ -25,6 +25,9 @@
 
 #include <builder/Context.hh>
 
+#define OZ_MODEL_FLAG(flagBit, flagName, defValue) \
+  model.flags |= flagBit & -entityConfig[flagName].get(defValue)
+
 namespace oz
 {
 namespace builder
@@ -224,13 +227,13 @@ void BSP::load()
     const Json& entityConfig = modelsConfig[i];
     Model&      model        = models[i];
 
-    model.mins.x = is.readFloat() * scale - 4.0f * EPSILON;
-    model.mins.y = is.readFloat() * scale - 4.0f * EPSILON;
-    model.mins.z = is.readFloat() * scale - 4.0f * EPSILON;
+    model.mins.x = is.readFloat() * scale - 2.0f * EPSILON;
+    model.mins.y = is.readFloat() * scale - 2.0f * EPSILON;
+    model.mins.z = is.readFloat() * scale - 2.0f * EPSILON;
 
-    model.maxs.x = is.readFloat() * scale + 4.0f * EPSILON;
-    model.maxs.y = is.readFloat() * scale + 4.0f * EPSILON;
-    model.maxs.z = is.readFloat() * scale + 4.0f * EPSILON;
+    model.maxs.x = is.readFloat() * scale + 2.0f * EPSILON;
+    model.maxs.y = is.readFloat() * scale + 2.0f * EPSILON;
+    model.maxs.z = is.readFloat() * scale + 2.0f * EPSILON;
 
     // int firstFace
     is.readInt();
@@ -239,35 +242,50 @@ void BSP::load()
 
     model.firstBrush = is.readInt();
     model.nBrushes   = is.readInt();
+
     model.title      = entityConfig["title"].get("");
-    model.move       = entityConfig["move"].get(Vec3::ZERO);
 
     static const EnumMap<EntityClass::Type> entityMap = {
-      { EntityClass::STATIC,         "STATIC"         },
-      { EntityClass::MANUAL_DOOR,    "MANUAL_DOOR"    },
-      { EntityClass::AUTO_DOOR,      "AUTO_DOOR"      },
-      { EntityClass::IGNORING_BLOCK, "IGNORING_BLOCK" },
-      { EntityClass::CRUSHING_BLOCK, "CRUSHING_BLOCK" },
-      { EntityClass::ELEVATOR,       "ELEVATOR"       },
-      { EntityClass::TELEPORT,       "TELEPORT"       }
+      { EntityClass::STATIC, "STATIC" },
+      { EntityClass::MOVER,  "MOVER"  },
+      { EntityClass::DOOR,   "DOOR"   },
+      { EntityClass::PORTAL, "PORTAL" }
     };
 
-    model.type       = entityMap[entityConfig["type"].get("")];
-    model.margin     = entityConfig["margin"].get(DEFAULT_MARGIN);
-    model.timeout    = entityConfig["timeout"].get(Math::INF);
-    model.ratioInc   = Timer::TICK_TIME / entityConfig["slideTime"].get(1.0f);
+    model.type         = entityMap[entityConfig["type"].get("")];
+    model.flags        = 0;
 
-    model.target     = entityConfig["target"].get(-1);
-    model.key        = entityConfig["key"].get(0);
+    OZ_MODEL_FLAG(EntityClass::IGNORANT,   "flag.ignorant",  false);
+    OZ_MODEL_FLAG(EntityClass::PUSHER,     "flag.pusher",    false);
+    OZ_MODEL_FLAG(EntityClass::CRUSHER,    "flag.crusher",   false);
+    OZ_MODEL_FLAG(EntityClass::REVERTER,   "flag.reverter",  false);
+    OZ_MODEL_FLAG(EntityClass::AUTO_OPEN,  "flag.autoOpen",  false);
+    OZ_MODEL_FLAG(EntityClass::AUTO_CLOSE, "flag.autoClose", false);
 
-    model.openSound  = entityConfig["openSound"].get("");
-    model.closeSound = entityConfig["closeSound"].get("");
-    model.frictSound = entityConfig["frictSound"].get("");
+    model.closeTimeout = entityConfig["closeTimeout"].get(0.0f);
+    model.openTimeout  = entityConfig["openTimeout"].get(0.0f);
 
-    if (model.type == EntityClass::ELEVATOR && (model.move.x != 0.0f || model.move.y != 0.0f)) {
-      OZ_ERROR("Elevator can only move vertically, but entities[%d].move = (%g %g %g)",
-               i, model.move.x, model.move.y, model.move.z);
+    Vec3  move         = entityConfig["move"].get(Vec3::ZERO);
+    float slideTime    = entityConfig["slideTime"].get(1.0f);
+
+    if (slideTime <= 0.0f) {
+      OZ_ERROR("entities[%d].slideTime must be > 0", i);
     }
+
+    model.moveDir      = move.sqN() == 0.0f ? move : ~move;
+    model.moveLength   = !move;
+    model.moveStep     = model.moveLength / (slideTime * Timer::TICKS_PER_SEC);
+
+    float defaultMargin = model.flags & EntityClass::AUTO_OPEN ? DEFAULT_MARGIN : 0.0f;
+
+    model.margin       = entityConfig["margin"].get(defaultMargin);
+
+    model.openSound    = entityConfig["openSound"].get("");
+    model.closeSound   = entityConfig["closeSound"].get("");
+    model.frictSound   = entityConfig["frictSound"].get("");
+
+    model.target       = entityConfig["target"].get(-1);
+    model.key          = entityConfig["key"].get(0);
 
     const Json& modelConfig = entityConfig["model"];
 
@@ -1043,19 +1061,22 @@ void BSP::saveMatrix()
     os.writePoint(model.mins);
     os.writePoint(model.maxs);
 
-    os.writeString(model.title);
-    os.writeVec3(model.move);
-
     os.writeInt(model.firstBrush);
     os.writeInt(model.nBrushes);
 
-    os.writeInt(model.type);
-    os.writeFloat(model.margin);
-    os.writeFloat(model.timeout);
-    os.writeFloat(model.ratioInc);
+    os.writeString(model.title);
 
-    os.writeInt(model.target);
-    os.writeInt(model.key);
+    os.writeInt(model.type);
+    os.writeInt(model.flags);
+
+    os.writeFloat(model.closeTimeout);
+    os.writeFloat(model.openTimeout);
+
+    os.writeVec3(model.moveDir);
+    os.writeFloat(model.moveLength);
+    os.writeFloat(model.moveStep);
+
+    os.writeFloat(model.margin);
 
     context.usedSounds.include(model.openSound, name + " (BSP)");
     context.usedSounds.include(model.closeSound, name + " (BSP)");
@@ -1064,6 +1085,9 @@ void BSP::saveMatrix()
     os.writeString(model.openSound);
     os.writeString(model.closeSound);
     os.writeString(model.frictSound);
+
+    os.writeInt(model.target);
+    os.writeInt(model.key);
 
     context.usedModels.include(model.modelName, name + " (BSP)");
 

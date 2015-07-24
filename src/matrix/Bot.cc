@@ -92,7 +92,7 @@ bool Bot::canReach(const Entity* ent) const
   Point eye   = Point(p.x, p.y, p.z + camZ);
   Vec3  reach = Vec3(clazz->reachDist, clazz->reachDist, clazz->reachDist);
 
-  return collider.overlapsEntity(AABB(eye, reach), ent);
+  return ent->bb().overlaps(AABB(eye, reach));
 }
 
 bool Bot::canReach(const Object* obj) const
@@ -102,7 +102,7 @@ bool Bot::canReach(const Object* obj) const
   Point eye   = Point(p.x, p.y, p.z + camZ);
   Vec3  reach = Vec3(clazz->reachDist, clazz->reachDist, clazz->reachDist);
 
-  return AABB(eye, reach).overlaps(*obj);
+  return obj->overlaps(AABB(eye, reach));
 }
 
 bool Bot::canEquip(const Weapon* weaponObj) const

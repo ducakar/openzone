@@ -112,12 +112,11 @@ private:
 
   bool overlapsAABBObj(const Object* sObj) const;
   bool overlapsAABBBrush(const BSP::Brush* brush) const;
-  bool overlapsAABBEntity();
   bool overlapsAABBNode(int nodeIndex);
   bool overlapsAABBEntities();
   bool overlapsAABBOrbis();
 
-  bool overlapsEntityOrbis();
+  bool overlapsEntityObjects();
 
   void trimAABBVoid();
   void trimAABBObj(const Object* sObj);
@@ -131,9 +130,9 @@ private:
   void trimAABBTerra();
   void trimAABBOrbis();
 
+  void trimEntityObjects();
+
   void getOrbisOverlaps(List<Struct*>* structs, List<Object*>* objects);
-  void getOrbisIncludes(List<Object*>* objects) const;
-  void touchOrbisOverlaps() const;
   void getEntityOverlaps(List<Object*>* objects);
 
 public:
@@ -144,22 +143,18 @@ public:
   bool overlaps(const AABB& aabb, const Object* exclObj = nullptr);
   bool overlaps(const Object* obj);
   bool overlaps(const Entity* entity, float margin = 0.0f);
-  bool overlapsEntity(const AABB& aabb, const Entity* entity, float margin = 0.0f);
-
-  // fill given vectors with objects and structures overlapping with the AABB
-  // if either vector is nullptr the respective test is not performed
-  void getOverlaps(const AABB& aabb, List<Struct*>* structs, List<Object*>* objects,
-                   float eps = EPSILON);
-  // fill given vector with objects included in the AABB
-  void getIncludes(const AABB& aabb, List<Object*>* objects, float eps = EPSILON);
-  // un-disable all dynamic objects that overlap (does not respect mask)
-  void touchOverlaps(const AABB& aabb, float eps = EPSILON);
-
-  void getOverlaps(const Entity* entity, List<Object*>* objects, float margin = 0.0f);
 
   void translate(const Point& point, const Vec3& move, const Object* exclObj = nullptr);
   void translate(const AABB& aabb, const Vec3& move, const Object* exclObj = nullptr);
   void translate(const Dynamic* obj, const Vec3& move);
+  void translate(const Entity* entity, const Vec3& move);
+
+  // fill given vectors with objects and structures overlapping with the AABB
+  // if either vector is nullptr the respective test is not performed
+  void getOverlaps(const AABB& aabb, List<Struct*>* structs, List<Object*>* objects, float margin);
+  void getOverlaps(const Entity* entity, List<Object*>* objects, float margin);
+
+
 
 };
 

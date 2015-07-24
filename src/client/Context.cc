@@ -176,30 +176,23 @@ void Context::speakMain(void*)
   speakSource.isAlive = false;
 }
 
-uint Context::addSource(int sound)
+Context::Source* Context::addSource(int sound)
 {
   hard_assert(sounds[sound].nUsers > 0);
 
   uint srcId;
   alGenSources(1, &srcId);
 
-  // Can this ever happen?
-  if (srcId == INVALID_SOURCE) {
-    soft_assert(false);
-
-    alDeleteSources(1, &srcId);
-    return INVALID_SOURCE;
-  }
   if (alGetError() != AL_NO_ERROR) {
     Log::printRaw("AL: Too many sources\n");
-    return INVALID_SOURCE;
+    return nullptr;
   }
 
   alSourcei(srcId, AL_BUFFER, sounds[sound].handle);
 
   ++sounds[sound].nUsers;
   sources.add(new Source(srcId, sound));
-  return srcId;
+  return sources.first();
 }
 
 void Context::removeSource(Source* source, Source* prev)
@@ -215,31 +208,21 @@ void Context::removeSource(Source* source, Source* prev)
   delete source;
 }
 
-uint Context::addContSource(int sound, int key)
+Context::ContSource* Context::addContSource(int sound, int key)
 {
   hard_assert(sounds[sound].nUsers > 0);
 
   uint srcId;
   alGenSources(1, &srcId);
 
-  // Can this ever happen?
-  if (srcId == INVALID_SOURCE) {
-    soft_assert(false);
-
-    alDeleteSources(1, &srcId);
-    return INVALID_SOURCE;
-  }
-
   if (alGetError() != AL_NO_ERROR) {
-    // Too many sources.
-    return INVALID_SOURCE;
+    return nullptr;
   }
 
   alSourcei(srcId, AL_BUFFER, sounds[sound].handle);
 
   ++sounds[sound].nUsers;
-  contSources.add(key, ContSource{ srcId, sound, true });
-  return srcId;
+  return &contSources.add(key, ContSource{ srcId, sound, true }).value;
 }
 
 void Context::removeContSource(ContSource* contSource, int key)
@@ -254,10 +237,10 @@ void Context::removeContSource(ContSource* contSource, int key)
   contSources.exclude(key);
 }
 
-uint Context::requestSpeakSource(const char* text, int owner)
+Context::SpeakSource* Context::requestSpeakSource(const char* text, int owner)
 {
   if (espeak_Synth == nullptr || speakSource.thread.isValid()) {
-    return INVALID_SOURCE;
+    return nullptr;
   }
 
   speakSource.nQueuedBuffers = 0;
@@ -267,7 +250,7 @@ uint Context::requestSpeakSource(const char* text, int owner)
   speakSource.text           = text;
 
   speakSource.thread = Thread("speak", speakMain);
-  return speakSource.id;
+  return &speakSource;
 }
 
 void Context::releaseSpeakSource()
@@ -429,11 +412,11 @@ void Context::playSample(int id)
     return;
   }
 
-  uint srcId = addSource(id);
+  Source* source = addSource(id);
 
-  if (srcId != INVALID_SOURCE) {
-    alSourcei(srcId, AL_SOURCE_RELATIVE, AL_TRUE);
-    alSourcePlay(srcId);
+  if (source != nullptr) {
+    alSourcei(source->id, AL_SOURCE_RELATIVE, AL_TRUE);
+    alSourcePlay(source->id);
   }
 
   OZ_AL_CHECK_ERROR();

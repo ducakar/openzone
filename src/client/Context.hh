@@ -48,9 +48,6 @@ class Context
 
 private:
 
-  // default audio format
-  static const uint INVALID_SOURCE = ~0u;
-
   template <typename Type>
   struct Resource
   {
@@ -163,13 +160,13 @@ private:
   static int speakCallback(short int* samples, int nSamples, void*);
   static void speakMain(void*);
 
-  uint addSource(int sound);
+  Source* addSource(int sound);
   void removeSource(Source* source, Source* prev);
 
-  uint addContSource(int sound, int key);
+  ContSource* addContSource(int sound, int key);
   void removeContSource(ContSource* contSource, int key);
 
-  uint requestSpeakSource(const char* text, int owner);
+  SpeakSource* requestSpeakSource(const char* text, int owner);
   void releaseSpeakSource();
 
   PartGen* addPartGen();

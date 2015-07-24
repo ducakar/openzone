@@ -80,7 +80,7 @@ void BuildFrame::overlayCallback(Area* area, const Vec3& ray)
     List<Struct*> strs;
     List<Object*> objs;
 
-    collider.getOverlaps(bounds.toAABB(), &strs, &objs);
+    collider.getOverlaps(bounds.toAABB(), &strs, &objs, 2.0f * EPSILON);
     overlaps  = !strs.isEmpty() || !objs.isEmpty();
     tf.colour = overlaps ? OVERLAY_RED : OVERLAY_GREEN;
 

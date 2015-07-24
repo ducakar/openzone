@@ -42,17 +42,17 @@ void BSP::load()
     OZ_ERROR("BSP file '%s' read failed", file.c());
   }
 
-  mins             = is.readPoint();
-  maxs             = is.readPoint();
+  mins          = is.readPoint();
+  maxs          = is.readPoint();
 
-  title            = lingua.get(is.readString());
-  description      = lingua.get(is.readString());
+  title         = lingua.get(is.readString());
+  description   = lingua.get(is.readString());
 
-  life             = is.readFloat();
-  resistance       = is.readFloat();
+  life          = is.readFloat();
+  resistance    = is.readFloat();
 
-  fragPool         = liber.fragPool(is.readString());
-  nFrags           = is.readInt();
+  fragPool      = liber.fragPool(is.readString());
+  nFrags        = is.readInt();
 
   demolishSound = liber.soundIndex(is.readString());
   groundOffset  = is.readFloat();
@@ -147,30 +147,36 @@ void BSP::load()
 
   entities = new(data) EntityClass[nEntities];
   for (int i = 0; i < nEntities; ++i) {
-    entities[i].mins        = is.readPoint();
-    entities[i].maxs        = is.readPoint();
+    entities[i].mins         = is.readPoint();
+    entities[i].maxs         = is.readPoint();
 
-    entities[i].title       = lingua.get(is.readString());
-    entities[i].bsp         = this;
-    entities[i].move        = is.readVec3();
+    entities[i].firstBrush   = is.readInt();
+    entities[i].nBrushes     = is.readInt();
 
-    entities[i].firstBrush  = is.readInt();
-    entities[i].nBrushes    = is.readInt();
+    entities[i].bsp          = this;
+    entities[i].title        = lingua.get(is.readString());
 
-    entities[i].type        = EntityClass::Type(is.readInt());
-    entities[i].margin      = is.readFloat();
-    entities[i].timeout     = is.readFloat();
-    entities[i].ratioInc    = is.readFloat();
+    entities[i].type         = EntityClass::Type(is.readInt());
+    entities[i].flags        = is.readInt();
 
-    entities[i].target      = is.readInt();
-    entities[i].key         = is.readInt();
+    entities[i].closeTimeout = is.readFloat();
+    entities[i].openTimeout  = is.readFloat();
 
-    entities[i].openSound   = liber.soundIndex(is.readString());
-    entities[i].closeSound  = liber.soundIndex(is.readString());
-    entities[i].frictSound  = liber.soundIndex(is.readString());
+    entities[i].moveDir      = is.readVec3();
+    entities[i].moveLength   = is.readFloat();
+    entities[i].moveStep     = is.readFloat();
 
-    entities[i].model       = liber.modelIndex(is.readString());
-    entities[i].modelTransf = is.readMat4();
+    entities[i].margin       = is.readFloat();
+
+    entities[i].openSound    = liber.soundIndex(is.readString());
+    entities[i].closeSound   = liber.soundIndex(is.readString());
+    entities[i].frictSound   = liber.soundIndex(is.readString());
+
+    entities[i].target       = is.readInt();
+    entities[i].key          = is.readInt();
+
+    entities[i].model        = liber.modelIndex(is.readString());
+    entities[i].modelTransf  = is.readMat4();
   }
   data += nEntities * sizeof(entities[0]);
 

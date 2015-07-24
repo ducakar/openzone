@@ -48,7 +48,7 @@ public:
   {
     CLOSED,
     OPENING,
-    OPENED,
+    OPEN,
     CLOSING
   };
 
@@ -58,7 +58,7 @@ public:
   int                key;
 
   State              state;
-  float              ratio;
+  float              moveDist;
   float              time;
 
   Vec3               offset;
@@ -66,6 +66,7 @@ public:
 
 public:
 
+  Bounds bb() const;
   int index() const;
   bool trigger();
   bool lock(Bot* user);
@@ -73,11 +74,9 @@ public:
 private:
 
   void staticHandler();
-  void manualDoorHandler();
-  void autoDoorHandler();
-  void ignoringBlockHandler();
-  void crushingBlockHandler();
-  void elevatorHandler();
+  void moverHandler();
+  void doorHandler();
+  void portalHandler();
 
 };
 
@@ -221,6 +220,11 @@ OZ_ALWAYS_INLINE
 inline int Entity::index() const
 {
   return (str->index << Struct::MAX_ENT_SHIFT) | int(this - str->entities.begin());
+}
+
+inline Bounds Entity::bb() const
+{
+  return str->toAbsoluteCS(*clazz + offset);
 }
 
 }

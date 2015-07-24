@@ -288,7 +288,7 @@ static int ozOrbisBindOverlaps(lua_State* l)
     collider.mask = ~0;
   }
 
-  collider.getOverlaps(aabb, structs, objects);
+  collider.getOverlaps(aabb, structs, objects, 0.0f);
   collider.mask = Object::SOLID_BIT;
   return 0;
 }
@@ -697,7 +697,7 @@ static int ozStrBindOverlaps(lua_State* l)
     collider.mask = ~0;
   }
 
-  collider.getOverlaps(aabb, structs, objects);
+  collider.getOverlaps(aabb, structs, objects, 0.0f);
   collider.mask = Object::SOLID_BIT;
 
   if (structs != nullptr) {
@@ -879,18 +879,17 @@ static int ozEntSetState(lua_State* l)
 
   Entity::State state = Entity::State(l_toint(1));
 
+  ms.ent->state    = state;
   ms.ent->time     = 0.0f;
   ms.ent->velocity = Vec3::ZERO;
 
   if (state == Entity::CLOSED) {
-    ms.ent->offset = Vec3::ZERO;
-    ms.ent->state  = Entity::CLOSED;
-    ms.ent->ratio  = 0.0f;
+    ms.ent->offset   = Vec3::ZERO;
+    ms.ent->moveDist = 0.0f;
   }
-  else if (state == Entity::OPENED) {
-    ms.ent->offset = ms.ent->clazz->move;
-    ms.ent->state  = Entity::OPENED;
-    ms.ent->ratio  = 1.0f;
+  else if (state == Entity::OPEN) {
+    ms.ent->offset   = ms.ent->clazz->moveLength * ms.ent->clazz->moveDir;
+    ms.ent->moveDist = ms.ent->clazz->moveLength;
   }
   else {
     ERROR("Entity state should be either OZ_ENTITY_CLOSED or OZ_ENTITY_OPENED");
@@ -1636,7 +1635,7 @@ static int ozObjBindOverlaps(lua_State* l)
     collider.mask = ~0;
   }
 
-  collider.getOverlaps(aabb, structs, objects);
+  collider.getOverlaps(aabb, structs, objects, 0.0f);
   collider.mask = Object::SOLID_BIT;
 
   if (objects != nullptr) {
@@ -2623,7 +2622,7 @@ static int ozFragBindOverlaps(lua_State* l)
     collider.mask = ~0;
   }
 
-  collider.getOverlaps(aabb, structs, objects);
+  collider.getOverlaps(aabb, structs, objects, 0.0f);
   collider.mask = Object::SOLID_BIT;
   return 0;
 }

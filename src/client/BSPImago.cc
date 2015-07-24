@@ -77,13 +77,13 @@ void BSPImago::preload()
   const File* file = model.preload();
   Stream      is   = file->read(Endian::LITTLE);
 
-  is.seek(is.available() - 2 * sizeof(float[4]));
+  int modelEnd = is.readInt();
+  is.seek(modelEnd);
 
   nClusters      = is.readInt();
   nClusterBits   = is.readInt();
 
   clusters.resize(nClusters * nClusterBits);
-
   is.readBitset(clusters);
 
   waterFogColour = is.readVec4();

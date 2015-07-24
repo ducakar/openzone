@@ -231,27 +231,29 @@ private:
   // Temporary structure for BSP entity (EntityClass).
   struct Model : Bounds
   {
-    String            title;
-
-    Vec3              move;
-
-    BSP*              bsp;
-
     int               firstBrush;
     int               nBrushes;
 
+    String            title;
+
     EntityClass::Type type;
+    int               flags;
+
+    float             closeTimeout;
+    float             openTimeout;
+
+    Vec3              moveDir;
+    float             moveLength;
+    float             moveStep;
 
     float             margin;
-    float             timeout;
-    float             ratioInc;
-
-    int               target;
-    int               key;
 
     String            openSound;
     String            closeSound;
     String            frictSound;
+
+    int               target;
+    int               key;
 
     String            modelName;
     Mat4              modelTransf;

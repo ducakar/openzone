@@ -710,6 +710,9 @@ void Compiler::writeModel(Stream* os, bool globalTextures)
     storeNode(&root, i);
   }
 
+  // Size in bytes, will be written at the end.
+  os->writeInt(0);
+
   os->writeVec3(bounds.dim());
 
   os->writeString(shaderName);
@@ -870,6 +873,14 @@ void Compiler::writeModel(Stream* os, bool globalTextures)
       }
     }
   }
+
+  // Write size of the model in bytes at the beginning.
+  int size = os->tell();
+
+  os->rewind();
+  os->writeInt(size);
+
+  os->seek(size);
 
   Log::printEnd(" OK");
 }

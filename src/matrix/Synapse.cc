@@ -280,7 +280,16 @@ void Synapse::remove(Struct* str)
 
   removedStructs.add(str->index);
 
-  collider.touchOverlaps(str->toAABB(), 4.0f * EPSILON);
+  List<Object*> overlappingObjs;
+  collider.getOverlaps(str->toAABB(), nullptr, &overlappingObjs, 2.0f * EPSILON);
+
+  for (Object* obj : overlappingObjs) {
+    if (obj->flags & Object::DYNAMIC_BIT) {
+      obj->flags &= ~Object::DISABLED_BIT;
+      obj->flags |= Object::ENABLE_BIT;
+    }
+  }
+
   orbis.unposition(str);
   orbis.remove(str);
 }
@@ -300,7 +309,16 @@ void Synapse::remove(Object* obj)
   removedObjects.add(obj->index);
 
   if (obj->cell != nullptr) {
-    collider.touchOverlaps(*obj, 4.0f * EPSILON);
+    List<Object*> overlappingObjs;
+    collider.getOverlaps(*obj, nullptr, &overlappingObjs, 2.0f * EPSILON);
+
+    for (Object* obj : overlappingObjs) {
+      if (obj->flags & Object::DYNAMIC_BIT) {
+        obj->flags &= ~Object::DISABLED_BIT;
+        obj->flags |= Object::ENABLE_BIT;
+      }
+    }
+
     orbis.unposition(obj);
   }
   orbis.remove(obj);

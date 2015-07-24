@@ -54,17 +54,17 @@ static const Mat4 ROTATIONS[] =
         0.0f,  0.0f,  0.0f,  1.0f),
 };
 
+static const Entity::State OPPOSITE_STATES[] = { Entity::CLOSING, Entity::OPENING };
+static const Entity::State END_STATES[]      = { Entity::OPEN, Entity::CLOSED };
+
 const Vec3  Struct::DESTRUCT_FRAG_VELOCITY = Vec3(0.0f, 0.0f, 2.0f);
 const float Struct::DEMOLISH_SPEED         = 8.0f;
 
 const Entity::Handler Entity::HANDLERS[] = {
   &Entity::staticHandler,
-  &Entity::manualDoorHandler,
-  &Entity::autoDoorHandler,
-  &Entity::ignoringBlockHandler,
-  &Entity::crushingBlockHandler,
-  &Entity::elevatorHandler,
-  &Entity::staticHandler
+  &Entity::moverHandler,
+  &Entity::doorHandler,
+  &Entity::portalHandler
 };
 
 List<Object*> Struct::overlappingObjs;
@@ -92,15 +92,13 @@ bool Entity::trigger()
 
   Entity& target = targetStr->entities[entIndex];
 
-  if (target.state == OPENED || target.state == OPENING) {
+  if (target.state == OPEN || target.state == OPENING) {
     target.state = CLOSING;
-    target.time = 0.0f;
-    target.velocity = -target.clazz->move * target.clazz->ratioInc / Timer::TICK_TIME;
+    target.time  = 0.0f;
   }
   else {
     target.state = OPENING;
-    target.time = 0.0f;
-    target.velocity = target.clazz->move * target.clazz->ratioInc / Timer::TICK_TIME;
+    target.time  = 0.0f;
   }
 
   return true;
@@ -133,407 +131,205 @@ void Entity::staticHandler()
   state = CLOSED;
 }
 
-void Entity::manualDoorHandler()
+void Entity::moverHandler()
 {
+  time += Timer::TICK_TIME;
+
   switch (state) {
     case CLOSED: {
-      return;
-    }
-    case OPENING: {
-      ratio  = min(ratio + clazz->ratioInc, 1.0f);
-      time  += Timer::TICK_TIME;
-      offset = ratio * clazz->move;
-
-      if (ratio == 1.0f) {
-        state    = OPENED;
-        time     = 0.0f;
-        velocity = Vec3::ZERO;
-      }
-      return;
-    }
-    case OPENED: {
-      return;
-    }
-    case CLOSING: {
-      time  += Timer::TICK_TIME;
-      offset = Vec3::ZERO;
-
-      if (collider.overlaps(this)) {
-        offset = ratio * clazz->move;
-
-        if (ratio == 1.0f) {
-          state = OPENED;
+      if (clazz->openTimeout != 0.0f) {
+        if (time > clazz->openTimeout) {
+          state = OPENING;
           time  = 0.0f;
         }
-        else {
-          state    = OPENING;
-          time     = 0.0f;
-          velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
+      }
+      break;
+    }
+    case OPEN: {
+      if (clazz->closeTimeout != 0.0f) {
+        if (time > clazz->closeTimeout) {
+          state = CLOSING;
+          time  = 0.0f;
         }
-        return;
+      }
+      break;
+    }
+    case OPENING:
+    case CLOSING: {
+      bool  isClosing = state == CLOSING;
+      float endMove[] = { clazz->moveLength, 0.0f };
+
+      float origMove   = moveDist;
+      Vec3  origOffset = offset;
+
+      if (isClosing) {
+        moveDist = max(moveDist - clazz->moveStep, 0.0f);
+      }
+      else {
+        moveDist = min(moveDist + clazz->moveStep, clazz->moveLength);
       }
 
-      ratio  = max(ratio - clazz->ratioInc, 0.0f);
-      offset = ratio * clazz->move;
+      if (clazz->flags & EntityClass::IGNORANT) {
+        offset   = moveDist * clazz->moveDir;
+        velocity = (offset - origOffset) / Timer::TICK_TIME;
+      }
+      else if (clazz->flags & EntityClass::PUSHER) {
+        collider.getOverlaps(this, &Struct::overlappingObjs, EPSILON);
 
-      if (ratio == 0.0f) {
-        state    = CLOSED;
+        if (!Struct::overlappingObjs.isEmpty()) {
+          Vec3 move = (clazz->moveStep + EPSILON) * clazz->moveDir;
+          move = isClosing ? -move : +move;
+
+          collider.translate(this, move);
+          //
+          float epsilon     = isClosing ? -EPSILON : +EPSILON;
+          Vec3  translation = str->toAbsoluteCS(offset - origOffset + epsilon * clazz->moveDir);
+
+          for (Object* obj : Struct::overlappingObjs) {
+            Dynamic* dyn = static_cast<Dynamic*>(obj);
+
+            if (dyn->flags & Object::DYNAMIC_BIT) {
+              collider.translate(dyn, translation);
+
+              if (collider.hit.ratio != 0.0f) {
+                Vec3 dynMove  = collider.hit.ratio * translation;
+                Vec3 velDelta = dynMove / Timer::TICK_TIME;
+
+                dyn->p        += dynMove;
+                dyn->velocity += velDelta;
+                dyn->flags    &= ~Object::DISABLED_BIT;
+                dyn->flags    |= Object::ENABLE_BIT;
+
+                orbis.reposition(dyn);
+              }
+
+//              if (collider.hit.ratio != 1.0f && collider.overlapsEntity(*dyn, this)) {
+//                if (clazz->flags & EntityClass::CRUSHER) {
+//                  dyn->destroy();
+//                }
+//                else {
+//                  if (clazz->flags & EntityClass::REVERTER) {
+//                    state = OPPOSITE_STATES[isClosing];
+//                    time  = Timer::TICK_TIME;
+//                  }
+//                  else {
+//                    state = moveDist == 0.0f ? CLOSED :
+//                            moveDist == clazz->moveLength ? OPEN :
+//                            END_STATES[isClosing];
+
+//                    time  = 0.0f;
+//                  }
+
+//                  moveDist = origMove;
+//                  offset   = origOffset;
+//                  velocity = Vec3::ZERO;
+//                }
+//              }
+            }
+          }
+
+          Struct::overlappingObjs.clear();
+        }
+      }
+
+      if (moveDist == endMove[isClosing]) {
+        state    = END_STATES[isClosing];
         time     = 0.0f;
         velocity = Vec3::ZERO;
       }
-      return;
+
+      break;
     }
   }
 }
 
-void Entity::autoDoorHandler()
+void Entity::doorHandler()
 {
+  time += Timer::TICK_TIME;
+
   switch (state) {
     case CLOSED: {
-      if ((timer.ticks + uint(str->index * 1025)) % (Timer::TICKS_PER_SEC / 6) == 0 &&
-          collider.overlaps(this, clazz->margin))
-      {
-        state    = OPENING;
-        velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
+      if (clazz->flags & EntityClass::AUTO_OPEN) {
+        bool checkTick = (timer.ticks + uint(str->index * 1025)) % (Timer::TICKS_PER_SEC / 6) == 0;
+
+        if (checkTick && collider.overlaps(this, clazz->margin)) {
+          state = OPENING;
+          time  = 0.0f;
+        }
       }
-      return;
+      break;
     }
     case OPENING: {
-      ratio  = min(ratio + clazz->ratioInc, 1.0f);
-      time  += Timer::TICK_TIME;
-      offset = ratio * clazz->move;
+      Vec3 origOffset = offset;
 
-      if (ratio == 1.0f) {
-        state    = OPENED;
+      moveDist += clazz->moveStep;
+
+      if (moveDist >= clazz->moveLength) {
+        state    = OPEN;
         time     = 0.0f;
+        moveDist = clazz->moveLength;
+        offset   = moveDist * clazz->moveDir;
         velocity = Vec3::ZERO;
       }
-      return;
+      else {
+        offset   = moveDist * clazz->moveDir;
+        velocity = (offset - origOffset) / Timer::TICK_TIME;
+      }
+      break;
     }
-    case OPENED: {
-      time += Timer::TICK_TIME;
+    case OPEN: {
+      if (clazz->closeTimeout != 0.0f && time > clazz->closeTimeout) {
+        Vec3 origOffset = offset;
 
-      if (time > clazz->timeout) {
-        offset = Vec3::ZERO;
         time   = 0.0f;
+        offset = Vec3::ZERO;
 
         if (!collider.overlaps(this, clazz->margin)) {
-          state    = CLOSING;
-          velocity = -clazz->move * clazz->ratioInc / Timer::TICK_TIME;
+          state = CLOSING;
         }
 
-        offset = clazz->move;
+        offset = origOffset;
       }
-      return;
+      break;
     }
     case CLOSING: {
-      time  += Timer::TICK_TIME;
-      offset = Vec3::ZERO;
+      float origMove   = moveDist;
+      Vec3  origOffset = offset;
+
+      moveDist -= clazz->moveStep;
+      offset    = Vec3::ZERO;
 
       if (collider.overlaps(this, clazz->margin)) {
-        offset = ratio * clazz->move;
-
-        if (ratio == 1.0f) {
-          state = OPENED;
-          time  = 0.0f;
-        }
-        else {
-          state    = OPENING;
-          time     = 0.0f;
-          velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
-        }
-        return;
-      }
-
-      ratio  = max(ratio - clazz->ratioInc, 0.0f);
-      offset = ratio * clazz->move;
-
-      if (ratio == 0.0f) {
-        state    = CLOSED;
-        time     = 0.0f;
-        velocity = Vec3::ZERO;
-      }
-      return;
-    }
-  }
-}
-
-void Entity::ignoringBlockHandler()
-{
-  time += Timer::TICK_TIME;
-
-  switch (state) {
-    case CLOSED: {
-      if (time > clazz->timeout) {
         state    = OPENING;
         time     = 0.0f;
-        velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
-      }
-      return;
-    }
-    case OPENING: {
-      ratio  = min(ratio + clazz->ratioInc, 1.0f);
-      offset = ratio * clazz->move;
-
-      if (ratio == 1.0f) {
-        state    = OPENED;
-        time     = 0.0f;
+        moveDist = origMove;
+        offset   = origOffset;
         velocity = Vec3::ZERO;
       }
-      return;
-    }
-    case OPENED: {
-      if (time > clazz->timeout) {
-        state    = CLOSING;
-        time     = 0.0f;
-        velocity = -clazz->move * clazz->ratioInc / Timer::TICK_TIME;
-      }
-      return;
-    }
-    case CLOSING: {
-      ratio  = max(ratio - clazz->ratioInc, 0.0f);
-      offset = ratio * clazz->move;
-
-      if (ratio == 0.0f) {
+      else if (moveDist <= 0.0f) {
         state    = CLOSED;
         time     = 0.0f;
+        moveDist = 0.0f;
         velocity = Vec3::ZERO;
       }
-      return;
+      else {
+        offset   = moveDist * clazz->moveDir;
+        velocity = (offset - origOffset) / Timer::TICK_TIME;
+      }
+      break;
     }
   }
 }
 
-void Entity::crushingBlockHandler()
+void Entity::portalHandler()
 {
-  time += Timer::TICK_TIME;
-
-  switch (state) {
-    case CLOSED: {
-      if (time > clazz->timeout) {
-        state    = OPENING;
-        time     = 0.0f;
-        velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
-      }
-      return;
-    }
-    case OPENING: {
-      Vec3 move = offset;
-
-      ratio  = min(ratio + clazz->ratioInc, 1.0f);
-      offset = ratio * clazz->move;
-
-      collider.getOverlaps(this, &Struct::overlappingObjs);
-
-      if (!Struct::overlappingObjs.isEmpty()) {
-        move = offset - move + 2.0f*EPSILON * clazz->move.fastUnit();
-        move = str->toAbsoluteCS(move);
-
-        for (int i = 0; i < Struct::overlappingObjs.length(); ++i) {
-          Dynamic* dyn = static_cast<Dynamic*>(Struct::overlappingObjs[i]);
-
-          if (dyn->flags & Object::DYNAMIC_BIT) {
-            collider.translate(dyn, move);
-
-            if (collider.hit.ratio != 0.0f) {
-              Vec3 dynMove  = collider.hit.ratio * move;
-              Vec3 velDelta = dynMove / Timer::TICK_TIME;
-
-              dyn->p        += dynMove;
-              dyn->velocity += velDelta;
-              dyn->momentum += velDelta;
-              dyn->flags    &= ~Object::DISABLED_BIT;
-              dyn->flags    |= Object::ENABLE_BIT;
-
-              orbis.reposition(dyn);
-            }
-            if (collider.hit.ratio != 1.0f && collider.overlapsEntity(*dyn, this)) {
-              dyn->destroy();
-            }
-          }
-        }
-
-        Struct::overlappingObjs.clear();
-      }
-
-      if (ratio == 1.0f) {
-        state    = OPENED;
-        time     = 0.0f;
-        velocity = Vec3::ZERO;
-      }
-      return;
-    }
-    case OPENED: {
-      if (time > clazz->timeout) {
-        state    = CLOSING;
-        time     = 0.0f;
-        velocity = -clazz->move * clazz->ratioInc / Timer::TICK_TIME;
-      }
-      return;
-    }
-    case CLOSING: {
-      Vec3 move = offset;
-
-      ratio  = max(ratio - clazz->ratioInc, 0.0f);
-      offset = ratio * clazz->move;
-
-      collider.getOverlaps(this, &Struct::overlappingObjs);
-
-      if (!Struct::overlappingObjs.isEmpty()) {
-        move = offset - move - 2.0f*EPSILON * clazz->move.fastUnit();
-        move = str->toAbsoluteCS(move);
-
-        for (int i = 0; i < Struct::overlappingObjs.length(); ++i) {
-          Dynamic* dyn = static_cast<Dynamic*>(Struct::overlappingObjs[i]);
-
-          if (dyn->flags & Object::DYNAMIC_BIT) {
-            collider.translate(dyn, move);
-
-            if (collider.hit.ratio != 0.0f) {
-              Vec3 dynMove  = collider.hit.ratio * move;
-              Vec3 velDelta = dynMove / Timer::TICK_TIME;
-
-              dyn->p        += dynMove;
-              dyn->velocity += velDelta;
-              dyn->momentum += velDelta;
-              dyn->flags    &= ~Object::DISABLED_BIT;
-              dyn->flags    |= Object::ENABLE_BIT;
-
-              orbis.reposition(dyn);
-            }
-            if (collider.hit.ratio != 1.0f && collider.overlapsEntity(*dyn, this)) {
-              dyn->destroy();
-            }
-          }
-        }
-
-        Struct::overlappingObjs.clear();
-      }
-
-      if (ratio == 0.0f) {
-        state    = CLOSED;
-        time     = 0.0f;
-        velocity = Vec3::ZERO;
-      }
-      return;
-    }
-  }
-}
-
-void Entity::elevatorHandler()
-{
-  switch (state) {
-    case CLOSED: {
-      return;
-    }
-    case OPENING: {
-      float originalRatio  = ratio;
-      Vec3  originalOffset = offset;
-
-      Vec3 move = offset;
-
-      ratio  = min(ratio + clazz->ratioInc, 1.0f);
-      time  += Timer::TICK_TIME;
-      offset = ratio * clazz->move;
-
-      collider.getOverlaps(this, &Struct::overlappingObjs);
-
-      if (!Struct::overlappingObjs.isEmpty()) {
-        move = offset - move + 2.0f*EPSILON * clazz->move.fastUnit();
-        move = str->toAbsoluteCS(move);
-
-        for (int i = 0; i < Struct::overlappingObjs.length(); ++i) {
-          Dynamic* dyn = static_cast<Dynamic*>(Struct::overlappingObjs[i]);
-
-          if (dyn->flags & Object::DYNAMIC_BIT) {
-            collider.translate(dyn, move);
-
-            if (collider.hit.ratio != 0.0f) {
-              dyn->p.z   += collider.hit.ratio * move.z;
-              dyn->flags &= ~Object::DISABLED_BIT;
-              dyn->flags |= Object::ENABLE_BIT;
-            }
-            if (collider.hit.ratio != 1.0f && collider.overlapsEntity(*dyn, this)) {
-              ratio    = originalRatio;
-              offset   = originalOffset;
-
-              state    = ratio == 0.0f ? CLOSED : OPENED;
-              time     = 0.0f;
-              velocity = Vec3::ZERO;
-              return;
-            }
-          }
-        }
-
-        Struct::overlappingObjs.clear();
-      }
-
-      if (ratio == 1.0f) {
-        state    = OPENED;
-        time     = 0.0f;
-        velocity = Vec3::ZERO;
-      }
-      return;
-    }
-    case OPENED: {
-      return;
-    }
-    case CLOSING: {
-      float originalRatio  = ratio;
-      Vec3  originalOffset = offset;
-
-      Vec3 move = offset;
-
-      ratio  = max(ratio - clazz->ratioInc, 0.0f);
-      time  += Timer::TICK_TIME;
-      offset = ratio * clazz->move;
-
-      collider.getOverlaps(this, &Struct::overlappingObjs);
-
-      if (!Struct::overlappingObjs.isEmpty()) {
-        move = offset - move - 2.0f*EPSILON * clazz->move.fastUnit();
-        move = str->toAbsoluteCS(move);
-
-        for (int i = 0; i < Struct::overlappingObjs.length(); ++i) {
-          Dynamic* dyn = static_cast<Dynamic*>(Struct::overlappingObjs[i]);
-
-          if (dyn->flags & Object::DYNAMIC_BIT) {
-            collider.translate(dyn, move);
-
-            if (collider.hit.ratio != 0.0f) {
-              dyn->p.z   += collider.hit.ratio * move.z;
-              dyn->flags &= ~Object::DISABLED_BIT;
-              dyn->flags |= Object::ENABLE_BIT;
-            }
-            if (collider.hit.ratio != 1.0f && collider.overlapsEntity(*dyn, this)) {
-              ratio    = originalRatio;
-              offset   = originalOffset;
-
-              state    = ratio == 1.0f ? OPENED : CLOSED;
-              time     = 0.0f;
-              velocity = Vec3::ZERO;
-              return;
-            }
-          }
-        }
-
-        Struct::overlappingObjs.clear();
-      }
-
-      if (ratio == 0.0f) {
-        state    = CLOSED;
-        time     = 0.0f;
-        velocity = Vec3::ZERO;
-      }
-      return;
-    }
-  }
+  state = CLOSED;
 }
 
 void Struct::onDemolish()
 {
   collider.mask = ~0;
-  collider.getOverlaps(toAABB(), nullptr, &overlappingObjs, 4.0f * EPSILON);
+  collider.getOverlaps(toAABB(), nullptr, &overlappingObjs, 2.0f * EPSILON);
   collider.mask = Object::SOLID_BIT;
 
   for (int i = 0; i < overlappingObjs.length(); ++i) {
@@ -583,8 +379,6 @@ void Struct::onUpdate()
   else {
     for (int i = 0; i < entities.length(); ++i) {
       Entity& entity = entities[i];
-
-      hard_assert(0.0f <= entity.ratio && entity.ratio <= 1.0f);
 
       (entity.*Entity::HANDLERS[entity.clazz->type])();
     }
@@ -687,7 +481,7 @@ Struct::Struct(const BSP* bsp_, int index_, const Point& p_, Heading heading_)
       entity.str      = this;
       entity.key      = bsp->entities[i].key;
       entity.state    = Entity::CLOSED;
-      entity.ratio    = 0.0f;
+      entity.moveDist = 0.0f;
       entity.time     = 0.0f;
       entity.offset   = Vec3::ZERO;
       entity.velocity = Vec3::ZERO;
@@ -732,23 +526,14 @@ Struct::Struct(const BSP* bsp_, int index_, const Json& json)
       const Json& entityJson = entitiesJson[i];
       Entity&     entity     = entities[i];
 
-      entity.clazz  = &bsp->entities[i];
-      entity.str    = this;
-      entity.key    = entityJson["key"].get(0);
-      entity.state  = Entity::State(entityJson["state"].get(Entity::CLOSED));
-      entity.ratio  = entityJson["ratio"].get(0.0f);
-      entity.time   = entityJson["time"].get(0.0f);
-      entity.offset = entityJson["offset"].get(Vec3::ZERO);
-
-      if (entity.state == Entity::OPENING) {
-        entity.velocity = +entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
-      }
-      else if (entity.state == Entity::CLOSING) {
-        entity.velocity = -entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
-      }
-      else {
-        entity.velocity = Vec3::ZERO;
-      }
+      entity.clazz    = &bsp->entities[i];
+      entity.str      = this;
+      entity.key      = entityJson["key"].get(0);
+      entity.state    = Entity::State(entityJson["state"].get(Entity::CLOSED));
+      entity.moveDist = entityJson["move"].get(0.0f);
+      entity.time     = entityJson["time"].get(0.0f);
+      entity.offset   = entityJson["offset"].get(Vec3::ZERO);
+      entity.velocity = entityJson["velocity"].get(Vec3::ZERO);
     }
   }
 
@@ -783,23 +568,14 @@ Struct::Struct(const BSP* bsp_, Stream* is)
     for (int i = 0; i < entities.length(); ++i) {
       Entity& entity = entities[i];
 
-      entity.clazz  = &bsp->entities[i];
-      entity.str    = this;
-      entity.key    = is->readInt();
-      entity.state  = Entity::State(is->readInt());
-      entity.ratio  = is->readFloat();
-      entity.time   = is->readFloat();
-      entity.offset = is->readVec3();
-
-      if (entity.state == Entity::OPENING) {
-        entity.velocity = +entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
-      }
-      else if (entity.state == Entity::CLOSING) {
-        entity.velocity = -entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
-      }
-      else {
-        entity.velocity = Vec3::ZERO;
-      }
+      entity.clazz    = &bsp->entities[i];
+      entity.str      = this;
+      entity.key      = is->readInt();
+      entity.state    = Entity::State(is->readInt());
+      entity.moveDist = is->readFloat();
+      entity.time     = is->readFloat();
+      entity.offset   = is->readVec3();
+      entity.velocity = is->readVec3();
     }
   }
 
@@ -834,9 +610,10 @@ Json Struct::write() const
 
     entityJson.add("key", entities[i].key);
     entityJson.add("state", entities[i].state);
-    entityJson.add("ratio", entities[i].ratio);
+    entityJson.add("move", entities[i].moveDist);
     entityJson.add("time", entities[i].time);
     entityJson.add("offset", entities[i].offset);
+    entityJson.add("velocity", entities[i].velocity);
   }
 
   Json& boundObjectsJson = json.add("boundObjects", Json::ARRAY);
@@ -865,9 +642,10 @@ void Struct::write(Stream* os) const
   for (int i = 0; i < entities.length(); ++i) {
     os->writeInt(entities[i].key);
     os->writeInt(entities[i].state);
-    os->writeFloat(entities[i].ratio);
+    os->writeFloat(entities[i].moveDist);
     os->writeFloat(entities[i].time);
     os->writeVec3(entities[i].offset);
+    os->writeVec3(entities[i].velocity);
   }
 
   os->writeInt(boundObjects.length());
