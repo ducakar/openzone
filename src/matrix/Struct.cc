@@ -23,7 +23,7 @@
 
 #include <matrix/Struct.hh>
 
-#include <matrix/Collider.hh>
+#include <matrix/Physics.hh>
 #include <matrix/Synapse.hh>
 #include <matrix/Bot.hh>
 
@@ -57,8 +57,8 @@ static const Mat4 ROTATIONS[] =
 static const Entity::State OPPOSITE_STATES[] = { Entity::CLOSING, Entity::OPENING };
 static const Entity::State END_STATES[]      = { Entity::OPEN, Entity::CLOSED };
 
-const Vec3  Struct::DESTRUCT_FRAG_VELOCITY = Vec3(0.0f, 0.0f, 2.0f);
-const float Struct::DEMOLISH_SPEED         = 8.0f;
+const Vec3  Struct::DESTRUCT_FRAG_VELOCITY   = Vec3(0.0f, 0.0f, 2.0f);
+const float Struct::DEMOLISH_SPEED           = 8.0f;
 
 const Entity::Handler Entity::HANDLERS[] = {
   &Entity::staticHandler,
@@ -77,7 +77,7 @@ bool Entity::trigger()
   }
 
   if (clazz->type == EntityClass::STATIC) {
-    hard_assert(time == 0.0f);
+    OZ_ASSERT(time == 0.0f);
 
     state = OPENING;
   }
@@ -135,20 +135,16 @@ void Entity::moverHandler()
 {
   time += Timer::TICK_TIME;
 
+  float timeout[] { clazz->openTimeout, clazz->closeTimeout };
+
   switch (state) {
-    case CLOSED: {
-      if (clazz->openTimeout != 0.0f) {
-        if (time > clazz->openTimeout) {
-          state = OPENING;
-          time  = 0.0f;
-        }
-      }
-      break;
-    }
+    case CLOSED:
     case OPEN: {
-      if (clazz->closeTimeout != 0.0f) {
-        if (time > clazz->closeTimeout) {
-          state = CLOSING;
+      bool isClosed = state == CLOSED;
+
+      if (timeout[isClosed] != 0.0f && time > timeout[isClosed]) {
+        if (time > clazz->openTimeout) {
+          state = OPPOSITE_STATES[isClosed];
           time  = 0.0f;
         }
       }
@@ -156,88 +152,18 @@ void Entity::moverHandler()
     }
     case OPENING:
     case CLOSING: {
-      bool  isClosing = state == CLOSING;
-      float endMove[] = { clazz->moveLength, 0.0f };
+      Vec3 move      = destination - offset;
+      bool finishing = move.sqN() <= clazz->moveStep;
 
-      float origMove   = moveDist;
-      Vec3  origOffset = offset;
+      physics.updateEnt(this, move);
 
-      if (isClosing) {
-        moveDist = max(moveDist - clazz->moveStep, 0.0f);
-      }
-      else {
-        moveDist = min(moveDist + clazz->moveStep, clazz->moveLength);
-      }
+      if (finishing && collider.hit.ratio == 1.0f) {
+        bool isClosing = state == CLOSING;
 
-      if (clazz->flags & EntityClass::IGNORANT) {
-        offset   = moveDist * clazz->moveDir;
-        velocity = (offset - origOffset) / Timer::TICK_TIME;
-      }
-      else if (clazz->flags & EntityClass::PUSHER) {
-        collider.getOverlaps(this, &Struct::overlappingObjs, EPSILON);
-
-        if (!Struct::overlappingObjs.isEmpty()) {
-          Vec3 move = (clazz->moveStep + EPSILON) * clazz->moveDir;
-          move = isClosing ? -move : +move;
-
-          collider.translate(this, move);
-          //
-          float epsilon     = isClosing ? -EPSILON : +EPSILON;
-          Vec3  translation = str->toAbsoluteCS(offset - origOffset + epsilon * clazz->moveDir);
-
-          for (Object* obj : Struct::overlappingObjs) {
-            Dynamic* dyn = static_cast<Dynamic*>(obj);
-
-            if (dyn->flags & Object::DYNAMIC_BIT) {
-              collider.translate(dyn, translation);
-
-              if (collider.hit.ratio != 0.0f) {
-                Vec3 dynMove  = collider.hit.ratio * translation;
-                Vec3 velDelta = dynMove / Timer::TICK_TIME;
-
-                dyn->p        += dynMove;
-                dyn->velocity += velDelta;
-                dyn->flags    &= ~Object::DISABLED_BIT;
-                dyn->flags    |= Object::ENABLE_BIT;
-
-                orbis.reposition(dyn);
-              }
-
-//              if (collider.hit.ratio != 1.0f && collider.overlapsEntity(*dyn, this)) {
-//                if (clazz->flags & EntityClass::CRUSHER) {
-//                  dyn->destroy();
-//                }
-//                else {
-//                  if (clazz->flags & EntityClass::REVERTER) {
-//                    state = OPPOSITE_STATES[isClosing];
-//                    time  = Timer::TICK_TIME;
-//                  }
-//                  else {
-//                    state = moveDist == 0.0f ? CLOSED :
-//                            moveDist == clazz->moveLength ? OPEN :
-//                            END_STATES[isClosing];
-
-//                    time  = 0.0f;
-//                  }
-
-//                  moveDist = origMove;
-//                  offset   = origOffset;
-//                  velocity = Vec3::ZERO;
-//                }
-//              }
-            }
-          }
-
-          Struct::overlappingObjs.clear();
-        }
-      }
-
-      if (moveDist == endMove[isClosing]) {
         state    = END_STATES[isClosing];
         time     = 0.0f;
         velocity = Vec3::ZERO;
       }
-
       break;
     }
   }
@@ -465,7 +391,7 @@ Struct::Struct(const BSP* bsp_, int index_, const Point& p_, Heading heading_)
   transf      = Mat4::translation(p - Point::ORIGIN) ^ ROTATIONS[heading];
   invTransf   = ROTATIONS[4 - heading] ^ Mat4::translation(Point::ORIGIN - p);
 
-  hard_assert(transf.det() != 0.0f);
+  OZ_ASSERT(transf.det() != 0.0f);
 
   Bounds bb   = toAbsoluteCS(*bsp);
   mins        = bb.mins;
@@ -580,7 +506,7 @@ Struct::Struct(const BSP* bsp_, Stream* is)
   }
 
   int nBoundObjects = is->readInt();
-  hard_assert(nBoundObjects <= bsp->nBoundObjects);
+  OZ_ASSERT(nBoundObjects <= bsp->nBoundObjects);
 
   if (bsp->nBoundObjects != 0) {
     boundObjects.reserve(bsp->nBoundObjects, true);

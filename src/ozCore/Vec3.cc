@@ -42,7 +42,7 @@ Vec3 Vec3::slerp(const Vec3& a, const Vec3& b, float t)
   float sine  = Math::sin(angle);
 
   if (sine == 0.0f) {
-    hard_assert(a * b > 0.0f);
+    OZ_ASSERT(a * b > 0.0f);
 
     return a;
   }

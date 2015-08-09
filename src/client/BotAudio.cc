@@ -41,14 +41,14 @@ BotAudio::BotAudio(const Object* obj) :
 
 Audio* BotAudio::create(const Object* obj)
 {
-  hard_assert(obj->flags & Object::BOT_BIT);
+  OZ_ASSERT(obj->flags & Object::BOT_BIT);
 
   return new BotAudio(obj);
 }
 
 void BotAudio::play(const Object* playAt)
 {
-  hard_assert(playAt != nullptr);
+  OZ_ASSERT(playAt != nullptr);
 
   const Bot*  bot    = static_cast<const Bot*>(obj);
   const auto& sounds = obj->clazz->audioSounds;
@@ -59,7 +59,7 @@ void BotAudio::play(const Object* playAt)
 
   // events
   for (const Object::Event& event : obj->events) {
-    hard_assert(event.id < ObjectClass::MAX_SOUNDS);
+    OZ_ASSERT(event.id < ObjectClass::MAX_SOUNDS);
 
     if (event.id >= 0 && sounds[event.id] >= 0 &&
         (!(bot->state & Bot::DEAD_BIT) || event.id == Bot::EVENT_DEATH))
@@ -102,7 +102,7 @@ void BotAudio::play(const Object* playAt)
         }
       }
       else if (recent[Object::EVENT_FRICTING] != 0) {
-        hard_assert(bot->depth >= 0.0f);
+        OZ_ASSERT(bot->depth >= 0.0f);
 
         int sample = bot->depth != 0.0f ? Bot::EVENT_WATER_STEP : Bot::EVENT_STEP;
         if (sounds[sample] >= 0) {

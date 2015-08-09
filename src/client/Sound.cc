@@ -305,7 +305,7 @@ int Sound::musicDecode()
 
       do {
         for (; madWrittenSamples < madFrameSamples; ++madWrittenSamples) {
-          hard_assert(musicOutput <= musicOutputEnd);
+          OZ_ASSERT(musicOutput <= musicOutputEnd);
 
           if (musicOutput == musicOutputEnd) {
             return MUSIC_BUFFER_SIZE;
@@ -628,7 +628,7 @@ int Sound::getCurrentTrack() const
 
 void Sound::playMusic(int track)
 {
-  hard_assert(track >= 0);
+  OZ_ASSERT(track >= 0);
 
   selectedTrack = track;
 }

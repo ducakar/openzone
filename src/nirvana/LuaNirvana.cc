@@ -35,7 +35,7 @@ static LuaNirvana& lua = luaNirvana;
 
 void LuaNirvana::mindCall(const char* functionName, Mind* mind, Bot* self)
 {
-  hard_assert(l_gettop() == 1 && mind != nullptr && self != nullptr);
+  OZ_ASSERT(l_gettop() == 1 && mind != nullptr && self != nullptr);
 
   ms.self     = self;
   ms.obj      = self;
@@ -56,12 +56,12 @@ void LuaNirvana::mindCall(const char* functionName, Mind* mind, Bot* self)
     l_pop(1);
   }
 
-  hard_assert(l_gettop() == 1);
+  OZ_ASSERT(l_gettop() == 1);
 }
 
 void LuaNirvana::registerMind(int botIndex)
 {
-  hard_assert(l_gettop() == 1);
+  OZ_ASSERT(l_gettop() == 1);
 
   l_newtable();
   l_rawseti(1, botIndex);
@@ -69,7 +69,7 @@ void LuaNirvana::registerMind(int botIndex)
 
 void LuaNirvana::unregisterMind(int botIndex)
 {
-  hard_assert(l_gettop() == 1);
+  OZ_ASSERT(l_gettop() == 1);
 
   l_pushnil();
   l_rawseti(1, botIndex);
@@ -77,9 +77,9 @@ void LuaNirvana::unregisterMind(int botIndex)
 
 void LuaNirvana::read(Stream* is)
 {
-  hard_assert(l_gettop() == 1);
-  hard_assert((l_pushnil(), true));
-  hard_assert(!l_next(1));
+  OZ_ASSERT(l_gettop() == 1);
+  OZ_ASSERT((l_pushnil(), true));
+  OZ_ASSERT(!l_next(1));
 
   int index = is->readInt();
 
@@ -94,12 +94,12 @@ void LuaNirvana::read(Stream* is)
 
 void LuaNirvana::write(Stream* os)
 {
-  hard_assert(l_gettop() == 1);
+  OZ_ASSERT(l_gettop() == 1);
 
   l_pushnil();
   while (l_next(1)) {
-    hard_assert(l_type(-2) == LUA_TNUMBER);
-    hard_assert(l_type(-1) == LUA_TTABLE);
+    OZ_ASSERT(l_type(-2) == LUA_TNUMBER);
+    OZ_ASSERT(l_type(-1) == LUA_TTABLE);
 
     os->writeInt(l_toint(-2));
     writeValue(l, os);
@@ -225,7 +225,6 @@ void LuaNirvana::init()
    */
 
   IMPORT_FUNC(ozEntGetState);
-  IGNORE_FUNC(ozEntSetState);
   IMPORT_FUNC(ozEntGetLock);
   IGNORE_FUNC(ozEntSetLock);
   IGNORE_FUNC(ozEntTrigger);
@@ -513,7 +512,7 @@ void LuaNirvana::init()
   loadDir("@lua/common");
   loadDir("@lua/nirvana");
 
-  hard_assert(l_gettop() == 1);
+  OZ_ASSERT(l_gettop() == 1);
 
   Log::printEnd(" OK");
 }
@@ -532,9 +531,9 @@ void LuaNirvana::destroy()
   ms.objects.clear();
   ms.objects.trim();
 
-  hard_assert(l_gettop() == 1);
-  hard_assert((l_pushnil(), true));
-  hard_assert(!l_next(1));
+  OZ_ASSERT(l_gettop() == 1);
+  OZ_ASSERT((l_pushnil(), true));
+  OZ_ASSERT(!l_next(1));
 
   Lua::destroy();
 

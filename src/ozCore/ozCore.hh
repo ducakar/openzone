@@ -39,16 +39,6 @@
 #include "System.hh"
 
 /*
- * Threads.
- */
-#include "SpinLock.hh"
-#include "Mutex.hh"
-#include "Semaphore.hh"
-#include "CallOnce.hh"
-#include "Thread.hh"
-#include "StackTrace.hh"
-
-/*
  * Array utilities.
  */
 #include "Arrays.hh"
@@ -93,10 +83,10 @@
 #include "simd.hh"
 #include "Math.hh"
 #include "Vec3.hh"
-#include "Point.hh"
-#include "Plane.hh"
 #include "Vec4.hh"
+#include "Point.hh"
 #include "Quat.hh"
+#include "Plane.hh"
 #include "Mat3.hh"
 #include "Mat4.hh"
 
@@ -106,6 +96,16 @@
 #include "Endian.hh"
 #include "File.hh"
 #include "Stream.hh"
+
+/*
+ * Threads.
+ */
+#include "SpinLock.hh"
+#include "Mutex.hh"
+#include "Semaphore.hh"
+#include "CallOnce.hh"
+#include "Thread.hh"
+#include "StackTrace.hh"
 
 /*
  * Utilities.

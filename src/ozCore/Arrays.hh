@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "common.hh"
+#include "System.hh"
 
 namespace oz
 {
@@ -87,7 +87,7 @@ private:
     OZ_ALWAYS_INLINE
     ArrayIterator& operator ++ ()
     {
-      hard_assert(elem != past);
+      OZ_ASSERT(elem != past);
 
       ++elem;
       return *this;

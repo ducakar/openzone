@@ -200,7 +200,7 @@ int GL::textureDataFromStream(Stream* is, int bias)
     nMipmaps = 1;
   }
 
-  hard_assert(nMipmaps >= 1);
+  OZ_ASSERT(nMipmaps >= 1);
   bias = min(bias, nMipmaps - 1);
 
   is->seek(4 + 76);
@@ -317,7 +317,7 @@ int GL::textureDataFromStream(Stream* is, int bias)
     }
   };
 
-  hard_assert(is->available() == 0);
+  OZ_ASSERT(is->available() == 0);
   return nMipmaps - bias;
 }
 

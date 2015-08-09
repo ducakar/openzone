@@ -43,7 +43,7 @@ void LuaClient::staticCall(const char* functionName)
   ms.objIndex = 0;
   ms.strIndex = 0;
 
-  hard_assert(l_gettop() == 0);
+  OZ_ASSERT(l_gettop() == 0);
 
   l_getglobal(functionName);
 
@@ -57,7 +57,7 @@ void LuaClient::staticCall(const char* functionName)
 
 bool LuaClient::exec(const char* code) const
 {
-  hard_assert(l_gettop() == 0);
+  OZ_ASSERT(l_gettop() == 0);
 
   ms.obj      = nullptr;
   ms.str      = nullptr;
@@ -136,7 +136,7 @@ void LuaClient::create(const char* mission)
 
 void LuaClient::read(Stream* is)
 {
-  hard_assert(l_gettop() == 0);
+  OZ_ASSERT(l_gettop() == 0);
 
   cs.mission = is->readString();
 
@@ -183,7 +183,7 @@ void LuaClient::read(Stream* is)
 
 void LuaClient::write(Stream* os)
 {
-  hard_assert(l_gettop() == 0);
+  OZ_ASSERT(l_gettop() == 0);
 
   os->writeString(cs.mission);
 
@@ -197,7 +197,7 @@ void LuaClient::write(Stream* os)
 #else
   while (l_next(LUA_GLOBALSINDEX) != 0) {
 #endif
-    hard_assert(l_type(-2) == LUA_TSTRING);
+    OZ_ASSERT(l_type(-2) == LUA_TSTRING);
 
     const char* name = l_tostring(-2);
     if (String::beginsWith(name, "oz_")) {
@@ -662,7 +662,7 @@ void LuaClient::init()
   loadDir("@lua/common");
   loadDir("@lua/client");
 
-  hard_assert(l_gettop() == 0);
+  OZ_ASSERT(l_gettop() == 0);
 
   Log::printEnd(" OK");
 }

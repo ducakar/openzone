@@ -233,7 +233,7 @@ void Compiler::disable(Capability cap)
 
 void Compiler::beginModel()
 {
-  hard_assert(environment == NONE);
+  OZ_ASSERT(environment == NONE);
 
   positions.clear();
   positions.trim();
@@ -279,7 +279,7 @@ void Compiler::beginModel()
 
 void Compiler::endModel()
 {
-  hard_assert(environment == MODEL);
+  OZ_ASSERT(environment == MODEL);
   environment = NONE;
 
   calculateBounds(&root, Mat4::ID);
@@ -287,14 +287,14 @@ void Compiler::endModel()
 
 void Compiler::shader(const char* shaderName_)
 {
-  hard_assert(environment == MODEL);
+  OZ_ASSERT(environment == MODEL);
 
   shaderName = shaderName_;
 }
 
 void Compiler::anim(int nFrames_, int nFramePositions_)
 {
-  hard_assert(environment == MODEL);
+  OZ_ASSERT(environment == MODEL);
 
   if (nFrames <= 1) {
     nFrames         = 0;
@@ -310,8 +310,8 @@ void Compiler::anim(int nFrames_, int nFramePositions_)
 
 void Compiler::animPositions(const float* positions_)
 {
-  hard_assert(environment == MODEL);
-  hard_assert(nFrames != 0);
+  OZ_ASSERT(environment == MODEL);
+  OZ_ASSERT(nFrames != 0);
 
   for (int i = 0; i < positions.length(); ++i) {
     positions[i].x = *positions_++;
@@ -322,8 +322,8 @@ void Compiler::animPositions(const float* positions_)
 
 void Compiler::animNormals(const float* normals_)
 {
-  hard_assert(environment == MODEL);
-  hard_assert(nFrames != 0);
+  OZ_ASSERT(environment == MODEL);
+  OZ_ASSERT(nFrames != 0);
 
   for (int i = 0; i < normals.length(); ++i) {
     normals[i].x = *normals_++;
@@ -334,7 +334,7 @@ void Compiler::animNormals(const float* normals_)
 
 void Compiler::beginNode(const char* name)
 {
-  hard_assert(environment == MODEL);
+  OZ_ASSERT(environment == MODEL);
 
   Node* newNode = new Node(name, node);
 
@@ -344,42 +344,42 @@ void Compiler::beginNode(const char* name)
 
 void Compiler::endNode()
 {
-  hard_assert(environment == MODEL && node != &root);
+  OZ_ASSERT(environment == MODEL && node != &root);
 
   node = node->parent;
 }
 
 void Compiler::transform(const Mat4& t)
 {
-  hard_assert(environment == MODEL && node != &root);
+  OZ_ASSERT(environment == MODEL && node != &root);
 
   node->transf = t;
 }
 
 void Compiler::includeInBounds(bool value)
 {
-  hard_assert(environment == MODEL && node != &root);
+  OZ_ASSERT(environment == MODEL && node != &root);
 
   node->includeInBounds = value;
 }
 
 void Compiler::bindMesh(int id)
 {
-  hard_assert(environment == MODEL && node != &root);
+  OZ_ASSERT(environment == MODEL && node != &root);
 
   node->mesh = id;
 }
 
 void Compiler::bindLight(int id)
 {
-  hard_assert(environment == MODEL && node != &root);
+  OZ_ASSERT(environment == MODEL && node != &root);
 
   lights[id].node = node;
 }
 
 void Compiler::beginMesh()
 {
-  hard_assert(environment == MODEL);
+  OZ_ASSERT(environment == MODEL);
   environment = MESH;
 
   mesh.flags     = Model::SOLID_BIT;
@@ -389,7 +389,7 @@ void Compiler::beginMesh()
 
 int Compiler::endMesh()
 {
-  hard_assert(environment == MESH);
+  OZ_ASSERT(environment == MESH);
   environment = MODEL;
 
   meshes.add(mesh);
@@ -400,7 +400,7 @@ int Compiler::endMesh()
 
 void Compiler::texture(const char* texture)
 {
-  hard_assert(environment == MESH);
+  OZ_ASSERT(environment == MESH);
 
   mesh.texture = texture;
 }
@@ -412,14 +412,14 @@ void Compiler::shininess(float exponent)
 
 void Compiler::blend(bool doBlend)
 {
-  hard_assert(environment == MESH);
+  OZ_ASSERT(environment == MESH);
 
   mesh.flags = doBlend ? Model::ALPHA_BIT : Model::SOLID_BIT;
 }
 
 void Compiler::begin(Compiler::PolyMode mode_)
 {
-  hard_assert(environment == MESH);
+  OZ_ASSERT(environment == MESH);
   environment = POLY;
 
   vert.pos         = Point::ORIGIN;
@@ -441,7 +441,7 @@ void Compiler::begin(Compiler::PolyMode mode_)
 
 void Compiler::end()
 {
-  hard_assert(environment == POLY);
+  OZ_ASSERT(environment == POLY);
   environment = MESH;
 
   if (caps & CLOCKWISE) {
@@ -450,13 +450,13 @@ void Compiler::end()
 
   switch (mode) {
     case TRIANGLES: {
-      hard_assert(vertNum >= 3 && vertNum % 3 == 0);
+      OZ_ASSERT(vertNum >= 3 && vertNum % 3 == 0);
 
       mesh.indices.takeAll(polyIndices.begin(), polyIndices.length());
       break;
     }
     case POLYGON: {
-      hard_assert(vertNum >= 3);
+      OZ_ASSERT(vertNum >= 3);
 
       int last[2] = { 0, 1 };
       int top     = vertNum - 1;
@@ -487,8 +487,8 @@ void Compiler::end()
 
 void Compiler::boneWeight(int which, const char* name, float weight)
 {
-  hard_assert(environment == POLY);
-  hard_assert(which == 0 || which == 1);
+  OZ_ASSERT(environment == POLY);
+  OZ_ASSERT(which == 0 || which == 1);
 
   vert.boneName[which] = name;
   vert.weight[which]   = weight;
@@ -496,7 +496,7 @@ void Compiler::boneWeight(int which, const char* name, float weight)
 
 void Compiler::texCoord(float u, float v)
 {
-  hard_assert(environment == POLY);
+  OZ_ASSERT(environment == POLY);
 
   vert.texCoord[0] = u;
   vert.texCoord[1] = v;
@@ -509,7 +509,7 @@ void Compiler::texCoord(const float* v)
 
 void Compiler::normal(float x, float y, float z)
 {
-  hard_assert(environment == POLY);
+  OZ_ASSERT(environment == POLY);
 
   vert.normal.x = x;
   vert.normal.y = y;
@@ -523,8 +523,8 @@ void Compiler::normal(const float* v)
 
 void Compiler::vertex(float x, float y, float z)
 {
-  hard_assert(environment == POLY);
-  hard_assert(nFrames == 0 || (y == 0.0f && z == 0.0f));
+  OZ_ASSERT(environment == POLY);
+  OZ_ASSERT(nFrames == 0 || (y == 0.0f && z == 0.0f));
 
   vert.pos.x = x;
   vert.pos.y = y;
@@ -554,17 +554,17 @@ void Compiler::vertex(const float* v)
 
 void Compiler::animVertex(int i)
 {
-  hard_assert(environment == POLY);
-  hard_assert(nFrames > 1 && uint(i) < uint(positions.length()));
+  OZ_ASSERT(environment == POLY);
+  OZ_ASSERT(nFrames > 1 && uint(i) < uint(positions.length()));
 
-  hard_assert(normals[i].fastN() > 0.9f);
+  OZ_ASSERT(normals[i].fastN() > 0.9f);
   normal(normals[i]);
   vertex(float(i), 0.0f, 0.0f);
 }
 
 void Compiler::beginLight(Light::Type type)
 {
-  hard_assert(environment == MODEL);
+  OZ_ASSERT(environment == MODEL);
   environment = LIGHT;
 
   light.type = type;
@@ -572,7 +572,7 @@ void Compiler::beginLight(Light::Type type)
 
 int Compiler::endLight()
 {
-  hard_assert(environment == LIGHT);
+  OZ_ASSERT(environment == LIGHT);
   environment = MODEL;
 
   lights.add(light);
@@ -581,7 +581,7 @@ int Compiler::endLight()
 
 void Compiler::position(float x, float y, float z)
 {
-  hard_assert(environment == LIGHT);
+  OZ_ASSERT(environment == LIGHT);
 
   light.pos.x = x;
   light.pos.y = y;
@@ -590,7 +590,7 @@ void Compiler::position(float x, float y, float z)
 
 void Compiler::direction(float x, float y, float z)
 {
-  hard_assert(environment == LIGHT);
+  OZ_ASSERT(environment == LIGHT);
 
   light.dir.x = x;
   light.dir.y = y;
@@ -599,7 +599,7 @@ void Compiler::direction(float x, float y, float z)
 
 void Compiler::colour(float r, float g, float b)
 {
-  hard_assert(environment == LIGHT);
+  OZ_ASSERT(environment == LIGHT);
 
   light.colour.x = r;
   light.colour.y = g;
@@ -608,7 +608,7 @@ void Compiler::colour(float r, float g, float b)
 
 void Compiler::attenuation(float constant, float linear, float quadratic)
 {
-  hard_assert(environment == LIGHT);
+  OZ_ASSERT(environment == LIGHT);
 
   light.attenuation[0] = constant;
   light.attenuation[1] = linear;
@@ -617,7 +617,7 @@ void Compiler::attenuation(float constant, float linear, float quadratic)
 
 void Compiler::coneAngles(float inner, float outer)
 {
-  hard_assert(environment == LIGHT);
+  OZ_ASSERT(environment == LIGHT);
 
   light.coneCoeff[0] = Math::tan(inner / 2.0f);
   light.coneCoeff[1] = Math::tan(outer / 2.0f);
@@ -625,7 +625,7 @@ void Compiler::coneAngles(float inner, float outer)
 
 void Compiler::beginAnimation()
 {
-  hard_assert(environment == MODEL);
+  OZ_ASSERT(environment == MODEL);
   environment = ANIMATION;
 
   animation.channels.clear();
@@ -633,7 +633,7 @@ void Compiler::beginAnimation()
 
 void Compiler::endAnimation()
 {
-  hard_assert(environment == ANIMATION);
+  OZ_ASSERT(environment == ANIMATION);
   environment = MODEL;
 
   animations.add(static_cast<Animation&&>(animation));
@@ -641,7 +641,7 @@ void Compiler::endAnimation()
 
 void Compiler::beginChannel()
 {
-  hard_assert(environment == ANIMATION);
+  OZ_ASSERT(environment == ANIMATION);
   environment = CHANNEL;
 
   channel.positionKeys.clear();
@@ -651,7 +651,7 @@ void Compiler::beginChannel()
 
 void Compiler::endChannel()
 {
-  hard_assert(environment == CHANNEL);
+  OZ_ASSERT(environment == CHANNEL);
   environment = ANIMATION;
 
   animation.channels.add(static_cast<Animation::Channel&&>(channel));
@@ -659,30 +659,30 @@ void Compiler::endChannel()
 
 void Compiler::positionKey(const Point& pos, float time)
 {
-  hard_assert(environment == CHANNEL);
+  OZ_ASSERT(environment == CHANNEL);
 
   channel.positionKeys.add(Animation::PositionKey{ pos, time });
 }
 
 void Compiler::rotationKey(const Quat& rot, float time)
 {
-  hard_assert(environment == CHANNEL);
+  OZ_ASSERT(environment == CHANNEL);
 
   channel.rotationKeys.add(Animation::RotationKey{ rot, time });
 }
 
 void Compiler::scalingKey(const Vec3& scale, float time)
 {
-  hard_assert(environment == CHANNEL);
+  OZ_ASSERT(environment == CHANNEL);
 
   channel.scalingKeys.add(Animation::ScalingKey{ scale, time });
 }
 
 void Compiler::writeModel(Stream* os, bool globalTextures)
 {
-  hard_assert(environment == NONE);
-  hard_assert(meshes.length() > 0 && vertices.length() > 0);
-  hard_assert(positions.length() == normals.length());
+  OZ_ASSERT(environment == NONE);
+  OZ_ASSERT(meshes.length() > 0 && vertices.length() > 0);
+  OZ_ASSERT(positions.length() == normals.length());
 
   Log::print("Writing mesh ...");
 
@@ -802,8 +802,8 @@ void Compiler::writeModel(Stream* os, bool globalTextures)
   }
 
   if (nFrames != 0) {
-    hard_assert(positions.length() == nFrames * nFramePositions);
-    hard_assert(normals.length() == nFrames * nFramePositions);
+    OZ_ASSERT(positions.length() == nFrames * nFramePositions);
+    OZ_ASSERT(normals.length() == nFrames * nFramePositions);
 
     for (const Point& position : positions) {
       os->writePoint(position);
@@ -823,7 +823,7 @@ void Compiler::writeModel(Stream* os, bool globalTextures)
   }
 
   for (const Light& light : lights) {
-    hard_assert(nodes.index(light.node) != -1);
+    OZ_ASSERT(nodes.index(light.node) != -1);
 
     os->writeInt(nodes.index(light.node));
     os->writeInt(light.type);
@@ -887,7 +887,7 @@ void Compiler::writeModel(Stream* os, bool globalTextures)
 
 void Compiler::buildModelTextures(const File& destDir)
 {
-  hard_assert(environment == NONE);
+  OZ_ASSERT(environment == NONE);
 
   List<String> textures;
 
@@ -937,11 +937,11 @@ void Compiler::destroy()
   polyIndices.clear();
   polyIndices.trim();
 
-  hard_assert(channel.positionKeys.capacity() == 0);
-  hard_assert(channel.rotationKeys.capacity() == 0);
-  hard_assert(channel.scalingKeys.capacity() == 0);
+  OZ_ASSERT(channel.positionKeys.capacity() == 0);
+  OZ_ASSERT(channel.rotationKeys.capacity() == 0);
+  OZ_ASSERT(channel.scalingKeys.capacity() == 0);
 
-  hard_assert(animation.channels.capacity() == 0);
+  OZ_ASSERT(animation.channels.capacity() == 0);
 }
 
 Compiler compiler;

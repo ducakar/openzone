@@ -26,9 +26,7 @@
 
 #include "Json.hh"
 
-#include "List.hh"
 #include "SList.hh"
-#include "Map.hh"
 #include "Log.hh"
 
 #define OZ_PARSE_ERROR(charBias, message) \
@@ -98,7 +96,7 @@ struct Json::Parser
   OZ_INTERNAL
   void backChar()
   {
-    hard_assert(line != oldLine || column != oldColumn);
+    OZ_ASSERT(line != oldLine || column != oldColumn);
 
     is->seek(is->tell() - 1);
 

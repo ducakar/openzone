@@ -171,7 +171,7 @@ public:
       }
     }
 
-    hard_assert(botObj == nullptr || (botObj->flags & Object::BOT_BIT));
+    OZ_ASSERT(botObj == nullptr || (botObj->flags & Object::BOT_BIT));
   }
 
   void rotateTo(const Quat& q)

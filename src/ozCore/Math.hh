@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "common.hh"
+#include "System.hh"
 
 namespace oz
 {
@@ -133,7 +133,7 @@ public:
   OZ_ALWAYS_INLINE
   static float fmod(float x, float y)
   {
-    hard_assert(y != 0.0f);
+    OZ_ASSERT(y != 0.0f);
 
     return __builtin_fmodf(x, y);
   }
@@ -153,7 +153,7 @@ public:
   OZ_ALWAYS_INLINE
   static float sqrt(float x)
   {
-    hard_assert(x >= 0.0f);
+    OZ_ASSERT(x >= 0.0f);
 
     return __builtin_sqrtf(x);
   }
@@ -195,7 +195,7 @@ public:
   OZ_ALWAYS_INLINE
   static float log(float x)
   {
-    hard_assert(x > 0.0f);
+    OZ_ASSERT(x > 0.0f);
 
     return __builtin_logf(x);
   }
@@ -206,7 +206,7 @@ public:
   OZ_ALWAYS_INLINE
   static float log2(float x)
   {
-    hard_assert(x > 0.0f);
+    OZ_ASSERT(x > 0.0f);
 
     return __builtin_log2f(x);
   }
@@ -217,7 +217,7 @@ public:
   OZ_ALWAYS_INLINE
   static float log10(float x)
   {
-    hard_assert(x > 0.0f);
+    OZ_ASSERT(x > 0.0f);
 
     return __builtin_log10f(x);
   }
@@ -228,7 +228,7 @@ public:
   OZ_ALWAYS_INLINE
   static float pow(float x, float y)
   {
-    hard_assert(x > 0.0f || (x == 0.0f && y >= 0.0f));
+    OZ_ASSERT(x > 0.0f || (x == 0.0f && y >= 0.0f));
 
     return __builtin_powf(x, y);
   }
@@ -278,7 +278,7 @@ public:
   OZ_ALWAYS_INLINE
   static float asin(float x)
   {
-    hard_assert(-1.0f <= x && x <= 1.0f);
+    OZ_ASSERT(-1.0f <= x && x <= 1.0f);
 
     return __builtin_asinf(x);
   }
@@ -289,7 +289,7 @@ public:
   OZ_ALWAYS_INLINE
   static float acos(float x)
   {
-    hard_assert(-1.0f <= x && x <= 1.0f);
+    OZ_ASSERT(-1.0f <= x && x <= 1.0f);
 
     return __builtin_acosf(x);
   }
@@ -375,7 +375,7 @@ public:
   OZ_ALWAYS_INLINE
   static float mod(float x, float y)
   {
-    hard_assert(y > 0.0f);
+    OZ_ASSERT(y > 0.0f);
 
     return x - __builtin_floorf(x / y) * y;
   }
@@ -422,7 +422,7 @@ public:
   OZ_ALWAYS_INLINE
   static float fastSqrt(float x)
   {
-    hard_assert(x >= 0.0f);
+    OZ_ASSERT(x >= 0.0f);
 
     FloatToBits fb = { x };
 
@@ -436,7 +436,7 @@ public:
   OZ_ALWAYS_INLINE
   static float fastInvSqrt(float x)
   {
-    hard_assert(x > 0.0f);
+    OZ_ASSERT(x > 0.0f);
 
     FloatToBits fb = { x };
 

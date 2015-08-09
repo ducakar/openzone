@@ -66,7 +66,7 @@ int Orbis::allocStrIndex() const
   {
     if (index == lastStructIndex) {
       // We have wrapped around => no slots available.
-      soft_assert(false);
+      OZ_ASSERT(false);
       return -1;
     }
 
@@ -86,7 +86,7 @@ int Orbis::allocObjIndex() const
   {
     if (index == lastObjectIndex) {
       // We have wrapped around => no slots available.
-      soft_assert(false);
+      OZ_ASSERT(false);
       return -1;
     }
 
@@ -104,7 +104,7 @@ int Orbis::allocFragIndex() const
   while (frags[1 + index] != nullptr || pendingFrags[0].get(index) || pendingFrags[1].get(index)) {
     if (index == lastFragIndex) {
       // We have wrapped around => no slots available.
-      soft_assert(false);
+      OZ_ASSERT(false);
       return -1;
     }
 
@@ -122,7 +122,7 @@ bool Orbis::position(Struct* str)
   for (int x = span.minX; x <= span.maxX; ++x) {
     for (int y = span.minY; y <= span.maxY; ++y) {
       if (cells[x][y].structs.length() == cells[x][y].structs.capacity()) {
-        soft_assert(false);
+        OZ_ASSERT(false);
         return false;
       }
     }
@@ -130,7 +130,7 @@ bool Orbis::position(Struct* str)
 
   for (int x = span.minX; x <= span.maxX; ++x) {
     for (int y = span.minY; y <= span.maxY; ++y) {
-      hard_assert(!cells[x][y].structs.contains(short(str->index)));
+      OZ_ASSERT(!cells[x][y].structs.contains(short(str->index)));
 
       cells[x][y].structs.add(short(str->index));
     }
@@ -145,7 +145,7 @@ void Orbis::unposition(Struct* str)
 
   for (int x = span.minX; x <= span.maxX; ++x) {
     for (int y = span.minY; y <= span.maxY; ++y) {
-      hard_assert(cells[x][y].structs.contains(short(str->index)));
+      OZ_ASSERT(cells[x][y].structs.contains(short(str->index)));
 
       cells[x][y].structs.excludeUnordered(short(str->index));
     }
@@ -154,7 +154,7 @@ void Orbis::unposition(Struct* str)
 
 void Orbis::position(Object* obj)
 {
-  hard_assert(obj->cell == nullptr);
+  OZ_ASSERT(obj->cell == nullptr);
 
   Cell* cell = getCell(obj->p);
 
@@ -170,7 +170,7 @@ void Orbis::position(Object* obj)
 
 void Orbis::unposition(Object* obj)
 {
-  hard_assert(obj->cell != nullptr);
+  OZ_ASSERT(obj->cell != nullptr);
 
   Cell* cell = obj->cell;
 
@@ -185,7 +185,7 @@ void Orbis::unposition(Object* obj)
 
 void Orbis::position(Frag* frag)
 {
-  hard_assert(frag->cell == nullptr);
+  OZ_ASSERT(frag->cell == nullptr);
 
   Cell* cell = getCell(frag->p);
 
@@ -201,7 +201,7 @@ void Orbis::position(Frag* frag)
 
 void Orbis::unposition(Frag* frag)
 {
-  hard_assert(frag->cell != nullptr);
+  OZ_ASSERT(frag->cell != nullptr);
 
   Cell* cell = frag->cell;
 
@@ -259,7 +259,7 @@ Frag* Orbis::add(const FragPool* pool, const Point& p, const Vec3& velocity)
 
 void Orbis::remove(Struct* str)
 {
-  hard_assert(str->index >= 0);
+  OZ_ASSERT(str->index >= 0);
 
   pendingStructs[freeing].set(str->index);
   structs[1 + str->index] = nullptr;
@@ -268,7 +268,7 @@ void Orbis::remove(Struct* str)
 
 void Orbis::remove(Object* obj)
 {
-  hard_assert(obj->index >= 0 && obj->cell == nullptr);
+  OZ_ASSERT(obj->index >= 0 && obj->cell == nullptr);
 
   if (obj->flags & Object::LUA_BIT) {
     luaMatrix.unregisterObject(obj->index);
@@ -281,7 +281,7 @@ void Orbis::remove(Object* obj)
 
 void Orbis::remove(Frag* frag)
 {
-  hard_assert(frag->index >= 0 && frag->cell == nullptr);
+  OZ_ASSERT(frag->index >= 0 && frag->cell == nullptr);
 
   pendingFrags[freeing].set(frag->index);
   frags[1 + frag->index] = nullptr;
@@ -290,7 +290,7 @@ void Orbis::remove(Frag* frag)
 
 void Orbis::reposition(Object* obj)
 {
-  hard_assert(obj->cell != nullptr);
+  OZ_ASSERT(obj->cell != nullptr);
 
   Cell* oldCell = obj->cell;
   Cell* newCell = getCell(obj->p);
@@ -315,7 +315,7 @@ void Orbis::reposition(Object* obj)
 
 void Orbis::reposition(Frag* frag)
 {
-  hard_assert(frag->cell != nullptr);
+  OZ_ASSERT(frag->cell != nullptr);
 
   Cell* oldCell = frag->cell;
   Cell* newCell = getCell(frag->p);
@@ -612,7 +612,7 @@ void Orbis::unload()
     }
   }
 
-  hard_assert(structs[0] == nullptr && objects[0] == nullptr && frags[0] == nullptr);
+  OZ_ASSERT(structs[0] == nullptr && objects[0] == nullptr && frags[0] == nullptr);
 
   Arrays::free(&frags[1], MAX_FRAGS);
   Arrays::free(&objects[1], MAX_OBJECTS);
@@ -630,7 +630,7 @@ void Orbis::unload()
   Bot::pool.free();
   Vehicle::pool.free();
 
-  hard_assert(Struct::overlappingObjs.isEmpty());
+  OZ_ASSERT(Struct::overlappingObjs.isEmpty());
 
   Struct::overlappingObjs.trim();
   Struct::pool.free();

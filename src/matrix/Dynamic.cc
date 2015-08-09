@@ -57,7 +57,7 @@ void Dynamic::onDestroy()
 
 bool Dynamic::rotate(int steps)
 {
-  hard_assert(steps >= 0);
+  OZ_ASSERT(steps >= 0);
 
   int heading = flags & Object::HEADING_MASK;
 

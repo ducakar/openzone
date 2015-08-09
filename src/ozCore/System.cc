@@ -26,15 +26,15 @@
 
 #include "System.hh"
 
-#include "StackTrace.hh"
-#include "Math.hh"
 #include "SpinLock.hh"
 #include "Log.hh"
 #include "Pepper.hh"
 
+#include <alloca.h>
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
 #if defined(__ANDROID__)
 # include <android/log.h>
@@ -62,42 +62,6 @@
 
 namespace oz
 {
-
-static const char* const SIGNALS[][2] =
-{
-  { "SIG???",    "[invalid signal number]"    },
-  { "SIGHUP",    "Hangup"                     }, //  1
-  { "SIGINT",    "Interrupt"                  }, //  2
-  { "SIGQUIT",   "Quit"                       }, //  3
-  { "SIGILL",    "Illegal instruction"        }, //  4
-  { "SIGTRAP",   "Trace trap"                 }, //  5
-  { "SIGABRT",   "Abort"                      }, //  6
-  { "SIGBUS",    "BUS error"                  }, //  7
-  { "SIGFPE",    "Floating-point exception"   }, //  8
-  { "SIGKILL",   "Kill, unblockable"          }, //  9
-  { "SIGUSR1",   "User-defined signal 1"      }, // 10
-  { "SIGSEGV",   "Segmentation violation"     }, // 11
-  { "SIGUSR2",   "User-defined signal 2"      }, // 12
-  { "SIGPIPE",   "Broken pipe"                }, // 13
-  { "SIGALRM",   "Alarm clock"                }, // 14
-  { "SIGTERM",   "Termination"                }, // 15
-  { "SIGSTKFLT", "Stack fault"                }, // 16
-  { "SIGCHLD",   "Child status has changed"   }, // 17
-  { "SIGCONT",   "Continue"                   }, // 18
-  { "SIGSTOP",   "Stop, unblockable"          }, // 19
-  { "SIGTSTP",   "Keyboard stop"              }, // 20
-  { "SIGTTIN",   "Background read from tty"   }, // 21
-  { "SIGTTOU",   "Background write to tty"    }, // 22
-  { "SIGURG",    "Urgent condition on socket" }, // 23
-  { "SIGXCPU",   "CPU limit exceeded"         }, // 24
-  { "SIGXFSZ",   "File size limit exceeded"   }, // 25
-  { "SIGVTALRM", "Virtual alarm clock"        }, // 26
-  { "SIGPROF",   "Profiling alarm clock"      }, // 27
-  { "SIGWINCH",  "Window size change"         }, // 28
-  { "SIGIO",     "I/O now possible"           }, // 29
-  { "SIGPWR",    "Power failure restart"      }, // 30
-  { "SIGSYS",    "Bad system call"            }  // 31
-};
 
 static const float BELL_TIME       = 0.30f;
 static const float BELL_FREQUENCY  = 1000.0f;
@@ -163,11 +127,13 @@ static void abort(bool doHalt);
 OZ_NORETURN
 static void signalHandler(int sigNum)
 {
-  int index = uint(sigNum) >= uint(Arrays::length(SIGNALS)) ? 0 : sigNum;
-
   Log::verboseMode = false;
 
-  Log::println("Signal %d %s (%s)", sigNum, SIGNALS[index][0], SIGNALS[index][1]);
+#if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L
+  Log::println("Signal %d (%s)", sigNum, strsignal(sigNum));
+#else
+  Log::println("Signal %d", sigNum);
+#endif
   Log::printTrace(StackTrace::current(1));
   Log::println();
 
@@ -504,39 +470,10 @@ void System::bell()
   bellLock.unlock();
 }
 
-void System::warning(const char* function, const char* file, int line, int nSkippedFrames,
-                     const char* msg, ...)
-{
-  trap();
-  bell();
-
-  va_list ap;
-  va_start(ap, msg);
-
-#ifdef __ANDROID__
-  __android_log_vprint(ANDROID_LOG_WARN, "oz", msg, ap);
-  __android_log_print(ANDROID_LOG_WARN, "oz", "  in %s\n  at %s:%d\n", function, file, line);
-#endif
-
-  bool verboseMode = Log::verboseMode;
-  Log::verboseMode = false;
-
-  Log::putsRaw("\n\n");
-  Log::vprintRaw(msg, ap);
-  Log::printRaw("\n  in %s\n  at %s:%d\n", function, file, line);
-
-  va_end(ap);
-
-  Log::printTrace(StackTrace::current(nSkippedFrames + 1));
-  Log::println();
-  Log::verboseMode = verboseMode;
-}
-
 void System::error(const char* function, const char* file, int line, int nSkippedFrames,
                    const char* msg, ...)
 {
   trap();
-  bell();
 
   va_list ap;
   va_start(ap, msg);
@@ -550,21 +487,15 @@ void System::error(const char* function, const char* file, int line, int nSkippe
 
   Log::putsRaw("\n\n");
   Log::vprintRaw(msg, ap);
-  Log::printRaw("\n  in %s\n  at %s:%d\n", function, file, line);
+  Log::printRaw("\n  at `%s' in %s:%d\n", function, file, line);
 
   va_end(ap);
 
   Log::printTrace(StackTrace::current(nSkippedFrames + 1));
   Log::println();
 
+  bell();
   abort(initFlags & HALT_BIT);
-}
-
-void System::threadInit()
-{
-  if (initFlags & HANDLER_BIT) {
-    catchSignals();
-  }
 }
 
 void System::init(int flags, CrashHandler* crashHandler_)
@@ -573,7 +504,10 @@ void System::init(int flags, CrashHandler* crashHandler_)
   crashHandler = crashHandler_;
 
   atexit(waitBell);
-  threadInit();
+
+  if (initFlags & HANDLER_BIT) {
+    catchSignals();
+  }
 
 #ifdef __native_client__
   PSInterfaceInit();

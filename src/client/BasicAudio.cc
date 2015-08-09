@@ -43,7 +43,7 @@ Audio* BasicAudio::create(const Object* obj)
 
 void BasicAudio::play(const Object* playAt)
 {
-  hard_assert(playAt != nullptr);
+  OZ_ASSERT(playAt != nullptr);
 
   const auto& sounds = obj->clazz->audioSounds;
 
@@ -53,7 +53,7 @@ void BasicAudio::play(const Object* playAt)
 
   // events
   for (const Object::Event& event : obj->events) {
-    hard_assert(event.id < ObjectClass::MAX_SOUNDS);
+    OZ_ASSERT(event.id < ObjectClass::MAX_SOUNDS);
 
     if (event.id >= 0 && sounds[event.id] >= 0) {
       if (event.intensity < 0.0f) {

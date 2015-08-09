@@ -49,7 +49,7 @@ Pool<Object>        Object::pool(16384);
 
 void Object::onDestroy()
 {
-  hard_assert(cell != nullptr);
+  OZ_ASSERT(cell != nullptr);
 
   if (!clazz->onDestroy.isEmpty()) {
     luaMatrix.objectCall(clazz->onDestroy, this);
@@ -74,14 +74,14 @@ void Object::onDestroy()
 
 bool Object::onUse(Bot* user)
 {
-  hard_assert(!clazz->onUse.isEmpty());
+  OZ_ASSERT(!clazz->onUse.isEmpty());
 
   return luaMatrix.objectCall(clazz->onUse, this, user);
 }
 
 void Object::onUpdate()
 {
-  hard_assert(!clazz->onUpdate.isEmpty());
+  OZ_ASSERT(!clazz->onUpdate.isEmpty());
 
   luaMatrix.objectCall(clazz->onUpdate, this);
 }
@@ -93,7 +93,7 @@ String Object::getTitle() const
 
 float Object::getStatus() const
 {
-  hard_assert(!clazz->getStatus.isEmpty());
+  OZ_ASSERT(!clazz->getStatus.isEmpty());
 
   luaMatrix.objectCall(clazz->getStatus, const_cast<Object*>(this));
   return luaMatrix.objectStatus;
@@ -101,8 +101,8 @@ float Object::getStatus() const
 
 Object::~Object()
 {
-  hard_assert(dim.x <= REAL_MAX_DIM);
-  hard_assert(dim.y <= REAL_MAX_DIM);
+  OZ_ASSERT(dim.x <= REAL_MAX_DIM);
+  OZ_ASSERT(dim.y <= REAL_MAX_DIM);
 
   events.free();
 }
@@ -244,7 +244,7 @@ Json Object::write() const
       break;
     }
     default: {
-      hard_assert(false);
+      OZ_ASSERT(false);
       break;
     }
   }

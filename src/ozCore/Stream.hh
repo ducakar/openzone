@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "Bitset.hh"
 #include "String.hh"
 #include "Mat4.hh"
 #include "Endian.hh"
@@ -154,7 +153,7 @@ public:
   OZ_ALWAYS_INLINE
   int capacity() const
   {
-    hard_assert(streamPos <= streamEnd);
+    OZ_ASSERT(streamPos <= streamEnd);
 
     return int(streamEnd - streamBegin);
   }
@@ -165,7 +164,7 @@ public:
   OZ_ALWAYS_INLINE
   int available() const
   {
-    hard_assert(streamPos <= streamEnd);
+    OZ_ASSERT(streamPos <= streamEnd);
 
     return int(streamEnd - streamPos);
   }
@@ -194,7 +193,7 @@ public:
   OZ_ALWAYS_INLINE
   const char& operator [] (int i) const
   {
-    hard_assert(uint(i) < uint(streamEnd - streamBegin));
+    OZ_ASSERT(uint(i) < uint(streamEnd - streamBegin));
 
     return streamBegin[i];
   }
@@ -205,7 +204,7 @@ public:
   OZ_ALWAYS_INLINE
   char& operator [] (int i)
   {
-    hard_assert(uint(i) < uint(streamEnd - streamBegin));
+    OZ_ASSERT(uint(i) < uint(streamEnd - streamBegin));
 
     return streamBegin[i];
   }
@@ -216,7 +215,7 @@ public:
   OZ_ALWAYS_INLINE
   int tell() const
   {
-    hard_assert(streamPos <= streamEnd);
+    OZ_ASSERT(streamPos <= streamEnd);
 
     return int(streamPos - streamBegin);
   }

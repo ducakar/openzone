@@ -52,7 +52,6 @@ add_library(ozCore
   Alloc.cc
   Bitset.cc
   CallOnce.cc
-  common.cc
   EnumMap.cc
   File.cc
   Gettext.cc

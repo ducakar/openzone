@@ -132,7 +132,7 @@ bool Bitset::isNoneSet() const
 
 bool Bitset::isSubset(const Bitset& b) const
 {
-  hard_assert(size == b.size);
+  OZ_ASSERT(size == b.size);
 
   for (int i = 0; i < size; ++i) {
     if ((data[i] & ~b.data[i]) != 0) {
@@ -155,7 +155,7 @@ Bitset Bitset::operator ~ () const
 
 Bitset Bitset::operator & (const Bitset& b) const
 {
-  hard_assert(size == b.size);
+  OZ_ASSERT(size == b.size);
 
   Bitset r = *this;
   return r &= b;
@@ -163,7 +163,7 @@ Bitset Bitset::operator & (const Bitset& b) const
 
 Bitset Bitset::operator | (const Bitset& b) const
 {
-  hard_assert(size == b.size);
+  OZ_ASSERT(size == b.size);
 
   Bitset r = *this;
   return r |= b;
@@ -171,7 +171,7 @@ Bitset Bitset::operator | (const Bitset& b) const
 
 Bitset Bitset::operator ^ (const Bitset& b) const
 {
-  hard_assert(size == b.size);
+  OZ_ASSERT(size == b.size);
 
   Bitset r = *this;
   return r ^= b;
@@ -212,7 +212,7 @@ Bitset& Bitset::operator ^= (const Bitset& b)
 
 void Bitset::resize(int nBits)
 {
-  hard_assert(nBits >= 0);
+  OZ_ASSERT(nBits >= 0);
 
   int nUnits = (nBits + PORT_BITS - 1) / PORT_BITS * (PORT_BITS / UNIT_BITS);
 

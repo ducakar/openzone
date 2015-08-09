@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Vec4.hh"
+#include "Vec3.hh"
 
 namespace oz
 {
@@ -106,7 +106,7 @@ public:
    */
   Quat operator ~ () const
   {
-    hard_assert(x*x + y*y + z*z + w*w > 0.0f);
+    OZ_ASSERT(x*x + y*y + z*z + w*w > 0.0f);
 
 #ifdef OZ_SIMD
     float4 k = vInvSqrt(vDot(f4, f4));
@@ -122,7 +122,7 @@ public:
    */
   Quat fastUnit() const
   {
-    hard_assert(x*x + y*y + z*z + w*w > 0.0f);
+    OZ_ASSERT(x*x + y*y + z*z + w*w > 0.0f);
 
 #ifdef OZ_SIMD
     float4 k = vFastInvSqrt(vDot(f4, f4));
@@ -241,7 +241,7 @@ public:
   OZ_ALWAYS_INLINE
   Quat operator / (float s) const
   {
-    hard_assert(s != 0.0f);
+    OZ_ASSERT(s != 0.0f);
 
 #ifdef OZ_SIMD
     return Quat(f4 / vFill(s));
@@ -390,7 +390,7 @@ public:
 #ifdef OZ_SIMD
     f4 /= vFill(s);
 #else
-    hard_assert(s != 0.0f);
+    OZ_ASSERT(s != 0.0f);
 
     s  = 1.0f / s;
     x *= s;

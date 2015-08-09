@@ -86,7 +86,7 @@ void BSP::load()
 
   char* data = new char[size];
 
-  hard_assert(data == Alloc::alignUp(data));
+  OZ_ASSERT(data == Alloc::alignUp(data));
 
   planes = new(data) Plane[nPlanes];
   for (int i = 0; i < nPlanes; ++i) {
@@ -195,7 +195,7 @@ void BSP::load()
     }
   }
 
-  hard_assert(is.available() == 0);
+  OZ_ASSERT(is.available() == 0);
 }
 
 void BSP::unload()

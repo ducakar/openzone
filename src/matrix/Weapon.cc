@@ -34,7 +34,7 @@ Pool<Weapon> Weapon::pool(2048);
 
 bool Weapon::onUse(Bot* user)
 {
-  hard_assert(user->canEquip(this));
+  OZ_ASSERT(user->canEquip(this));
 
   if (parent == user->index) {
     user->weapon = user->weapon == index ? -1 : index;
@@ -53,7 +53,7 @@ bool Weapon::onUse(Bot* user)
     else {
       Object* container = orbis.obj(parent);
 
-      hard_assert(container->items.contains(index));
+      OZ_ASSERT(container->items.contains(index));
 
       parent = user->index;
       container->items.exclude(index);
@@ -88,7 +88,7 @@ float Weapon::getStatus() const
 
 void Weapon::trigger(Bot* user)
 {
-  hard_assert(user != nullptr);
+  OZ_ASSERT(user != nullptr);
 
   const WeaponClass* clazz = static_cast<const WeaponClass*>(this->clazz);
 

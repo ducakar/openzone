@@ -325,7 +325,7 @@ void Model::clearScheduled(QueueType queue)
 
 void Model::deallocate()
 {
-  hard_assert(loadedModels.isEmpty());
+  OZ_ASSERT(loadedModels.isEmpty());
 
   loadedModels.trim();
 
@@ -397,7 +397,7 @@ void Model::scheduleAnimated(int mesh, int firstFrame, int secondFrame, float in
 
 const File* Model::preload()
 {
-  hard_assert(preloadData == nullptr);
+  OZ_ASSERT(preloadData == nullptr);
 
   preloadData = new PreloadData();
   preloadData->modelFile = path;
@@ -433,7 +433,7 @@ const File* Model::preload()
     }
   }
   else {
-    hard_assert(nTextures > 0);
+    OZ_ASSERT(nTextures > 0);
 
     textures.resize(nTextures, true);
 
@@ -572,7 +572,7 @@ void Model::load()
 {
   OZ_NACL_IS_MAIN(true);
 
-  hard_assert(preloadData != nullptr);
+  OZ_ASSERT(preloadData != nullptr);
   Stream is = preloadData->modelFile.read(Endian::LITTLE);
 
   is.readInt();

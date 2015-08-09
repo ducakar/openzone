@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "common.hh"
+#include "System.hh"
 
 namespace oz
 {
@@ -117,7 +117,7 @@ protected:
     OZ_ALWAYS_INLINE
     ChainIterator& operator ++ ()
     {
-      hard_assert(elem != nullptr);
+      OZ_ASSERT(elem != nullptr);
 
       elem = elem->next[INDEX];
       return *this;
@@ -319,7 +319,7 @@ public:
    */
   bool has(const Elem* elem) const
   {
-    hard_assert(elem != nullptr);
+    OZ_ASSERT(elem != nullptr);
 
     Elem* p = firstElem;
 
@@ -337,7 +337,7 @@ public:
    */
   bool contains(const Elem* elem) const
   {
-    hard_assert(elem != nullptr);
+    OZ_ASSERT(elem != nullptr);
 
     Elem* p = firstElem;
 
@@ -362,7 +362,7 @@ public:
    */
   void insertAfter(Elem* elem, Elem* prev)
   {
-    hard_assert(elem != nullptr && prev != nullptr);
+    OZ_ASSERT(elem != nullptr && prev != nullptr);
 
     elem->next[INDEX] = prev->next[INDEX];
     prev->next[INDEX] = elem;
@@ -376,7 +376,7 @@ public:
    */
   void eraseAfter(Elem* elem, Elem* prev)
   {
-    hard_assert(prev == nullptr || prev->next[INDEX] == elem);
+    OZ_ASSERT(prev == nullptr || prev->next[INDEX] == elem);
 
     if (prev == nullptr) {
       firstElem = elem->next[INDEX];
@@ -391,7 +391,7 @@ public:
    */
   void pushFirst(Elem* elem)
   {
-    hard_assert(elem != nullptr);
+    OZ_ASSERT(elem != nullptr);
 
     elem->next[INDEX] = firstElem;
     firstElem = elem;
@@ -402,7 +402,7 @@ public:
    */
   Elem* popFirst()
   {
-    hard_assert(firstElem != nullptr);
+    OZ_ASSERT(firstElem != nullptr);
 
     Elem* elem = firstElem;
 

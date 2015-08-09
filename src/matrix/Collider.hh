@@ -80,28 +80,28 @@ private:
   SBitset<Orbis::MAX_STRUCTS> visitedStructs;
   SBitset<BSP::MAX_BRUSHES>   visitedBrushes;
 
-  Span           span;
-  Bounds         trace;
-  Vec3           move;
+  Span                        span;
+  Bounds                      trace;
+  Vec3                        move;
 
-  AABB           aabb;
-  Point          startPos;
-  Point          endPos;
-  Vec3           localDim;
+  AABB                        aabb;
+  Point                       startPos;
+  Point                       endPos;
+  Vec3                        localDim;
 
-  const Dynamic* obj;
-  const Object*  exclObj;
-  const Entity*  entity;
-  const Struct*  str;
-  const BSP*     bsp;
+  const Dynamic*              obj;
+  const Object*               exclObj;
+  const Entity*               entity;
+  const Struct*               str;
+  const BSP*                  bsp;
 
-  int            flags;
-  float          margin;
+  int                         flags;
+  float                       margin;
 
 public:
 
-  int            mask; /// Only objects whose `Object::flags` matches the mask are tested.
-  Hit            hit;  /// Collision feedback data.
+  int                         mask = Object::SOLID_BIT; /// Filter for `Object::flags`.
+  Hit                         hit;                      /// Collision feedback data.
 
 private:
 
@@ -137,8 +137,6 @@ private:
 
 public:
 
-  Collider();
-
   bool overlaps(const Point& point, const Object* exclObj = nullptr);
   bool overlaps(const AABB& aabb, const Object* exclObj = nullptr);
   bool overlaps(const Object* obj);
@@ -147,7 +145,7 @@ public:
   void translate(const Point& point, const Vec3& move, const Object* exclObj = nullptr);
   void translate(const AABB& aabb, const Vec3& move, const Object* exclObj = nullptr);
   void translate(const Dynamic* obj, const Vec3& move);
-  void translate(const Entity* entity, const Vec3& move);
+  void translate(const Entity* entity, const Vec3& localMove);
 
   // fill given vectors with objects and structures overlapping with the AABB
   // if either vector is nullptr the respective test is not performed

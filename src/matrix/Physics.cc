@@ -60,91 +60,6 @@ const float Physics::FRAG_DAMAGE_COEF        =  0.05f;
 const float Physics::FRAG_FIXED_DAMAGE       =  0.75f;
 
 //***********************************
-//*   FRAGMENT COLLISION HANDLING   *
-//***********************************
-
-void Physics::handleFragHit()
-{
-  Vec3  fragVelocity = frag->velocity;
-  float velocity2    = frag->velocity.sqN();
-
-  frag->velocity *= frag->elasticity;
-  frag->velocity -= (2.0f * (frag->velocity * collider.hit.normal)) * collider.hit.normal;
-
-  if (velocity2 > FRAG_HIT_VELOCITY2) {
-    if (frag->mass != 0.0f) {
-      if (collider.hit.str != nullptr) {
-        Struct* str = collider.hit.str;
-        float damage = FRAG_DAMAGE_COEF * velocity2 * frag->mass;
-
-        if (damage > str->resistance) {
-          damage *= FRAG_FIXED_DAMAGE + (1.0f - FRAG_FIXED_DAMAGE) * Math::rand();
-          str->damage(damage);
-        }
-      }
-      else if (collider.hit.obj != nullptr) {
-        Object* obj = collider.hit.obj;
-        float damage = FRAG_DAMAGE_COEF * velocity2 * frag->mass;
-
-        if (damage > obj->resistance) {
-          damage *= FRAG_FIXED_DAMAGE + (1.0f - FRAG_FIXED_DAMAGE) * Math::rand();
-          obj->damage(damage);
-        }
-
-        if (obj->flags & Object::DYNAMIC_BIT) {
-          Dynamic* dynObj = static_cast<Dynamic*>(obj);
-
-          float fragMass = frag->mass * 10.0f;
-          float massSum  = fragMass + dynObj->mass;
-
-          dynObj->flags   &= ~Object::DISABLED_BIT;
-          dynObj->momentum = (fragVelocity * fragMass + dynObj->momentum * dynObj->mass) / massSum;
-        }
-      }
-    }
-
-    if (velocity2 > FRAG_DESTROY_VELOCITY2) {
-      // We abuse velocity to hold the normal of the fatal hit, needed for positioning decals.
-      frag->velocity = collider.hit.normal;
-      frag->life     = -Math::INF;
-    }
-  }
-}
-
-void Physics::handleFragMove()
-{
-  move = frag->velocity * Timer::TICK_TIME;
-
-  float leftRatio = 1.0f;
-
-  int traceSplits = 0;
-  do {
-    collider.translate(frag->p, move);
-    frag->p += collider.hit.ratio * move;
-    leftRatio -= leftRatio * collider.hit.ratio;
-
-    if (collider.hit.ratio == 1.0f) {
-      break;
-    }
-    // Collision response.
-    handleFragHit();
-
-    // We must check lifeTime <= 0.0f to prevent an already destroyed fragment to bounce off a
-    // surface and hit something and to position decal properly.
-    if (traceSplits >= 3 || frag->life <= 0.0f) {
-      break;
-    }
-    ++traceSplits;
-
-    move *= 1.0f - collider.hit.ratio;
-    move -= (move * collider.hit.normal - MOVE_BOUNCE) * collider.hit.normal;
-  }
-  while (true);
-
-  orbis.reposition(frag);
-}
-
-//***********************************
 //*    OBJECT COLLISION HANDLING    *
 //***********************************
 
@@ -328,7 +243,7 @@ void Physics::handleObjHit()
       sDyn->momentum.z = momentum.z;
     }
     else { // hit.normal.z == 1.0f
-      hard_assert(hit.normal.z == 1.0f);
+      OZ_ASSERT(hit.normal.z == 1.0f);
 
       dyn->flags     &= ~Object::ON_FLOOR_BIT;
       dyn->lower      = sDyn->index;
@@ -477,23 +392,127 @@ Vec3 Physics::handleObjMove()
 }
 
 //***********************************
+//*   FRAGMENT COLLISION HANDLING   *
+//***********************************
+
+void Physics::handleFragHit()
+{
+  Vec3  fragVelocity = frag->velocity;
+  float velocity2    = frag->velocity.sqN();
+
+  frag->velocity *= frag->elasticity;
+  frag->velocity -= (2.0f * (frag->velocity * collider.hit.normal)) * collider.hit.normal;
+
+  if (velocity2 > FRAG_HIT_VELOCITY2) {
+    if (frag->mass != 0.0f) {
+      if (collider.hit.str != nullptr) {
+        Struct* str = collider.hit.str;
+        float damage = FRAG_DAMAGE_COEF * velocity2 * frag->mass;
+
+        if (damage > str->resistance) {
+          damage *= FRAG_FIXED_DAMAGE + (1.0f - FRAG_FIXED_DAMAGE) * Math::rand();
+          str->damage(damage);
+        }
+      }
+      else if (collider.hit.obj != nullptr) {
+        Object* obj = collider.hit.obj;
+        float damage = FRAG_DAMAGE_COEF * velocity2 * frag->mass;
+
+        if (damage > obj->resistance) {
+          damage *= FRAG_FIXED_DAMAGE + (1.0f - FRAG_FIXED_DAMAGE) * Math::rand();
+          obj->damage(damage);
+        }
+
+        if (obj->flags & Object::DYNAMIC_BIT) {
+          Dynamic* dynObj = static_cast<Dynamic*>(obj);
+
+          float fragMass = frag->mass * 10.0f;
+          float massSum  = fragMass + dynObj->mass;
+
+          dynObj->flags   &= ~Object::DISABLED_BIT;
+          dynObj->momentum = (fragVelocity * fragMass + dynObj->momentum * dynObj->mass) / massSum;
+        }
+      }
+    }
+
+    if (velocity2 > FRAG_DESTROY_VELOCITY2) {
+      // We abuse velocity to hold the normal of the fatal hit, needed for positioning decals.
+      frag->velocity = collider.hit.normal;
+      frag->life     = -Math::INF;
+    }
+  }
+}
+
+void Physics::handleFragMove()
+{
+  move = frag->velocity * Timer::TICK_TIME;
+
+  float leftRatio = 1.0f;
+
+  int traceSplits = 0;
+  do {
+    collider.translate(frag->p, move);
+    frag->p += collider.hit.ratio * move;
+    leftRatio -= leftRatio * collider.hit.ratio;
+
+    if (collider.hit.ratio == 1.0f) {
+      break;
+    }
+    // Collision response.
+    handleFragHit();
+
+    // We must check lifeTime <= 0.0f to prevent an already destroyed fragment to bounce off a
+    // surface and hit something and to position decal properly.
+    if (traceSplits >= 3 || frag->life <= 0.0f) {
+      break;
+    }
+    ++traceSplits;
+
+    move *= 1.0f - collider.hit.ratio;
+    move -= (move * collider.hit.normal - MOVE_BOUNCE) * collider.hit.normal;
+  }
+  while (true);
+
+  orbis.reposition(frag);
+}
+
+//***********************************
 //*             PUBLIC              *
 //***********************************
 
-void Physics::updateFrag(Frag* frag_)
+void Physics::updateEnt(Entity* ent, const Vec3& localMove)
 {
-  frag = frag_;
+  const EntityClass* clazz = ent->clazz;
 
-  hard_assert(frag->cell != nullptr);
+  if (clazz->flags & EntityClass::IGNORANT) {
+    ent->offset  += localMove;
+    ent->velocity = localMove / Timer::TICK_TIME;
+  }
+  else {
+    collider.translate(ent, localMove);
 
-  frag->velocity.z += gravity * Timer::TICK_TIME;
+    if (collider.hit.obj != nullptr) {
+      Object* obj = collider.hit.obj;
 
-  handleFragMove();
+      if (obj->flags & Object::DYNAMIC_BIT) {
+        Dynamic* dyn        = static_cast<Dynamic*>(obj);
+        Vec3     globalMove = ent->str->toAbsoluteCS(localMove);
+
+        dyn->momentum -= 8.0f * collider.hit.normal;
+        dyn->flags    &= ~Object::DISABLED_BIT;
+      }
+    }
+
+    Vec3 realisedMove = collider.hit.ratio * localMove;
+
+    ent->offset  += realisedMove;
+    ent->velocity = realisedMove / Timer::TICK_TIME;
+  }
 }
 
 void Physics::updateObj(Dynamic* dyn_)
 {
-  hard_assert(dyn_->cell != nullptr);
+  OZ_ASSERT(dyn_->cell != nullptr);
 
   dyn         = dyn_;
   dyn->flags &= ~Object::TICK_CLEAR_MASK;
@@ -566,12 +585,23 @@ void Physics::updateObj(Dynamic* dyn_)
       dyn->depth    = min(collider.hit.depth, 2.0f * dyn->dim.z);
     }
     else {
-      hard_assert(dyn->momentum == Vec3::ZERO);
+      OZ_ASSERT(dyn->momentum == Vec3::ZERO);
 
       dyn->flags   |= Object::DISABLED_BIT;
       dyn->velocity = Vec3::ZERO;
     }
   }
+}
+
+void Physics::updateFrag(Frag* frag_)
+{
+  frag = frag_;
+
+  OZ_ASSERT(frag->cell != nullptr);
+
+  frag->velocity.z += gravity * Timer::TICK_TIME;
+
+  handleFragMove();
 }
 
 Physics physics;

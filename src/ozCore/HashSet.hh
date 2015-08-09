@@ -128,7 +128,7 @@ protected:
      */
     HashIterator& operator ++ ()
     {
-      hard_assert(elem != nullptr);
+      OZ_ASSERT(elem != nullptr);
 
       if (elem->next != nullptr) {
         elem = elem->next;

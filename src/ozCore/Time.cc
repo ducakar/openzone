@@ -26,8 +26,6 @@
 
 #include "Time.hh"
 
-#include <cstdio>
-
 #ifdef _WIN32
 # include <windows.h>
 #else

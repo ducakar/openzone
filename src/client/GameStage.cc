@@ -84,7 +84,7 @@ void GameStage::read()
   camera.read(&is);
   luaClient.read(&is);
 
-  hard_assert(is.available() == 0);
+  OZ_ASSERT(is.available() == 0);
 
   Log::unindent();
   Log::println("}");

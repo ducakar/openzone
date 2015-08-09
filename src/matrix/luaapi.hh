@@ -242,7 +242,7 @@ static int ozOrbisOverlaps(lua_State* l)
     exclObj = orbis.obj(index);
   }
 
-  hard_assert(collider.mask == Object::SOLID_BIT);
+  OZ_ASSERT(collider.mask == Object::SOLID_BIT);
 
   if (flags & COLLIDE_ALL_OBJECTS_BIT) {
     collider.mask = ~0;
@@ -270,7 +270,7 @@ static int ozOrbisBindOverlaps(lua_State* l)
   List<Struct*>* structs = nullptr;
   List<Object*>* objects = nullptr;
 
-  hard_assert(collider.mask == Object::SOLID_BIT);
+  OZ_ASSERT(collider.mask == Object::SOLID_BIT);
 
   if (flags & COLLIDE_STRUCTS_BIT) {
     structs = &ms.structs;
@@ -651,7 +651,7 @@ static int ozStrOverlaps(lua_State* l)
   int  flags = l_toint(1);
   AABB aabb  = ms.str->toAABB(l_tofloat(2));
 
-  hard_assert(collider.mask == Object::SOLID_BIT);
+  OZ_ASSERT(collider.mask == Object::SOLID_BIT);
 
   if (flags & COLLIDE_ALL_OBJECTS_BIT) {
     collider.mask = ~0;
@@ -679,7 +679,7 @@ static int ozStrBindOverlaps(lua_State* l)
   List<Struct*>* structs = nullptr;
   List<Object*>* objects = nullptr;
 
-  hard_assert(collider.mask == Object::SOLID_BIT);
+  OZ_ASSERT(collider.mask == Object::SOLID_BIT);
 
   if (flags & COLLIDE_STRUCTS_BIT) {
     structs = &ms.structs;
@@ -872,31 +872,6 @@ static int ozEntGetState(lua_State* l)
   return 1;
 }
 
-static int ozEntSetState(lua_State* l)
-{
-  ARG(1);
-  ENT();
-
-  Entity::State state = Entity::State(l_toint(1));
-
-  ms.ent->state    = state;
-  ms.ent->time     = 0.0f;
-  ms.ent->velocity = Vec3::ZERO;
-
-  if (state == Entity::CLOSED) {
-    ms.ent->offset   = Vec3::ZERO;
-    ms.ent->moveDist = 0.0f;
-  }
-  else if (state == Entity::OPEN) {
-    ms.ent->offset   = ms.ent->clazz->moveLength * ms.ent->clazz->moveDir;
-    ms.ent->moveDist = ms.ent->clazz->moveLength;
-  }
-  else {
-    ERROR("Entity state should be either OZ_ENTITY_CLOSED or OZ_ENTITY_OPENED");
-  }
-  return 0;
-}
-
 static int ozEntGetLock(lua_State* l)
 {
   ARG(0);
@@ -932,7 +907,7 @@ static int ozEntOverlaps(lua_State* l)
   int   flags  = l_toint(1);
   float margin = l_tofloat(2);
 
-  hard_assert(collider.mask == Object::SOLID_BIT);
+  OZ_ASSERT(collider.mask == Object::SOLID_BIT);
 
   if (flags & COLLIDE_ALL_OBJECTS_BIT) {
     collider.mask = ~0;
@@ -959,7 +934,7 @@ static int ozEntBindOverlaps(lua_State* l)
 
   List<Object*>* objects = nullptr;
 
-  hard_assert(collider.mask == Object::SOLID_BIT);
+  OZ_ASSERT(collider.mask == Object::SOLID_BIT);
 
   if (flags & (COLLIDE_OBJECTS_BIT | COLLIDE_ALL_OBJECTS_BIT)) {
     objects = &ms.objects;
@@ -1265,7 +1240,7 @@ static int ozObjGetPos(lua_State* l)
   OBJ();
 
   if (ms.obj->cell == nullptr) {
-    hard_assert(ms.obj->flags & Object::DYNAMIC_BIT);
+    OZ_ASSERT(ms.obj->flags & Object::DYNAMIC_BIT);
 
     const Dynamic* dyn    = static_cast<const Dynamic*>(ms.obj);
     const Object*  parent = orbis.obj(dyn->parent);
@@ -1479,7 +1454,7 @@ static int ozObjBindItems(lua_State* l)
   ms.objects.clear();
 
   for (int item : ms.obj->items) {
-    hard_assert(item >= 0);
+    OZ_ASSERT(item >= 0);
 
     ms.objects.add(orbis.obj(item));
   }
@@ -1518,7 +1493,7 @@ static int ozObjAddItem(lua_State* l)
     ITEM_INDEX(l_toint(1));
 
     if (item->cell == nullptr) {
-      hard_assert(item->parent >= 0);
+      OZ_ASSERT(item->parent >= 0);
 
       Object* container = orbis.obj(item->parent);
       if (container != nullptr) {
@@ -1589,7 +1564,7 @@ static int ozObjOverlaps(lua_State* l)
   int  flags = l_toint(1);
   AABB aabb  = AABB(*ms.obj, l_tofloat(2));
 
-  hard_assert(collider.mask == Object::SOLID_BIT);
+  OZ_ASSERT(collider.mask == Object::SOLID_BIT);
 
   if (flags & COLLIDE_ALL_OBJECTS_BIT) {
     collider.mask = ~0;
@@ -1617,7 +1592,7 @@ static int ozObjBindOverlaps(lua_State* l)
   List<Struct*>* structs = nullptr;
   List<Object*>* objects = nullptr;
 
-  hard_assert(collider.mask == Object::SOLID_BIT);
+  OZ_ASSERT(collider.mask == Object::SOLID_BIT);
 
   if (flags & COLLIDE_STRUCTS_BIT) {
     structs = &ms.structs;
@@ -2575,7 +2550,7 @@ static int ozFragOverlaps(lua_State* l)
   float dim   = l_tofloat(2);
   AABB  aabb  = AABB(ms.frag->p, Vec3(dim, dim, dim));
 
-  hard_assert(collider.mask == Object::SOLID_BIT);
+  OZ_ASSERT(collider.mask == Object::SOLID_BIT);
 
   if (flags & COLLIDE_ALL_OBJECTS_BIT) {
     collider.mask = ~0;
@@ -2604,7 +2579,7 @@ static int ozFragBindOverlaps(lua_State* l)
   List<Struct*>* structs = nullptr;
   List<Object*>* objects = nullptr;
 
-  hard_assert(collider.mask == Object::SOLID_BIT);
+  OZ_ASSERT(collider.mask == Object::SOLID_BIT);
 
   if (flags & COLLIDE_STRUCTS_BIT) {
     structs = &ms.structs;

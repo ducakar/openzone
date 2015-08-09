@@ -53,7 +53,7 @@ void EditFrame::itemCallback(ModelField* sender, bool isClicked)
     return;
   }
 
-  hard_assert(editFrame->taggedItemIndex == -1);
+  OZ_ASSERT(editFrame->taggedItemIndex == -1);
 
   editFrame->taggedItemIndex = item->index;
 

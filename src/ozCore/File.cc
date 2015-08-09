@@ -31,7 +31,6 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 #include <dirent.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -105,7 +104,7 @@ static File specialFiles[10];
 
 #ifdef __native_client__
 
-static void initSpecialDirs()
+static void initSpecialFiles()
 {
   specialFiles[0] = "/";
   specialFiles[1] = "/config";
@@ -128,7 +127,7 @@ static void setSpecialDir(int id, int csidl)
   specialFiles[id] = String(path).replace('\\', '/');
 }
 
-static void initSpecialDirs()
+static void initSpecialFiles()
 {
   setSpecialDir(0, CSIDL_PROFILE);
   setSpecialDir(1, CSIDL_APPDATA);

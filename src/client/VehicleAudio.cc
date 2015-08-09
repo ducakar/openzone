@@ -35,14 +35,14 @@ Pool<VehicleAudio> VehicleAudio::pool(256);
 
 Audio* VehicleAudio::create(const Object* obj)
 {
-  hard_assert(obj->flags & Object::VEHICLE_BIT);
+  OZ_ASSERT(obj->flags & Object::VEHICLE_BIT);
 
   return new VehicleAudio(obj);
 }
 
 void VehicleAudio::play(const Object* playAt)
 {
-  hard_assert(playAt != nullptr);
+  OZ_ASSERT(playAt != nullptr);
 
   const Vehicle*      vehicle = static_cast<const Vehicle*>(obj);
   const VehicleClass* clazz   = static_cast<const VehicleClass*>(this->clazz);
@@ -63,10 +63,10 @@ void VehicleAudio::play(const Object* playAt)
 
   // events
   for (const Object::Event& event : obj->events) {
-    hard_assert(event.id < ObjectClass::MAX_SOUNDS);
+    OZ_ASSERT(event.id < ObjectClass::MAX_SOUNDS);
 
     if (event.id >= 0 && sounds[event.id] >= 0 && recent[event.id] == 0) {
-      hard_assert(0.0f <= event.intensity);
+      OZ_ASSERT(0.0f <= event.intensity);
 
       recent[event.id] = RECENT_TICKS;
       playSound(sounds[event.id], event.intensity, playAt);

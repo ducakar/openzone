@@ -43,7 +43,7 @@ String LuaMatrix::nameGenCall(const char* functionName)
   ms.objIndex = 0;
   ms.strIndex = 0;
 
-  hard_assert(l_gettop() == 1);
+  OZ_ASSERT(l_gettop() == 1);
 
   String name = "";
 
@@ -74,7 +74,7 @@ bool LuaMatrix::objectCall(const char* functionName, Object* self, Bot* user)
   ms.objIndex = 0;
   ms.strIndex = 0;
 
-  hard_assert(l_gettop() == 1 && self != nullptr);
+  OZ_ASSERT(l_gettop() == 1 && self != nullptr);
 
   bool success = true;
 
@@ -118,9 +118,9 @@ void LuaMatrix::unregisterObject(int index)
 
 void LuaMatrix::read(Stream* is)
 {
-  hard_assert(l_gettop() == 1);
-  hard_assert((l_pushnil(), true));
-  hard_assert(!l_next(1));
+  OZ_ASSERT(l_gettop() == 1);
+  OZ_ASSERT((l_pushnil(), true));
+  OZ_ASSERT(!l_next(1));
 
   int index = is->readInt();
 
@@ -135,12 +135,12 @@ void LuaMatrix::read(Stream* is)
 
 void LuaMatrix::write(Stream* os)
 {
-  hard_assert(l_gettop() == 1);
+  OZ_ASSERT(l_gettop() == 1);
 
   l_pushnil();
   while (l_next(1)) {
-    hard_assert(l_type(-2) == LUA_TNUMBER);
-    hard_assert(l_type(-1) == LUA_TTABLE);
+    OZ_ASSERT(l_type(-2) == LUA_TNUMBER);
+    OZ_ASSERT(l_type(-1) == LUA_TTABLE);
 
     os->writeInt(l_toint(-2));
     writeValue(l, os);
@@ -263,7 +263,6 @@ void LuaMatrix::init()
    */
 
   IMPORT_FUNC(ozEntGetState);
-  IMPORT_FUNC(ozEntSetState);
   IMPORT_FUNC(ozEntGetLock);
   IMPORT_FUNC(ozEntSetLock);
   IMPORT_FUNC(ozEntTrigger);
@@ -466,7 +465,7 @@ void LuaMatrix::init()
   loadDir("@lua/common");
   loadDir("@lua/matrix");
 
-  hard_assert(l_gettop() == 1);
+  OZ_ASSERT(l_gettop() == 1);
 
   Log::printEnd(" OK");
 }
@@ -485,9 +484,9 @@ void LuaMatrix::destroy()
   ms.objects.clear();
   ms.objects.trim();
 
-  hard_assert(l_gettop() == 1);
-  hard_assert((l_pushnil(), true));
-  hard_assert(!l_next(1));
+  OZ_ASSERT(l_gettop() == 1);
+  OZ_ASSERT((l_pushnil(), true));
+  OZ_ASSERT(!l_next(1));
 
   Lua::destroy();
 

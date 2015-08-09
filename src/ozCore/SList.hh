@@ -82,7 +82,7 @@ public:
   explicit SList(int count_) :
     count(count_)
   {
-    hard_assert(count <= SIZE);
+    OZ_ASSERT(count <= SIZE);
   }
 
   /**
@@ -217,7 +217,7 @@ public:
   OZ_ALWAYS_INLINE
   const Elem& operator [] (int i) const
   {
-    hard_assert(uint(i) < uint(count));
+    OZ_ASSERT(uint(i) < uint(count));
 
     return data[i];
   }
@@ -228,7 +228,7 @@ public:
   OZ_ALWAYS_INLINE
   Elem& operator [] (int i)
   {
-    hard_assert(uint(i) < uint(count));
+    OZ_ASSERT(uint(i) < uint(count));
 
     return data[i];
   }
@@ -239,7 +239,7 @@ public:
   OZ_ALWAYS_INLINE
   const Elem& first() const
   {
-    hard_assert(count != 0);
+    OZ_ASSERT(count != 0);
 
     return data[0];
   }
@@ -250,7 +250,7 @@ public:
   OZ_ALWAYS_INLINE
   Elem& first()
   {
-    hard_assert(count != 0);
+    OZ_ASSERT(count != 0);
 
     return data[0];
   }
@@ -261,7 +261,7 @@ public:
   OZ_ALWAYS_INLINE
   const Elem& last() const
   {
-    hard_assert(count != 0);
+    OZ_ASSERT(count != 0);
 
     return data[count - 1];
   }
@@ -272,7 +272,7 @@ public:
   OZ_ALWAYS_INLINE
   Elem& last()
   {
-    hard_assert(count != 0);
+    OZ_ASSERT(count != 0);
 
     return data[count - 1];
   }
@@ -320,7 +320,7 @@ public:
   {
     int newCount = count + arrayCount;
 
-    hard_assert(uint(newCount) <= uint(SIZE));
+    OZ_ASSERT(uint(newCount) <= uint(SIZE));
 
     Arrays::copy<Elem>(array, arrayCount, data + count);
     count = newCount;
@@ -333,7 +333,7 @@ public:
   {
     int newCount = count + arrayCount;
 
-    hard_assert(uint(newCount) <= uint(SIZE));
+    OZ_ASSERT(uint(newCount) <= uint(SIZE));
 
     Arrays::move<Elem>(array, arrayCount, data + count);
     count = newCount;
@@ -365,8 +365,8 @@ public:
   template <typename Elem_>
   Elem& insert(int i, Elem_&& elem)
   {
-    hard_assert(uint(i) <= uint(count));
-    hard_assert(uint(count) < uint(SIZE));
+    OZ_ASSERT(uint(i) <= uint(count));
+    OZ_ASSERT(uint(count) < uint(SIZE));
 
     Arrays::moveBackward<Elem>(data + i, count - i, data + i + 1);
     data[i] = static_cast<Elem_&&>(elem);
@@ -382,7 +382,7 @@ public:
    */
   void erase(int i)
   {
-    hard_assert(uint(i) < uint(count));
+    OZ_ASSERT(uint(i) < uint(count));
 
     --count;
 
@@ -403,7 +403,7 @@ public:
    */
   void eraseUnordered(int i)
   {
-    hard_assert(uint(i) < uint(count));
+    OZ_ASSERT(uint(i) < uint(count));
 
     --count;
 
@@ -532,7 +532,7 @@ public:
    */
   void resize(int newCount)
   {
-    hard_assert(newCount <= SIZE);
+    OZ_ASSERT(newCount <= SIZE);
 
     Arrays::clear<Elem>(data + newCount, count - newCount);
     count = newCount;

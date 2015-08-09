@@ -621,7 +621,7 @@ public:
   OZ_ALWAYS_INLINE
   const char& operator [] (int i) const
   {
-    hard_assert(0 <= i && i <= count);
+    OZ_ASSERT(0 <= i && i <= count);
 
     return begin()[i];
   }
@@ -632,7 +632,7 @@ public:
   OZ_ALWAYS_INLINE
   char& operator [] (int i)
   {
-    hard_assert(0 <= i && i <= count);
+    OZ_ASSERT(0 <= i && i <= count);
 
     return begin()[i];
   }

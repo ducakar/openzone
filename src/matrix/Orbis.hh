@@ -102,7 +102,7 @@ public:
   OZ_ALWAYS_INLINE
   Struct* str(int index) const
   {
-    hard_assert(uint(1 + index) <= uint(MAX_STRUCTS));
+    OZ_ASSERT(uint(1 + index) <= uint(MAX_STRUCTS));
 
     return structs[1 + index];
   }
@@ -112,7 +112,7 @@ public:
    */
   Entity* ent(int index) const
   {
-    hard_assert(uint(1 + index) <= uint(MAX_STRUCTS * Struct::MAX_ENTITIES));
+    OZ_ASSERT(uint(1 + index) <= uint(MAX_STRUCTS * Struct::MAX_ENTITIES));
 
     int     strIndex = index >> Struct::MAX_ENT_SHIFT;
     Struct* str      = structs[1 + strIndex];
@@ -135,7 +135,7 @@ public:
   OZ_ALWAYS_INLINE
   ObjectType* obj(int index) const
   {
-    hard_assert(uint(1 + index) <= uint(MAX_OBJECTS));
+    OZ_ASSERT(uint(1 + index) <= uint(MAX_OBJECTS));
 
     return static_cast<ObjectType*>(objects[1 + index]);
   }
@@ -146,7 +146,7 @@ public:
   OZ_ALWAYS_INLINE
   Frag* frag(int index) const
   {
-    hard_assert(uint(1 + index) <= uint(MAX_FRAGS));
+    OZ_ASSERT(uint(1 + index) <= uint(MAX_FRAGS));
 
     return frags[1 + index];
   }
@@ -157,7 +157,7 @@ public:
   OZ_ALWAYS_INLINE
   int strIndex(int index) const
   {
-    hard_assert(uint(1 + index) <= uint(MAX_STRUCTS));
+    OZ_ASSERT(uint(1 + index) <= uint(MAX_STRUCTS));
 
     return structs[1 + index] == nullptr ? -1 : index;
   }
@@ -168,7 +168,7 @@ public:
   OZ_ALWAYS_INLINE
   int entIndex(int index) const
   {
-    hard_assert(uint(1 + index) <= uint(MAX_STRUCTS * Struct::MAX_ENTITIES));
+    OZ_ASSERT(uint(1 + index) <= uint(MAX_STRUCTS * Struct::MAX_ENTITIES));
 
     int     strIndex = index >> Struct::MAX_ENT_SHIFT;
     Struct* str      = structs[1 + strIndex];
@@ -182,7 +182,7 @@ public:
   OZ_ALWAYS_INLINE
   int objIndex(int index) const
   {
-    hard_assert(uint(1 + index) <= uint(MAX_OBJECTS));
+    OZ_ASSERT(uint(1 + index) <= uint(MAX_OBJECTS));
 
     return objects[1 + index] == nullptr ? -1 : index;
   }
@@ -193,12 +193,11 @@ public:
   OZ_ALWAYS_INLINE
   int fragIndex(int index) const
   {
-    hard_assert(uint(1 + index) <= uint(MAX_FRAGS));
+    OZ_ASSERT(uint(1 + index) <= uint(MAX_FRAGS));
 
     return frags[1 + index] == nullptr ? -1 : index;
   }
 
-  // get pointer to the cell the point is in
   OZ_ALWAYS_INLINE
   Cell* getCell(float x, float y)
   {
@@ -217,16 +216,10 @@ public:
     return getCell(p.x, p.y);
   }
 
-  // get indices of the cell the point is in
   OZ_ALWAYS_INLINE
   Span getInters(float x, float y, float epsilon = 0.0f) const
   {
-    return {
-      max(int((x - epsilon + Orbis::DIM) / Cell::SIZE), 0),
-      max(int((y - epsilon + Orbis::DIM) / Cell::SIZE), 0),
-      min(int((x + epsilon + Orbis::DIM) / Cell::SIZE), Orbis::CELLS - 1),
-      min(int((y + epsilon + Orbis::DIM) / Cell::SIZE), Orbis::CELLS - 1)
-    };
+    return getInters(x, y, x, y, epsilon);
   }
 
   OZ_ALWAYS_INLINE
@@ -235,7 +228,6 @@ public:
     return getInters(p.x, p.y, epsilon);
   }
 
-  // get indices of min and max cells which the area intersects
   OZ_ALWAYS_INLINE
   Span getInters(float minPosX, float minPosY, float maxPosX, float maxPosY,
                  float epsilon = 0.0f) const
@@ -248,7 +240,6 @@ public:
     };
   }
 
-  // get indices of min and max cells which the AABB intersects
   OZ_ALWAYS_INLINE
   Span getInters(const AABB& bb, float epsilon = 0.0f) const
   {
@@ -256,7 +247,6 @@ public:
                      epsilon);
   }
 
-  // get indices of min and max cells which the bounds intersects
   OZ_ALWAYS_INLINE
   Span getInters(const Bounds& bounds, float epsilon = 0.0f) const
   {

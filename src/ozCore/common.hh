@@ -101,30 +101,6 @@
 #define OZ_WEAK __attribute__((weak))
 
 /**
- * @def soft_assert
- * If condition fails, raise SIGTRAP and print error using global log.
- */
-#ifdef NDEBUG
-# define soft_assert(cond) void(0)
-#else
-# define soft_assert(cond) \
-  ((cond) ? \
-   void(0) : oz::detail::softAssertHelper(__PRETTY_FUNCTION__, __FILE__, __LINE__, #cond))
-#endif
-
-/**
- * @def hard_assert
- * If condition fails, raise SIGTRAP, print error using global log and abort program.
- */
-#ifdef NDEBUG
-# define hard_assert(cond) void(0)
-#else
-# define hard_assert(cond) \
-  ((cond) ? \
-   void(0) : oz::detail::hardAssertHelper(__PRETTY_FUNCTION__, __FILE__, __LINE__, #cond))
-#endif
-
-/**
  * Top-level OpenZone namespace.
  */
 namespace oz
@@ -198,17 +174,6 @@ static_assert(sizeof(double) == 8, "sizeof(double) should be 8");
  */
 namespace detail
 {
-
-/**
- * Helper function for `soft_assert` macro.
- */
-void softAssertHelper(const char* function, const char* file, int line, const char* message);
-
-/**
- * Helper function for `hard_assert` macro.
- */
-OZ_NORETURN
-void hardAssertHelper(const char* function, const char* file, int line, const char* message);
 
 /**
  * Base class for iterators.

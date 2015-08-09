@@ -46,9 +46,11 @@ public:
   /// Maximum number of stack frames.
   static const int MAX_FRAMES = 32;
 
-  char  threadName[Thread::NAME_LENGTH + 1]; ///< Current thread's name.
-  int   nFrames;                             ///< Number of stack frames.
-  void* frames[MAX_FRAMES];                  ///< Pointers to stack frames.
+public:
+
+  char  thread[Thread::NAME_LENGTH + 1]; ///< Current thread's name.
+  int   nFrames;                         ///< Number of stack frames.
+  void* frames[MAX_FRAMES];              ///< Pointers to stack frames.
 
 public:
 
@@ -58,14 +60,6 @@ public:
    * @param nSkippedFrames number of stack frames to skip (must be >= 0).
    */
   static StackTrace current(int nSkippedFrames);
-
-  /**
-   * Return string table for stack frames.
-   *
-   * Beginning of the returned table contains pointers to string entries in stack trace, same as
-   * with `backtrace_symbols()` call from glibc. The table must be freed by caller with `free()`.
-   */
-  char** symbols() const;
 
 };
 

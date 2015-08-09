@@ -178,7 +178,7 @@ void Context::speakMain(void*)
 
 Context::Source* Context::addSource(int sound)
 {
-  hard_assert(sounds[sound].nUsers > 0);
+  OZ_ASSERT(sounds[sound].nUsers > 0);
 
   uint srcId;
   alGenSources(1, &srcId);
@@ -199,7 +199,7 @@ void Context::removeSource(Source* source, Source* prev)
 {
   int sound = source->sound;
 
-  hard_assert(sounds[sound].nUsers > 0);
+  OZ_ASSERT(sounds[sound].nUsers > 0);
 
   alDeleteSources(1, &source->id);
 
@@ -210,7 +210,7 @@ void Context::removeSource(Source* source, Source* prev)
 
 Context::ContSource* Context::addContSource(int sound, int key)
 {
-  hard_assert(sounds[sound].nUsers > 0);
+  OZ_ASSERT(sounds[sound].nUsers > 0);
 
   uint srcId;
   alGenSources(1, &srcId);
@@ -229,7 +229,7 @@ void Context::removeContSource(ContSource* contSource, int key)
 {
   int sound = contSource->sound;
 
-  hard_assert(sounds[sound].nUsers > 0);
+  OZ_ASSERT(sounds[sound].nUsers > 0);
 
   alDeleteSources(1, &contSource->id);
 
@@ -255,7 +255,7 @@ Context::SpeakSource* Context::requestSpeakSource(const char* text, int owner)
 
 void Context::releaseSpeakSource()
 {
-  hard_assert(speakSource.thread.isValid());
+  OZ_ASSERT(speakSource.thread.isValid());
 
   speakSource.isAlive = false;
   speakSource.thread.join();
@@ -348,7 +348,7 @@ void Context::releaseTexture(int id)
 
   Resource<Texture>& resource = textures[id];
 
-  hard_assert(resource.nUsers > 0);
+  OZ_ASSERT(resource.nUsers > 0);
 
   --resource.nUsers;
 
@@ -396,7 +396,7 @@ void Context::releaseSound(int id)
 
   Resource<uint>& resource = sounds[id];
 
-  hard_assert(resource.nUsers > 0);
+  OZ_ASSERT(resource.nUsers > 0);
 
   --resource.nUsers;
 
@@ -490,7 +490,7 @@ void Context::releaseModel(int id)
 {
   Resource<Model*>& resource = models[id];
 
-  hard_assert(resource.handle != nullptr && resource.nUsers > 0);
+  OZ_ASSERT(resource.handle != nullptr && resource.nUsers > 0);
 
   --resource.nUsers;
 }
@@ -519,14 +519,14 @@ void Context::releasePartClass(int id)
 {
   Resource<PartClass>& resource = partClasses[id];
 
-  hard_assert(resource.nUsers > 0);
+  OZ_ASSERT(resource.nUsers > 0);
 
   --resource.nUsers;
 }
 
 void Context::drawImago(const Object* obj, const Imago* parent)
 {
-  hard_assert(obj->flags & Object::IMAGO_BIT);
+  OZ_ASSERT(obj->flags & Object::IMAGO_BIT);
 
   Imago* const* value = imagines.find(obj->index);
 
@@ -542,7 +542,7 @@ void Context::drawImago(const Object* obj, const Imago* parent)
 
 void Context::playAudio(const Object* obj, const Object* parent)
 {
-  hard_assert(obj->flags & Object::AUDIO_BIT);
+  OZ_ASSERT(obj->flags & Object::AUDIO_BIT);
 
   Audio* const* value = audios.find(obj->index);
 

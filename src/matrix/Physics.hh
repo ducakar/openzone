@@ -76,21 +76,22 @@ private:
 
 public:
 
-  float    gravity;
+  float    gravity = -9.81f;
 
 private:
-
-  void handleFragHit();
-  void handleFragMove();
 
   bool handleObjFriction();
   void handleObjHit();
   Vec3 handleObjMove();
 
+  void handleFragHit();
+  void handleFragMove();
+
 public:
 
-  void updateFrag(Frag* frag);
+  void updateEnt(Entity* ent, const Vec3& localMove);
   void updateObj(Dynamic* dyn);
+  void updateFrag(Frag* frag);
 
 };
 

@@ -42,7 +42,7 @@ MD2Imago::~MD2Imago()
 
 Imago* MD2Imago::create(const Object* obj)
 {
-  hard_assert(obj->flags & (Object::BOT_BIT | Object::VEHICLE_BIT));
+  OZ_ASSERT(obj->flags & (Object::BOT_BIT | Object::VEHICLE_BIT));
 
   if (obj->flags & Object::VEHICLE_BIT) {
     const Vehicle* veh   = static_cast<const Vehicle*>(obj);

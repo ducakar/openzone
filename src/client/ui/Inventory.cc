@@ -44,7 +44,7 @@ void Inventory::ownerItemCallback(ModelField* sender, bool isClicked)
   Bot*           bot       = camera.botObj;
   int            id        = inventory->scrollOwner * COLS + sender->id;
 
-  hard_assert(bot != nullptr);
+  OZ_ASSERT(bot != nullptr);
 
   if (uint(id) < uint(container->items.length())) {
     item = orbis.obj<const Dynamic>(container->items[id]);
@@ -53,7 +53,7 @@ void Inventory::ownerItemCallback(ModelField* sender, bool isClicked)
     return;
   }
 
-  hard_assert(inventory->taggedItemIndex == -1);
+  OZ_ASSERT(inventory->taggedItemIndex == -1);
 
   inventory->taggedItemIndex      = item->index;
   inventory->taggedOwnerComponent = true;
@@ -88,7 +88,7 @@ void Inventory::otherItemCallback(ModelField* sender, bool isClicked)
   Bot*           bot       = camera.botObj;
   int            id        = inventory->scrollOther * COLS + sender->id;
 
-  hard_assert(bot != nullptr);
+  OZ_ASSERT(bot != nullptr);
 
   if (container == nullptr) {
     return;
@@ -101,7 +101,7 @@ void Inventory::otherItemCallback(ModelField* sender, bool isClicked)
     return;
   }
 
-  hard_assert(inventory->taggedItemIndex == -1);
+  OZ_ASSERT(inventory->taggedItemIndex == -1);
 
   inventory->taggedItemIndex      = item->index;
   inventory->taggedOwnerComponent = false;

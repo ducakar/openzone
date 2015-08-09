@@ -28,8 +28,8 @@
 
 #pragma once
 
-#include "Plane.hh"
 #include "Quat.hh"
+#include "Plane.hh"
 
 namespace oz
 {
@@ -287,7 +287,7 @@ public:
    */
   Mat3 operator / (float s) const
   {
-    hard_assert(s != 0.0f);
+    OZ_ASSERT(s != 0.0f);
 
     s = 1.0f / s;
     return Mat3(x * s, y * s, z * s);
@@ -331,7 +331,7 @@ public:
    */
   Mat3& operator /= (float s)
   {
-    hard_assert(s != 0.0f);
+    OZ_ASSERT(s != 0.0f);
 
     s = 1.0f / s;
     x *= s;

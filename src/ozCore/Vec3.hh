@@ -118,7 +118,7 @@ public:
    */
   Vec3 operator ~ () const
   {
-    hard_assert(x*x + y*y + z*z > 0.0f);
+    OZ_ASSERT(x*x + y*y + z*z > 0.0f);
 
 #ifdef OZ_SIMD
     float4 k = vInvSqrt(vDot(f4, f4));
@@ -134,7 +134,7 @@ public:
    */
   Vec3 fastUnit() const
   {
-    hard_assert(x*x + y*y + z*z > 0.0f);
+    OZ_ASSERT(x*x + y*y + z*z > 0.0f);
 
 #ifdef OZ_SIMD
     float4 k = vFastInvSqrt(vDot(f4, f4));
@@ -225,7 +225,7 @@ public:
   OZ_ALWAYS_INLINE
   Vec3 operator / (float s) const
   {
-    hard_assert(s != 0.0f);
+    OZ_ASSERT(s != 0.0f);
 
 #ifdef OZ_SIMD
     return Vec3(f4 / vFill(s));
@@ -289,7 +289,7 @@ public:
   OZ_ALWAYS_INLINE
   Vec3& operator /= (float s)
   {
-    hard_assert(s != 0.0f);
+    OZ_ASSERT(s != 0.0f);
 
 #ifdef OZ_SIMD
     f4 /= vFill(s);

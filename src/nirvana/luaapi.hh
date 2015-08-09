@@ -446,7 +446,7 @@ static int ozSelfBindItems(lua_State* l)
   ms.objects.clear();
 
   for (int item : ns.self->items) {
-    hard_assert(item >= 0);
+    OZ_ASSERT(item >= 0);
 
     ms.objects.add(orbis.obj(item));
   }
@@ -475,7 +475,7 @@ static int ozSelfOverlaps(lua_State* l)
   int  flags = l_toint(1);
   AABB aabb  = AABB(*ns.self, l_tofloat(2));
 
-  hard_assert(collider.mask == Object::SOLID_BIT);
+  OZ_ASSERT(collider.mask == Object::SOLID_BIT);
 
   if (flags & COLLIDE_ALL_OBJECTS_BIT) {
     collider.mask = ~0;
@@ -502,7 +502,7 @@ static int ozSelfBindOverlaps(lua_State* l)
   List<Struct*>* structs = nullptr;
   List<Object*>* objects = nullptr;
 
-  hard_assert(collider.mask == Object::SOLID_BIT);
+  OZ_ASSERT(collider.mask == Object::SOLID_BIT);
 
   if (flags & COLLIDE_STRUCTS_BIT) {
     structs = &ms.structs;

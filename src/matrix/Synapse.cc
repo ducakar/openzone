@@ -51,7 +51,7 @@ bool Synapse::lock(Bot* user, Entity* target)
 
 bool Synapse::transferItem(Object* source, Dynamic* item, Object* target)
 {
-  hard_assert(source->items.contains(item->index));
+  OZ_ASSERT(source->items.contains(item->index));
 
   if (target->items.length() == target->clazz->nItems) {
     return false;
@@ -72,7 +72,7 @@ bool Synapse::transferItem(Object* source, Dynamic* item, Object* target)
 
 bool Synapse::takeItem(Object* container, Dynamic* item)
 {
-  hard_assert(item->cell != nullptr);
+  OZ_ASSERT(item->cell != nullptr);
 
   if (container->items.length() == container->clazz->nItems) {
     return false;
@@ -87,7 +87,7 @@ bool Synapse::takeItem(Object* container, Dynamic* item)
 
 bool Synapse::dropItem(Object* container, Dynamic* item, const Point& p, const Vec3& velocity)
 {
-  hard_assert(container->items.contains(item->index));
+  OZ_ASSERT(container->items.contains(item->index));
 
   item->p = p;
 
@@ -113,7 +113,7 @@ bool Synapse::dropItem(Object* container, Dynamic* item, const Point& p, const V
 
 void Synapse::put(Dynamic* obj)
 {
-  hard_assert(obj->index >= 0 && obj->cell == nullptr && obj->parent == -1);
+  OZ_ASSERT(obj->index >= 0 && obj->cell == nullptr && obj->parent == -1);
 
   orbis.position(obj);
 
@@ -122,7 +122,7 @@ void Synapse::put(Dynamic* obj)
 
 void Synapse::cut(Dynamic* obj)
 {
-  hard_assert(obj->index >= 0 && obj->cell != nullptr && obj->parent >= 0);
+  OZ_ASSERT(obj->index >= 0 && obj->cell != nullptr && obj->parent >= 0);
 
   obj->flags   &= ~(Object::TICK_CLEAR_MASK | Object::MOVE_CLEAR_MASK);
   obj->lower    = -1;
@@ -268,7 +268,7 @@ void Synapse::genFrags(const char* poolName, int nFrags, const Bounds& bb, const
 
 void Synapse::remove(Struct* str)
 {
-  hard_assert(str->index >= 0);
+  OZ_ASSERT(str->index >= 0);
 
   for (int i = 0; i < str->boundObjects.length(); ++i) {
     Object* boundObj = orbis.obj(str->boundObjects[i]);
@@ -296,7 +296,7 @@ void Synapse::remove(Struct* str)
 
 void Synapse::remove(Object* obj)
 {
-  hard_assert(obj->index >= 0);
+  OZ_ASSERT(obj->index >= 0);
 
   for (int i = 0; i < obj->items.length(); ++i) {
     Object* item = orbis.obj(obj->items[i]);
@@ -326,7 +326,7 @@ void Synapse::remove(Object* obj)
 
 void Synapse::remove(Frag* frag)
 {
-  hard_assert(frag->index >= 0);
+  OZ_ASSERT(frag->index >= 0);
 
   removedFrags.add(frag->index);
 
@@ -336,7 +336,7 @@ void Synapse::remove(Frag* frag)
 
 void Synapse::removeStruct(int index)
 {
-  hard_assert(index >= 0);
+  OZ_ASSERT(index >= 0);
 
   Struct* str = orbis.str(index);
 
@@ -347,7 +347,7 @@ void Synapse::removeStruct(int index)
 
 void Synapse::removeObject(int index)
 {
-  hard_assert(index >= 0);
+  OZ_ASSERT(index >= 0);
 
   Object* obj = orbis.obj(index);
 
@@ -358,7 +358,7 @@ void Synapse::removeObject(int index)
 
 void Synapse::removeFrag(int index)
 {
-  hard_assert(index >= 0);
+  OZ_ASSERT(index >= 0);
 
   Frag* frag = orbis.frag(index);
 

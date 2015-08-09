@@ -26,8 +26,6 @@
 
 #include "Alloc.hh"
 
-#include "Arrays.hh"
-#include "System.hh"
 #include "SpinLock.hh"
 
 #include <cstdlib>
@@ -160,13 +158,13 @@ Alloc::CIterator Alloc::arrayCIter()
 }
 
 OZ_WEAK
-void* operator new (size_t size)
+void* operator new (std::size_t size)
 {
   return oz::allocate(oz::OBJECT, size);
 }
 
 OZ_WEAK
-void* operator new[] (size_t size)
+void* operator new[] (std::size_t size)
 {
   return oz::allocate(oz::ARRAY, size);
 }
@@ -188,13 +186,13 @@ void operator delete[] (void* ptr) noexcept
 }
 
 OZ_WEAK
-void* operator new (size_t size, const std::nothrow_t&) noexcept
+void* operator new (std::size_t size, const std::nothrow_t&) noexcept
 {
   return oz::allocate(oz::OBJECT, size);
 }
 
 OZ_WEAK
-void* operator new[] (size_t size, const std::nothrow_t&) noexcept
+void* operator new[] (std::size_t size, const std::nothrow_t&) noexcept
 {
   return oz::allocate(oz::ARRAY, size);
 }

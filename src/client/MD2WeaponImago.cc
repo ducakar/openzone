@@ -40,8 +40,8 @@ MD2WeaponImago::~MD2WeaponImago()
 
 Imago* MD2WeaponImago::create(const Object* obj)
 {
-  hard_assert(obj->flags & Object::DYNAMIC_BIT);
-  hard_assert(obj->flags & Object::WEAPON_BIT);
+  OZ_ASSERT(obj->flags & Object::DYNAMIC_BIT);
+  OZ_ASSERT(obj->flags & Object::WEAPON_BIT);
 
   MD2WeaponImago* imago = new MD2WeaponImago(obj);
 

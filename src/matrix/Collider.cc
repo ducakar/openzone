@@ -36,10 +36,6 @@ static const Vec3 NORMALS[] =
   Vec3( 0.0f,  0.0f, -1.0f)
 };
 
-Collider::Collider() :
-  mask(Object::SOLID_BIT)
-{}
-
 inline bool Collider::visitBrush(int index)
 {
   bool isTested = visitedBrushes.get(index);
@@ -137,7 +133,7 @@ bool Collider::overlapsAABBEntities()
         int index = entity->clazz->firstBrush + j;
         const BSP::Brush& brush = bsp->brushes[index];
 
-        hard_assert(!visitBrush(index));
+        OZ_ASSERT(!visitBrush(index));
 
         startPos = originalStartPos - entity->offset;
 
@@ -289,7 +285,7 @@ void Collider::trimAABBObj(const Object* sObj)
       float discriminant = radiusEps2 * moveDist2 - pxsy_pysx * pxsy_pysx;
 
       if (startDist2 < radius2) {
-        hard_assert(discriminant >= 0.0f);
+        OZ_ASSERT(discriminant >= 0.0f);
 
         float sqrtDiscr = Math::sqrt(discriminant);
         float endRatio  = (-pxsx_pysy + sqrtDiscr) / max(moveDist2, Math::FLOAT_EPS);
@@ -453,7 +449,7 @@ void Collider::trimAABBLiquid(const BSP::Brush* brush)
     }
   }
 
-  hard_assert(0.0f < depth && depth < Math::INF);
+  OZ_ASSERT(0.0f < depth && depth < Math::INF);
 
   hit.mediumStr = const_cast<Struct*>(str);
   hit.medium   |= brush->flags & Medium::MASK;
@@ -541,7 +537,7 @@ void Collider::trimAABBEntities()
         int index = entity->clazz->firstBrush + j;
         const BSP::Brush& brush = bsp->brushes[index];
 
-        hard_assert(!visitBrush(index));
+        OZ_ASSERT(!visitBrush(index));
 
         trimAABBBrush(&brush);
       }
@@ -697,9 +693,9 @@ void Collider::trimAABBOrbis()
 
   trimAABBTerra();
 
-  hard_assert(0.0f <= hit.ratio && hit.ratio <= 1.0f);
-  hard_assert(((hit.material & Material::OBJECT_BIT) != 0) == (hit.obj != nullptr));
-  hard_assert(hit.depth >= 0.0f);
+  OZ_ASSERT(0.0f <= hit.ratio && hit.ratio <= 1.0f);
+  OZ_ASSERT(((hit.material & Material::OBJECT_BIT) != 0) == (hit.obj != nullptr));
+  OZ_ASSERT(hit.depth >= 0.0f);
 }
 
 void Collider::trimEntityObjects()
@@ -727,15 +723,23 @@ void Collider::trimEntityObjects()
             const BSP::Brush& brush = bsp->brushes[index];
 
             trimAABBBrush(&brush);
+
+            if (hit.str != nullptr) {
+              hit.normal   = -hit.normal;
+              hit.obj      = const_cast<Object*>(sObj);
+              hit.str      = nullptr;
+              hit.entity   = nullptr;
+              hit.material = Material::OBJECT_BIT;
+            }
           }
         }
       }
     }
   }
 
-  hard_assert(0.0f <= hit.ratio && hit.ratio <= 1.0f);
-  hard_assert(((hit.material & Material::OBJECT_BIT) != 0) == (hit.obj != nullptr));
-  hard_assert(hit.depth >= 0.0f);
+  OZ_ASSERT(0.0f <= hit.ratio && hit.ratio <= 1.0f);
+  OZ_ASSERT(((hit.material & Material::OBJECT_BIT) != 0) == (hit.obj != nullptr));
+  OZ_ASSERT(hit.depth >= 0.0f);
 }
 
 //***********************************
@@ -744,7 +748,7 @@ void Collider::trimEntityObjects()
 
 void Collider::getOrbisOverlaps(List<Struct*>* structs, List<Object*>* objects)
 {
-  hard_assert(structs != nullptr || objects != nullptr);
+  OZ_ASSERT(structs != nullptr || objects != nullptr);
 
   for (int x = span.minX; x <= span.maxX; ++x) {
     for (int y = span.minY; y <= span.maxY; ++y) {
@@ -781,7 +785,7 @@ void Collider::getOrbisOverlaps(List<Struct*>* structs, List<Object*>* objects)
 
 void Collider::getEntityOverlaps(List<Object*>* objects)
 {
-  hard_assert(objects != nullptr);
+  OZ_ASSERT(objects != nullptr);
 
   for (int x = span.minX; x <= span.maxX; ++x) {
     for (int y = span.minY; y <= span.maxY; ++y) {
@@ -864,7 +868,7 @@ void Collider::translate(const Point& point, const Vec3& move_, const Object* ex
   exclObj = exclObj_;
   flags   = Object::CYLINDER_BIT;
 
-  trace   = Bounds(point, move, 2.0f * EPSILON);
+  trace   = Bounds(point, 2.0f * EPSILON).expand(move);
   span    = orbis.getInters(trace, Object::MAX_DIM);
 
   trimAABBOrbis();
@@ -878,7 +882,7 @@ void Collider::translate(const AABB& aabb_, const Vec3& move_, const Object* exc
   exclObj = exclObj_;
   flags   = 0;
 
-  trace   = Bounds(aabb, move, 2.0f * EPSILON);
+  trace   = Bounds(aabb, 2.0f * EPSILON).expand(move);
   span    = orbis.getInters(trace, Object::MAX_DIM);
 
   trimAABBOrbis();
@@ -886,7 +890,7 @@ void Collider::translate(const AABB& aabb_, const Vec3& move_, const Object* exc
 
 void Collider::translate(const Dynamic* obj_, const Vec3& move_)
 {
-  hard_assert(obj_->cell != nullptr);
+  OZ_ASSERT(obj_->cell != nullptr);
 
   obj     = obj_;
   aabb    = *obj_;
@@ -894,20 +898,21 @@ void Collider::translate(const Dynamic* obj_, const Vec3& move_)
   exclObj = obj_;
   flags   = obj_->flags;
 
-  trace   = Bounds(aabb, move, 2.0f * EPSILON);
+  trace   = Bounds(aabb, 2.0f * EPSILON).expand(move);
   span    = orbis.getInters(trace, Object::MAX_DIM);
 
   trimAABBOrbis();
 }
 
-void Collider::translate(const Entity* entity_, const Vec3& move_)
+void Collider::translate(const Entity* entity_, const Vec3& localMove)
 {
   str    = entity_->str;
   entity = entity_;
-  move   = move_;
+  bsp    = entity_->clazz->bsp;
+  move   = localMove;
   flags  = 0;
 
-  trace  = Bounds(str->toAbsoluteCS(*entity->clazz + entity->offset), 2.0f * EPSILON);
+  trace  = str->toAbsoluteCS(Bounds(*entity->clazz + entity->offset, 2.0f * EPSILON).expand(move));
   span   = orbis.getInters(trace, Object::MAX_DIM);
 
   trimEntityObjects();
@@ -918,7 +923,7 @@ void Collider::getOverlaps(const AABB& aabb_, List<Struct*>* structs, List<Objec
 {
   aabb    = AABB(aabb_, margin_);
 
-  trace   = Bounds(aabb);
+  trace   = Bounds(aabb, 0.0f);
   span    = orbis.getInters(trace, Object::MAX_DIM);
 
   getOrbisOverlaps(structs, objects);

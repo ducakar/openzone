@@ -68,7 +68,7 @@ void Matrix::update()
       continue;
     }
 
-    hard_assert(str->life >= 0.0f);
+    OZ_ASSERT(str->life >= 0.0f);
 
     if (str->demolishing >= 1.0f) {
       synapse.remove(str);
@@ -88,7 +88,7 @@ void Matrix::update()
       continue;
     }
 
-    hard_assert(obj->life >= 0.0f);
+    OZ_ASSERT(obj->life >= 0.0f);
 
     if (obj->life == 0.0f) {
       obj->destroy();
@@ -109,12 +109,12 @@ void Matrix::update()
       obj->update();
 
       // objects should not remove themselves within onUpdate()
-      hard_assert(orbis.obj(i) != nullptr);
+      OZ_ASSERT(orbis.obj(i) != nullptr);
 
       if (obj->flags & Object::DYNAMIC_BIT) {
         Dynamic* dyn = static_cast<Dynamic*>(obj);
 
-        hard_assert((dyn->parent >= 0) == (dyn->cell == nullptr));
+        OZ_ASSERT((dyn->parent >= 0) == (dyn->cell == nullptr));
 
         if (dyn->cell == nullptr) {
           if (orbis.obj(dyn->parent) == nullptr) {

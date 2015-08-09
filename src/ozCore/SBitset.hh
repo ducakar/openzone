@@ -199,7 +199,7 @@ public:
   OZ_ALWAYS_INLINE
   bool get(int i) const
   {
-    hard_assert(uint(i) < uint(BITS));
+    OZ_ASSERT(uint(i) < uint(BITS));
 
     return (data[i / UNIT_BITS] & (size_t(1) << (i % UNIT_BITS))) != 0;
   }
@@ -210,7 +210,7 @@ public:
   OZ_ALWAYS_INLINE
   void set(int i)
   {
-    hard_assert(uint(i) < uint(BITS));
+    OZ_ASSERT(uint(i) < uint(BITS));
 
     data[i / UNIT_BITS] |= size_t(1) << (i % UNIT_BITS);
   }
@@ -221,7 +221,7 @@ public:
   OZ_ALWAYS_INLINE
   void clear(int i)
   {
-    hard_assert(uint(i) < uint(BITS));
+    OZ_ASSERT(uint(i) < uint(BITS));
 
     data[i / UNIT_BITS] &= ~(size_t(1) << (i % UNIT_BITS));
   }
@@ -232,7 +232,7 @@ public:
   OZ_ALWAYS_INLINE
   void flip(int i)
   {
-    hard_assert(uint(i) < uint(BITS));
+    OZ_ASSERT(uint(i) < uint(BITS));
 
     data[i / UNIT_BITS] ^= size_t(1) << (i % UNIT_BITS);
   }

@@ -285,7 +285,7 @@ void Camera::read(Stream* is)
   vehicle    = is->readInt();
   vehicleObj = orbis.obj<Vehicle>(vehicle);
 
-  hard_assert(switchableUnits.isEmpty());
+  OZ_ASSERT(switchableUnits.isEmpty());
 
   int nSwitchableUnits = is->readInt();
   for (int i = 0; i < nSwitchableUnits; ++i) {

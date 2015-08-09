@@ -26,7 +26,7 @@
 
 #include "Pool.hh"
 
-#include "Alloc.hh"
+#include "System.hh"
 
 #include <cstring>
 
@@ -142,7 +142,7 @@ void PoolAlloc::deallocate(void* ptr)
     return;
   }
 
-  hard_assert(count != 0);
+  OZ_ASSERT(count != 0);
 
   Slot* slot = static_cast<Slot*>(ptr);
 
@@ -157,7 +157,7 @@ void PoolAlloc::deallocate(void* ptr)
 
 void PoolAlloc::free()
 {
-  soft_assert(count == 0);
+  OZ_ASSERT(count == 0);
 
   if (count == 0) {
     for (Block* block = firstBlock; block != nullptr;) {

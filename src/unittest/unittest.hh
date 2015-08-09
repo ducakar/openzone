@@ -42,7 +42,7 @@
 template <class CIteratorA, class CIteratorB>
 inline bool iEquals(CIteratorA iterA, CIteratorB iterB)
 {
-  hard_assert(static_cast<void*>(&iterA) != static_cast<void*>(&iterB));
+  OZ_ASSERT(static_cast<void*>(&iterA) != static_cast<void*>(&iterB));
 
   for (; iterA.isValid() && iterB.isValid() && *iterA == *iterB; ++iterA, ++iterB);
   return !iterA.isValid() && !iterB.isValid();

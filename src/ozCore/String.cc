@@ -26,8 +26,6 @@
 
 #include "String.hh"
 
-#include "Math.hh"
-
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -42,8 +40,8 @@ const String String::EMPTY = String();
 OZ_INTERNAL
 char* String::resize(int newCount, bool keepContents)
 {
-  hard_assert(count >= 0 && newCount >= 0);
-  hard_assert(!keepContents || newCount > count);
+  OZ_ASSERT(count >= 0 && newCount >= 0);
+  OZ_ASSERT(!keepContents || newCount > count);
 
   if (newCount < BUFFER_SIZE) {
     if (count >= BUFFER_SIZE) {
@@ -162,14 +160,14 @@ bool String::endsWith(const char* s, const char* sub)
 
 String String::substring(const char* s, int start)
 {
-  hard_assert(0 <= start && start <= length(s));
+  OZ_ASSERT(0 <= start && start <= length(s));
 
   return String(s + start, length(s) - start);
 }
 
 String String::substring(const char* s, int start, int end)
 {
-  hard_assert(0 <= start && start <= end && end <= length(s));
+  OZ_ASSERT(0 <= start && start <= end && end <= length(s));
 
   return String(s + start, end - start);
 }
@@ -480,14 +478,14 @@ String& String::operator += (const char* s)
 
 String String::substring(int start) const
 {
-  hard_assert(0 <= start && start <= count);
+  OZ_ASSERT(0 <= start && start <= count);
 
   return String(begin() + start, count - start);
 }
 
 String String::substring(int start, int end) const
 {
-  hard_assert(0 <= start && start <= count && start <= end && end <= count);
+  OZ_ASSERT(0 <= start && start <= count && start <= end && end <= count);
 
   return String(begin() + start, end - start);
 }

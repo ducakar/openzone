@@ -57,85 +57,39 @@ public:
   {}
 
   /**
-   * Create `Bounds` enlarged for a given margin `eps`.
+   * Create `Bounds` from a point expanded for a given margin `eps`.
    */
   OZ_ALWAYS_INLINE
-  explicit Bounds(const Bounds& b, float eps) :
-    mins(b.mins - Vec3(eps, eps, eps)), maxs(b.maxs + Vec3(eps, eps, eps))
-  {}
-
-  /**
-   * Create `Bounds` that describes the same set as the given `AABB`.
-   */
-  OZ_ALWAYS_INLINE
-  explicit Bounds(const AABB& a, float eps = 0.0f)
-  {
-    Vec3 epsDim = a.dim + Vec3(eps, eps, eps);
-
-    mins = a.p - epsDim;
-    maxs = a.p + epsDim;
-  }
-
-  /**
-   * Create `Bounds` that cover the trace described by the given point move.
-   */
-  OZ_ALWAYS_INLINE
-  explicit Bounds(const Point& p, const Vec3& move, float eps = 0.0f)
+  explicit Bounds(const Point& p, float eps)
   {
     Vec3 epsDim = Vec3(eps, eps, eps);
 
     mins = p - epsDim;
     maxs = p + epsDim;
-
-    if (move.x < 0.0f) {
-      mins.x += move.x;
-    }
-    else {
-      maxs.x += move.x;
-    }
-    if (move.y < 0.0f) {
-      mins.y += move.y;
-    }
-    else {
-      maxs.y += move.y;
-    }
-    if (move.z < 0.0f) {
-      mins.z += move.z;
-    }
-    else {
-      maxs.z += move.z;
-    }
   }
 
   /**
-   * Create `Bounds` that cover the trace described by the given `AABB` move.
+   * Create `Bounds` from an `AABB` expanded for a given margin `eps`.
    */
   OZ_ALWAYS_INLINE
-  explicit Bounds(const AABB& a, const Vec3& move, float eps = 0.0f)
+  explicit Bounds(const AABB& a, float eps)
   {
     Vec3 epsDim = a.dim + Vec3(eps, eps, eps);
 
     mins = a.p - epsDim;
     maxs = a.p + epsDim;
+  }
 
-    if (move.x < 0.0f) {
-      mins.x += move.x;
-    }
-    else {
-      maxs.x += move.x;
-    }
-    if (move.y < 0.0f) {
-      mins.y += move.y;
-    }
-    else {
-      maxs.y += move.y;
-    }
-    if (move.z < 0.0f) {
-      mins.z += move.z;
-    }
-    else {
-      maxs.z += move.z;
-    }
+  /**
+   * Create `Bounds` expanded for a given margin `eps`.
+   */
+  OZ_ALWAYS_INLINE
+  explicit Bounds(const Bounds& b, float eps)
+  {
+    Vec3 epsDim = Vec3(eps, eps, eps);
+
+    mins = b.mins - epsDim;
+    maxs = b.maxs + epsDim;
   }
 
   /**
@@ -152,6 +106,33 @@ public:
   Vec3 dim(float eps = 0.0f) const
   {
     return 0.5f * (maxs - mins) + Vec3(eps, eps, eps);
+  }
+
+  /**
+   * Expand bounds to describe trace of bounds moved by a given vector.
+   */
+  Bounds& expand(const Vec3& move)
+  {
+    if (move.x < 0.0f) {
+      mins.x += move.x;
+    }
+    else {
+      maxs.x += move.x;
+    }
+    if (move.y < 0.0f) {
+      mins.y += move.y;
+    }
+    else {
+      maxs.y += move.y;
+    }
+    if (move.z < 0.0f) {
+      mins.z += move.z;
+    }
+    else {
+      maxs.z += move.z;
+    }
+
+    return *this;
   }
 
   /**

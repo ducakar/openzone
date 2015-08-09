@@ -239,7 +239,7 @@ void Area::add(Area* area, int localX, int localY)
 
 void Area::remove(Area* area)
 {
-  hard_assert(children.has(area));
+  OZ_ASSERT(children.has(area));
 
   children.erase(area);
   delete area;
@@ -248,7 +248,7 @@ void Area::remove(Area* area)
 void Area::raise()
 {
   if (parent != nullptr && parent->children.first() != this) {
-    hard_assert(parent->children.has(this));
+    OZ_ASSERT(parent->children.has(this));
 
     parent->children.erase(this);
     parent->children.pushFirst(this);
@@ -258,7 +258,7 @@ void Area::raise()
 void Area::sink()
 {
   if (parent != nullptr && parent->children.last() != this) {
-    hard_assert(parent->children.has(this));
+    OZ_ASSERT(parent->children.has(this));
 
     parent->children.erase(this);
     parent->children.pushLast(this);

@@ -174,7 +174,7 @@ public:
    */
   void insertAfter(Elem* e, Elem* p)
   {
-    hard_assert(e != nullptr && p != nullptr);
+    OZ_ASSERT(e != nullptr && p != nullptr);
 
     Elem* next = p->next[INDEX];
 
@@ -195,7 +195,7 @@ public:
    */
   void insertBefore(Elem* e, Elem* p)
   {
-    hard_assert(e != nullptr && p != nullptr);
+    OZ_ASSERT(e != nullptr && p != nullptr);
 
     Elem* prev = p->prev[INDEX];
 
@@ -235,7 +235,7 @@ public:
    */
   void pushFirst(Elem* elem)
   {
-    hard_assert(elem != nullptr);
+    OZ_ASSERT(elem != nullptr);
 
     elem->prev[INDEX] = nullptr;
     elem->next[INDEX] = firstElem;
@@ -255,7 +255,7 @@ public:
    */
   void pushLast(Elem* elem)
   {
-    hard_assert(elem != nullptr);
+    OZ_ASSERT(elem != nullptr);
 
     elem->prev[INDEX] = lastElem;
     elem->next[INDEX] = nullptr;
@@ -275,7 +275,7 @@ public:
    */
   Elem* popFirst()
   {
-    hard_assert(firstElem != nullptr);
+    OZ_ASSERT(firstElem != nullptr);
 
     Elem* elem = firstElem;
 
@@ -295,7 +295,7 @@ public:
    */
   Elem* popLast()
   {
-    hard_assert(lastElem != nullptr);
+    OZ_ASSERT(lastElem != nullptr);
 
     Elem* elem = lastElem;
 

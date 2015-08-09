@@ -31,7 +31,11 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
+
+#ifdef __GLIBC__
+# include <execinfo.h>
+# include <unistd.h>
+#endif
 
 #define OZ_VAARGS_BUFFER(buffer) \
   char buffer[OUT_BUFFER_SIZE]; \
@@ -59,12 +63,12 @@ static File  logFile;
 static FILE* logFileStream = nullptr;
 static int   indentLevel   = 0;
 
-bool Log::showVerbose      = false;
-bool Log::verboseMode      = false;
+bool Log::showVerbose = false;
+bool Log::verboseMode = false;
 
 static inline const char* getIndent()
 {
-  hard_assert(indentLevel >= 0);
+  OZ_ASSERT(indentLevel >= 0);
 
   int bias = max<int>(INDENT_BUFFER_LENGTH - indentLevel * INDENT_SPACES, 0);
   return &INDENT_BUFFER[bias];
@@ -205,22 +209,19 @@ bool Log::printMemorySummary()
 
 void Log::printTrace(const StackTrace& st)
 {
-  const char* threadName = String::isEmpty(st.threadName) ? "?" : st.threadName;
+  printEnd("  thread `%s'", st.thread);
 
-  printRaw("  thread: %s\n  stack trace:\n", threadName);
+#ifdef __GLIBC__
 
-  if (st.nFrames == 0) {
-    printRaw("    [no stack trace]");
+  printEnd("  stack trace:");
+
+  backtrace_symbols_fd(st.frames, st.nFrames, STDOUT_FILENO);
+
+  if (logFileStream != nullptr) {
+    backtrace_symbols_fd(st.frames, st.nFrames, fileno(logFileStream));
   }
-  else {
-    char** entries = st.symbols();
 
-    for (int i = 0; i < st.nFrames; ++i) {
-      printRaw("    %s\n", entries[i]);
-    }
-
-    free(entries);
-  }
+#endif
 }
 
 bool Log::printMemoryLeaks()

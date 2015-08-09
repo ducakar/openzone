@@ -527,7 +527,7 @@ void BSP::optimise()
 
   // remove brushes that lay out of boundaries
   for (int i = 0; i < brushes.length();) {
-    hard_assert(brushes[i].nSides >= 0);
+    OZ_ASSERT(brushes[i].nSides >= 0);
 
     if (brushes[i].nSides != 0) {
       ++i;
@@ -555,7 +555,7 @@ void BSP::optimise()
             --leaves[k].firstBrush;
           }
           else if (j < leaves[k].firstBrush + leaves[k].nBrushes) {
-            hard_assert(leaves[k].nBrushes > 0);
+            OZ_ASSERT(leaves[k].nBrushes > 0);
 
             --leaves[k].nBrushes;
           }
@@ -568,7 +568,7 @@ void BSP::optimise()
         --models[j].firstBrush;
       }
       else if (i < models[j].firstBrush + models[j].nBrushes) {
-        hard_assert(models[j].nBrushes > 0);
+        OZ_ASSERT(models[j].nBrushes > 0);
 
         --models[j].nBrushes;
       }
@@ -598,7 +598,7 @@ void BSP::optimise()
             --leaves[l].firstBrush;
           }
           else if (k < leaves[l].firstBrush + leaves[l].nBrushes) {
-            hard_assert(leaves[l].nBrushes > 0);
+            OZ_ASSERT(leaves[l].nBrushes > 0);
 
             --leaves[l].nBrushes;
           }
@@ -673,7 +673,7 @@ void BSP::optimise()
           i = nodes[0].front;
         }
         else {
-          hard_assert(false);
+          OZ_ASSERT(false);
         }
         nodes[0] = nodes[i];
 
@@ -684,17 +684,17 @@ void BSP::optimise()
         int* parentsRef = nullptr;
         for (int j = 0; j < nodes.length(); ++j) {
           if (nodes[j].front == i) {
-            hard_assert(parentsRef == nullptr);
+            OZ_ASSERT(parentsRef == nullptr);
 
             parentsRef = &nodes[j].front;
           }
           if (nodes[j].back == i) {
-            hard_assert(parentsRef == nullptr);
+            OZ_ASSERT(parentsRef == nullptr);
 
             parentsRef = &nodes[j].back;
           }
         }
-        hard_assert(parentsRef != nullptr);
+        OZ_ASSERT(parentsRef != nullptr);
 
         if (nodes[i].front == 0) {
           *parentsRef = nodes[i].back;
@@ -703,15 +703,15 @@ void BSP::optimise()
           *parentsRef = nodes[i].front;
         }
         else {
-          hard_assert(false);
+          OZ_ASSERT(false);
         }
       }
 
       nodes.erase(i);
 
       for (int j = 0; j < nodes.length(); ++j) {
-        hard_assert(nodes[j].front != i);
-        hard_assert(nodes[j].back != i);
+        OZ_ASSERT(nodes[j].front != i);
+        OZ_ASSERT(nodes[j].back != i);
       }
 
       // shift nodes' references
@@ -760,7 +760,7 @@ void BSP::optimise()
       }
       else if (i < brushes[j].firstSide + brushes[j].nSides) {
         // removed brush side shouldn't be referenced by any brush
-        hard_assert(false);
+        OZ_ASSERT(false);
       }
     }
   }
@@ -794,14 +794,14 @@ void BSP::optimise()
 
     // adjust plane references
     for (int j = 0; j < nodes.length(); ++j) {
-      hard_assert(nodes[j].plane != i);
+      OZ_ASSERT(nodes[j].plane != i);
 
       if (nodes[j].plane > i) {
         --nodes[j].plane;
       }
     }
     for (int j = 0; j < brushSides.length(); ++j) {
-      hard_assert(brushSides[j] != i);
+      OZ_ASSERT(brushSides[j] != i);
 
       if (brushSides[j] > i) {
         --brushSides[j];
@@ -855,7 +855,7 @@ void BSP::optimise()
 
   // remove faces that lay out of boundaries
   for (int i = 0; i < faces.length();) {
-    hard_assert(faces[i].nVertices > 0 && faces[i].nIndices >= 0);
+    OZ_ASSERT(faces[i].nVertices > 0 && faces[i].nIndices >= 0);
 
     if (faces[i].nIndices != 0) {
       ++i;
@@ -871,7 +871,7 @@ void BSP::optimise()
         --modelFaces[j].firstFace;
       }
       else if (i < modelFaces[j].firstFace + modelFaces[j].nFaces) {
-        hard_assert(modelFaces[j].nFaces > 0);
+        OZ_ASSERT(modelFaces[j].nFaces > 0);
 
         --modelFaces[j].nFaces;
       }

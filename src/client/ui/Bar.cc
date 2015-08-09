@@ -43,7 +43,7 @@ void Bar::setStyle(const Style::Bar* style_)
 
 void Bar::draw(const Area* area, float ratio) const
 {
-  hard_assert(style != nullptr);
+  OZ_ASSERT(style != nullptr);
 
   draw(area, style->x, style->y, style->w, style->h, ratio);
 }
@@ -61,7 +61,7 @@ void Bar::draw(const Area* area, int barX, int barY, int barWidth, int barHeight
 
 void Bar::drawAbs(int barX, int barY, int barWidth, int barHeight, float ratio) const
 {
-  hard_assert(style != nullptr);
+  OZ_ASSERT(style != nullptr);
 
   ratio = clamp(ratio, 0.0f, 1.0f);
 

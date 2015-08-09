@@ -266,7 +266,7 @@ void MD2::AnimState::advance()
     while (frameRatio >= 1.0f);
   }
 
-  hard_assert(0.0f <= frameRatio && frameRatio < 1.0f);
+  OZ_ASSERT(0.0f <= frameRatio && frameRatio < 1.0f);
 }
 
 }

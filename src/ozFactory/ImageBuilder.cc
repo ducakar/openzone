@@ -142,7 +142,7 @@ static FIBITMAP* loadBitmap(const File& file)
 
 static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
 {
-  hard_assert(nFaces > 0);
+  OZ_ASSERT(nFaces > 0);
 
   int width      = faces[0].width;
   int height     = faces[0].height;

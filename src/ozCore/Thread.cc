@@ -26,7 +26,6 @@
 
 #include "Thread.hh"
 
-#include "System.hh"
 #include "SpinLock.hh"
 #include "Java.hh"
 #include "Pepper.hh"
@@ -93,8 +92,6 @@ void* Thread::Descriptor::threadMain(void* descriptor_)
 
   descriptor->lock.unlock();
 
-  System::threadInit();
-
 #if defined(__ANDROID__)
 
   JavaVM* javaVM = Java::vm();
@@ -128,7 +125,7 @@ void* Thread::Descriptor::threadMain(void* descriptor_)
 
 const char* Thread::name()
 {
-  return isMain() ? "main" : threadName;
+  return isMain() ? "MAIN" : threadName;
 }
 
 bool Thread::isMain()

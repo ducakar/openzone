@@ -35,7 +35,7 @@ Pool<SMMVehicleImago> SMMVehicleImago::pool(64);
 
 Imago* SMMVehicleImago::create(const Object* obj)
 {
-  hard_assert(obj->flags & Object::VEHICLE_BIT);
+  OZ_ASSERT(obj->flags & Object::VEHICLE_BIT);
 
   SMMVehicleImago* imago = new SMMVehicleImago(obj);
 

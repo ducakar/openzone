@@ -256,7 +256,7 @@ bool ModelBuilder::buildModel(const File& file, OutputStream* os)
     for (uint j = 0; j < mesh->mNumFaces; ++j) {
       const aiFace& face = mesh->mFaces[j];
 
-      hard_assert(face.mNumIndices == 3);
+      OZ_ASSERT(face.mNumIndices == 3);
 
       Vec3 a      = vertices[firstVertex + int(face.mIndices[0])].p - Point::ORIGIN;
       Vec3 b      = vertices[firstVertex + int(face.mIndices[1])].p - Point::ORIGIN;

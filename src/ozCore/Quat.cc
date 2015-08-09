@@ -95,7 +95,7 @@ void Quat::toAxisAngle(Vec3* axis, float* angle) const
 
 Quat Quat::slerp(const Quat& a, const Quat& b, float t)
 {
-  hard_assert(0.0f <= t && t <= 1.0f);
+  OZ_ASSERT(0.0f <= t && t <= 1.0f);
 
   float cosTheta  = a.w*b.w + a.x*b.x + a.y*b.y + a.z*b.z;
   float sinTheta2 = 1.0f - cosTheta*cosTheta;
@@ -115,7 +115,7 @@ Quat Quat::slerp(const Quat& a, const Quat& b, float t)
 
 Quat Quat::fastSlerp(const Quat& a, const Quat& b, float t)
 {
-  hard_assert(0.0f <= t && t <= 1.0f);
+  OZ_ASSERT(0.0f <= t && t <= 1.0f);
 
   Quat  d = *a * b;
   float k = d.w < 0.0f ? -t : t;

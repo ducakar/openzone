@@ -58,10 +58,10 @@ public:
   int                key;
 
   State              state;
-  float              moveDist;
   float              time;
 
   Vec3               offset;
+  Vec3               destination;
   Vec3               velocity;
 
 public:

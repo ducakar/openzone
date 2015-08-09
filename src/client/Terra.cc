@@ -264,7 +264,7 @@ void Terra::load()
   landShaderId   = liber.shaderIndex("terraLand");
   liquidShaderId = liber.shaderIndex("terraLiquid");
 
-  hard_assert(is.available() == 0);
+  OZ_ASSERT(is.available() == 0);
 }
 
 void Terra::unload()

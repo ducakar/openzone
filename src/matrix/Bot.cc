@@ -107,7 +107,7 @@ bool Bot::canReach(const Object* obj) const
 
 bool Bot::canEquip(const Weapon* weaponObj) const
 {
-  hard_assert(weaponObj->flags & WEAPON_BIT);
+  OZ_ASSERT(weaponObj->flags & WEAPON_BIT);
 
   const WeaponClass* weaponClazz = static_cast<const WeaponClass*>(weaponObj->clazz);
 
@@ -116,7 +116,7 @@ bool Bot::canEquip(const Weapon* weaponObj) const
 
 bool Bot::trigger(const Entity* entity)
 {
-  hard_assert(entity != nullptr);
+  OZ_ASSERT(entity != nullptr);
 
   if (entity->key >= 0 && entity->clazz->target >= 0 && canReach(entity)) {
     actions   &= ~INSTRUMENT_ACTIONS;
@@ -131,7 +131,7 @@ bool Bot::trigger(const Entity* entity)
 
 bool Bot::lock(const Entity* entity)
 {
-  hard_assert(entity != nullptr);
+  OZ_ASSERT(entity != nullptr);
 
   if (entity->key != 0 && canReach(entity)) {
     actions   &= ~INSTRUMENT_ACTIONS;
@@ -146,7 +146,7 @@ bool Bot::lock(const Entity* entity)
 
 bool Bot::use(const Object* object)
 {
-  hard_assert(object != nullptr);
+  OZ_ASSERT(object != nullptr);
 
   if ((object->flags & USE_FUNC_BIT) && canReach(object)) {
     if ((object->flags & WEAPON_BIT) && !canEquip(static_cast<const Weapon*>(object))) {
@@ -165,7 +165,7 @@ bool Bot::use(const Object* object)
 
 bool Bot::take(const Dynamic* item)
 {
-  hard_assert(item != nullptr && (item->flags & DYNAMIC_BIT));
+  OZ_ASSERT(item != nullptr && (item->flags & DYNAMIC_BIT));
 
   if ((item->flags & ITEM_BIT) && canReach(item)) {
     actions   &= ~INSTRUMENT_ACTIONS;
@@ -180,7 +180,7 @@ bool Bot::take(const Dynamic* item)
 
 bool Bot::grab(const Dynamic* dynamic)
 {
-  hard_assert(dynamic == nullptr || (dynamic->flags & DYNAMIC_BIT));
+  OZ_ASSERT(dynamic == nullptr || (dynamic->flags & DYNAMIC_BIT));
 
   if (dynamic == nullptr || canReach(dynamic)) {
     actions   &= ~INSTRUMENT_ACTIONS;
@@ -221,7 +221,7 @@ bool Bot::throwCargo()
 
 bool Bot::invUse(const Dynamic* item, const Object* source)
 {
-  hard_assert(item != nullptr && source != nullptr);
+  OZ_ASSERT(item != nullptr && source != nullptr);
 
   if ((item->flags & USE_FUNC_BIT) && source->items.contains(item->index) &&
       (source == this || canReach(source)))
@@ -242,7 +242,7 @@ bool Bot::invUse(const Dynamic* item, const Object* source)
 
 bool Bot::invTake(const Dynamic* item, const Object* source)
 {
-  hard_assert(item != nullptr && source != nullptr && source != this);
+  OZ_ASSERT(item != nullptr && source != nullptr && source != this);
 
   if (source->items.contains(item->index) && canReach(source)) {
     actions   &= ~INSTRUMENT_ACTIONS;
@@ -257,7 +257,7 @@ bool Bot::invTake(const Dynamic* item, const Object* source)
 
 bool Bot::invGive(const Dynamic* item, const Object* target)
 {
-  hard_assert(item != nullptr && target != nullptr && target != this);
+  OZ_ASSERT(item != nullptr && target != nullptr && target != this);
 
   if (items.contains(item->index) && canReach(target)) {
     actions   &= ~INSTRUMENT_ACTIONS;
@@ -272,7 +272,7 @@ bool Bot::invGive(const Dynamic* item, const Object* target)
 
 bool Bot::invDrop(const Dynamic* item)
 {
-  hard_assert(item != nullptr);
+  OZ_ASSERT(item != nullptr);
 
   if (items.contains(item->index)) {
     actions   &= ~INSTRUMENT_ACTIONS;
@@ -287,7 +287,7 @@ bool Bot::invDrop(const Dynamic* item)
 
 bool Bot::invGrab(const Dynamic* item)
 {
-  hard_assert(item != nullptr);
+  OZ_ASSERT(item != nullptr);
 
   if (items.contains(item->index)) {
     actions   &= ~INSTRUMENT_ACTIONS;
@@ -302,7 +302,7 @@ bool Bot::invGrab(const Dynamic* item)
 
 void Bot::grabCargo(Dynamic* dyn)
 {
-  hard_assert(cargo == -1 && dyn != nullptr);
+  OZ_ASSERT(cargo == -1 && dyn != nullptr);
 
   const DynamicClass* clazz    = static_cast<const DynamicClass*>(this->clazz);
   const DynamicClass* dynClazz = static_cast<const DynamicClass*>(dyn->clazz);
@@ -372,7 +372,7 @@ void Bot::kill()
 
 void Bot::enter(int vehicle_)
 {
-  hard_assert(cell != nullptr && vehicle_ >= 0);
+  OZ_ASSERT(cell != nullptr && vehicle_ >= 0);
 
   const BotClass* clazz = static_cast<const BotClass*>(this->clazz);
 
@@ -396,8 +396,8 @@ void Bot::enter(int vehicle_)
 
 void Bot::exit()
 {
-  hard_assert(cell == nullptr && parent >= 0);
-  hard_assert(cargo == -1);
+  OZ_ASSERT(cell == nullptr && parent >= 0);
+  OZ_ASSERT(cargo == -1);
 
   parent     = -1;
   actions    = 0;
@@ -432,8 +432,8 @@ void Bot::onUpdate()
   }
 
   // Sanity checks.
-  hard_assert(cargoObj  != static_cast<const Dynamic*>(this));
-  hard_assert(weaponObj != static_cast<const Dynamic*>(this));
+  OZ_ASSERT(cargoObj  != static_cast<const Dynamic*>(this));
+  OZ_ASSERT(weaponObj != static_cast<const Dynamic*>(this));
 
   // Dead.
   if (life < clazz->life / 2.0f) {
@@ -462,8 +462,8 @@ void Bot::onUpdate()
     return;
   }
 
-  hard_assert(-EPSILON <= h && h < Math::TAU + EPSILON);
-  hard_assert(0.0f <= v && v <= Math::TAU / 2.0f);
+  OZ_ASSERT(-EPSILON <= h && h < Math::TAU + EPSILON);
+  OZ_ASSERT(0.0f <= v && v <= Math::TAU / 2.0f);
 
   life      = min(life + clazz->regeneration, clazz->life);
   stamina   = min(stamina + clazz->staminaGain, clazz->stamina);
@@ -935,7 +935,7 @@ stepSucceeded:
       if (item != nullptr && source != nullptr &&
           source->items.contains(instrument) && canReach(source))
       {
-        hard_assert((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
+        OZ_ASSERT((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
 
         synapse.use(this, item);
       }
@@ -947,7 +947,7 @@ stepSucceeded:
       if (item != nullptr && source != nullptr && items.length() != clazz->nItems &&
           source->items.contains(instrument) && canReach(source))
       {
-        hard_assert((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
+        OZ_ASSERT((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
 
         synapse.transferItem(source, item, this);
       }
@@ -959,7 +959,7 @@ stepSucceeded:
       if (item != nullptr && target != nullptr && target->items.length() != target->clazz->nItems &&
           items.contains(instrument) && canReach(target))
       {
-        hard_assert((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
+        OZ_ASSERT((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
 
         synapse.transferItem(this, item, target);
       }
@@ -990,7 +990,7 @@ stepSucceeded:
         if (item != nullptr && items.length() != clazz->nItems &&
             abs(item->mass * physics.gravity) <= clazz->grabWeight && canReach(item))
         {
-          hard_assert((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
+          OZ_ASSERT((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
 
           releaseCargo();
           synapse.takeItem(this, item);
@@ -1004,7 +1004,7 @@ stepSucceeded:
       }
       else if (actions & ~oldActions & ACTION_THROW) {
         if (cargoObj != nullptr && stamina >= clazz->staminaThrowDrain) {
-          hard_assert(cargoObj->flags & DYNAMIC_BIT);
+          OZ_ASSERT(cargoObj->flags & DYNAMIC_BIT);
 
           // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
           float hvsc[6];
@@ -1031,7 +1031,7 @@ stepSucceeded:
           if (dyn != nullptr && abs(dyn->mass * physics.gravity) <= clazz->grabWeight &&
               !((dyn->flags & BOT_BIT) && dynBot->cargo >= 0) && canReach(dyn))
           {
-            hard_assert(dyn->flags & DYNAMIC_BIT);
+            OZ_ASSERT(dyn->flags & DYNAMIC_BIT);
 
             float dimX = dim.x + dyn->dim.x;
             float dimY = dim.y + dyn->dim.y;
@@ -1048,7 +1048,7 @@ stepSucceeded:
         Dynamic* item = orbis.obj<Dynamic>(instrument);
 
         if (item != nullptr && cargo < 0 && items.contains(instrument)) {
-          hard_assert((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
+          OZ_ASSERT((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
 
           // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
           float hvsc[6];

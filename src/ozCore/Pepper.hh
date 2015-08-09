@@ -39,7 +39,7 @@
  * Check if on the main thread (debug mode only).
  */
 # define OZ_NACL_IS_MAIN(boolean) \
-  hard_assert(Thread::isMain() == boolean)
+  OZ_ASSERT(Thread::isMain() == boolean)
 
 #else
 

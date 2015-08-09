@@ -157,7 +157,7 @@ void Text::setFont(Font::Type font_)
 
 void Text::setTextv(const char* s, va_list ap)
 {
-  hard_assert(s != nullptr);
+  OZ_ASSERT(s != nullptr);
 
   char buffer[1024];
   vsnprintf(buffer, 1024, s, ap);

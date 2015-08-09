@@ -29,7 +29,6 @@
 #pragma once
 
 #include "Arrays.hh"
-#include "System.hh"
 
 namespace oz
 {
@@ -303,7 +302,7 @@ public:
   OZ_ALWAYS_INLINE
   const Elem& operator [] (int i) const
   {
-    hard_assert(uint(i) < uint(count));
+    OZ_ASSERT(uint(i) < uint(count));
 
     return data[i];
   }
@@ -314,7 +313,7 @@ public:
   OZ_ALWAYS_INLINE
   Elem& operator [] (int i)
   {
-    hard_assert(uint(i) < uint(count));
+    OZ_ASSERT(uint(i) < uint(count));
 
     return data[i];
   }
@@ -325,7 +324,7 @@ public:
   OZ_ALWAYS_INLINE
   const Elem& first() const
   {
-    hard_assert(count != 0);
+    OZ_ASSERT(count != 0);
 
     return data[0];
   }
@@ -336,7 +335,7 @@ public:
   OZ_ALWAYS_INLINE
   Elem& first()
   {
-    hard_assert(count != 0);
+    OZ_ASSERT(count != 0);
 
     return data[0];
   }
@@ -347,7 +346,7 @@ public:
   OZ_ALWAYS_INLINE
   const Elem& last() const
   {
-    hard_assert(count != 0);
+    OZ_ASSERT(count != 0);
 
     return data[count - 1];
   }
@@ -358,7 +357,7 @@ public:
   OZ_ALWAYS_INLINE
   Elem& last()
   {
-    hard_assert(count != 0);
+    OZ_ASSERT(count != 0);
 
     return data[count - 1];
   }
@@ -451,7 +450,7 @@ public:
   template <typename Elem_>
   Elem& insert(int i, Elem_&& elem)
   {
-    hard_assert(uint(i) <= uint(count));
+    OZ_ASSERT(uint(i) <= uint(count));
 
     ensureCapacity(count + 1);
 
@@ -469,7 +468,7 @@ public:
    */
   void erase(int i)
   {
-    hard_assert(uint(i) < uint(count));
+    OZ_ASSERT(uint(i) < uint(count));
 
     --count;
 
@@ -490,7 +489,7 @@ public:
    */
   void eraseUnordered(int i)
   {
-    hard_assert(uint(i) < uint(count));
+    OZ_ASSERT(uint(i) < uint(count));
 
     --count;
 

@@ -92,7 +92,7 @@ void Mind::update(bool doRegularUpdate)
 {
   Bot* botObj = orbis.obj<Bot>(bot);
 
-  hard_assert(botObj != nullptr && (botObj->flags & Object::BOT_BIT));
+  OZ_ASSERT(botObj != nullptr && (botObj->flags & Object::BOT_BIT));
 
   if ((flags & PLAYER_BIT) || (botObj->state & Bot::DEAD_BIT) || botObj->mind.isEmpty()) {
     return;

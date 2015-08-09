@@ -31,11 +31,17 @@
 #include "common.hh"
 
 /**
- * @def OZ_WARNING
- * Wrapper for `System::warning()`, filling in the current function, file and line parameters.
+ * @def OZ_ASSERT
+ * If condition fails, raise SIGTRAP, print error using global log and abort program.
  */
-#define OZ_WARNING(...) \
-  oz::System::warning(__PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__)
+#ifdef NDEBUG
+# define OZ_ASSERT(cond) void(0)
+#else
+# define OZ_ASSERT(cond) \
+  ((cond) ? \
+   void(0) : oz::System::error(__PRETTY_FUNCTION__, __FILE__, __LINE__, 0, \
+                               "Assertion `" #cond "' failed."))
+#endif
 
 /**
  * @def OZ_ERROR
@@ -93,20 +99,6 @@ public:
   static void bell();
 
   /**
-   * Print warning message.
-   *
-   * This function first triggers breakpoint with `System::trap()`, prints error message, file
-   * location and stack trace (skipping `nSkippedFrames` stack frames relative to the caller) to log
-   * and plays a bell.
-   *
-   * You will probably want to use `OZ_WARNING` macro instead to fill in the current function, file
-   * and line for you.
-   */
-  OZ_PRINTF_FORMAT(5, 6)
-  static void warning(const char* function, const char* file, int line, int nSkippedFrames,
-                      const char* msg, ...);
-
-  /**
    * Print error message and halt the program.
    *
    * Same as `System::warning()` but also aborts the application. If running from a terminal and
@@ -120,15 +112,6 @@ public:
   OZ_PRINTF_FORMAT(5, 6)
   static void error(const char* function, const char* file, int line, int nSkippedFrames,
                     const char* msg, ...);
-
-  /**
-   * Install per-thread signal handlers if `HANDLERS_BIT` has been passed to `System::init()`.
-   *
-   * Signal handlers must be set up for each thread in a process separately. `System::init()`
-   * function sets them up for the caller/main thread only while other threads should call this
-   * function unless created with `Thread::start()`, which calls it implicitly.
-   */
-  static void threadInit();
 
   /**
    * Initialise `System`.
