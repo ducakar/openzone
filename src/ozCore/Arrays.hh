@@ -142,12 +142,12 @@ private:
    * @param first pointer to first element in the array to be sorted.
    * @param last pointer to last element in the array.
    */
-  template <typename Elem, class LessFunc = Less<void>>
+  template <typename Elem, class LessFunc = Less<Elem>>
   static void quicksort(Elem* first, Elem* last)
   {
     // 8-14 seem as optimal thresholds for switching to selection sort.
     if (last - first > 11) {
-      // Quicksort (last element is pivot).
+      // Quicksort (the last element is the pivot).
       Elem* top    = first;
       Elem* bottom = last - 1;
 
@@ -201,8 +201,10 @@ public:
   template <typename Elem>
   static bool equals(const Elem* arrayA, int count, const Elem* arrayB)
   {
-    for (int i = 0; i < count; ++i) {
-      if (!(arrayA[i] == arrayB[i])) {
+    const Elem* endA = arrayA + count;
+
+    while (arrayA < endA) {
+      if (!(*arrayA++ == *arrayB++)) {
         return false;
       }
     }
@@ -225,9 +227,12 @@ public:
   template <typename Elem, typename Value>
   static int index(const Elem* array, int count, const Value& value)
   {
-    for (int i = 0; i < count; ++i) {
-      if (array[i] == value) {
-        return i;
+    const Elem* begin = array;
+    const Elem* end   = array + count;
+
+    for (; begin < end; ++begin) {
+      if (*begin == value) {
+        return int(begin - array);
       }
     }
     return -1;
@@ -239,12 +244,14 @@ public:
   template <typename Elem, typename Value>
   static int lastIndex(const Elem* array, int count, const Value& value)
   {
-    for (int i = count - 1; i >= 0; --i) {
-      if (array[i] == value) {
-        return i;
+    const Elem* end = array + count - 1;
+
+    for (; end > array; --end) {
+      if (*end == value) {
+        break;
       }
     }
-    return -1;
+    return int(end - array);
   }
 
   /**
@@ -253,7 +260,14 @@ public:
   template <typename Elem, typename Value>
   static bool contains(const Elem* array, int count, const Value& value)
   {
-    return index<Elem, Value>(array, count, value) >= 0;
+    const Elem* end = array + count;
+
+    while (array < end) {
+      if (*array++ == value) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -262,8 +276,10 @@ public:
   template <typename Elem>
   static void copy(const Elem* srcArray, int count, Elem* destArray)
   {
-    for (int i = 0; i < count; ++i) {
-      destArray[i] = srcArray[i];
+    const Elem* srcEnd = srcArray + count;
+
+    while (srcArray < srcEnd) {
+      *destArray++ = *srcArray++;
     }
   }
 
@@ -273,8 +289,11 @@ public:
   template <typename Elem>
   static void copyBackward(const Elem* srcArray, int count, Elem* destArray)
   {
-    for (int i = count - 1; i >= 0; --i) {
-      destArray[i] = srcArray[i];
+    const Elem* srcEnd  = srcArray + count;
+    Elem*       destEnd = destArray + count;
+
+    while (srcEnd > srcArray) {
+      *--destEnd = *--srcEnd;
     }
   }
 
@@ -284,8 +303,10 @@ public:
   template <typename Elem>
   static void move(Elem* srcArray, int count, Elem* destArray)
   {
-    for (int i = 0; i < count; ++i) {
-      destArray[i] = static_cast<Elem&&>(srcArray[i]);
+    const Elem* srcEnd = srcArray + count;
+
+    while (srcArray < srcEnd) {
+      *destArray++ = static_cast<Elem&&>(*srcArray++);
     }
   }
 
@@ -295,8 +316,11 @@ public:
   template <typename Elem>
   static void moveBackward(Elem* srcArray, int count, Elem* destArray)
   {
-    for (int i = count - 1; i >= 0; --i) {
-      destArray[i] = static_cast<Elem&&>(srcArray[i]);
+    Elem* srcEnd  = srcArray + count;
+    Elem* destEnd = destArray + count;
+
+    while (srcEnd > srcArray) {
+      *--destEnd = static_cast<Elem&&>(*--srcEnd);
     }
   }
 
@@ -306,8 +330,10 @@ public:
   template <typename Elem, typename Value>
   static void fill(Elem* array, int count, const Value& value)
   {
-    for (int i = 0; i < count; ++i) {
-      array[i] = value;
+    const Elem* end = array + count;
+
+    while (array < end) {
+      *array++ = value;
     }
   }
 
@@ -317,8 +343,10 @@ public:
   template <typename Elem>
   static void clear(Elem* array, int count)
   {
-    for (int i = 0; i < count; ++i) {
-      array[i] = Elem();
+    const Elem* end = array + count;
+
+    while (array < end) {
+      *array++ = Elem();
     }
   }
 
@@ -330,9 +358,11 @@ public:
   template <typename Elem>
   static void free(Elem* array, int count)
   {
-    for (int i = 0; i < count; ++i) {
-      delete array[i];
-      array[i] = Elem();
+    const Elem* end = array + count;
+
+    while (array < end) {
+      delete *array;
+      *array++ = Elem();
     }
   }
 
@@ -342,15 +372,18 @@ public:
   template <typename Elem>
   static void reverse(Elem* array, int count)
   {
-    for (int bottom = 0, top = count - 1; bottom < top; ++bottom, --top) {
-      swap<Elem>(array[bottom], array[top]);
+    Elem* bottom = array;
+    Elem* top    = array + count - 1;
+
+    while (bottom < top) {
+      swap<Elem>(*bottom++, *top--);
     }
   }
 
   /**
    * Sort array using `detail::quicksort()`.
    */
-  template <typename Elem, class LessFunc = Less<void>>
+  template <typename Elem, class LessFunc = Less<Elem>>
   static void sort(Elem* array, int count)
   {
     int last = count - 1;
@@ -361,19 +394,19 @@ public:
   }
 
   /**
-   * Find index in a sorted array such that `array[index] <= key && key < array[index + 1]`.
+   * Find index in a sorted array such that `array[index - 1] < key && key <= array[index]`.
    *
    * @note
-   * `Elem` type must have `bool operator < (const Key&, const Elem&) const` defined.
+   * `Elem` type must have `bool operator < (const Elem&, const Key&) const` defined.
    *
-   * If all elements are lesser return `count - 1` and if all elements are greater return -1.
+   * If all elements are lesser return `count` and if all elements are greater return 0.
    *
    * @param array array of elements.
    * @param count number of elements.
    * @param key the key we are looking for.
-   * @return Index of the last element not greater than `key`, -1 otherwise.
+   * @return Index of the first element >= `key`, `count` otherwise.
    */
-  template <typename Elem, typename Key, class LessFunc = Less<void>>
+  template <typename Elem, typename Key, class LessFunc = Less<Elem>>
   static int bisection(const Elem* array, int count, const Key& key)
   {
     int a = -1;
@@ -384,14 +417,14 @@ public:
     while (b - a > 1) {
       int c = (a + b) / 2;
 
-      if (LessFunc()(key, array[c])) {
-        b = c;
-      }
-      else {
+      if (LessFunc()(array[c], key)) {
         a = c;
       }
+      else {
+        b = c;
+      }
     }
-    return a;
+    return b;
   }
 
   /**

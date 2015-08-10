@@ -1004,8 +1004,8 @@ void BSP::saveMatrix()
 
   Stream os(0, Endian::LITTLE);
 
-  os.writePoint(mins);
-  os.writePoint(maxs);
+  os.write<Point>(mins);
+  os.write<Point>(maxs);
 
   os.writeString(title);
   os.writeString(description);
@@ -1029,7 +1029,7 @@ void BSP::saveMatrix()
   os.writeInt(boundObjects.length());
 
   for (const Plane& plane : planes) {
-    os.writePlane(plane);
+    os.write<Plane>(plane);
   }
 
   for (const oz::BSP::Node& node : nodes) {
@@ -1058,8 +1058,8 @@ void BSP::saveMatrix()
   }
 
   for (const Model& model : models) {
-    os.writePoint(model.mins);
-    os.writePoint(model.maxs);
+    os.write<Point>(model.mins);
+    os.write<Point>(model.maxs);
 
     os.writeInt(model.firstBrush);
     os.writeInt(model.nBrushes);
@@ -1072,7 +1072,7 @@ void BSP::saveMatrix()
     os.writeFloat(model.closeTimeout);
     os.writeFloat(model.openTimeout);
 
-    os.writeVec3(model.moveDir);
+    os.write<Vec3>(model.moveDir);
     os.writeFloat(model.moveLength);
     os.writeFloat(model.moveStep);
 
@@ -1092,12 +1092,12 @@ void BSP::saveMatrix()
     context.usedModels.include(model.modelName, name + " (BSP)");
 
     os.writeString(model.modelName);
-    os.writeMat4(model.modelTransf);
+    os.write<Mat4>(model.modelTransf);
   }
 
   for (const BoundObject& boundObject : boundObjects) {
     os.writeString(boundObject.clazz);
-    os.writePoint(boundObject.pos);
+    os.write<Point>(boundObject.pos);
     os.writeInt(boundObject.heading);
   }
 
@@ -1200,8 +1200,8 @@ void BSP::saveClient()
   os.writeInt(nClusterBytes * 8);
   os.writeBitset(clusters);
 
-  os.writeVec4(waterFogColour);
-  os.writeVec4(lavaFogColour);
+  os.write<Vec4>(waterFogColour);
+  os.write<Vec4>(lavaFogColour);
 
   Log::print("Writing BSP model to '%s' ...", destFile.c());
 

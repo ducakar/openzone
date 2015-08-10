@@ -110,9 +110,9 @@ Dynamic::Dynamic(const DynamicClass* clazz_, int index, const Json& json) :
 Dynamic::Dynamic(const DynamicClass* clazz_, Stream* is) :
   Object(clazz_, is)
 {
-  velocity = is->readVec3();
-  momentum = is->readVec3();
-  floor    = is->readVec3();
+  velocity = is->read<Vec3>();
+  momentum = is->read<Vec3>();
+  floor    = is->read<Vec3>();
   parent   = is->readInt();
   lower    = is->readInt();
   depth    = is->readFloat();
@@ -129,9 +129,9 @@ void Dynamic::write(Stream* os) const
 {
   Object::write(os);
 
-  os->writeVec3(velocity);
-  os->writeVec3(momentum);
-  os->writeVec3(floor);
+  os->write<Vec3>(velocity);
+  os->write<Vec3>(momentum);
+  os->write<Vec3>(floor);
   os->writeInt(parent);
   os->writeInt(lower);
   os->writeFloat(depth);

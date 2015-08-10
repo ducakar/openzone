@@ -47,7 +47,7 @@ namespace oz
  *
  * @sa `oz::Map`, `oz::HashSet`, `oz::Heap`, `oz::List`
  */
-template <typename Elem, class LessFunc = Less<void>>
+template <typename Elem, class LessFunc = Less<Elem>>
 class Set : protected List<Elem>
 {
 public:
@@ -71,14 +71,13 @@ protected:
   {
     int i = Arrays::bisection<Elem, Elem_, LessFunc>(data, count, elem);
 
-    if (i >= 0 && elem == data[i]) {
+    if (i != count && data[i] == elem) {
       if (overwrite) {
         data[i] = static_cast<Elem_&&>(elem);
       }
     }
     else {
       ensureCapacity(count + 1);
-      ++i;
 
       Arrays::moveBackward<Elem>(data + i, count - i, data + i + 1);
       data[i] = static_cast<Elem_&&>(elem);
@@ -185,7 +184,7 @@ public:
   int index(const Key& key) const
   {
     int i = Arrays::bisection<Elem, Key, LessFunc>(data, count, key);
-    return i < 0 || !(key == data[i]) ? -1 : i;
+    return i == count || !(data[i] == key) ? -1 : i;
   }
 
   /**
@@ -220,7 +219,7 @@ public:
   {
     int i = Arrays::bisection<Elem, Key, LessFunc>(data, count, key);
 
-    if (i >= 0 && key == data[i]) {
+    if (i != count && data[i] == key) {
       erase(i);
       return i;
     }

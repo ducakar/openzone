@@ -40,7 +40,7 @@ bool PartClass::isLoaded() const
 //   flags          = 0;
 //
 //   nParts         = is->readInt();
-//   velocity       = is->readVec3();
+//   velocity       = is->read<Vec3>();
 //   velocitySpread = is->readFloat();
 //   texId          = liber.textureIndex(is->readString());
 //   endTexId       = liber.textureIndex(is->readString());

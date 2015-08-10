@@ -39,12 +39,7 @@
 namespace oz
 {
 
-Cursor::Cursor() :
-  images{}, nImages(0), frame(0), lastFrame(-1), frameTime(0), mode(SYSTEM)
-{}
-
-Cursor::Cursor(const File& file, Mode mode_, int size) :
-  Cursor()
+Cursor::Cursor(const File& file, Mode mode_, int size)
 {
   Stream is = file.read(Endian::LITTLE);
 
@@ -54,14 +49,15 @@ Cursor::Cursor(const File& file, Mode mode_, int size) :
   }
 
   is.seek(12);
-  int nEntries = is.readInt();
 
-  nImages   = 0;
+  int nEntries = is.readInt();
+  images.resize(min<int>(nEntries, images.capacity()));
+
+  mode      = mode_;
   frame     = 0;
   frameTime = 0;
-  mode      = mode_;
 
-  for (int i = 0; i < nEntries && nImages < MAX_IMAGES; ++i) {
+  for (Image& image : images) {
     uint type     = is.readUInt();
     int  subtype  = is.readInt();
     int  position = is.readInt();
@@ -83,9 +79,6 @@ Cursor::Cursor(const File& file, Mode mode_, int size) :
     is.readInt();
     is.readInt();
     is.readInt();
-
-    Image& image = images[nImages];
-    ++nImages;
 
     image.width       = is.readInt();
     image.height      = is.readInt();
@@ -162,39 +155,32 @@ Cursor::~Cursor()
 }
 
 Cursor::Cursor(Cursor&& c) :
-  nImages(c.nImages), frame(c.frame), lastFrame(-1), frameTime(c.frameTime), mode(c.mode)
+  mode(c.mode), frame(c.frame), lastFrame(-1), frameTime(c.frameTime), images(c.images)
 {
-  Arrays::move<Image>(c.images, MAX_IMAGES, images);
-
-  c.nImages   = 0;
+  c.mode      = SYSTEM;
   c.frame     = 0;
   c.lastFrame = -1;
   c.frameTime = 0;
-  c.mode      = SYSTEM;
+  c.images.clear();
 }
 
 Cursor& Cursor::operator = (Cursor&& c)
 {
-  if (&c == this) {
-    return *this;
+  if (&c != this) {
+    destroy();
+
+    mode      = c.mode;
+    frame     = c.frame;
+    lastFrame = c.lastFrame;
+    frameTime = c.frameTime;
+    images    = c.images;
+
+    c.mode      = SYSTEM;
+    c.frame     = 0;
+    c.lastFrame = -1;
+    c.frameTime = 0;
+    c.images.clear();
   }
-
-  destroy();
-
-  nImages   = c.nImages;
-  frame     = c.frame;
-  lastFrame = c.lastFrame;
-  frameTime = c.frameTime;
-  mode      = c.mode;
-
-  Arrays::move<Image>(c.images, MAX_IMAGES, images);
-
-  c.nImages   = 0;
-  c.frame     = 0;
-  c.lastFrame = -1;
-  c.frameTime = 0;
-  c.mode      = SYSTEM;
-
   return *this;
 }
 
@@ -206,17 +192,17 @@ void Cursor::reset()
 
 void Cursor::update(int millis)
 {
-  if (nImages == 0) {
+  if (images.isEmpty()) {
     return;
   }
 
   int delay = images[frame].delay;
 
   frameTime += millis;
-  frame      = (frame + frameTime / delay) % nImages;
+  frame      = (frame + frameTime / delay) % images.length();
   frameTime  = frameTime % delay;
 
-  if (mode == SYSTEM && frame != lastFrame && nImages != 0) {
+  if (mode == SYSTEM && frame != lastFrame) {
     lastFrame = frame;
 
 #ifdef __native_client__
@@ -232,33 +218,33 @@ void Cursor::update(int millis)
 
 void Cursor::destroy()
 {
-  if (nImages == 0) {
+  if (images.isEmpty()) {
     return;
   }
 
   if (mode == SYSTEM) {
-    for (int i = 0; i < nImages; ++i) {
+    for (const Image& image : images) {
 #ifdef __native_client__
-      delete images[i].imageData;
+      delete image.imageData;
 #else
-      SDL_FreeCursor(images[i].sdlCursor);
+      SDL_FreeCursor(image.sdlCursor);
 #endif
     }
   }
   else {
     MainCall() << [&]
     {
-      for (int i = 0; i < nImages; ++i) {
-        glDeleteTextures(1, &images[i].textureId);
+      for (const Image& image : images) {
+        glDeleteTextures(1, &image.textureId);
       }
     };
   }
 
-  nImages   = 0;
+  mode      = SYSTEM;
   frame     = 0;
   lastFrame = -1;
   frameTime = 0;
-  mode      = SYSTEM;
+  images.clear();
 }
 
 }

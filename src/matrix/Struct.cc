@@ -472,7 +472,7 @@ Struct::Struct(const BSP* bsp_, Stream* is)
 {
   bsp         = bsp_;
 
-  p           = is->readPoint();
+  p           = is->read<Point>();
   heading     = Heading(is->readInt());
 
   index       = is->readInt();
@@ -500,8 +500,8 @@ Struct::Struct(const BSP* bsp_, Stream* is)
       entity.state    = Entity::State(is->readInt());
       entity.moveDist = is->readFloat();
       entity.time     = is->readFloat();
-      entity.offset   = is->readVec3();
-      entity.velocity = is->readVec3();
+      entity.offset   = is->read<Vec3>();
+      entity.velocity = is->read<Vec3>();
     }
   }
 
@@ -557,7 +557,7 @@ Json Struct::write() const
 
 void Struct::write(Stream* os) const
 {
-  os->writePoint(p);
+  os->write<Point>(p);
   os->writeInt(heading);
 
   os->writeInt(index);
@@ -570,8 +570,8 @@ void Struct::write(Stream* os) const
     os->writeInt(entities[i].state);
     os->writeFloat(entities[i].moveDist);
     os->writeFloat(entities[i].time);
-    os->writeVec3(entities[i].offset);
-    os->writeVec3(entities[i].velocity);
+    os->write<Vec3>(entities[i].offset);
+    os->write<Vec3>(entities[i].velocity);
   }
 
   os->writeInt(boundObjects.length());

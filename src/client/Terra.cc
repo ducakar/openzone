@@ -244,7 +244,7 @@ void Terra::load()
 
   detailTexId     = liber.textureIndex(is.readString());
   liquidTexId     = liber.textureIndex(is.readString());
-  liquidFogColour = is.readVec4();
+  liquidFogColour = is.read<Vec4>();
 
   detailTex       = context.requestTexture(detailTexId);
   liquidTex       = context.requestTexture(liquidTexId);

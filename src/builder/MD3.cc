@@ -335,15 +335,15 @@ void MD3::save()
     os.writeInt(nUpperFrames);
 
 //     for (int i = 0; i < nLowerFrames; ++i) {
-//       os.writeVec3(joints[i][client::MD3::JOINT_HIP].transl);
+//       os.write<Vec3>(joints[i][client::MD3::JOINT_HIP].transl);
 //       os.writeQuat(joints[i][client::MD3::JOINT_HIP].rot);
 //     }
 //     for (int i = 0; i < nUpperFrames; ++i) {
-//       os.writeVec3(joints[i][client::MD3::JOINT_NECK].transl);
+//       os.write<Vec3>(joints[i][client::MD3::JOINT_NECK].transl);
 //       os.writeQuat(joints[i][client::MD3::JOINT_NECK].rot);
 //     }
 //     for (int i = 0; i < nUpperFrames; ++i) {
-//       os.writeVec3(joints[i][client::MD3::JOINT_WEAPON].transl);
+//       os.write<Vec3>(joints[i][client::MD3::JOINT_WEAPON].transl);
 //       os.writeQuat(joints[i][client::MD3::JOINT_WEAPON].rot);
 //     }
   }

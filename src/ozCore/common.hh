@@ -360,7 +360,7 @@ inline constexpr const Value& clamp(const Value& c, const Value& a, const Value&
 }
 
 /**
- * Generic less function object, defaults to `operator <`.
+ * Generic `Less` function object, defaults to `operator <`.
  */
 template <typename Type = void>
 struct Less
@@ -394,6 +394,22 @@ struct Greater
 };
 
 /**
+ * `Less` function object for string comparison.
+ */
+template <>
+struct Less<const char*>
+{
+  /**
+   * Compare using `strcmp`.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator () (const char* a, const char* b) const
+  {
+    return __builtin_strcmp(a, b) < 0;
+  }
+};
+
+/**
  * Generic hash function object for integers and pointers.
  */
 template <typename Number>
@@ -410,7 +426,7 @@ struct Hash
 };
 
 /**
- * Hash function for strings.
+ * `Hash` function object for strings.
  */
 template <>
 struct Hash<const char*>

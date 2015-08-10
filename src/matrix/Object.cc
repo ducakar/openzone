@@ -165,7 +165,7 @@ Object::Object(const ObjectClass* clazz_, int index_, const Json& json)
 
 Object::Object(const ObjectClass* clazz_, Stream* is)
 {
-  p          = is->readPoint();
+  p          = is->read<Point>();
   dim        = clazz_->dim;
   index      = is->readInt();
   flags      = is->readInt();
@@ -266,7 +266,7 @@ Json Object::write() const
 
 void Object::write(Stream* os) const
 {
-  os->writePoint(p);
+  os->write<Point>(p);
   os->writeInt(index);
   os->writeInt(flags);
   os->writeFloat(life);

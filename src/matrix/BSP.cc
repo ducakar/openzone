@@ -42,8 +42,8 @@ void BSP::load()
     OZ_ERROR("BSP file '%s' read failed", file.c());
   }
 
-  mins          = is.readPoint();
-  maxs          = is.readPoint();
+  mins          = is.read<Point>();
+  maxs          = is.read<Point>();
 
   title         = lingua.get(is.readString());
   description   = lingua.get(is.readString());
@@ -90,7 +90,7 @@ void BSP::load()
 
   planes = new(data) Plane[nPlanes];
   for (int i = 0; i < nPlanes; ++i) {
-    planes[i] = is.readPlane();
+    planes[i] = is.read<Plane>();
   }
   data += nPlanes * sizeof(planes[0]);
 
@@ -147,8 +147,8 @@ void BSP::load()
 
   entities = new(data) EntityClass[nEntities];
   for (int i = 0; i < nEntities; ++i) {
-    entities[i].mins         = is.readPoint();
-    entities[i].maxs         = is.readPoint();
+    entities[i].mins         = is.read<Point>();
+    entities[i].maxs         = is.read<Point>();
 
     entities[i].firstBrush   = is.readInt();
     entities[i].nBrushes     = is.readInt();
@@ -162,7 +162,7 @@ void BSP::load()
     entities[i].closeTimeout = is.readFloat();
     entities[i].openTimeout  = is.readFloat();
 
-    entities[i].moveDir      = is.readVec3();
+    entities[i].moveDir      = is.read<Vec3>();
     entities[i].moveLength   = is.readFloat();
     entities[i].moveStep     = is.readFloat();
 
@@ -176,7 +176,7 @@ void BSP::load()
     entities[i].key          = is.readInt();
 
     entities[i].model        = liber.modelIndex(is.readString());
-    entities[i].modelTransf  = is.readMat4();
+    entities[i].modelTransf  = is.read<Mat4>();
   }
   data += nEntities * sizeof(entities[0]);
 
@@ -187,7 +187,7 @@ void BSP::load()
     const ObjectClass* clazz = liber.objClass(is.readString());
 
     boundObjects[i].clazz   = clazz;
-    boundObjects[i].pos     = is.readPoint();
+    boundObjects[i].pos     = is.read<Point>();
     boundObjects[i].heading = Heading(is.readInt());
 
     if (clazz->flags & Object::DYNAMIC_BIT) {

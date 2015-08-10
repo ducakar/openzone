@@ -99,6 +99,42 @@ public:
   }
 
   /**
+   * Constant float pointer to the members.
+   */
+  OZ_ALWAYS_INLINE
+  operator const float* () const
+  {
+    return n;
+  }
+
+  /**
+   * Float pointer to the members.
+   */
+  OZ_ALWAYS_INLINE
+  operator float* ()
+  {
+    return n;
+  }
+
+  /**
+   * Constant reference to the `i`-th member.
+   */
+  OZ_ALWAYS_INLINE
+  const float& operator [] (int i) const
+  {
+    return n[i];
+  }
+
+  /**
+   * Reference to the `i`-th member.
+   */
+  OZ_ALWAYS_INLINE
+  float& operator [] (int i)
+  {
+    return n[i];
+  }
+
+  /**
    * Projection of a vector to a plane's normal.
    */
   OZ_ALWAYS_INLINE

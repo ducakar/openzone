@@ -58,14 +58,11 @@ public:
    */
   enum Mode
   {
-    TEXTURE,
-    SYSTEM
+    SYSTEM,
+    TEXTURE
   };
 
 private:
-
-  /// Maximum number of images in animation.
-  static const int MAX_IMAGES = 32;
 
   /**
    * Cursor image.
@@ -74,36 +71,35 @@ private:
    */
   struct Image
   {
-    int width;                  ///< Image width.
-    int height;                 ///< Image height.
-    int hotspotLeft;            ///< Hotspot offset from the left.
-    int hotspotTop;             ///< Hotspot offset from the top.
-    int delay;                  ///< Frame time in milliseconds.
+    int width;                         ///< Image width.
+    int height;                        ///< Image height.
+    int hotspotLeft;                   ///< Hotspot offset from the left.
+    int hotspotTop;                    ///< Hotspot offset from the top.
+    int delay;                         ///< Frame time in milliseconds.
 
     union
     {
-      uint           textureId; ///< GL texture id.
+      uint           textureId;        ///< GL texture id.
 #ifdef __native_client__
-      pp::ImageData* imageData; ///< PPAPI cursor image.
+      pp::ImageData* imageData;        ///< PPAPI cursor image.
 #else
-      SDL_Cursor*    sdlCursor; ///< SDL cursor.
+      SDL_Cursor*    sdlCursor;        ///< SDL cursor.
 #endif
     };
   };
 
-  Image images[MAX_IMAGES];     ///< Cursor images.
-  int   nImages;                ///< Number of images.
-  int   frame;                  ///< Current animation frame.
-  int   lastFrame;              ///< Last uploaded frame for OS cursor to avoid unnecessary updates.
-  int   frameTime;              ///< Time in milliseconds of the current animation frame.
-  Mode  mode;                   ///< Render mode.
+  Mode             mode      = SYSTEM; ///< Render mode.
+  int              frame     = 0;      ///< Current animation frame.
+  int              lastFrame = -1;     ///< Last frame for OS cursor to avoid unnecessary updates.
+  int              frameTime = 0;      ///< Time in milliseconds of the current animation frame.
+  SList<Image, 32> images;             ///< Cursor images.
 
 public:
 
   /**
    * Create an empty instance.
    */
-  Cursor();
+  Cursor() = default;
 
   /**
    * Create from file.
@@ -130,7 +126,7 @@ public:
    */
   bool isValid() const
   {
-    return nImages != 0;
+    return !images.isEmpty();
   }
 
   /**

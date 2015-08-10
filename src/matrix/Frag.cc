@@ -49,8 +49,8 @@ Frag::Frag(const FragPool* pool_, Stream* is)
   index      = is->readInt();
   poolId     = pool_->id;
   pool       = pool_;
-  p          = is->readPoint();
-  velocity   = is->readVec3();
+  p          = is->read<Point>();
+  velocity   = is->read<Vec3>();
   life       = is->readFloat();
   mass       = pool->mass;
   elasticity = pool->elasticity;
@@ -59,8 +59,8 @@ Frag::Frag(const FragPool* pool_, Stream* is)
 void Frag::write(Stream* os) const
 {
   os->writeInt(index);
-  os->writePoint(p);
-  os->writeVec3(velocity);
+  os->write<Point>(p);
+  os->write<Vec3>(velocity);
   os->writeFloat(life);
 }
 

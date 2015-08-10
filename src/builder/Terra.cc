@@ -338,7 +338,7 @@ void Terra::saveClient()
 
   os.writeString(detailTex);
   os.writeString(liquidTex);
-  os.writeVec4(liquidColour);
+  os.write<Vec4>(liquidColour);
 
   if (!destFile.write(os.begin(), os.tell())) {
     OZ_ERROR("Failed to write '%s'", destFile.c());

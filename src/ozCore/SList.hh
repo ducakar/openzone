@@ -457,7 +457,7 @@ public:
    * All elements are shifted to make a gap.
    */
   template <typename Elem_>
-  Elem&  pushFirst(Elem_&& elem)
+  Elem& pushFirst(Elem_&& elem)
   {
     return insert<Elem_>(0, static_cast<Elem_&&>(elem));
   }
@@ -519,7 +519,7 @@ public:
   /**
    * Sort elements with quicksort.
    */
-  template <class LessFunc = Less<void>>
+  template <class LessFunc = Less<Elem>>
   void sort()
   {
     Arrays::sort<Elem, LessFunc>(data, count);

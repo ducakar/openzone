@@ -30,7 +30,6 @@
 #include "Log.hh"
 #include "Pepper.hh"
 
-#include <alloca.h>
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>

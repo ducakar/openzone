@@ -336,8 +336,8 @@ bool ModelBuilder::buildModel(const File& file, OutputStream* os)
   Log() << nodes.length() << " nodes";
 
   for (int i = 0; i < vertices.length(); ++i) {
-    os->writePoint(vertices[i].p);
-    os->writeVec3(vertices[i].n);
+    os->write<Point>(vertices[i].p);
+    os->write<Vec3>(vertices[i].n);
     os->writeFloat(vertices[i].u);
     os->writeFloat(vertices[i].v);
   }
@@ -356,14 +356,14 @@ bool ModelBuilder::buildModel(const File& file, OutputStream* os)
   }
 
   for (int i = 0; i < lights.length(); ++i) {
-    os->writePoint(lights[i].p);
-    os->writeVec3(lights[i].dir);
+    os->write<Point>(lights[i].p);
+    os->write<Vec3>(lights[i].dir);
     os->writeFloat(lights[i].coneCoeff[0]),
     os->writeFloat(lights[i].coneCoeff[1]),
     os->writeFloat(lights[i].attenuation[0]);
     os->writeFloat(lights[i].attenuation[1]);
     os->writeFloat(lights[i].attenuation[2]);
-    os->writeVec3(lights[i].colour);
+    os->write<Vec3>(lights[i].colour);
     os->writeInt(lights[i].type);
   }
 

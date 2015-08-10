@@ -334,7 +334,6 @@ void LuaClient::init()
    */
 
   IMPORT_FUNC(ozEntGetState);
-  IMPORT_FUNC(ozEntSetState);
   IMPORT_FUNC(ozEntGetLock);
   IMPORT_FUNC(ozEntSetLock);
   IMPORT_FUNC(ozEntTrigger);

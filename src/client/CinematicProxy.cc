@@ -265,9 +265,9 @@ void CinematicProxy::reset()
 
 void CinematicProxy::read(Stream* is)
 {
-  beginRot    = is->readQuat();
-  beginPos    = is->readPoint();
-  beginColour = is->readMat4();
+  beginRot    = is->read<Quat>();
+  beginPos    = is->read<Point>();
+  beginColour = is->read<Mat4>();
 
   title       = is->readString();
   nTitleChars = is->readInt();
@@ -279,9 +279,9 @@ void CinematicProxy::read(Stream* is)
   for (int i = 0; i < nSteps; ++i) {
     Step step;
 
-    step.rot         = is->readQuat();
-    step.p           = is->readPoint();
-    step.colour      = is->readMat4();
+    step.rot         = is->read<Quat>();
+    step.p           = is->read<Point>();
+    step.colour      = is->read<Mat4>();
 
     step.track       = is->readInt();
     step.title       = is->readString();
@@ -299,9 +299,9 @@ void CinematicProxy::read(const Json&)
 
 void CinematicProxy::write(Stream* os) const
 {
-  os->writeQuat(beginRot);
-  os->writePoint(beginPos);
-  os->writeMat4(beginColour);
+  os->write<Quat>(beginRot);
+  os->write<Point>(beginPos);
+  os->write<Mat4>(beginColour);
 
   os->writeString(title);
   os->writeInt(nTitleChars);
@@ -313,9 +313,9 @@ void CinematicProxy::write(Stream* os) const
   for (int i = 0; i < steps.length(); ++i) {
     const Step& step = steps[i];
 
-    os->writeQuat(step.rot);
-    os->writePoint(step.p);
-    os->writeMat4(step.colour);
+    os->write<Quat>(step.rot);
+    os->write<Point>(step.p);
+    os->write<Mat4>(step.colour);
 
     os->writeInt(step.track);
     os->writeString(step.title);

@@ -65,7 +65,7 @@ struct Vertex
 
   void write(Stream* os) const
   {
-    os->writePoint(pos);
+    os->write<Point>(pos);
 
     os->writeShort(short(Math::lround(texCoord.u * 1024.0f)));
     os->writeShort(short(Math::lround(texCoord.v * 1024.0f)));
@@ -713,7 +713,7 @@ void Compiler::writeModel(Stream* os, bool globalTextures)
   // Size in bytes, will be written at the end.
   os->writeInt(0);
 
-  os->writeVec3(bounds.dim());
+  os->write<Vec3>(bounds.dim());
 
   os->writeString(shaderName);
   os->writeInt(globalTextures ? ~textures.length() : textures.length());
@@ -806,10 +806,10 @@ void Compiler::writeModel(Stream* os, bool globalTextures)
     OZ_ASSERT(normals.length() == nFrames * nFramePositions);
 
     for (const Point& position : positions) {
-      os->writePoint(position);
+      os->write<Point>(position);
     }
     for (const Vec3& normal : normals) {
-      os->writeVec3(normal);
+      os->write<Vec3>(normal);
     }
   }
 
@@ -828,9 +828,9 @@ void Compiler::writeModel(Stream* os, bool globalTextures)
     os->writeInt(nodes.index(light.node));
     os->writeInt(light.type);
 
-    os->writePoint(light.pos);
-    os->writeVec3(light.dir);
-    os->writeVec3(light.colour);
+    os->write<Point>(light.pos);
+    os->write<Vec3>(light.dir);
+    os->write<Vec3>(light.colour);
 
     os->writeFloat(light.attenuation[0]);
     os->writeFloat(light.attenuation[1]);
@@ -841,7 +841,7 @@ void Compiler::writeModel(Stream* os, bool globalTextures)
   }
 
   for (const Node* node : nodes) {
-    os->writeMat4(node->transf);
+    os->write<Mat4>(node->transf);
     os->writeInt(node->mesh);
 
     os->writeInt(nodes.index(node->parent));
@@ -860,15 +860,15 @@ void Compiler::writeModel(Stream* os, bool globalTextures)
       os->writeInt(channel.scalingKeys.length());
 
       for (const Animation::PositionKey& posKey : channel.positionKeys) {
-        os->writePoint(posKey.position);
+        os->write<Point>(posKey.position);
         os->writeFloat(posKey.time);
       }
       for (const Animation::RotationKey& rotKey : channel.rotationKeys) {
-        os->writeQuat(rotKey.rotation);
+        os->write<Quat>(rotKey.rotation);
         os->writeFloat(rotKey.time);
       }
       for (const Animation::ScalingKey& scaleKey : channel.scalingKeys) {
-        os->writeVec3(scaleKey.scaling);
+        os->write<Vec3>(scaleKey.scaling);
         os->writeFloat(scaleKey.time);
       }
     }

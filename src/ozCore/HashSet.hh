@@ -257,7 +257,7 @@ protected:
     Entry* entry = data[index];
 
     while (entry != nullptr) {
-      if (elem == entry->elem) {
+      if (entry->elem == elem) {
         if (overwrite) {
           entry->elem = static_cast<Elem_&&>(elem);
         }
@@ -507,7 +507,7 @@ public:
     Entry* entry = data[index];
 
     while (entry != nullptr) {
-      if (key == entry->elem) {
+      if (entry->elem == key) {
         return true;
       }
 
@@ -552,7 +552,7 @@ public:
     Entry** prev  = &data[index];
 
     while (entry != nullptr) {
-      if (key == entry->elem) {
+      if (entry->elem == key) {
         *prev = entry->next;
 
         entry->~Entry();

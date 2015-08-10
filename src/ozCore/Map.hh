@@ -64,23 +64,23 @@ struct MapPair
   }
 
   /**
-   * Equality operator for key-pair comparison, required by `Set` class.
+   * Equality operator for pair-key comparison, required by `Set` class.
    */
   template <typename Key_>
   OZ_ALWAYS_INLINE
-  friend constexpr bool operator == (const Key_& k, const MapPair& p)
+  constexpr bool operator == (const Key_& k) const
   {
-    return k == p.key;
+    return key == k;
   }
 
   /**
-   * Less-than operator for key-pair comparison, required for `aBisection()`.
+   * Less-than operator for pair-key comparison, required for `aBisection()`.
    */
   template <typename Key_>
   OZ_ALWAYS_INLINE
-  friend constexpr bool operator < (const Key_& k, const MapPair& p)
+  constexpr bool operator < (const Key_& k) const
   {
-    return LessFunc()(k, p.key);
+    return LessFunc()(key, k);
   }
 };
 
@@ -100,7 +100,7 @@ struct MapPair
  *
  * @sa `oz::Set`, `oz::HashMap`
  */
-template <typename Key, typename Value, class LessFunc = Less<void>>
+template <typename Key, typename Value, class LessFunc = Less<Key>>
 class Map : private Set<detail::MapPair<Key, Value, LessFunc>>
 {
 public:
@@ -131,7 +131,7 @@ private:
   {
     int i = Arrays::bisection<Pair, Key>(data, count, key);
 
-    if (i >= 0 && data[i].key == key) {
+    if (i != count && data[i].key == key) {
       if (overwrite) {
         data[i].key   = static_cast<Key_&&>(key);
         data[i].value = static_cast<Value_&&>(value);
@@ -139,7 +139,6 @@ private:
     }
     else {
       ensureCapacity(count + 1);
-      ++i;
 
       Arrays::moveBackward<Pair>(data + i, count - i, data + i + 1);
       data[i].key   = static_cast<Key_&&>(key);

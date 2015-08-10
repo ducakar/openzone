@@ -59,6 +59,7 @@ public:
 
   State              state;
   float              time;
+  float              moveDist; // TODO remove
 
   Vec3               offset;
   Vec3               destination;

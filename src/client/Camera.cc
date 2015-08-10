@@ -252,9 +252,9 @@ void Camera::read(const Json& json)
 
 void Camera::read(Stream* is)
 {
-  rot        = is->readQuat();
+  rot        = is->read<Quat>();
   mag        = is->readFloat();
-  p          = is->readPoint();
+  p          = is->read<Point>();
   velocity   = Vec3::ZERO;
 
   desiredRot = rot;
@@ -268,9 +268,9 @@ void Camera::read(Stream* is)
   rotMat     = Mat4::rotation(rot);
   rotTMat    = ~rotMat;
 
-  colour     = is->readMat4();
-  baseColour = is->readMat4();
-  nvColour   = is->readMat4();
+  colour     = is->read<Mat4>();
+  baseColour = is->read<Mat4>();
+  nvColour   = is->read<Mat4>();
 
   right      = Vec3(+rotMat.x);
   up         = Vec3(+rotMat.y);
@@ -319,16 +319,16 @@ Json Camera::write() const
 
 void Camera::write(Stream* os) const
 {
-  os->writeQuat(desiredRot);
+  os->write<Quat>(desiredRot);
   os->writeFloat(desiredMag);
-  os->writePoint(desiredPos);
+  os->write<Point>(desiredPos);
 
   os->writeFloat(relH);
   os->writeFloat(relV);
 
-  os->writeMat4(colour);
-  os->writeMat4(baseColour);
-  os->writeMat4(nvColour);
+  os->write<Mat4>(colour);
+  os->write<Mat4>(baseColour);
+  os->write<Mat4>(nvColour);
 
   os->writeInt(bot);
   os->writeInt(vehicle);

@@ -410,7 +410,7 @@ const File* Model::preload()
 
   is.readInt();
 
-  dim             = is.readVec3();
+  dim             = is.read<Vec3>();
   size            = dim.fastN();
   flags           = 0;
   shaderId        = liber.shaderIndex(is.readString());
@@ -471,10 +471,10 @@ const File* Model::preload()
       normals   = new Vec3[nFramePositions * nFrames];
 
       for (int i = 0; i < nFramePositions * nFrames; ++i) {
-        positions[i] = is.readPoint();
+        positions[i] = is.read<Point>();
       }
       for (int i = 0; i < nFramePositions * nFrames; ++i) {
-        normals[i] = is.readVec3();
+        normals[i] = is.read<Vec3>();
       }
 
       memcpy(vertices, vertexBuffer, nVertices * sizeof(Vertex));
@@ -500,9 +500,9 @@ const File* Model::preload()
     lights[i].node           = is.readInt();
     lights[i].type           = Light::Type(is.readInt());
 
-    lights[i].pos            = is.readPoint();
-    lights[i].dir            = is.readVec3();
-    lights[i].colour         = is.readVec3();
+    lights[i].pos            = is.read<Point>();
+    lights[i].dir            = is.read<Vec3>();
+    lights[i].colour         = is.read<Vec3>();
 
     lights[i].attenuation[0] = is.readFloat();
     lights[i].attenuation[1] = is.readFloat();
@@ -515,7 +515,7 @@ const File* Model::preload()
   nodes.resize(nNodes, true);
 
   for (int i = 0; i < nNodes; ++i) {
-    nodes[i].transf     = is.readMat4();
+    nodes[i].transf     = is.read<Mat4>();
     nodes[i].mesh       = is.readInt();
 
     nodes[i].parent     = is.readInt();
@@ -544,15 +544,15 @@ const File* Model::preload()
       channel.scalingKeys.resize(nScalingKeys, true);
 
       for (int k = 0; k < nPositionKeys; ++k) {
-        channel.positionKeys[k].position = is.readPoint();
+        channel.positionKeys[k].position = is.read<Point>();
         channel.positionKeys[k].time     = is.readFloat();
       }
       for (int k = 0; k < nRotationKeys; ++k) {
-        channel.rotationKeys[k].rotation = is.readQuat();
+        channel.rotationKeys[k].rotation = is.read<Quat>();
         channel.rotationKeys[k].time     = is.readFloat();
       }
       for (int k = 0; k < nScalingKeys; ++k) {
-        channel.scalingKeys[k].scaling = is.readVec3();
+        channel.scalingKeys[k].scaling = is.read<Vec3>();
         channel.scalingKeys[k].time    = is.readFloat();
       }
     }
@@ -576,7 +576,7 @@ void Model::load()
   Stream is = preloadData->modelFile.read(Endian::LITTLE);
 
   is.readInt();
-  is.readVec3();
+  is.read<Vec3>();
   is.readString();
   is.readInt();
   is.readInt();

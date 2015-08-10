@@ -605,7 +605,7 @@ public:
   /**
    * Sort elements with quicksort.
    */
-  template <class LessFunc = Less<void>>
+  template <class LessFunc = Less<Elem>>
   void sort()
   {
     Arrays::sort<Elem, LessFunc>(data, count);

@@ -45,7 +45,7 @@ namespace oz
  *
  * @sa `oz::Set`, `oz::List`
  */
-template <typename Elem, class LessFunc = Less<void>>
+template <typename Elem, class LessFunc = Less<Elem>>
 class Heap : private List<Elem>
 {
 public:

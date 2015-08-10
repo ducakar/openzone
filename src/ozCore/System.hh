@@ -40,7 +40,7 @@
 # define OZ_ASSERT(cond) \
   ((cond) ? \
    void(0) : oz::System::error(__PRETTY_FUNCTION__, __FILE__, __LINE__, 0, \
-                               "Assertion `" #cond "' failed."))
+                               "Assertion `%s' failed.", #cond))
 #endif
 
 /**

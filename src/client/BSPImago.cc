@@ -86,8 +86,8 @@ void BSPImago::preload()
   clusters.resize(nClusters * nClusterBits);
   is.readBitset(clusters);
 
-  waterFogColour = is.readVec4();
-  lavaFogColour  = is.readVec4();
+  waterFogColour = is.read<Vec4>();
+  lavaFogColour  = is.read<Vec4>();
 }
 
 void BSPImago::load()

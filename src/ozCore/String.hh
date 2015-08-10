@@ -412,102 +412,6 @@ public:
   }
 
   /**
-   * Operator <=.
-   */
-  bool operator <= (const String& s) const
-  {
-    return compare(begin(), s.begin()) <= 0;
-  }
-
-  /**
-   * Operator <=.
-   */
-  bool operator <= (const char* s) const
-  {
-    return compare(begin(), s) <= 0;
-  }
-
-  /**
-   * Operator <=.
-   */
-  friend bool operator <= (const char* a, const String& b)
-  {
-    return compare(a, b.begin()) <= 0;
-  }
-
-  /**
-   * Operator >=.
-   */
-  bool operator >= (const String& s) const
-  {
-    return compare(begin(), s.begin()) >= 0;
-  }
-
-  /**
-   * Operator >=.
-   */
-  bool operator >= (const char* s) const
-  {
-    return compare(begin(), s) >= 0;
-  }
-
-  /**
-   * Operator >=.
-   */
-  friend bool operator >= (const char* a, const String& b)
-  {
-    return compare(a, b.begin()) >= 0;
-  }
-
-  /**
-   * Operator <.
-   */
-  bool operator < (const String& s) const
-  {
-    return compare(begin(), s.begin()) < 0;
-  }
-
-  /**
-   * Operator <.
-   */
-  bool operator < (const char* s) const
-  {
-    return compare(begin(), s) < 0;
-  }
-
-  /**
-   * Operator <.
-   */
-  friend bool operator < (const char* a, const String& b)
-  {
-    return compare(a, b.begin()) < 0;
-  }
-
-  /**
-   * Operator >.
-   */
-  bool operator > (const String& s) const
-  {
-    return compare(begin(), s.begin()) > 0;
-  }
-
-  /**
-   * Operator >.
-   */
-  bool operator > (const char* s) const
-  {
-    return compare(begin(), s) > 0;
-  }
-
-  /**
-   * Operator >.
-   */
-  friend bool operator > (const char* a, const String& b)
-  {
-    return compare(a, b.begin()) > 0;
-  }
-
-  /**
    * %Iterator with constant access, initially points to the first character.
    */
   OZ_ALWAYS_INLINE
@@ -784,9 +688,16 @@ public:
 };
 
 /**
- * Hash function is the same as for C strings.
+ * `Less` function object is the same as for C strings.
  */
-template<>
+template <>
+struct Less<String> : Less<const char*>
+{};
+
+/**
+ * `Hash` function object is the same as for C strings.
+ */
+template <>
 struct Hash<String> : Hash<const char*>
 {};
 

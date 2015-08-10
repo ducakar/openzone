@@ -48,7 +48,7 @@ StackTrace StackTrace::current(int nSkippedFrames)
 
 #ifdef __GLIBC__
 
-  void* framesBuffer[StackTrace::MAX_FRAMES + 4];
+  void* framesBuffer[MAX_FRAMES + 4];
   int   nBufferedFrames = backtrace(framesBuffer, MAX_FRAMES + 4);
 
   st.nFrames = clamp<int>(nBufferedFrames - 1 - nSkippedFrames, 0, MAX_FRAMES);

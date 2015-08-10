@@ -64,7 +64,7 @@ void QuestList::read(Stream* is)
 
     quest.title       = is->readString();
     quest.description = is->readString();
-    quest.place       = is->readPoint();
+    quest.place       = is->read<Point>();
     quest.state       = Quest::State(is->readInt());
   }
 
@@ -78,7 +78,7 @@ void QuestList::write(Stream* os) const
   for (const Quest& quest : quests) {
     os->writeString(quest.title);
     os->writeString(quest.description);
-    os->writePoint(quest.place);
+    os->write<Point>(quest.place);
     os->writeInt(quest.state);
   }
 

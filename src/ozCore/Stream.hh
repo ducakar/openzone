@@ -65,12 +65,12 @@ public:
 private:
 
   /**
-   * Read consecutive floats. Helper function for readVec3(), readVec4() etc.
+   * Read consecutive floats. Helper function for read<Vec3>(), readVec4() etc.
    */
   void readFloats(float* values, int count);
 
   /**
-   * Write consecutive floats. Helper function for writeVec3(), writeVec4() etc.
+   * Write consecutive floats. Helper function for write<Vec3>(), write<Vec4>() etc.
    */
   void writeFloats(const float* values, int count);
 
@@ -408,74 +408,21 @@ public:
   void writeString(const char* s);
 
   /**
-   * Read 3D vector.
+   * Read a line.
+   *
+   * Line delimiter is read but not included in the returned string.
    */
-  Vec3 readVec3();
+  String readLine();
 
   /**
-   * Write 3D vector.
+   * Write a line replacing terminating null byte with UNIX newline.
    */
-  void writeVec3(const Vec3& v);
+  void writeLine(const String& s);
 
   /**
-   * Read 3D point.
+   * Write a line replacing terminating null byte with UNIX newline.
    */
-  Point readPoint();
-
-  /**
-   * Write 3D point.
-   */
-  void writePoint(const Point& p);
-
-  /**
-   * Read 3D plane.
-   */
-  Plane readPlane();
-
-  /**
-   * Write 3D plane.
-   */
-  void writePlane(const Plane& p);
-
-  /**
-   * Read 4-component vector.
-   */
-  Vec4 readVec4();
-
-  /**
-   * Write 4-component vector.
-   */
-  void writeVec4(const Vec4& v);
-
-  /**
-   * Read quaternion.
-   */
-  Quat readQuat();
-
-  /**
-   * Write quaternion.
-   */
-  void writeQuat(const Quat& q);
-
-  /**
-   * Read 3x3 matrix.
-   */
-  Mat3 readMat3();
-
-  /**
-   * Write 3x3 matrix.
-   */
-  void writeMat3(const Mat3& m);
-
-  /**
-   * Read 4x4 matrix.
-   */
-  Mat4 readMat4();
-
-  /**
-   * Write 4x4 matrix.
-   */
-  void writeMat4(const Mat4& m);
+  void writeLine(const char* s);
 
   /**
    * Fill bitset with data from a stream.
@@ -508,21 +455,24 @@ public:
   }
 
   /**
-   * Read a line.
-   *
-   * Line delimiter is read but not included in the returned string.
+   * Read a vector, quaternion, matrix etc.
    */
-  String readLine();
+  template <class Vector>
+  Vector read()
+  {
+    Vector v;
+    readFloats(v, int(sizeof(Vector) / sizeof(float)));
+    return v;
+  }
 
   /**
-   * Write a line replacing terminating null byte with UNIX newline.
+   * Write a vector, quaternion, matrix etc.
    */
-  void writeLine(const String& s);
-
-  /**
-   * Write a line replacing terminating null byte with UNIX newline.
-   */
-  void writeLine(const char* s);
+  template <class Vector>
+  void write(const Vector& v)
+  {
+    writeFloats(v, int(sizeof(Vector) / sizeof(float)));
+  }
 
   /**
    * Compress using deflate (ZIP/GZip) algorithm.
