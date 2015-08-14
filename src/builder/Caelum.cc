@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file builder/Caelum.cc
- */
-
 #include <builder/Caelum.hh>
 
 #include <client/Caelum.hh>

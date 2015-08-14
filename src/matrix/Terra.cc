@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file matrix/Terra.cc
- */
-
 #include <matrix/Terra.hh>
 
 #include <matrix/Liber.hh>

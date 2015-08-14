@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <client/ui/Font.hh>
+#include <client/common.hh>
 
 namespace oz
 {
@@ -112,7 +112,12 @@ public:
 
 public:
 
-  Font    fonts[Font::MAX];
+  Font    monoFont;
+  Font    sansFont;
+  Font    smallFont;
+  Font    largeFont;
+  Font    titleFont;
+
   Colours colours;
   Images  images;
   Sounds  sounds;

@@ -37,7 +37,6 @@ const char* const BuildInfo::CONFIG      = "OZ_ALLOCATOR: @OZ_ALLOCATOR@, "
                                            "OZ_SIMD: @OZ_SIMD@, "
                                            "OZ_GL_ES: @OZ_GL_ES@, "
                                            "OZ_LUAJIT: @OZ_LUAJIT@, "
-                                           "OZ_NONFREE: @OZ_NONFREE@, "
                                            "OZ_TOOLS: @OZ_TOOLS@, "
                                            "OZ_TESTS: @OZ_TESTS@, "
                                            "OZ_BUNDLE: @OZ_BUNDLE@";

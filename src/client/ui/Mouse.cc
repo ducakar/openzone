@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/Mouse.cc
- */
-
 #include <client/ui/Mouse.hh>
 
 #include <client/Shader.hh>

@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/Caelum.cc
- */
-
 #include <client/Caelum.hh>
 
 #include <client/Shader.hh>

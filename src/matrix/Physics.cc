@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file matrix/Physics.cc
- */
-
 #include <matrix/Physics.hh>
 
 namespace oz

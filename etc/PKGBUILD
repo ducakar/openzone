@@ -34,7 +34,6 @@ function build()
     -D CMAKE_CXX_FLAGS="${CXXFLAGS/-O2} -msse3 -mfpmath=sse" \
     -D CMAKE_CXX_FLAGS_RELEASE="-Ofast -flto -fprofile-generate" \
     -D BUILD_SHARED_LIBS=1 \
-    -D OZ_NONFREE=1 \
     ..
 
   make

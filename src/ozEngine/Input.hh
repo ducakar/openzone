@@ -1,5 +1,5 @@
 /*
- * ozFactory - OpenZone Assets Builder Library.
+ * ozEngine - OpenZone Engine Library.
  *
  * Copyright © 2002-2014 Davorin Učakar
  *
@@ -21,46 +21,62 @@
  */
 
 /**
- * @file ozFactory/ModelBuilder.hh
- *
- * `ModelBuilder` class.
+ * @file ozEngine/Input.hh
  */
 
 #pragma once
 
 #include "common.hh"
 
+struct SDL_Event;
+
 namespace oz
 {
 
-/**
- * %ModelBuilder converts generic 3D model to OpenZone format (.ozModel).
- *
- * Assimp (Open Asset Import Library) is used to read source models.
- */
-class ModelBuilder
+class Input
 {
+private:
+
+  static const int MAX_ACTIONS = 255;
+
+private:
+
+  static SBitset<MAX_ACTIONS> downActions;     ///< Action for which keys were down.
+  static SBitset<MAX_ACTIONS> pressedActions;  ///< Action for which keys were pressed.
+  static SBitset<MAX_ACTIONS> releasedActions; ///< Action for which keys were released.
+
 public:
 
   /**
    * Static class.
    */
-  ModelBuilder() = delete;
+  Input() = delete;
 
   /**
-   * Get the last error string from Assimp.
+   * A key/button for a given action was down at some moment during the current tick.
    */
-  static const char* getError();
+  static bool down(int action)
+  {
+    return downActions.get(action);
+  }
 
   /**
-   * True iff the given 3D model format is supported by Assimp (only file extension is checked).
+   * A key/buttons for a given action changed state to down at some moment during the current tick.
    */
-  static bool isModel(const File& file);
+  static bool pressed(int action)
+  {
+    return pressedActions.get(action);
+  }
 
   /**
-   * Build a Collada (.dae) model into OpenZone (.ozModel) format.
+   * A key/buttons for a given action changed state to up at some moment during the current tick.
    */
-  static bool buildModel(const File& file, Stream* os);
+  static bool released(int action)
+  {
+    return releasedActions.get(action);
+  }
+
+  static void handle(SDL_Event* event);
 
 };
 

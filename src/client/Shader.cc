@@ -17,12 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/Shader.cc
- *
- * Shader utilities.
- */
-
 #include <client/Shader.hh>
 
 #include <client/Camera.hh>

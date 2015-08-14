@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/EditFrame.cc
- */
-
 #include <client/ui/EditFrame.hh>
 
 #include <matrix/Synapse.hh>
@@ -185,7 +181,7 @@ EditFrame::EditFrame() :
   Frame(COLS*SLOT_SIZE, SINGLE_HEIGHT, ""),
   owner(nullptr),
   lifeBar(&style.taggedLife), statusBar(&style.taggedStatus),
-  itemDesc(-ICON_SIZE - 12, FOOTER_SIZE / 2, 0, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, ""),
+  itemDesc(-ICON_SIZE - 12, FOOTER_SIZE / 2, 0, ALIGN_RIGHT | ALIGN_VCENTRE, &style.sansFont, ""),
   taggedItemIndex(-1), scrollOwner(0)
 {
   flags |= UPDATE_BIT;

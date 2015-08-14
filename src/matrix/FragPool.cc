@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file matrix/FragPool.cc
- */
-
 #include <matrix/FragPool.hh>
 
 #include <matrix/Frag.hh>

@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/EditStage.cc
- */
-
 #include <client/EditStage.hh>
 
 #include <matrix/Synapse.hh>

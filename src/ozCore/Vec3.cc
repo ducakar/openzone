@@ -20,10 +20,6 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-/**
- * @file ozCore/Vec3.cc
- */
-
 #include "Vec3.hh"
 
 namespace oz

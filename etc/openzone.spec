@@ -80,7 +80,6 @@ cmake \
   -D CMAKE_AR="/usr/bin/gcc-ar" \
   -D CMAKE_RANLIB="/usr/bin/gcc-ranlib" \
   -D BUILD_SHARED_LIBS=1 \
-  -D OZ_NONFREE=1 \
   -D OZ_TOOLS=1 \
   ..
 

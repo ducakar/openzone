@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/SMMVehicleImago.cc
- */
-
 #include <client/SMMVehicleImago.hh>
 
 #include <matrix/Vehicle.hh>

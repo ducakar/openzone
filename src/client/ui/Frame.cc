@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/Frame.cc
- */
-
 #include <client/ui/Frame.hh>
 
 #include <client/Input.hh>
@@ -81,7 +77,7 @@ void Frame::onDraw()
 
 Frame::Frame(int width, int height, const char* text) :
   Area(width, height + HEADER_SIZE),
-  title(width / 2, -HEADER_SIZE / 2, 0, ALIGN_HCENTRE | ALIGN_VCENTRE, Font::LARGE, "%s", text)
+  title(width / 2, -HEADER_SIZE / 2, 0, ALIGN_HCENTRE | ALIGN_VCENTRE, &style.largeFont, "%s", text)
 {}
 
 }

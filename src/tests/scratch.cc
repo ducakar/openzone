@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file tests/scratch.cc
- */
-
 #include <ozCore/ozCore.hh>
 
 using namespace oz;

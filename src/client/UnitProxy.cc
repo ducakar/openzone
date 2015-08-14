@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/UnitProxy.cc
- */
-
 #include <client/UnitProxy.hh>
 
 #include <client/Camera.hh>

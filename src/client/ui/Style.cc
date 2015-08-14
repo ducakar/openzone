@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/Style.cc
- */
-
 #include <client/ui/Style.hh>
 
 #include <client/Context.hh>
@@ -79,13 +75,14 @@ struct FontInfo
   int         height;
 };
 
-static const FontInfo FONT_INFOS[Font::MAX] = {
-  { "mono",  "", 13 },
-  { "sans",  "", 13 },
-  { "small", "", 10 },
-  { "large", "", 14 },
-  { "title", "", 18 }
-};
+static Font loadFont(const char* name, const Json& fontsConfig)
+{
+  const Json& config = fontsConfig[name];
+  File        file   = "@ui/font/" + config["name"].get(String::EMPTY) + ".ttf";
+  int         height = config["height"].get(10);
+
+  return Font(file, height);
+}
 
 void Style::init()
 {
@@ -96,14 +93,11 @@ void Style::init()
 
   const Json& fontsConfig = config["fonts"];
 
-  for (int i = 0; i < Font::MAX; ++i) {
-    const Json& fontConfig = fontsConfig[FONT_INFOS[i].key];
-
-    const char* name   = fontConfig["name"].get(FONT_INFOS[i].name);
-    int         height = fontConfig["height"].get(FONT_INFOS[i].height);
-
-    fonts[i].init(name, height);
-  }
+  monoFont  = loadFont("mono", fontsConfig);
+  sansFont  = loadFont("sans", fontsConfig);
+  smallFont = loadFont("small", fontsConfig);
+  largeFont = loadFont("large", fontsConfig);
+  titleFont = loadFont("title", fontsConfig);
 
   const Json& coloursConfig = config["colours"];
 
@@ -151,7 +145,7 @@ void Style::init()
                                    Vec4(0.20f, 0.40f, 1.00f, 0.60f),
                                    Vec4(0.20f, 0.40f, 1.00f, 0.60f));
 
-  int weaponBarHeight = fonts[Font::LARGE].height + 8;
+  int weaponBarHeight = largeFont.height() + 8;
 
   OZ_READ_BAR(botLife,             8, 30, 200, 14,
                                    Vec4(0.80f, 1.00f, 0.90f, 0.60f),
@@ -252,9 +246,11 @@ void Style::destroy()
     glDeleteTextures(GLsizei(sizeof(images) / sizeof(images.crosshair)), &images.crosshair);
   };
 
-  for (int i = 0; i < Font::MAX; ++i) {
-    fonts[i].destroy();
-  }
+  monoFont.destroy();
+  sansFont.destroy();
+  smallFont.destroy();
+  largeFont.destroy();
+  titleFont.destroy();
 }
 
 Style style;

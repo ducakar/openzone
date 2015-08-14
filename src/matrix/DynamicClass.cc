@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file matrix/DynamicClass.cc
- */
-
 #include <matrix/DynamicClass.hh>
 
 #include <matrix/Dynamic.hh>

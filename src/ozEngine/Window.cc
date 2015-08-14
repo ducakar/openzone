@@ -20,17 +20,14 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-/**
- * @file ozEngine/Window.cc
- */
-
 #include "Window.hh"
 
 #include "GL.hh"
 
+#include <AL/alc.h>
+#include <SDL.h>
 #include <cstdio>
 #include <jpeglib.h>
-#include <SDL.h>
 
 #ifdef __native_client__
 # include <ppapi/cpp/completion_callback.h>
@@ -60,8 +57,10 @@ static pp::Graphics3D*       context            = nullptr;
 static Semaphore             mouseLockSemaphore;
 static Semaphore             flushSemaphore;
 #else
-static SDL_GLContext         context;
+static SDL_GLContext         glContext          = nullptr;
 #endif
+static ALCdevice*            alDevice           = nullptr;
+static ALCcontext*           alContext          = nullptr;
 static SDL_Window*           window             = nullptr;
 static Thread                screenshotThread;
 
@@ -226,8 +225,8 @@ void Window::updateSize(int newWidth, int newHeight)
     ppbFullscreen->SetFullscreen(PSGetInstanceId(), PP_Bool(fullscreen));
 
     glSetCurrentContextPPAPI(0);
-    context->ResizeBuffers(windowWidth, windowHeight);
-    glSetCurrentContextPPAPI(context->pp_resource());
+    glContext->ResizeBuffers(windowWidth, windowHeight);
+    glSetCurrentContextPPAPI(glContext->pp_resource());
   };
 
 #endif
@@ -267,21 +266,16 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
   windowFocus  = true;
   windowGrab   = false;
 
-  // Don't mess with screensaver. In X11 it only makes effect for windowed mode, in fullscreen
-  // mode screensaver never starts anyway. Turning off screensaver has a side effect: if the game
-  // crashes, it remains turned off. Besides that, in X11 several programs (e.g. IM clients) rely
-  // on screensaver's counter, so they don't detect that you are away if the screensaver is screwed.
-  SDL_EnableScreenSaver();
-
   // Force old Mesa drivers to turn on partial S3TC support even when libtxc_dxtn is not present.
   // We don't use online texture compression anywhere so partial S3TC support is enough.
 #ifdef __unix__
   SDL_setenv("force_s3tc_enable", "true", true);
 #endif
 
-  uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | (fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
+  uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE |
+               (fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
 
-  Log::print("Creating OpenGL window %dx%d [%s] ... ",
+  Log::print("Creating window %dx%d [%s] ... ",
              windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed");
 
   window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -290,6 +284,9 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
     Log::printEnd("Window creation failed");
     return false;
   }
+
+  Log::printEnd("OK");
+  Log::print("Creating OpenGL context ...");
 
 #ifdef __native_client__
 
@@ -308,15 +305,17 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
       PP_GRAPHICS3DATTRIB_NONE
     };
 
-    context = new pp::Graphics3D(pp::InstanceHandle(PSGetInstanceId()), pp::Graphics3D(), attribs);
+    glContext = new pp::Graphics3D(pp::InstanceHandle(PSGetInstanceId()),
+                                   pp::Graphics3D(),
+                                   attribs);
 
     if (context->is_null()) {
       Log::printEnd("Failed to create OpenGL context");
       delete context;
     }
-    else if (!PSInterfaceInstance()->BindGraphics(PSGetInstanceId(), context->pp_resource())) {
+    else if (!PSInterfaceInstance()->BindGraphics(PSGetInstanceId(), glContext->pp_resource())) {
       Log::printEnd("Failed to bind Graphics3D");
-      delete context;
+      delete glContext;
     }
     else {
       glSetCurrentContextPPAPI(context->pp_resource());
@@ -325,7 +324,7 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
       glFlush();
 
-      context->SwapBuffers(pp::CompletionCallback(onFlushComplete, nullptr));
+      glContext->SwapBuffers(pp::CompletionCallback(onFlushComplete, nullptr));
     }
   };
   flushSemaphore.wait();
@@ -349,7 +348,9 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
 
   SDL_GL_SetSwapInterval(1);
 
-  context = SDL_GL_CreateContext(window);
+  glContext = SDL_GL_CreateContext(window);
+
+  GL::init();
 
   glViewport(0, 0, windowWidth, windowHeight);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -361,22 +362,56 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
 #endif
 
   Log::printEnd("OK");
+  Log::print("Creating OpenAL context ... ");
+
+  alDevice = alcOpenDevice(nullptr);
+  if (alDevice == nullptr) {
+    Log::printEnd("Failed to open default OpenAL device");
+    return false;
+  }
+
+  alContext = alcCreateContext(alDevice, nullptr);
+  if (alContext == nullptr) {
+    Log::printEnd("Failed to create OpenAL context");
+    return false;
+  }
+
+  if (alcMakeContextCurrent(alContext) != ALC_TRUE) {
+    Log::printEnd("Failed to activate OpenAL context");
+    return false;
+  }
+
+  Log::printEnd("OK");
   return true;
 }
 
 void Window::destroy()
 {
   if (window != nullptr) {
+    if (alContext != nullptr) {
+      alcDestroyContext(alContext);
+      alContext = nullptr;
+    }
+
+    if (alDevice != nullptr) {
+      alcCloseDevice(alDevice);
+      alDevice = nullptr;
+    }
+
+    if (glContext != nullptr) {
 #ifdef __native_client__
-    MainCall() << []
-    {
-      glSetCurrentContextPPAPI(0);
-      delete context;
-      glTerminatePPAPI();
-    };
+      MainCall() << []
+      {
+        glSetCurrentContextPPAPI(0);
+        delete glContext;
+        glTerminatePPAPI();
+      };
 #else
-    SDL_GL_DeleteContext(context);
+      SDL_GL_DeleteContext(glContext);
 #endif
+      glContext = nullptr;
+    }
+
     SDL_DestroyWindow(window);
     window = nullptr;
   }

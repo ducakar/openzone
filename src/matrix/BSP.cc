@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file matrix/BSP.cc
- */
-
 #include <matrix/BSP.hh>
 
 #include <matrix/Liber.hh>

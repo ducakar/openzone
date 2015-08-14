@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/MD2Imago.cc
- */
-
 #include <client/MD2Imago.hh>
 
 #include <client/Context.hh>

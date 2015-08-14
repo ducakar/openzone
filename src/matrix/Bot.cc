@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file matrix/Bot.cc
- */
-
 #include <matrix/Bot.hh>
 
 #include <matrix/LuaMatrix.hh>

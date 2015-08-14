@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/Terra.cc
- */
-
 #include <client/Terra.hh>
 
 #include <client/Frustum.hh>

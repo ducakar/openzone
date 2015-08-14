@@ -77,7 +77,7 @@ public:
 public:
 
   /**
-   * Forbid instances.
+   * Static class.
    */
   Endian() = delete;
 

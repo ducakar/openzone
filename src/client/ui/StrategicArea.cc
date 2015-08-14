@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/StrategicArea.cc
- */
-
 #include <client/ui/StrategicArea.hh>
 
 #include <client/Input.hh>
@@ -458,7 +454,7 @@ void StrategicArea::onDraw()
 
 StrategicArea::StrategicArea() :
   Area(camera.width, camera.height),
-  unitName(0, 0, 0, ALIGN_HCENTRE, Font::SANS, ""),
+  unitName(0, 0, 0, ALIGN_HCENTRE, &style.sansFont, ""),
   overlayCallback(nullptr), overlaySender(nullptr),
   hoverStr(-1), hoverEnt(-1), hoverObj(-1), taggedStr(-1),
   mouseW(0.0f)

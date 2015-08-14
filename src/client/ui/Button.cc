@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/Button.cc
- */
-
 #include <client/ui/Button.hh>
 
 #include <client/Input.hh>
@@ -89,7 +85,7 @@ void Button::onDraw()
 }
 
 Button::Button(const char* s, Callback* callback_, int width, int height) :
-  Area(width, height), text(width / 2, height / 2, 0, ALIGN_CENTRE, Font::SANS, "%s", s),
+  Area(width, height), text(width / 2, height / 2, 0, ALIGN_CENTRE, &style.sansFont, "%s", s),
   callback(callback_), isHighlighted(false), isClicked(false), wasClicked(false)
 {}
 

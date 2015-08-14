@@ -154,7 +154,7 @@ public:
 public:
 
   /**
-   * Forbid instances.
+   * Static class.
    */
   AL() = delete;
 
@@ -182,16 +182,6 @@ public:
    * Load OpenAL buffer from a WAVE or Ogg Vorbis file.
    */
   static bool bufferDataFromFile(ALuint bufferId, const File& file);
-
-  /**
-   * Open default OpenAL device and create a context with default parameters.
-   */
-  static bool init();
-
-  /**
-   * Destroy OpenAL context and close device.
-   */
-  static void destroy();
 
 };
 

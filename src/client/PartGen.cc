@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/PartGen.cc
- */
-
 #include <client/PartGen.hh>
 
 #include <matrix/Physics.hh>

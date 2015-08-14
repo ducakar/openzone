@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file matrix/WeaponClass.cc
- */
-
 #include <matrix/WeaponClass.hh>
 
 #include <matrix/Weapon.hh>

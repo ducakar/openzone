@@ -55,7 +55,7 @@ public:
 public:
 
   /**
-   * Forbid instances.
+   * Static class.
    */
   TerraBuilder() = delete;
 

@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file matrix/Vehicle.cc
- */
-
 #include <matrix/Vehicle.hh>
 
 #include <matrix/Physics.hh>

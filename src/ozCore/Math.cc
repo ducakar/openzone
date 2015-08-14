@@ -20,10 +20,6 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-/**
- * @file ozCore/Math.cc
- */
-
 #include "Math.hh"
 
 #include <cstdlib>

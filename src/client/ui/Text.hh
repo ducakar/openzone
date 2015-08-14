@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <client/ui/Font.hh>
+#include <client/ui/Area.hh>
 
 namespace oz
 {
@@ -32,24 +32,22 @@ namespace client
 namespace ui
 {
 
-class Area;
-
 class Text
 {
 private:
 
-  int        x;
-  int        y;
-  int        width;
-  int        align;
-  Font::Type font;
-  int        lastHash;
+  int   x         = 0;
+  int   y         = 0;
+  int   width     = 0;
+  int   align     = Area::ALIGN_NONE;
+  Font* font      = nullptr;
+  int   lastHash  = Hash<const char*>::EMPTY;
 
-  int        texX;
-  int        texY;
-  int        texWidth;
-  int        texHeight;
-  uint       texId;
+  int   texX      = 0;
+  int   texY      = 0;
+  int   texWidth  = 0;
+  int   texHeight = 0;
+  uint  texId     = 0;
 
 private:
 
@@ -57,10 +55,10 @@ private:
 
 public:
 
-  Text();
+  Text() = default;
 
   OZ_PRINTF_FORMAT(7, 8)
-  explicit Text(int x, int y, int width, int align, Font::Type font, const char* s, ...);
+  explicit Text(int x, int y, int width, int align, Font* font, const char* s, ...);
 
   ~Text();
   Text(Text&& l);
@@ -69,7 +67,7 @@ public:
   void setPosition(int x, int y);
   void setWidth(int width);
   void setAlign(int align);
-  void setFont(Font::Type font);
+  void setFont(Font* font);
   OZ_PRINTF_FORMAT(2, 0)
   void setTextv(const char* s, va_list ap);
   OZ_PRINTF_FORMAT(2, 3)

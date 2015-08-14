@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/HudArea.cc
- */
-
 #include <client/ui/HudArea.hh>
 
 #include <matrix/Physics.hh>
@@ -303,9 +299,9 @@ void HudArea::onDraw()
 
 HudArea::HudArea() :
   Area(camera.width, camera.height),
-  title(0, 0, 0, ALIGN_CENTRE, Font::LARGE, ""),
-  weaponName(0, 0, 0, ALIGN_LEFT, Font::LARGE, ""),
-  weaponRounds(0, 0, 0, ALIGN_RIGHT, Font::LARGE, "∞"),
+  title(0, 0, 0, ALIGN_CENTRE, &style.largeFont, ""),
+  weaponName(0, 0, 0, ALIGN_LEFT, &style.largeFont, ""),
+  weaponRounds(0, 0, 0, ALIGN_RIGHT, &style.largeFont, "∞"),
   taggedLife(&style.taggedLife),
   taggedStatus(&style.taggedStatus),
   botLife(&style.botLife),
@@ -317,8 +313,8 @@ HudArea::HudArea() :
   flags |= UPDATE_BIT | PINNED_BIT;
 
   for (int i = 0; i < Vehicle::MAX_WEAPONS; ++i) {
-    vehicleWeaponNames[i]  = Text(0, 0, 0, ALIGN_LEFT, Font::LARGE, "");
-    vehicleWeaponRounds[i] = Text(0, 0, 0, ALIGN_RIGHT, Font::LARGE, "∞");
+    vehicleWeaponNames[i]  = Text(0, 0, 0, ALIGN_LEFT, &style.largeFont, "");
+    vehicleWeaponRounds[i] = Text(0, 0, 0, ALIGN_RIGHT, &style.largeFont, "∞");
   }
 
   vehicleModel = new ModelField(nullptr, style.vehicleField.h);

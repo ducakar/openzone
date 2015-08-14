@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/Render.cc
- */
-
 #include <client/Render.hh>
 
 #include <client/Shape.hh>
@@ -769,7 +765,6 @@ void Render::init()
   Log::unindent();
   Log::println("}");
 
-  GL::init();
   shader.init();
   shape.init();
 

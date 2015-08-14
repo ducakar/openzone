@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file nirvana/Mind.cc
- */
-
 #include <nirvana/Mind.hh>
 
 #include <nirvana/LuaNirvana.hh>

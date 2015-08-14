@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/ModelField.cc
- */
-
 #include <client/ui/ModelField.hh>
 
 #include <client/Input.hh>

@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/GameStage.cc
- */
-
 #include <client/GameStage.hh>
 
 #include <matrix/Synapse.hh>

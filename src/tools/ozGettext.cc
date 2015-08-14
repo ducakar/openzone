@@ -17,13 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file tools/ozGettext.cc
- *
- * Extract class, weapon, BSP and entity names from game data and generate POT template files for
- * translations.
- */
-
 #include <ozCore/ozCore.hh>
 
 #include <cstdlib>

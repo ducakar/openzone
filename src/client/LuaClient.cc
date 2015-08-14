@@ -17,12 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/LuaClient.cc
- *
- * Lua scripting engine for client
- */
-
 #include <client/LuaClient.hh>
 
 #include <matrix/Matrix.hh>

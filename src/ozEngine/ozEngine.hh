@@ -34,4 +34,5 @@
 #include "AL.hh"
 
 #include "Cursor.hh"
+#include "Font.hh"
 #include "Window.hh"

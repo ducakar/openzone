@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/MainMenu.cc
- */
-
 #include <client/ui/MainMenu.hh>
 
 #include <client/Camera.hh>
@@ -164,8 +160,8 @@ void MainMenu::onDraw()
 
 MainMenu::MainMenu() :
   Area(camera.width, camera.height),
-  copyright(20, 10, 360, Area::ALIGN_NONE, Font::SMALL, ""),
-  title(-120, -20, 0, ALIGN_HCENTRE | ALIGN_VCENTRE, Font::LARGE, "OpenZone " OZ_VERSION)
+  copyright(20, 10, 360, Area::ALIGN_NONE, &style.smallFont, ""),
+  title(-120, -20, 0, ALIGN_HCENTRE | ALIGN_VCENTRE, &style.largeFont, "OpenZone " OZ_VERSION)
 {
   flags |= UPDATE_BIT;
 

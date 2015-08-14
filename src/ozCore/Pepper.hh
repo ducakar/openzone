@@ -72,7 +72,7 @@ public:
 public:
 
   /**
-   * Forbid instances.
+   * Static class.
    */
   Pepper() = delete;
 

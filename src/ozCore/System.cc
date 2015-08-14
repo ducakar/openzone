@@ -20,10 +20,6 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-/**
- * @file ozCore/System.cc
- */
-
 #include "System.hh"
 
 #include "SpinLock.hh"
@@ -486,7 +482,7 @@ void System::error(const char* function, const char* file, int line, int nSkippe
 
   Log::putsRaw("\n\n");
   Log::vprintRaw(msg, ap);
-  Log::printRaw("\n  at `%s' in %s:%d\n", function, file, line);
+  Log::printRaw("\n  at %s\n  in %s:%d\n", function, file, line);
 
   va_end(ap);
 

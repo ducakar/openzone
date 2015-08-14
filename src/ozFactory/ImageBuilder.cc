@@ -20,17 +20,11 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-/**
- * @file ozFactory/ImageBuilder.cc
- */
-
 #include "ImageBuilder.hh"
 
 #include <cstdio>
 #include <FreeImage.h>
-#ifdef OZ_NONFREE
-# include <squish.h>
-#endif
+#include <squish.h>
 
 namespace oz
 {
@@ -61,10 +55,8 @@ static const uint DDPF_RGB                           = 0x00000040;
 static const uint DDPF_NORMAL                        = 0x80000000;
 
 static const uint DXGI_FORMAT_R8G8B8A8_UNORM         = 28;
-#ifdef OZ_NONFREE
 static const uint DXGI_FORMAT_BC1_UNORM              = 71;
 static const uint DXGI_FORMAT_BC3_UNORM              = 77;
-#endif
 
 static const int D3D10_RESOURCE_DIMENSION_TEXTURE2D = 3;
 
@@ -103,7 +95,7 @@ static FIBITMAP* createBitmap(const ImageData& image)
 static FIBITMAP* loadBitmap(const File& file)
 {
   Stream            is        = file.read();
-  ubyte*            dataBegin = reinterpret_cast<ubyte*>(const_cast<char*>(is.begin()));
+  ubyte*            dataBegin = reinterpret_cast<ubyte*>(is.begin());
   FIMEMORY*         memoryIO  = FreeImage_OpenMemory(dataBegin, is.capacity());
   FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory(memoryIO, is.capacity());
   FIBITMAP*         dib       = FreeImage_LoadFromMemory(format < 0 ? FIF_TARGA : format, memoryIO);
@@ -165,16 +157,6 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
     }
   }
 
-  if (compress) {
-#ifndef OZ_NONFREE
-    snprintf(errorBuffer, ERROR_LENGTH, "Texture compression requested but compiled without"
-             " libsquish (OZ_NONFREE is disabled).");
-    return false;
-#else
-    compress = Math::isPow2(width) && Math::isPow2(height);
-#endif
-  }
-
   if (isCubeMap && nFaces != 6) {
     snprintf(errorBuffer, ERROR_LENGTH, "Cube map requires exactly 6 faces.");
     return false;
@@ -207,7 +189,6 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
   const char* fourCC = isArray ? "DX10" : "\0\0\0\0";
   int dx10Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
-#ifdef OZ_NONFREE
   bool isFast     = ImageBuilder::options & ImageBuilder::FAST_BIT;
   int squishFlags = 0;
 
@@ -219,7 +200,6 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
     dx10Format     = hasAlpha ? DXGI_FORMAT_BC3_UNORM : DXGI_FORMAT_BC1_UNORM;
     fourCC         = isArray ? "DX10" : hasAlpha ? "DXT5" : "DXT1";
   }
-#endif
 
   Stream os(0, Endian::LITTLE);
 
@@ -337,12 +317,10 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
       }
 
       if (compress) {
-#ifdef OZ_NONFREE
         ubyte* pixels = FreeImage_GetBits(level);
         int    s3Size = squish::GetStorageRequirements(levelWidth, levelHeight, squishFlags);
 
         squish::CompressImage(pixels, levelWidth, levelHeight, os.writeSkip(s3Size), squishFlags);
-#endif
       }
       else {
         const char* pixels = reinterpret_cast<const char*>(FreeImage_GetBits(level));
@@ -401,6 +379,8 @@ ImageData::ImageData(ImageData&& i) :
 ImageData& ImageData::operator = (ImageData&& i)
 {
   if (&i != this) {
+    delete[] pixels;
+
     width  = i.width;
     height = i.height;
     flags  = i.flags;
@@ -412,50 +392,6 @@ ImageData& ImageData::operator = (ImageData&& i)
     i.pixels = nullptr;
   }
   return *this;
-}
-
-void ImageData::determineAlpha()
-{
-  if (pixels == nullptr) {
-    return;
-  }
-
-  int size = width * height * 4;
-
-  flags &= ~ALPHA_BIT;
-
-  for (int i = 0; i < size; i += 4) {
-    if (pixels[i + 3] != char(255)) {
-      flags |= ALPHA_BIT;
-      return;
-    }
-  }
-}
-
-bool ImageData::isNormalMap() const
-{
-  if (pixels == nullptr) {
-    return false;
-  }
-
-  int  size    = width * height * 4;
-  Vec4 average = Vec4::ZERO;
-
-  for (int i = 0; i < size; i += 4) {
-    Vec4 c = Vec4(ubyte(pixels[i + 0]) / 255.0f - 0.5f,
-                  ubyte(pixels[i + 1]) / 255.0f - 0.5f,
-                  ubyte(pixels[i + 2]) / 255.0f - 0.5f,
-                  ubyte(pixels[i + 3]) / 255.0f);
-
-    if (abs(1.0f - c.sqN()) > 1.0f || c.w < 0.9f) {
-      return false;
-    }
-
-    average += c;
-  }
-
-  average /= float(width * height);
-  return (average - Vec4(0.0f, 0.0f, 0.5f, 1.0f)).sqN() < 0.1f;
 }
 
 const char* ImageBuilder::getError()

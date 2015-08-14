@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/Camera.cc
- */
-
 #include <client/Camera.hh>
 
 #include <client/Input.hh>

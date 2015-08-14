@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/CheckBox.cc
- */
-
 #include <client/ui/CheckBox.hh>
 
 #include <client/Input.hh>
@@ -95,7 +91,7 @@ void CheckBox::onDraw()
 
 CheckBox::CheckBox(const char* text, int width, int height) :
   Area(width, height),
-  label(height + 2, height / 2, 0, ALIGN_VCENTRE, Font::SANS, "%s", text),
+  label(height + 2, height / 2, 0, ALIGN_VCENTRE, &style.sansFont, "%s", text),
   isHighlighted(false), isClicked(false), wasClicked(false), isChecked(false)
 {}
 

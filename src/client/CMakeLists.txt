@@ -102,7 +102,6 @@ add_library(client STATIC
   ui/CreditsMenu.hh
   ui/DebugFrame.hh
   ui/EditFrame.hh
-  ui/Font.hh
   ui/Frame.hh
   ui/GalileoFrame.hh
   ui/HudArea.hh
@@ -132,7 +131,6 @@ add_library(client STATIC
   ui/CreditsMenu.cc
   ui/DebugFrame.cc
   ui/EditFrame.cc
-  ui/Font.cc
   ui/Frame.cc
   ui/GalileoFrame.cc
   ui/HudArea.cc

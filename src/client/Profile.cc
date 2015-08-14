@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/Profile.cc
- */
-
 #include <client/Profile.hh>
 
 #include <matrix/BotClass.hh>

@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/BotAudio.cc
- */
-
 #include <client/BotAudio.hh>
 
 #include <client/Context.hh>

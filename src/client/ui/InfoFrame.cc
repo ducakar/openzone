@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/InfoFrame.cc
- */
-
 #include <client/ui/InfoFrame.hh>
 
 #include <nirvana/Nirvana.hh>
@@ -87,8 +83,8 @@ void InfoFrame::onDraw()
 }
 
 InfoFrame::InfoFrame() :
-  Frame(320, 12 + 30 * style.fonts[Font::SANS].height, ""),
-  text(6, -HEADER_SIZE - 4, 308, Area::ALIGN_TOP, Font::SANS, ""), lastId(-1)
+  Frame(320, 12 + 30 * style.sansFont.height(), ""),
+  text(6, -HEADER_SIZE - 4, 308, Area::ALIGN_TOP, &style.sansFont, ""), lastId(-1)
 {
   flags |= PINNED_BIT;
 }

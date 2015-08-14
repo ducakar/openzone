@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/MD2WeaponImago.cc
- */
-
 #include <client/MD2WeaponImago.hh>
 
 #include <client/Context.hh>

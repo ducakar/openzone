@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/MissionMenu.cc
- */
-
 #include <client/ui/MissionMenu.hh>
 
 #include <client/Camera.hh>
@@ -83,7 +79,7 @@ void MissionMenu::onRealign()
   scroll      = 0;
 
   imageX      = 20;
-  imageY      = 100 + 8 * style.fonts[Font::SANS].height;
+  imageY      = 100 + 8 * style.sansFont.height();
   imageWidth  = width - 280;
   imageHeight = height - 20 - imageY;
 
@@ -183,7 +179,7 @@ MissionMenu::~MissionMenu()
 
 MissionMenu::MissionMenu() :
   Area(camera.width, camera.height),
-  description(40, 190, width - 320, ALIGN_TOP, Font::SANS, ""),
+  description(40, 190, width - 320, ALIGN_TOP, &style.sansFont, ""),
   imageId(0)
 {
   Button* backButton = new Button(OZ_GETTEXT("Back"), back, 200, 30);

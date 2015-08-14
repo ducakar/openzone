@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/BSPAudio.cc
- */
-
 #include <client/BSPAudio.hh>
 
 #include <client/Context.hh>

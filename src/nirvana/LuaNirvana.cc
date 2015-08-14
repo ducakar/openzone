@@ -17,12 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file nirvana/LuaNirvana.cc
- *
- * Lua scripting engine for Nirvana
- */
-
 #include <nirvana/LuaNirvana.hh>
 
 #include <nirvana/luaapi.hh>

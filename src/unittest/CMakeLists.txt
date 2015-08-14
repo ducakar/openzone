@@ -6,7 +6,7 @@ add_executable(unittest
 #BEGIN SOURCES
   unittest.hh
   Alloc.cc
-  arrays.cc
+  Arrays.cc
   common.cc
   iterables.cc
   unittest.cc

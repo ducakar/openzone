@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file common/Lingua.cc
- */
-
 #include <common/Lingua.hh>
 
 #include <cstdlib>

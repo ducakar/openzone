@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/CreditsMenu.cc
- */
-
 #include <client/ui/CreditsMenu.hh>
 
 #include <client/Shape.hh>
@@ -55,10 +51,10 @@ void CreditsMenu::onRealign()
     int line = scroll + i;
 
     if (line < nLabels) {
-      labels[i] = Text(0, 0, 0, ALIGN_HCENTRE, Font::SANS, "");
+      labels[i] = Text(0, 0, 0, ALIGN_HCENTRE, &style.sansFont, "");
     }
     else {
-      labels[i] = Text(0, 0, 0, ALIGN_HCENTRE, Font::SANS, "%s", lines[line - nLabels].c());
+      labels[i] = Text(0, 0, 0, ALIGN_HCENTRE, &style.sansFont, "%s", lines[line - nLabels].c());
     }
   }
 }
@@ -137,7 +133,7 @@ void CreditsMenu::onDraw()
 
 CreditsMenu::CreditsMenu() :
   Area(camera.width, camera.height),
-  stride(style.fonts[Font::SANS].height), scroll(0), bias(0), direction(1)
+  stride(style.sansFont.height()), scroll(0), bias(0), direction(1)
 {
   flags |= UPDATE_BIT;
 

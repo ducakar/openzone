@@ -17,12 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file matrix/Library.cc
- *
- * Map of all resources, object types, scripts etc.
- */
-
 #include <matrix/Liber.hh>
 
 #include <matrix/Vehicle.hh>

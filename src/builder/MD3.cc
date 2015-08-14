@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file builder/MD3.cc
- */
-
 #include <builder/MD3.hh>
 
 #include <client/Context.hh>

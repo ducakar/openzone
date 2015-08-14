@@ -46,11 +46,11 @@ protected:
 public:
 
   OZ_PRINTF_FORMAT(6, 7)
-  explicit Label(int width, int height, int align, Font::Type font, const char* s, ...);
+  explicit Label(int width, int height, int align, Font* font, const char* s, ...);
 
   void setWidth(int width);
   void setAlign(int align);
-  void setFont(Font::Type font);
+  void setFont(Font* font);
   OZ_PRINTF_FORMAT(2, 3)
   void setText(const char* s, ...);
 

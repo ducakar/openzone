@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/Loader.cc
- */
-
 #include <client/Loader.hh>
 
 #include <client/Camera.hh>

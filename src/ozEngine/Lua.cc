@@ -20,10 +20,6 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-/**
- * @file ozEngine/Lua.cc
- */
-
 #include "Lua.hh"
 
 #include <lua.hpp>

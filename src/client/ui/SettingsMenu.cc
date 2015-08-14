@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/SettingsMenu.cc
- */
-
 #include <client/ui/SettingsMenu.hh>
 
 #include <client/Camera.hh>

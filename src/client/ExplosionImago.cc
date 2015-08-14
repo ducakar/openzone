@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ExplosionImago.cc
- */
-
 #include <client/ExplosionImago.hh>
 
 #include <client/Context.hh>

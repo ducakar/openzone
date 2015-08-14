@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file matrix/Caelum.cc
- */
-
 #include <matrix/Caelum.hh>
 
 #include <matrix/Liber.hh>

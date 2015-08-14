@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/QuestFrame.cc
- */
-
 #include <client/ui/QuestFrame.hh>
 
 #include <client/ui/Style.hh>
@@ -130,8 +126,8 @@ void QuestFrame::onDraw()
 
 QuestFrame::QuestFrame() :
   Frame(500, 2, OZ_GETTEXT("No quest")),
-  description(6, -HEADER_SIZE - 4, 488, Area::ALIGN_TOP, Font::SANS, ""),
-  contentHeight(8 + 16 * style.fonts[Font::SANS].height),
+  description(6, -HEADER_SIZE - 4, 488, Area::ALIGN_TOP, &style.sansFont, ""),
+  contentHeight(8 + 16 * style.sansFont.height()),
   isOpened(false), lastQuest(-1), lastState(Quest::NONE)
 {
   flags |= UPDATE_BIT;

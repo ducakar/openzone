@@ -39,7 +39,7 @@ If you want to build the tools (`OZ_TOOLS` option) you also need:
 - Assimp
 - FreeImage
 - libnoise
-- libsquish (optional, for texture compression)
+- libsquish
 
 The following development tools are required:
 
@@ -107,10 +107,6 @@ You may also want to adjust several options when configuring CMake build system:
 
 - `OZ_LUAJIT`: Use LuaJIT instead of the official Lua library. Lua scripts execute much faster but
   LuaJIT is written in assembler and supported only on x86 desktop platforms.
-  `OFF` by default.
-
-- `OZ_NONFREE`: Enable support for building textures using S3 texture compression. Requires
-  libsquish library.
   `OFF` by default.
 
 - `OZ_TOOLS`: Build tools required for building game data (see the next section).

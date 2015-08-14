@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/DebugFrame.cc
- */
-
 #include <client/ui/DebugFrame.hh>
 
 #include <client/Camera.hh>
@@ -95,21 +91,21 @@ void DebugFrame::onDraw()
 }
 
 DebugFrame::DebugFrame() :
-  Frame(560, 10 + 7 * (style.fonts[Font::MONO].height + 2), OZ_GETTEXT("Debug"))
+  Frame(560, 10 + 7 * (style.monoFont.height() + 2), OZ_GETTEXT("Debug"))
 {
   flags |= PINNED_BIT;
 
   x = (camera.width - width) / 2;
 
-  int height = style.fonts[Font::MONO].height + 2;
+  int height = style.monoFont.height() + 2;
 
-  camPosRot     = Text(5, 5 + height * 6, 0, ALIGN_NONE, Font::MONO, "");
-  botPosRot     = Text(5, 5 + height * 5, 0, ALIGN_NONE, Font::MONO, "");
-  botVelMom     = Text(5, 5 + height * 4, 0, ALIGN_NONE, Font::MONO, "");
-  botFlagsState = Text(5, 5 + height * 3, 0, ALIGN_NONE, Font::MONO, "");
-  tagPos        = Text(5, 5 + height * 2, 0, ALIGN_NONE, Font::MONO, "");
-  tagVelMom     = Text(5, 5 + height * 1, 0, ALIGN_NONE, Font::MONO, "");
-  tagFlags      = Text(5, 5 + height * 0, 0, ALIGN_NONE, Font::MONO, "");
+  camPosRot     = Text(5, 5 + height * 6, 0, ALIGN_NONE, &style.monoFont, "");
+  botPosRot     = Text(5, 5 + height * 5, 0, ALIGN_NONE, &style.monoFont, "");
+  botVelMom     = Text(5, 5 + height * 4, 0, ALIGN_NONE, &style.monoFont, "");
+  botFlagsState = Text(5, 5 + height * 3, 0, ALIGN_NONE, &style.monoFont, "");
+  tagPos        = Text(5, 5 + height * 2, 0, ALIGN_NONE, &style.monoFont, "");
+  tagVelMom     = Text(5, 5 + height * 1, 0, ALIGN_NONE, &style.monoFont, "");
+  tagFlags      = Text(5, 5 + height * 0, 0, ALIGN_NONE, &style.monoFont, "");
 }
 
 }

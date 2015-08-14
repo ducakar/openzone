@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file matrix/ObjectClass.cc
- */
-
 #include <matrix/ObjectClass.hh>
 
 #include <matrix/Object.hh>

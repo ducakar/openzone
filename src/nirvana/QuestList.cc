@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file nirvana/QuestList.cc
- */
-
 #include <nirvana/QuestList.hh>
 
 namespace oz

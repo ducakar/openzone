@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ParticleGen.cc
- */
-
 #include <client/SparkModel.hh>
 
 #include <client/Frustum.hh>

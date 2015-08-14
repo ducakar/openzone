@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/UI.cc
- */
-
 #include <client/ui/UI.hh>
 
 #include <client/Camera.hh>
@@ -227,7 +223,7 @@ void UI::init()
   loadingScreen = new LoadingArea();
 
   if (showFPS) {
-    fpsLabel = new Text(-4, -4, 0, Area::ALIGN_RIGHT | Area::ALIGN_TOP, Font::MONO, "");
+    fpsLabel = new Text(-4, -4, 0, Area::ALIGN_RIGHT | Area::ALIGN_TOP, &style.monoFont, "");
   }
 
   root->add(loadingScreen, 0, 0);

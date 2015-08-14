@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file nirvana/Memo.cc
- */
-
 #include <nirvana/Memo.hh>
 
 namespace oz

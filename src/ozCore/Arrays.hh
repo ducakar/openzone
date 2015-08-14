@@ -191,7 +191,7 @@ private:
 public:
 
   /**
-   * Forbid instances.
+   * Static class.
    */
   Arrays() = delete;
 
@@ -246,7 +246,7 @@ public:
   {
     const Elem* end = array + count - 1;
 
-    for (; end > array; --end) {
+    for (; end >= array; --end) {
       if (*end == value) {
         break;
       }

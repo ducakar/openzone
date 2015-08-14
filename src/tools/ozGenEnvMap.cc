@@ -17,14 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file tools/ozGenEnvMap.cc
- *
- * Generate environment cube map.
- *
- * A `env.dds` file is generated in the current directory. It should be copied to `oz_base/glsl`.
- */
-
 #include <ozFactory/ozFactory.hh>
 
 #include <cstdlib>

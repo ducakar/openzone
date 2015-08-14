@@ -55,9 +55,6 @@ private:
     AAC
   };
 
-  ALCdevice*                  soundDevice;
-  ALCcontext*                 soundContext;
-
   SharedLib                   libeSpeak;
   SharedLib                   libMad;
   SharedLib                   libFaad;

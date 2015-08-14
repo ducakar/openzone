@@ -12,7 +12,6 @@ option(OZ_ALLOCATOR "Overload new/delete with diagnostics and allocations tracki
 option(OZ_SIMD "Use SIMD implementation of linear algebra classes." OFF)
 option(OZ_GL_ES "Use OpenGL ES 2.0 instead of OpenGL 2.1." OFF)
 option(OZ_LUAJIT "Use use LuaJIT instead of official Lua." OFF)
-option(OZ_NONFREE "Enable support for building S3TC textures." OFF)
 option(OZ_TOOLS "Build engine tools required for game data creation." OFF)
 option(OZ_TESTS "Build test programs (that should only be used by me)." OFF)
 
@@ -48,7 +47,6 @@ endif()
 if(PLATFORM_EMBEDDED)
   set(OZ_PLATFORM_NAME ${PLATFORM_NAME}-${CMAKE_SYSTEM_PROCESSOR})
   set(OZ_GL_ES ON)
-  set(OZ_NONFREE OFF)
   set(OZ_TOOLS OFF)
 endif()
 
@@ -162,13 +160,11 @@ if(OZ_TOOLS)
     message(FATAL_ERROR "libnoise library is missing")
   endif()
 
-  if(OZ_NONFREE)
-    find_library(SQUISH_LIBRARY squish)
-    mark_as_advanced(SQUISH_LIBRARY)
+  find_library(SQUISH_LIBRARY squish)
+  mark_as_advanced(SQUISH_LIBRARY)
 
-    if(NOT SQUISH_LIBRARY)
-      message(FATAL_ERROR "libsquish library is missing (required by OZ_NONFREE)")
-    endif()
+  if(NOT SQUISH_LIBRARY)
+    message(FATAL_ERROR "libsquish library is missing")
   endif()
 endif()
 

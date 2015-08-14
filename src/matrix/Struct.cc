@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file matrix/Struct.cc
- */
-
 #include <matrix/Struct.hh>
 
 #include <matrix/Physics.hh>

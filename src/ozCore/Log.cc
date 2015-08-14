@@ -20,10 +20,6 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-/**
- * @file ozCore/Log.cc
- */
-
 #include "Log.hh"
 
 #include "Alloc.hh"
@@ -209,7 +205,7 @@ bool Log::printMemorySummary()
 
 void Log::printTrace(const StackTrace& st)
 {
-  printEnd("  thread `%s'", st.thread);
+  printEnd("  on %s", String::isEmpty(st.thread) ? "?" : st.thread);
 
 #ifdef __GLIBC__
 

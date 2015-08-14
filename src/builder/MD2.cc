@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file builder/MD2.cc
- */
-
 #include <builder/MD2.hh>
 
 #include <client/MD2.hh>

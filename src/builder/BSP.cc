@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file builder/BSP.cc
- */
-
 #include <builder/BSP.hh>
 
 #include <builder/Context.hh>

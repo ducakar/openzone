@@ -1,5 +1,5 @@
 /*
- * ozFactory - OpenZone Assets Builder Library.
+ * ozEngine - OpenZone Engine Library.
  *
  * Copyright © 2002-2014 Davorin Učakar
  *
@@ -20,11 +20,9 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-#pragma once
+#include "Input.hh"
 
-/*
- * Configuration variables
- */
+namespace oz
+{
 
-// Enable squish S3TC library.
-#cmakedefine OZ_NONFREE
+}

@@ -20,10 +20,6 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-/**
- * @file unittest/arrays.cc
- */
-
 #include "unittest.hh"
 
 using namespace oz;
@@ -128,9 +124,9 @@ void test_arrays()
         OZ_CHECK(r[i - 1] <= r[i]);
       }
 
-      OZ_CHECK((index == -1 && r[0] > i) ||
-               (index == 999 && r[999] <= i) ||
-               (r[index] <= i && r[index + 1] > i));
+      OZ_CHECK((index == 0 && r[0] >= i) ||
+               (index == 1000 && r[999] < i) ||
+               (r[index - 1] < i && r[index] >= i));
     }
   }
 }

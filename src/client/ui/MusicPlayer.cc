@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/MusicPlayer.cc
- */
-
 #include <client/ui/MusicPlayer.hh>
 
 #include <client/Camera.hh>
@@ -159,10 +155,10 @@ void MusicPlayer::onDraw()
 }
 
 MusicPlayer::MusicPlayer() :
-  Frame(240, 36 + style.fonts[Font::SMALL].height, OZ_GETTEXT("Music Player")),
-  trackTitle(width / 2, 32, 0, ALIGN_HCENTRE, Font::SMALL, ""),
-  trackLabel(39, 14, 0, ALIGN_CENTRE, Font::SMALL, "0"),
-  volumeLabel(201, 14, 0, ALIGN_CENTRE, Font::SMALL, "5"),
+  Frame(240, 36 + style.smallFont.height(), OZ_GETTEXT("Music Player")),
+  trackTitle(width / 2, 32, 0, ALIGN_HCENTRE, &style.smallFont, ""),
+  trackLabel(39, 14, 0, ALIGN_CENTRE, &style.smallFont, "0"),
+  volumeLabel(201, 14, 0, ALIGN_CENTRE, &style.smallFont, "5"),
   currentTrack(0), volume(5), isPlaying(false)
 {
   flags |= UPDATE_BIT;

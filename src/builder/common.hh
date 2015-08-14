@@ -26,8 +26,6 @@
 #include <client/common.hh>
 #include <ozFactory/ozFactory.hh>
 
-#include <builder/config.hh>
-
 namespace oz
 {
 namespace builder

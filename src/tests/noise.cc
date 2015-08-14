@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file tests/noise.cc
- */
-
 #include <ozCore/ozCore.hh>
 #include <ozEngine/ozEngine.hh>
 #include <ozFactory/ozFactory.hh>

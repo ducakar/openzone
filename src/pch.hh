@@ -17,12 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file pch.hh
- *
- * Precompiled header including `common/common.hh`.
- */
-
 #include <common/common.hh>
 
 #ifdef _WIN32

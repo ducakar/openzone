@@ -79,19 +79,6 @@ struct ImageData
   {
     return pixels == nullptr;
   }
-
-  /**
-   * Check if any non-opaque pixel is present and update alpha flag accordingly.
-   */
-  void determineAlpha();
-
-  /**
-   * Guess if the image is a normal map.
-   *
-   * The guess is based on average colour being close to #8080ff and whether pixel lengths roughly
-   * one (\f$ (R - 0.5)^2 + (G - 0.5)^2 + (B - 0.5)^2 = 1 \f$).
-   */
-  bool isNormalMap() const;
 };
 
 /**
@@ -137,7 +124,7 @@ public:
 public:
 
   /**
-   * Forbid instances.
+   * Static class.
    */
   ImageBuilder() = delete;
 

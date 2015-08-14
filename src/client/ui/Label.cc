@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/Label.cc
- */
-
 #include <client/ui/Label.hh>
 
 namespace oz
@@ -35,7 +31,7 @@ void Label::onDraw()
   text.draw(this);
 }
 
-Label::Label(int width, int height, int align, Font::Type font, const char* s, ...) :
+Label::Label(int width, int height, int align, Font* font, const char* s, ...) :
   Area(width, height), text(0, 0, width, align, font, "")
 {
   va_list ap;
@@ -54,7 +50,7 @@ void Label::setAlign(int align)
   text.setAlign(align);
 }
 
-void Label::setFont(Font::Type font)
+void Label::setFont(Font* font)
 {
   text.setFont(font);
 }

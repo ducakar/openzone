@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file builder/UI.cc
- */
-
 #include <builder/UI.hh>
 
 #include <builder/Context.hh>

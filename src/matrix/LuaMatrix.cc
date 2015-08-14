@@ -17,12 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file matrix/LuaMatrix.cc
- *
- * Lua scripting engine for Matrix
- */
-
 #include <matrix/LuaMatrix.hh>
 
 #include <matrix/luaapi.hh>

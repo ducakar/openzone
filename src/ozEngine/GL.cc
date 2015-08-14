@@ -20,10 +20,6 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-/**
- * @file ozEngine/GL.cc
- */
-
 #include "GL.hh"
 
 #include <cstring>

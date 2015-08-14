@@ -20,10 +20,6 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-/**
- * @file ozFactory/ModelBuilder.cc
- */
-
 #if 0
 
 #include "ModelBuilder.hh"

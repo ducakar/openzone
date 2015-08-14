@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/Input.cc
- */
-
 #include <client/Input.hh>
 
 #include <SDL.h>

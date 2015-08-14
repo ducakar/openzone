@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/MenuStage.cc
- */
-
 #include <client/MenuStage.hh>
 
 #include <client/Camera.hh>

@@ -141,6 +141,11 @@ class GL
 public:
 
   /**
+   * Static class.
+   */
+  GL() = delete;
+
+  /**
    * Helper function for `OZ_GL_CHECK_ERROR` macro.
    */
   static void checkError(const char* function, const char* file, int line);
@@ -180,7 +185,9 @@ public:
   static void textureDataIdenticon(int hash, int size, const Vec4& backgroundColour);
 
   /**
-   * Link previously declared OpenGL functions on Windows, NOP on other platforms.
+   * Initialise function pointers on Windows.
+   *
+   * This call is internally called by `Window::create()` and is a NOOP on non-Windows platforms.
    */
   static void init();
 

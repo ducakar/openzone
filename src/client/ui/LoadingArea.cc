@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/LoadingArea.cc
- */
-
 #include <client/ui/LoadingArea.hh>
 
 #include <client/Shape.hh>
@@ -52,7 +48,7 @@ void LoadingArea::onDraw()
 
 LoadingArea::LoadingArea() :
   Area(camera.width, camera.height),
-  status(width / 2, height / 5, 0, ALIGN_CENTRE, Font::LARGE, "")
+  status(width / 2, height / 5, 0, ALIGN_CENTRE, &style.largeFont, "")
 {
   flags |= PINNED_BIT;
 }

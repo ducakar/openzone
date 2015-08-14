@@ -7,13 +7,17 @@ add_library(ozEngine
   AL.hh
   common.hh
   Cursor.hh
+  Font.hh
   GL.hh
+  Input.hh
   Lua.hh
   ozEngine.hh
   Window.hh
   AL.cc
   Cursor.cc
+  Font.cc
   GL.cc
+  Input.cc
   Lua.cc
   Window.cc
 #END SOURCES

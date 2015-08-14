@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/SMMImago.cc
- */
-
 #include <client/SMMImago.hh>
 
 #include <client/Context.hh>

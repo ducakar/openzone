@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/StrategicProxy.cc
- */
-
 #include <client/StrategicProxy.hh>
 
 #include <client/Camera.hh>

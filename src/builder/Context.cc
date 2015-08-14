@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file builder/Context.cc
- */
-
 #include <builder/Context.hh>
 
 #include <client/SMMImago.hh>

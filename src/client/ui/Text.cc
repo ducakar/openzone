@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/Label.cc
- */
-
 #include <client/ui/Text.hh>
 
 #include <client/Shader.hh>
@@ -54,14 +50,8 @@ void Text::realign()
   }
 }
 
-Text::Text() :
-  x(0), y(0), width(0), align(Area::ALIGN_NONE), font(Font::MONO),
-  lastHash(Hash<const char*>::EMPTY), texX(0), texY(0), texWidth(0), texHeight(0), texId(0)
-{}
-
-Text::Text(int x_, int y_, int width_, int align_, Font::Type font_, const char* s, ...) :
-  x(x_), y(y_), width(width_), align(align_), font(font_), lastHash(Hash<const char*>::EMPTY),
-  texX(0), texY(0), texWidth(0), texHeight(0), texId(0)
+Text::Text(int x_, int y_, int width_, int align_, Font* font_, const char* s, ...) :
+  x(x_), y(y_), width(width_), align(align_), font(font_)
 {
   va_list ap;
   va_start(ap, s);
@@ -82,7 +72,7 @@ Text::Text(Text&& l) :
   l.y         = 0;
   l.width     = 0;
   l.align     = Area::ALIGN_NONE;
-  l.font      = Font::MONO;
+  l.font      = nullptr;
   l.lastHash  = Hash<const char*>::EMPTY;
   l.texX      = 0;
   l.texY      = 0;
@@ -93,36 +83,33 @@ Text::Text(Text&& l) :
 
 Text& Text::operator = (Text&& l)
 {
-  if (&l == this) {
-    return *this;
+  if (&l != this) {
+    clear();
+
+    x         = l.x;
+    y         = l.y;
+    width     = l.width;
+    align     = l.align;
+    font      = l.font;
+    lastHash  = l.lastHash;
+    texX      = l.texX;
+    texY      = l.texY;
+    texWidth  = l.texWidth;
+    texHeight = l.texHeight;
+    texId     = l.texId;
+
+    l.x         = 0;
+    l.y         = 0;
+    l.width     = 0;
+    l.align     = Area::ALIGN_NONE;
+    l.font      = nullptr;
+    l.lastHash  = Hash<const char*>::EMPTY;
+    l.texX      = 0;
+    l.texY      = 0;
+    l.texWidth  = 0;
+    l.texHeight = 0;
+    l.texId     = 0;
   }
-
-  clear();
-
-  x         = l.x;
-  y         = l.y;
-  width     = l.width;
-  align     = l.align;
-  font      = l.font;
-  lastHash  = l.lastHash;
-  texX      = l.texX;
-  texY      = l.texY;
-  texWidth  = l.texWidth;
-  texHeight = l.texHeight;
-  texId     = l.texId;
-
-  l.x         = 0;
-  l.y         = 0;
-  l.width     = 0;
-  l.align     = Area::ALIGN_NONE;
-  l.font      = Font::MONO;
-  l.lastHash  = Hash<const char*>::EMPTY;
-  l.texX      = 0;
-  l.texY      = 0;
-  l.texWidth  = 0;
-  l.texHeight = 0;
-  l.texId     = 0;
-
   return *this;
 }
 
@@ -150,7 +137,7 @@ void Text::setAlign(int align_)
   realign();
 }
 
-void Text::setFont(Font::Type font_)
+void Text::setFont(Font* font_)
 {
   font = font_;
 }
@@ -183,7 +170,7 @@ void Text::setTextv(const char* s, va_list ap)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-        style.fonts[font].upload(buffer, &texWidth, &texHeight);
+        font->upload(buffer, &texWidth, &texHeight);
 
         glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 

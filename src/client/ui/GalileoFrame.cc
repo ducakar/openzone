@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/GalileoFrame.cc
- */
-
 #include <client/ui/GalileoFrame.hh>
 
 #include <nirvana/QuestList.hh>

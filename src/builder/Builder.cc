@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file builder/Builder.cc
- */
-
 #include <builder/Builder.hh>
 
 #include <builder/Context.hh>
@@ -751,12 +747,6 @@ int Builder::main(int argc, char** argv)
   config.add("window.width", 400);
   config.add("window.height", 40);
   config.add("window.fullscreen", false);
-
-#ifndef OZ_NONFREE
-  if (context.useS3TC) {
-    OZ_ERROR("S3 texture compression requested but compiled without OZ_NONFREE option");
-  }
-#endif
 
   context.init();
   compiler.init();

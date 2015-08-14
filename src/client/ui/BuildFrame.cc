@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/BuildFrame.cc
- */
-
 #include <client/ui/BuildFrame.hh>
 
 #include <matrix/Synapse.hh>

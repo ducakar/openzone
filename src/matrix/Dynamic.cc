@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file matrix/Dynamic.cc
- */
-
 #include <matrix/Dynamic.hh>
 
 #include <matrix/LuaMatrix.hh>

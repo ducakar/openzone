@@ -20,24 +20,16 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-/**
- * @file ozEngine/AL.cc
- */
-
 #include "AL.hh"
 
 #include <cstring>
 
-#include <AL/alc.h>
 // We don't use those callbacks anywhere and they don't compile on MinGW.
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
 
 namespace oz
 {
-
-static ALCdevice*  soundDevice  = nullptr;
-static ALCcontext* soundContext = nullptr;
 
 /*
  * Vorbis stream reader callbacks.
@@ -491,46 +483,6 @@ bool AL::bufferDataFromFile(ALuint bufferId, const File& file)
 {
   Stream is = file.read(Endian::LITTLE);
   return bufferDataFromStream(bufferId, &is);
-}
-
-bool AL::init()
-{
-  destroy();
-
-  Log::print("Opening default OpenAL device and creating context ... ");
-
-  soundDevice = alcOpenDevice(nullptr);
-  if (soundDevice == nullptr) {
-    Log::printEnd("Failed to open OpenAL device");
-    return false;
-  }
-
-  soundContext = alcCreateContext(soundDevice, nullptr);
-  if (soundContext == nullptr) {
-    Log::printEnd("Failed to create OpenAL context");
-    return false;
-  }
-
-  if (alcMakeContextCurrent(soundContext) != ALC_TRUE) {
-    Log::printEnd("Failed to select OpenAL context");
-    return false;
-  }
-
-  Log::printEnd("OK");
-  return true;
-}
-
-void AL::destroy()
-{
-  if (soundContext != nullptr) {
-    alcDestroyContext(soundContext);
-    soundContext = nullptr;
-  }
-
-  if (soundDevice != nullptr) {
-    alcCloseDevice(soundDevice);
-    soundDevice = nullptr;
-  }
 }
 
 }

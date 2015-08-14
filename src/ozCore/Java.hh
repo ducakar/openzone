@@ -69,7 +69,7 @@ class Java
 public:
 
   /**
-   * Forbid instances.
+   * Static class.
    */
   Java() = delete;
 

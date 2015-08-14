@@ -78,7 +78,7 @@ private:
 public:
 
   /**
-   * Forbid instances.
+   * Static class.
    */
   Math() = delete;
 

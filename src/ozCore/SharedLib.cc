@@ -20,10 +20,6 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-/**
- * @file ozCore/SharedLib.cc
- */
-
 #include "SharedLib.hh"
 
 #if defined(__native_client__)

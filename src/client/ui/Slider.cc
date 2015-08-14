@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/Slider.cc
- */
-
 #include <client/ui/Slider.hh>
 
 #include <client/Input.hh>
@@ -100,7 +96,7 @@ void Slider::onDraw()
 
 Slider::Slider(float min, float max, float step, float value_, int width, int height) :
   Area(width, height),
-  text(width / 2, height / 2, 0, ALIGN_CENTRE, Font::SANS, "%g", value_),
+  text(width / 2, height / 2, 0, ALIGN_CENTRE, &style.sansFont, "%g", value_),
   isHighlighted(false), isClicked(false), wasClicked(false),
   minValue(min), maxValue(max), valueStep(step), value(value_)
 {}

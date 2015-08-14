@@ -17,12 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file builder/ozBuild.cc
- *
- * Data builder launcher.
- */
-
 #include <builder/Builder.hh>
 
 using namespace oz;

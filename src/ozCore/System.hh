@@ -79,7 +79,7 @@ public:
 public:
 
   /**
-   * Forbid instances.
+   * Static class.
    */
   System() = delete;
 

@@ -2,11 +2,9 @@ if(NOT OZ_TOOLS)
   return()
 endif()
 
-configure_file(config.hh.in config.hh @ONLY)
 configure_file(ozFactory.pc.in ozFactory.pc @ONLY)
 
 add_library(ozFactory
-  ${CMAKE_CURRENT_BINARY_DIR}/config.hh
 #BEGIN SOURCES
   common.hh
   ImageBuilder.hh
@@ -20,9 +18,7 @@ add_library(ozFactory
 )
 
 target_link_libraries(ozFactory ozCore ${ASSIMP_LIBRARIES} ${FREEIMAGE_LIBRARY} ${NOISE_LIBRARY})
-if(OZ_NONFREE)
-  target_link_libraries(ozFactory ${SQUISH_LIBRARY})
-endif()
+target_link_libraries(ozFactory ${SQUISH_LIBRARY})
 
 set_target_properties(ozFactory PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0)
 

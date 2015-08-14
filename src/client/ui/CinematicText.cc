@@ -17,12 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/ui/CinematicText.cc
- */
-
 #include <client/ui/CinematicText.hh>
 
+#include <client/ui/Style.hh>
 #include <client/Camera.hh>
 
 namespace oz
@@ -47,7 +44,7 @@ void CinematicText::onDraw()
 }
 
 CinematicText::CinematicText() :
-  Area(600, 400), text(0, 0, 600, Area::ALIGN_NONE, Font::TITLE, "")
+  Area(600, 400), text(0, 0, 600, Area::ALIGN_NONE, &style.titleFont, "")
 {
   flags |= PINNED_BIT;
 }

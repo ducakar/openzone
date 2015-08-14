@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file nirvana/luaapi.cc
- */
-
 #include <common/luabase.hh>
 
 #include <nirvana/QuestList.hh>

@@ -58,7 +58,7 @@ private:
 public:
 
   /**
-   * Forbid instances.
+   * Static class.
    */
   Window() = delete;
 

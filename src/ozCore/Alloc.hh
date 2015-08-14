@@ -86,7 +86,7 @@ public:
 public:
 
   /**
-   * Forbid instances.
+   * Static class.
    */
   Alloc() = delete;
 

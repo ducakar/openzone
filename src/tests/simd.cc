@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file tests/simd.cc
- */
-
 // #define OZ_SIMD
 #include <ozCore/ozCore.hh>
 

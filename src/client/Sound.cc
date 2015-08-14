@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/Sound.cc
- */
-
 #include <client/Sound.hh>
 
 #include <client/Context.hh>
@@ -640,14 +636,12 @@ void Sound::stopMusic()
 
 void Sound::resume() const
 {
-  alcProcessContext(soundContext);
   alListenerf(AL_GAIN, volume);
 }
 
 void Sound::suspend() const
 {
   alListenerf(AL_GAIN, 0.0f);
-  alcSuspendContext(soundContext);
 }
 
 void Sound::play()
@@ -694,84 +688,7 @@ void Sound::init()
   Log::println("}");
   Log::verboseMode = false;
 
-  const char* deviceName = config.include("sound.device", "").get("");
-
-  if (String::isEmpty(deviceName)) {
-    deviceName = nullptr;
-    Log::print("Initialising default device ...");
-  }
-  else {
-    Log::print("Initialising device '%s' ...", deviceName);
-  }
-
-  soundDevice = alcOpenDevice(deviceName);
-  if (soundDevice == nullptr) {
-    OZ_ERROR("Failed to open OpenAL device");
-  }
-
-  int defaultAttributes[] = {
-    ALC_SYNC, AL_FALSE,
-    ALC_MONO_SOURCES, 255,
-    ALC_STEREO_SOURCES, 1,
-    0
-  };
-
-  soundContext = alcCreateContext(soundDevice, defaultAttributes);
-  if (soundContext == nullptr) {
-    OZ_ERROR("Failed to create OpenAL context");
-  }
-
-  if (alcMakeContextCurrent(soundContext) != ALC_TRUE) {
-    OZ_ERROR("Failed to select OpenAL context");
-  }
-
-  Log::printEnd(" OK");
-
   OZ_AL_CHECK_ERROR();
-
-  Log::println("OpenAL context device: %s", alcGetString(soundDevice, ALC_DEVICE_SPECIFIER));
-
-  int nAttributes;
-  alcGetIntegerv(soundDevice, ALC_ATTRIBUTES_SIZE, 1, &nAttributes);
-
-  int* attributes = new int[nAttributes];
-  alcGetIntegerv(soundDevice, ALC_ALL_ATTRIBUTES, nAttributes, attributes);
-
-  Log::println("OpenAL context attributes {");
-  Log::indent();
-
-  for (int i = 0; i < nAttributes; i += 2) {
-    switch (attributes[i]) {
-      case ALC_FREQUENCY: {
-        Log::println("ALC_FREQUENCY: %d Hz", attributes[i + 1]);
-        break;
-      }
-      case ALC_REFRESH: {
-        Log::println("ALC_REFRESH: %d Hz", attributes[i + 1]);
-        break;
-      }
-      case ALC_SYNC: {
-        Log::println("ALC_SYNC: %s", attributes[i + 1] != 0 ? "on" : "off");
-        break;
-      }
-      case ALC_MONO_SOURCES: {
-        Log::println("ALC_MONO_SOURCES: %d", attributes[i + 1]);
-        break;
-      }
-      case ALC_STEREO_SOURCES: {
-        Log::println("ALC_STEREO_SOURCES: %d", attributes[i + 1]);
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-  }
-
-  delete[] attributes;
-
-  Log::unindent();
-  Log::println("}");
 
   Log::println("OpenAL vendor: %s", alGetString(AL_VENDOR));
   Log::println("OpenAL renderer: %s", alGetString(AL_RENDERER));
@@ -845,19 +762,11 @@ void Sound::destroy()
   soundThread.join();
   musicThread.join();
 
-  if (soundContext != nullptr) {
-    alSourceStop(musicSource);
-    alDeleteSources(1, &musicSource);
-    alDeleteBuffers(2, musicBufferIds);
+  alSourceStop(musicSource);
+  alDeleteSources(1, &musicSource);
+  alDeleteBuffers(2, musicBufferIds);
 
-    OZ_AL_CHECK_ERROR();
-
-    alcDestroyContext(soundContext);
-    soundContext = nullptr;
-
-    alcCloseDevice(soundDevice);
-    soundDevice = nullptr;
-  }
+  OZ_AL_CHECK_ERROR();
 
 #ifndef __native_client__
   libFaad.close();

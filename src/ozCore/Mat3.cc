@@ -20,10 +20,6 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-/**
- * @file ozCore/Mat3.cc
- */
-
 #include "Mat3.hh"
 
 namespace oz

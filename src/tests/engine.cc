@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file tests/engine.cc
- */
-
 #include <ozCore/ozCore.hh>
 #include <ozEngine/ozEngine.hh>
 
@@ -33,7 +29,6 @@ int main(int argc, char** argv)
   System::init();
   SDL_Init(SDL_INIT_VIDEO);
   Window::create("Test", 600, 600, false);
-  AL::init();
 
   File file = argc < 2 ? "/usr/share/icons/OpenZone_Ice_Slim/cursors/wait" : argv[1];
 
@@ -119,7 +114,6 @@ int main(int argc, char** argv)
 
   glDeleteTextures(1, &texId);
 
-  AL::destroy();
   Window::destroy();
   SDL_Quit();
   return 0;

@@ -17,10 +17,4 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file pch.cc
- *
- * Trigger for precompiled header.
- */
-
 #include "pch.hh"

@@ -17,10 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file client/Network.cc
- */
-
 #include <client/Network.hh>
 
 //#include <SDL_net.h>
