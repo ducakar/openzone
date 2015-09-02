@@ -30,6 +30,8 @@
 
 #include "common.hh"
 
+#include <SDL.h>
+
 namespace oz
 {
 
@@ -46,7 +48,6 @@ private:
   static int  windowHeight; ///< Window inner height.
   static bool fullscreen;   ///< True iff in full screen mode;
   static bool windowFocus;  ///< True iff window has (input) focus.
-  static bool windowGrab;   ///< True iff window has exclusive input grab.
 
 private:
 
@@ -122,27 +123,6 @@ public:
   }
 
   /**
-   * Set whether window has focus.
-   */
-  static void setFocus(bool focus)
-  {
-    windowFocus = focus;
-  }
-
-  /**
-   * True iff the window has input grab.
-   */
-  static bool hasGrab()
-  {
-    return windowGrab;
-  }
-
-  /**
-   * Toggle input grab.
-   */
-  static void setGrab(bool grab);
-
-  /**
    * Warp mouse cursor to the centre of the window.
    */
   static void warpMouse();
@@ -162,11 +142,6 @@ public:
   static void screenshot(const File& file, int quality = 85);
 
   /**
-   * Update window and OpenGL context after size change.
-   */
-  static void updateSize(int newWidth, int newHeight);
-
-  /**
    * Resize window and/or toggle full-screen mode.
    *
    * If width (or height) is 0, desktop width (or height) is used.
@@ -177,6 +152,14 @@ public:
    * Minimise window.
    */
   static void minimise();
+
+  /**
+   * Process SDL event.
+   *
+   * This updates GL context after window resize, stops/starts AL context on minimise/restore.
+   * It returns false iff the window got a close request (i.e. Alt + F4 or close button clicked).
+   */
+  static bool processEvent(const SDL_Event* event);
 
   /**
    * Create the window.

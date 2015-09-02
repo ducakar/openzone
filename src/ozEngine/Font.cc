@@ -46,6 +46,11 @@ Font::Font(const File& file, int height) :
   }
 }
 
+Font::~Font()
+{
+  destroy();
+}
+
 Font::Font(Font&& f) :
   handle(f.handle), fontHeight(f.fontHeight), fileBuffer(static_cast<Stream&&>(f.fileBuffer))
 {

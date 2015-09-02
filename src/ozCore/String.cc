@@ -300,8 +300,7 @@ String::String(const String& s) :
   String(s.begin(), s.count)
 {}
 
-String::String(String&& s) :
-  count(s.count)
+String::String(String&& s)
 {
   memcpy(this, &s, sizeof(String));
 

@@ -30,9 +30,11 @@
 
 #include "common.hh"
 
+#include "Lua.hh"
 #include "GL.hh"
 #include "AL.hh"
 
 #include "Cursor.hh"
 #include "Font.hh"
 #include "Window.hh"
+#include "Input.hh"

@@ -54,6 +54,8 @@ private:
   static const int INIT_STAGE_LOAD = 0x2000;
   static const int INIT_MAIN_LOOP  = 0x4000;
 
+private:
+
   Stage* stage;
   int    initFlags;
 
@@ -64,6 +66,8 @@ private:
 
   float  benchmarkTime;
   bool   isBenchmark;
+
+private:
 
   void printUsage();
 

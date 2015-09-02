@@ -30,3 +30,5 @@
 
 #include <ozCore/ozCore.hh>
 #include <ozEngine/config.hh>
+
+#define SDL_MAIN_HANDLED

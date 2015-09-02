@@ -47,7 +47,7 @@ Cursor::Cursor(const File& file, Mode mode_, int size)
   is.seek(12);
 
   int nEntries = is.readInt();
-  images.resize(min<int>(nEntries, images.capacity()));
+  images.resize(nEntries);
 
   mode      = mode_;
   frame     = 0;
@@ -151,13 +151,13 @@ Cursor::~Cursor()
 }
 
 Cursor::Cursor(Cursor&& c) :
-  mode(c.mode), frame(c.frame), lastFrame(-1), frameTime(c.frameTime), images(c.images)
+  mode(c.mode), frame(c.frame), lastFrame(-1), frameTime(c.frameTime),
+  images(static_cast<List<Image>&&>(c.images))
 {
   c.mode      = SYSTEM;
   c.frame     = 0;
   c.lastFrame = -1;
   c.frameTime = 0;
-  c.images.clear();
 }
 
 Cursor& Cursor::operator = (Cursor&& c)
@@ -169,13 +169,12 @@ Cursor& Cursor::operator = (Cursor&& c)
     frame     = c.frame;
     lastFrame = c.lastFrame;
     frameTime = c.frameTime;
-    images    = c.images;
+    images    = static_cast<List<Image>&&>(c.images);
 
     c.mode      = SYSTEM;
     c.frame     = 0;
     c.lastFrame = -1;
     c.frameTime = 0;
-    c.images.clear();
   }
   return *this;
 }

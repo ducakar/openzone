@@ -50,8 +50,8 @@ static const Mat4 ROTATIONS[] =
         0.0f,  0.0f,  0.0f,  1.0f),
 };
 
-static const Entity::State OPPOSITE_STATES[] = { Entity::CLOSING, Entity::OPENING };
-static const Entity::State END_STATES[]      = { Entity::OPEN, Entity::CLOSED };
+//static const Entity::State OPPOSITE_STATES[] = { Entity::CLOSING, Entity::OPENING };
+//static const Entity::State END_STATES[]      = { Entity::OPEN, Entity::CLOSED };
 
 const Vec3  Struct::DESTRUCT_FRAG_VELOCITY   = Vec3(0.0f, 0.0f, 2.0f);
 const float Struct::DEMOLISH_SPEED           = 8.0f;
@@ -131,6 +131,8 @@ void Entity::moverHandler()
 {
   time += Timer::TICK_TIME;
 
+#if 0
+
   float timeout[] { clazz->openTimeout, clazz->closeTimeout };
 
   switch (state) {
@@ -163,6 +165,7 @@ void Entity::moverHandler()
       break;
     }
   }
+#endif
 }
 
 void Entity::doorHandler()

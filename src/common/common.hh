@@ -31,7 +31,7 @@
 #include <common/Bounds.hh>
 #include <common/Lingua.hh>
 #include <common/Timer.hh>
-#include <ozEngine/Lua.hh>
+#include <ozEngine/ozEngine.hh>
 
 #include <cstdio>
 #include <cstdlib>
@@ -42,6 +42,8 @@
 # include <windows.h>
 # undef near
 # undef far
+# undef ERROR
+# undef TECHNOLOGY
 #endif
 
 namespace oz

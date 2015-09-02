@@ -52,6 +52,11 @@ public:
   Font() = default;
 
   /**
+   * Destroy.
+   */
+  ~Font();
+
+  /**
    * Load font of specified height from a file.
    */
   Font(const File& file, int height);

@@ -102,8 +102,8 @@ Stream::Stream(Stream&& s) :
   s.streamPos   = nullptr;
   s.streamBegin = nullptr;
   s.streamEnd   = nullptr;
-  s.order       = Endian::NATIVE;
   s.flags       = 0;
+  s.order       = Endian::NATIVE;
 }
 
 Stream& Stream::operator = (Stream&& s)

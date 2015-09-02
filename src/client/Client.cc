@@ -31,7 +31,6 @@
 #include <client/EditStage.hh>
 #include <client/ui/UI.hh>
 
-#include <SDL.h>
 #include <SDL_ttf.h>
 #include <unistd.h>
 #ifdef __native_client__
@@ -120,24 +119,10 @@ int Client::main()
           }
           break;
         }
-        case PSE_INSTANCE_DIDCHANGEFOCUS: {
-          Window::setFocus(psEvent->as_bool);
-          Window::setGrab(psEvent->as_bool);
-          input.reset();
-          break;
-        }
-        case PSE_MOUSELOCK_MOUSELOCKLOST: {
-          Window::setFocus(false);
-          Window::setGrab(false);
-          input.reset();
-          break;
-        }
+        case PSE_INSTANCE_DIDCHANGEFOCUS:
+        case PSE_MOUSELOCK_MOUSELOCKLOST:
         case PSE_INSTANCE_DIDCHANGEVIEW: {
-          PP_Rect rect;
-          PSInterfaceView()->GetRect(psEvent->as_resource, &rect);
-
-          Window::resize(rect.size.width, rect.size.height, Window::isFullscreen());
-          input.reset();
+          eventQueue.add(psEvent);
           break;
         }
         default: {
@@ -160,6 +145,8 @@ int Client::main()
     SDL_PumpEvents();
 
     while (SDL_PollEvent(&event) != 0) {
+      isAlive = Window::processEvent(&event);
+
       switch (event.type) {
         case SDL_MOUSEMOTION:
         case SDL_MOUSEWHEEL:
@@ -184,7 +171,7 @@ int Client::main()
           }
           else if (keysym.sym == SDLK_F11) {
             if (keysym.mod & KMOD_CTRL) {
-              Window::setGrab(!Window::hasGrab());
+              oz::Input::setGrab(!oz::Input::hasGrab()); // TODO remove oz::
             }
 #ifdef __native_client__
             else {
@@ -218,19 +205,14 @@ int Client::main()
         case SDL_WINDOWEVENT: {
           switch (event.window.event) {
             case SDL_WINDOWEVENT_FOCUS_GAINED: {
-              Window::setFocus(true);
-              Window::setGrab(true);
               input.reset();
               break;
             }
             case SDL_WINDOWEVENT_FOCUS_LOST: {
-              Window::setFocus(false);
-              Window::setGrab(false);
               input.reset();
               break;
             }
             case SDL_WINDOWEVENT_SIZE_CHANGED: {
-              Window::updateSize(event.window.data1, event.window.data2);
               input.reset();
               break;
             }
@@ -249,16 +231,8 @@ int Client::main()
               isActive = false;
               break;
             }
-            case SDL_WINDOWEVENT_CLOSE: {
-              isAlive = false;
-              break;
-            }
 #endif
           }
-          break;
-        }
-        case SDL_QUIT: {
-          isAlive = false;
           break;
         }
         default: {
@@ -530,6 +504,7 @@ int Client::init(int argc, char** argv)
                  fullscreen);
   initFlags |= INIT_WINDOW;
 
+  oz::Input::init();
   input.init();
   initFlags |= INIT_INPUT;
 
@@ -684,7 +659,7 @@ int Client::init(int argc, char** argv)
   stage->load();
 
 #ifndef __native_client__
-  Window::setGrab(true);
+  oz::Input::setGrab(true); // TODO remove oz::
 #endif
   input.reset();
 

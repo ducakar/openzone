@@ -23,6 +23,7 @@
 #include "Window.hh"
 
 #include "GL.hh"
+#include "Input.hh"
 
 #include <AL/alc.h>
 #include <SDL.h>
@@ -51,10 +52,8 @@ struct ScreenshotInfo
 };
 
 #ifdef __native_client__
-static const PPB_MouseLock*  ppbMouseLock       = nullptr;
 static const PPB_Fullscreen* ppbFullscreen      = nullptr;
-static pp::Graphics3D*       context            = nullptr;
-static Semaphore             mouseLockSemaphore;
+static pp::Graphics3D*       glContext          = nullptr;
 static Semaphore             flushSemaphore;
 #else
 static SDL_GLContext         glContext          = nullptr;
@@ -63,6 +62,7 @@ static ALCdevice*            alDevice           = nullptr;
 static ALCcontext*           alContext          = nullptr;
 static SDL_Window*           window             = nullptr;
 static Thread                screenshotThread;
+static bool                  inputGrab          = false;
 
 #ifdef __native_client__
 
@@ -119,7 +119,6 @@ int  Window::windowWidth  = 0;
 int  Window::windowHeight = 0;
 bool Window::fullscreen   = false;
 bool Window::windowFocus  = true;
-bool Window::windowGrab   = false;
 
 void Window::measureScreen()
 {
@@ -133,43 +132,9 @@ void Window::measureScreen()
 bool Window::isCreated()
 {
 #ifdef __native_client__
-  return !context->is_null();
+  return !glContext->is_null();
 #else
   return window != nullptr;
-#endif
-}
-
-void Window::setGrab(bool grab)
-{
-#ifdef __native_client__
-
-  if (grab && !windowGrab) {
-    MainCall() += []
-    {
-      ppbMouseLock->LockMouse(PSGetInstanceId(), PP_MakeCompletionCallback([](void*, int result)
-      {
-        Log() << "LOCKED";
-        windowGrab = result == PP_OK;
-        mouseLockSemaphore.post();
-      },
-      nullptr));
-    };
-    mouseLockSemaphore.wait();
-  }
-  else if (!grab && windowGrab) {
-    MainCall() << []
-    {
-      ppbMouseLock->UnlockMouse(PSGetInstanceId());
-      windowGrab = false;
-    };
-  }
-
-#else
-
-  if (SDL_SetRelativeMouseMode(SDL_bool(windowGrab)) == 0) {
-    windowGrab = grab;
-  }
-
 #endif
 }
 
@@ -184,7 +149,7 @@ void Window::swapBuffers()
 
   MainCall() << []
   {
-    context->SwapBuffers(pp::CompletionCallback(onFlushComplete, nullptr));
+    glContext->SwapBuffers(pp::CompletionCallback(onFlushComplete, nullptr));
   };
   flushSemaphore.wait();
 
@@ -210,30 +175,6 @@ void Window::screenshot(const File& file, int quality)
   screenshotThread = Thread("screenshot", screenshotMain, info);
 }
 
-void Window::updateSize(int newWidth, int newHeight)
-{
-  windowWidth  = windowWidth  == 0 ? screenWidth  : newWidth;
-  windowHeight = windowHeight == 0 ? screenHeight : newHeight;
-
-  Log::print("Resized OpenGL window to %dx%d [%s] ... ",
-             windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed");
-
-#ifdef __native_client__
-
-  MainCall() << []
-  {
-    ppbFullscreen->SetFullscreen(PSGetInstanceId(), PP_Bool(fullscreen));
-
-    glSetCurrentContextPPAPI(0);
-    glContext->ResizeBuffers(windowWidth, windowHeight);
-    glSetCurrentContextPPAPI(glContext->pp_resource());
-  };
-
-#endif
-
-  Log::printEnd("OK");
-}
-
 void Window::resize(int newWidth, int newHeight, bool fullscreen_)
 {
   newWidth  = newWidth  == 0 ? screenWidth  : newWidth;
@@ -255,16 +196,80 @@ void Window::minimise()
   SDL_MinimizeWindow(window);
 }
 
+bool Window::processEvent(const SDL_Event* event)
+{
+  switch (event->type) {
+    case SDL_WINDOWEVENT_FOCUS_GAINED: {
+      windowFocus = true;
+
+      Input::setGrab(inputGrab);
+      break;
+    }
+    case SDL_WINDOWEVENT_FOCUS_LOST: {
+      windowFocus = false;
+      inputGrab   = Input::hasGrab();
+
+      Input::setGrab(false);
+      break;
+    }
+    case SDL_WINDOWEVENT_RESIZED: {
+      windowWidth  = event->window.data1;
+      windowHeight = event->window.data2;
+
+      Log::print("Resizing window to %dx%d [%s] ... ",
+                 windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed");
+
+#ifdef __native_client__
+      MainCall() << []
+      {
+        ppbFullscreen->SetFullscreen(PSGetInstanceId(), PP_Bool(fullscreen));
+
+        glSetCurrentContextPPAPI(0);
+        glContext->ResizeBuffers(windowWidth, windowHeight);
+        glSetCurrentContextPPAPI(glContext->pp_resource());
+      };
+#endif
+
+      Log::printEnd("OK");
+      break;
+    }
+    case SDL_WINDOWEVENT_MINIMIZED: {
+      alcSuspendContext(alContext);
+      break;
+    }
+    case SDL_WINDOWEVENT_RESTORED: {
+      alcProcessContext(alContext);
+      break;
+    }
+    case SDL_WINDOWEVENT_CLOSE:
+    case SDL_QUIT: {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool Window::create(const char* title, int width, int height, bool fullscreen_)
 {
   destroy();
+
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_NOPARACHUTE) != 0) {
+    Log::println("Failed to initialise SDL");
+    return false;
+  }
+
   measureScreen();
 
   windowWidth  = width  == 0 ? screenWidth  : width;
   windowHeight = height == 0 ? screenHeight : height;
   fullscreen   = fullscreen_;
   windowFocus  = true;
-  windowGrab   = false;
+
+  uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE |
+               (fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
+
+  Log::print("Creating window %dx%d [%s] ... ",
+             windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed");
 
   // Force old Mesa drivers to turn on partial S3TC support even when libtxc_dxtn is not present.
   // We don't use online texture compression anywhere so partial S3TC support is enough.
@@ -272,11 +277,20 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
   SDL_setenv("force_s3tc_enable", "true", true);
 #endif
 
-  uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE |
-               (fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
-
-  Log::print("Creating window %dx%d [%s] ... ",
-             windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed");
+# ifdef OZ_GL_ES
+# ifndef __EMSCRIPTEN__
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_ES);
+# endif
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+# else
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+# endif
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,            24);
+  SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,            0);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,          0);
 
   window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                             windowWidth, windowHeight, flags);
@@ -285,12 +299,8 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
     return false;
   }
 
-  Log::printEnd("OK");
-  Log::print("Creating OpenGL context ...");
-
 #ifdef __native_client__
 
-  ppbMouseLock  = static_cast<const PPB_MouseLock*>(PSGetInterface(PPB_MOUSELOCK_INTERFACE));
   ppbFullscreen = static_cast<const PPB_Fullscreen*>(PSGetInterface(PPB_FULLSCREEN_INTERFACE));
   fullscreen    = false;
 
@@ -309,16 +319,16 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
                                    pp::Graphics3D(),
                                    attribs);
 
-    if (context->is_null()) {
+    if (glContext->is_null()) {
       Log::printEnd("Failed to create OpenGL context");
-      delete context;
+      delete glContext;
     }
     else if (!PSInterfaceInstance()->BindGraphics(PSGetInstanceId(), glContext->pp_resource())) {
       Log::printEnd("Failed to bind Graphics3D");
       delete glContext;
     }
     else {
-      glSetCurrentContextPPAPI(context->pp_resource());
+      glSetCurrentContextPPAPI(glContext->pp_resource());
 
       glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -329,27 +339,23 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
   };
   flushSemaphore.wait();
 
+  if (glContext->is_null()) {
+    Log::printEnd("Failed to create OpenGL context");
+    return false;
+  }
+
 #else
 
-# ifdef OZ_GL_ES
-# ifndef __EMSCRIPTEN__
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_ES);
-# endif
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-# else
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-# endif
-  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,            24);
-  SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,            0);
-  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,          0);
-
-  SDL_GL_SetSwapInterval(1);
+  SDL_ClearError();
 
   glContext = SDL_GL_CreateContext(window);
 
+  if (!String::isEmpty(SDL_GetError())) {
+    Log::printEnd("Failed to create OpenGL context: %s", SDL_GetError());
+    return false;
+  }
+
+  SDL_GL_SetSwapInterval(1);
   GL::init();
 
   glViewport(0, 0, windowWidth, windowHeight);
@@ -360,9 +366,6 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
   SDL_GL_SwapWindow(window);
 
 #endif
-
-  Log::printEnd("OK");
-  Log::print("Creating OpenAL context ... ");
 
   alDevice = alcOpenDevice(nullptr);
   if (alDevice == nullptr) {
@@ -387,6 +390,10 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
 
 void Window::destroy()
 {
+  if (screenshotThread.isValid()) {
+    screenshotThread.join();
+  }
+
   if (window != nullptr) {
     if (alContext != nullptr) {
       alcDestroyContext(alContext);
@@ -416,9 +423,7 @@ void Window::destroy()
     window = nullptr;
   }
 
-  if (screenshotThread.isValid()) {
-    screenshotThread.join();
-  }
+  SDL_Quit();
 }
 
 }

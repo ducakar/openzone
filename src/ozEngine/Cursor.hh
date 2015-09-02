@@ -88,11 +88,11 @@ private:
     };
   };
 
-  Mode             mode      = SYSTEM; ///< Render mode.
-  int              frame     = 0;      ///< Current animation frame.
-  int              lastFrame = -1;     ///< Last frame for OS cursor to avoid unnecessary updates.
-  int              frameTime = 0;      ///< Time in milliseconds of the current animation frame.
-  SList<Image, 32> images;             ///< Cursor images.
+  Mode        mode      = SYSTEM; ///< Render mode.
+  int         frame     = 0;      ///< Current animation frame.
+  int         lastFrame = -1;     ///< Last frame for OS cursor to avoid unnecessary updates.
+  int         frameTime = 0;      ///< Time in milliseconds of the current animation frame.
+  List<Image> images;             ///< Cursor images.
 
 public:
 
