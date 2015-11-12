@@ -19,9 +19,9 @@ platforms=(
 #  Android14-ARMv7a
 #  Emscripten
   Linux-i686
-  Linux-i686-Clang
+#  Linux-i686-Clang
   Linux-x86_64
-  Linux-x86_64-Clang
+#  Linux-x86_64-Clang
   PNaCl
   Windows-i686
   Windows-x86_64

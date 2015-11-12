@@ -25,36 +25,5 @@ using namespace oz;
 int main()
 {
   System::init();
-  Window::create("Drek", 400, 300, false);
-
-  uint buffers[2], source;
-  alGenBuffers(2, buffers);
-  alGenSources(1, &source);
-  AL::bufferDataFromFile(buffers[0], "/usr/share/sounds/Kopete_Received.ogg");
-  AL::bufferDataFromFile(buffers[1], "/usr/share/sounds/Oxygen-Sys-App-Positive.ogg");
-
-  alSourcei(source, AL_BUFFER, buffers[0]);
-  alSourcePlay(source);
-  alSourceStop(source);
-  alSourcei(source, AL_BUFFER, buffers[1]);
-  alSourcePlay(source);
-
-  bool isAlive = true;
-  while (isAlive) {
-    SDL_Event event;
-    while(SDL_PollEvent(&event)) {
-      isAlive = Window::processEvent(&event);
-      Input::processEvent(&event);
-    }
-    Window::swapBuffers();
-    Time::sleep(10);
-
-    Log() << Input::mouse.x << ", " << Input::mouse.y;
-  }
-
-  alDeleteSources(1, &source);
-  alDeleteBuffers(2, buffers);
-
-  Window::destroy();
   return 0;
 }

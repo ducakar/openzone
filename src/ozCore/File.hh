@@ -388,4 +388,18 @@ public:
 
 };
 
+/**
+ * `Less` function object is the same as for C strings.
+ */
+template <>
+struct Less<File> : Less<const char*>
+{};
+
+/**
+ * `Hash` function object is the same as for C strings.
+ */
+template <>
+struct Hash<File> : Hash<const char*>
+{};
+
 }

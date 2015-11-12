@@ -211,10 +211,18 @@ void Log::printTrace(const StackTrace& st)
 
   printEnd("  stack trace:");
 
-  backtrace_symbols_fd(st.frames, st.nFrames, STDOUT_FILENO);
+  for (int i = 0; i < st.nFrames; ++i) {
+    write(STDOUT_FILENO, "    ", 4);
+    backtrace_symbols_fd(&st.frames[i], 1, STDOUT_FILENO);
+  }
 
   if (logFileStream != nullptr) {
-    backtrace_symbols_fd(st.frames, st.nFrames, fileno(logFileStream));
+    int fd = fileno(logFileStream);
+
+    for (int i = 0; i < st.nFrames; ++i) {
+      write(fd, "    ", 4);
+      backtrace_symbols_fd(&st.frames[i], 1, fd);
+    }
   }
 
 #endif

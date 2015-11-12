@@ -469,7 +469,7 @@ public:
   OZ_ALWAYS_INLINE
   static constexpr float smooth(float t)
   {
-    return t*t*(3 - 2*t);
+    return t*t * (3 - 2*t);
   }
 
   /**

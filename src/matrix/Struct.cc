@@ -50,8 +50,8 @@ static const Mat4 ROTATIONS[] =
         0.0f,  0.0f,  0.0f,  1.0f),
 };
 
-//static const Entity::State OPPOSITE_STATES[] = { Entity::CLOSING, Entity::OPENING };
-//static const Entity::State END_STATES[]      = { Entity::OPEN, Entity::CLOSED };
+static const Entity::State OPPOSITE_STATES[] = { Entity::CLOSING, Entity::OPENING };
+static const Entity::State END_STATES[]      = { Entity::OPEN, Entity::CLOSED };
 
 const Vec3  Struct::DESTRUCT_FRAG_VELOCITY   = Vec3(0.0f, 0.0f, 2.0f);
 const float Struct::DEMOLISH_SPEED           = 8.0f;
@@ -88,14 +88,8 @@ bool Entity::trigger()
 
   Entity& target = targetStr->entities[entIndex];
 
-  if (target.state == OPEN || target.state == OPENING) {
-    target.state = CLOSING;
-    target.time  = 0.0f;
-  }
-  else {
-    target.state = OPENING;
-    target.time  = 0.0f;
-  }
+  target.state = target.state == OPEN || target.state == OPENING ? CLOSING : OPENING;
+  target.time  = 0.0f;
 
   return true;
 }
@@ -131,8 +125,6 @@ void Entity::moverHandler()
 {
   time += Timer::TICK_TIME;
 
-#if 0
-
   float timeout[] { clazz->openTimeout, clazz->closeTimeout };
 
   switch (state) {
@@ -150,22 +142,21 @@ void Entity::moverHandler()
     }
     case OPENING:
     case CLOSING: {
-      Vec3 move      = destination - offset;
-      bool finishing = move.sqN() <= clazz->moveStep;
+      Vec3 move = destination - offset;
 
-      physics.updateEnt(this, move);
-
-      if (finishing && collider.hit.ratio == 1.0f) {
+      if (move.sqN() <= EPSILON) {
         bool isClosing = state == CLOSING;
 
         state    = END_STATES[isClosing];
         time     = 0.0f;
         velocity = Vec3::ZERO;
       }
+      else {
+        physics.updateEnt(this, move);
+      }
       break;
     }
   }
-#endif
 }
 
 void Entity::doorHandler()

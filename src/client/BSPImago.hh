@@ -60,6 +60,9 @@ public:
   explicit BSPImago(const BSP* bsp);
   ~BSPImago();
 
+  BSPImago(const BSPImago&) = delete;
+  BSPImago& operator = (const BSPImago&) = delete;
+
   Vec3 dim() const
   {
     return model.dim;

@@ -29,4 +29,3 @@
 #pragma once
 
 #include <ozCore/ozCore.hh>
-#include <ozFactory/config.hh>

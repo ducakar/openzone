@@ -202,7 +202,9 @@ bool Input::saveConfig(const File& file)
 
 void Input::init()
 {
+#ifdef __native_client__
   ppbMouseLock = static_cast<const PPB_MouseLock*>(PSGetInterface(PPB_MOUSELOCK_INTERFACE));
+#endif
 }
 
 }

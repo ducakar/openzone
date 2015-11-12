@@ -213,7 +213,7 @@ void LuaClient::init()
 {
   Log::print("Initialising Client Lua ...");
 
-  Lua::init();
+  Lua::init("tsm");
 
   ls.envName = "client";
   ms.structs.reserve(32);
@@ -670,6 +670,7 @@ void LuaClient::destroy()
 
   l_getglobal("ozPersistent");
   profile.persistent = writeValue(l);
+  l_settop(0);
 
   ms.structs.clear();
   ms.structs.trim();

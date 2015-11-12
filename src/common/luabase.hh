@@ -52,7 +52,7 @@
  * Registers Lua API function with the Lua class in the current namespace.
  */
 #define IMPORT_FUNC(func) \
-  lua.import(#func, func)
+  lua[#func] = func
 
 /**
  * @def IGNORE_FUNC
@@ -66,7 +66,7 @@
  * Registers Lua API constant with the Lua class in the current namespace.
  */
 #define IMPORT_CONST(name, value) \
-  lua.set(name, value)
+  lua[name] = value
 
 /**
  * @def ERROR

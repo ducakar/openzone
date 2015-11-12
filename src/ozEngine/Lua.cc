@@ -24,10 +24,318 @@
 
 #include <lua.hpp>
 
+#if LUA_VERSION_NUM < 502
+# define luaL_requiref(l, name,  openFunc, global); \
+  lua_pushcfunction(l, openFunc); \
+  lua_pcall(l, 0, 0, 0);
+#endif
+
 namespace oz
 {
 
+Lua::Result::Result(lua_State* l) :
+  l(l)
+{}
+
+void Lua::Result::read(int index, bool& value) const
+{
+  value = lua_toboolean(l, index);
+}
+
+void Lua::Result::read(int index, int& value) const
+{
+  value = int(lua_tointeger(l, index));
+}
+
+void Lua::Result::read(int index, float& value) const
+{
+  value = float(lua_tonumber(l, index));
+}
+
+void Lua::Result::read(int index, String& value) const
+{
+  const char* s = lua_tostring(l, index);
+  value = s == nullptr ? String() : String(s);
+}
+
+Lua::Result::~Result()
+{
+  if (l != nullptr) {
+    lua_settop(l, 0);
+  }
+}
+
+Lua::Result::Result(Result&& r) :
+  l(r.l)
+{
+  r.l = nullptr;
+}
+
+Lua::Result& Lua::Result::operator = (Lua::Result&& r)
+{
+  if (&r != this) {
+    l = r.l;
+
+    r.l = nullptr;
+  }
+  return *this;
+}
+
+Lua::Field::Field(lua_State* l, const Field* parent, const char* name) :
+  l(l), parent(parent), name(name), index(0)
+{}
+
+Lua::Field::Field(lua_State* l, const Field* parent, int index) :
+  l(l), parent(parent), name(nullptr), index(index)
+{
+  OZ_ASSERT(parent != nullptr);
+}
+
+void Lua::Field::push() const
+{
+  if (parent == nullptr) {
+    lua_getglobal(l, name);
+  }
+  else {
+    parent->push();
+
+    if (name == nullptr) {
+      lua_rawgeti(l, -1, index);
+    }
+    else {
+      lua_getfield(l, -1, name);
+    }
+  }
+}
+
+void Lua::Field::pushValue(nullptr_t) const
+{
+  lua_pushnil(l);
+}
+
+void Lua::Field::pushValue(bool value) const
+{
+  lua_pushboolean(l, value);
+}
+
+void Lua::Field::pushValue(int value) const
+{
+  lua_pushinteger(l, value);
+}
+
+void Lua::Field::pushValue(float value) const
+{
+  lua_pushnumber(l, value);
+}
+
+void Lua::Field::pushValue(const char* value) const
+{
+  lua_pushstring(l, value);
+}
+
+Lua::Field::Field(Field&& s) :
+  l(s.l)
+{
+  s.l = nullptr;
+}
+
+Lua::Field& Lua::Field::operator = (Lua::Field&& s)
+{
+  if (&s != this) {
+    l = s.l;
+
+    s.l = nullptr;
+  }
+  return *this;
+}
+
+Lua::Field& Lua::Field::operator = (nullptr_t)
+{
+  if (parent == nullptr) {
+    lua_pushnil(l);
+    lua_setglobal(l, name);
+  }
+  else {
+    parent->push();
+    lua_pushnil(l);
+    lua_setfield(l, -2, name);
+    lua_settop(l, 0);
+  }
+  return *this;
+}
+
+Lua::Field& Lua::Field::operator = (bool value)
+{
+  if (parent == nullptr) {
+    lua_pushboolean(l, value);
+    lua_setglobal(l, name);
+  }
+  else {
+    parent->push();
+    lua_pushboolean(l, value);
+    lua_setfield(l, -2, name);
+    lua_settop(l, 0);
+  }
+  return *this;
+}
+
+Lua::Field& Lua::Field::operator = (int value)
+{
+  if (parent == nullptr) {
+    lua_pushinteger(l, value);
+    lua_setglobal(l, name);
+  }
+  else {
+    parent->push();
+    lua_pushinteger(l, value);
+    lua_setfield(l, -2, name);
+    lua_settop(l, 0);
+  }
+  return *this;
+}
+
+Lua::Field& Lua::Field::operator = (float value)
+{
+  if (parent == nullptr) {
+    lua_pushnumber(l, value);
+    lua_setglobal(l, name);
+  }
+  else {
+    parent->push();
+    lua_pushnumber(l, value);
+    lua_setfield(l, -2, name);
+    lua_settop(l, 0);
+  }
+  return *this;
+}
+
+Lua::Field& Lua::Field::operator = (const char* value)
+{
+  if (parent == nullptr) {
+    lua_pushstring(l, value);
+    lua_setglobal(l, name);
+  }
+  else {
+    parent->push();
+    lua_pushstring(l, value);
+    lua_setfield(l, -2, name);
+    lua_settop(l, 0);
+  }
+  return *this;
+}
+
+Lua::Field& Lua::Field::operator = (Lua::Function* value)
+{
+  if (parent == nullptr) {
+    lua_pushcfunction(l, value);
+    lua_setglobal(l, name);
+  }
+  else {
+    parent->push();
+    lua_pushcfunction(l, value);
+    lua_setfield(l, -2, name);
+    lua_settop(l, 0);
+  }
+  return *this;
+}
+
+Lua::Field Lua::Field::operator [] (const char* name) const
+{
+  return Field(l, this, name);
+}
+
+Lua::Field Lua::Field::operator [] (int index) const
+{
+  return Field(l, this, index);
+}
+
+Lua::Result Lua::Field::call(int nArgs) const
+{
+  lua_call(l, nArgs, LUA_MULTRET);
+  return Result(l);
+}
+
+bool Lua::Field::toBool() const
+{
+  push();
+  bool value = lua_toboolean(l, -1);
+  lua_settop(l, 0);
+  return value;
+}
+
+int Lua::Field::toInt() const
+{
+  push();
+  int value = int(lua_tointeger(l, -1));
+  lua_settop(l, 0);
+  return value;
+}
+
+float Lua::Field::toFloat() const
+{
+  push();
+  float value = float(lua_tonumber(l, -1));
+  lua_settop(l, 0);
+  return value;
+}
+
+String Lua::Field::toString() const
+{
+  push();
+
+  const char* s     = lua_tostring(l, -1);
+  String      value = s == nullptr ? String() : String(s);
+
+  lua_settop(l, 0);
+  return value;
+}
+
+Lua::Type Lua::Field::type() const
+{
+  push();
+  Lua::Type t = Lua::Type(lua_type(l, -1));
+  lua_settop(l, 0);
+  return t;
+}
+
 int Lua::randomSeed = 0;
+
+Lua::Lua(const char* libs)
+{
+  init(libs);
+}
+
+Lua::~Lua()
+{
+  destroy();
+}
+
+Lua::Lua(Lua&& s) :
+  l(s.l)
+{
+  s.l = nullptr;
+}
+
+Lua& Lua::operator = (Lua&& s)
+{
+  if (&s != this) {
+    l = s.l;
+
+    s.l = nullptr;
+  }
+  return *this;
+}
+
+Lua::Result Lua::operator () (const char* code) const
+{
+  luaL_dostring(l, code);
+  return Result(l);
+}
+
+Lua::Field Lua::operator [] (const char* name) const
+{
+  return Field(l, nullptr, name);
+}
 
 void Lua::readValue(lua_State* l, Stream* is)
 {
@@ -164,7 +472,6 @@ void Lua::writeValue(lua_State* l, Stream* os)
 
         // value
         writeValue(l, os);
-
         lua_pop(l, 1);
       }
 
@@ -255,6 +562,21 @@ object:
   }
 }
 
+Lua::Result Lua::load(const File& file)
+{
+  Stream is = file.read();
+
+  if (is.available() != 0) {
+    if (luaL_loadbufferx(l, is.begin(), is.available(), file, "t") != 0 ||
+        lua_pcall(l, 0, LUA_MULTRET, 0) != 0)
+    {
+      OZ_ERROR("oz::Lua: %s", lua_tostring(l, -1));
+    }
+  }
+
+  return Result(l);
+}
+
 void Lua::loadDir(const File& dir) const
 {
   for (const File& file : dir.list()) {
@@ -277,70 +599,58 @@ void Lua::loadDir(const File& dir) const
   }
 }
 
-void Lua::init()
+void Lua::init(const char* libs)
 {
+  destroy();
+
+  libs = String::index(libs, 'A') >= 0 ? "ctiosmdp" : libs;
+
   l = luaL_newstate();
   if (l == nullptr) {
-    OZ_ERROR("oz::Lua: Failed to create Lua state");
+    OZ_ERROR("oz::Lua: Failed to create Lua Lua");
   }
 
-#if LUA_VERSION_NUM < 502
-  lua_pushcfunction(l, luaopen_base);
-  lua_pcall(l, 0, 0, 0);
-  lua_pushcfunction(l, luaopen_table);
-  lua_pcall(l, 0, 0, 0);
-  lua_pushcfunction(l, luaopen_string);
-  lua_pcall(l, 0, 0, 0);
-  lua_pushcfunction(l, luaopen_math);
-  lua_pcall(l, 0, 0, 0);
-#else
-  luaL_requiref(l, "",              luaopen_base,   true);
-  luaL_requiref(l, LUA_TABLIBNAME,  luaopen_table,  true);
-  luaL_requiref(l, LUA_STRLIBNAME,  luaopen_string, true);
-  luaL_requiref(l, LUA_MATHLIBNAME, luaopen_math,   true);
-  lua_settop(l, 0);
+  luaL_requiref(l, "", luaopen_base, true);
+
+  if (String::index(libs, 'c') >= 0) {
+#ifndef LUA_JITLIBNAME
+    luaL_requiref(l, LUA_COLIBNAME, luaopen_coroutine, true);
 #endif
-
-  luaL_dostring(l, String::format("math.random(%u)", randomSeed));
-
-  if (lua_gettop(l) != 0) {
-    OZ_ERROR("oz::Lua: Failed to initialise Lua libraries");
   }
+  if (String::index(libs, 't') >= 0) {
+    luaL_requiref(l, LUA_TABLIBNAME, luaopen_table, true);
+  }
+  if (String::index(libs, 'i') >= 0) {
+    luaL_requiref(l, LUA_IOLIBNAME, luaopen_io, true);
+  }
+  if (String::index(libs, 'o') >= 0) {
+    luaL_requiref(l, LUA_OSLIBNAME, luaopen_os, true);
+  }
+  if (String::index(libs, 's') >= 0) {
+    luaL_requiref(l, LUA_STRLIBNAME, luaopen_string, true);
+  }
+  if (String::index(libs, 'm') >= 0) {
+    luaL_requiref(l, LUA_MATHLIBNAME, luaopen_math, true);
+    luaL_dostring(l, String::format("math.random(%u)", randomSeed));
+  }
+  if (String::index(libs, 'd') >= 0) {
+    luaL_requiref(l, LUA_DBLIBNAME, luaopen_debug, true);
+  }
+  if (String::index(libs, 'p') >= 0) {
+    luaL_requiref(l, LUA_LOADLIBNAME, luaopen_package, true);
+  }
+
+  lua_settop(l, 0);
 }
 
 void Lua::destroy()
 {
-  lua_close(l);
-  l = nullptr;
-}
+  if (l != nullptr) {
+    OZ_ASSERT(lua_gettop(l) == 0);
 
-void Lua::import(const char* name, APIFunc func)
-{
-  lua_register(l, name, func);
-}
-
-void Lua::set(const char* name, bool value)
-{
-  lua_pushboolean(l, value);
-  lua_setglobal(l, name);
-}
-
-void Lua::set(const char* name, int value)
-{
-  lua_pushnumber(l, value);
-  lua_setglobal(l, name);
-}
-
-void Lua::set(const char* name, double value)
-{
-  lua_pushnumber(l, value);
-  lua_setglobal(l, name);
-}
-
-void Lua::set(const char* name, const char* value)
-{
-  lua_pushstring(l, value);
-  lua_setglobal(l, name);
+    lua_close(l);
+    l = nullptr;
+  }
 }
 
 }

@@ -149,7 +149,7 @@ void LuaMatrix::init()
 {
   Log::print("Initialising Matrix Lua ...");
 
-  Lua::init();
+  Lua::init("tsm");
 
   ls.envName = "matrix";
   ms.structs.reserve(32);
@@ -482,6 +482,7 @@ void LuaMatrix::destroy()
   OZ_ASSERT((l_pushnil(), true));
   OZ_ASSERT(!l_next(1));
 
+  l_settop(0);
   Lua::destroy();
 
   Log::printEnd(" OK");

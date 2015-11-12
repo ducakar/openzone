@@ -12,7 +12,7 @@
 
 arch=i686
 [[ `uname -m` == x86_64 ]] && arch=x86_64
-defaultPlatform=Linux-${arch}-Clang
+defaultPlatform=Linux-${arch}
 
 function launchWine()
 {

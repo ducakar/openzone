@@ -491,8 +491,7 @@ void Physics::updateEnt(Entity* ent, const Vec3& localMove)
       Object* obj = collider.hit.obj;
 
       if (obj->flags & Object::DYNAMIC_BIT) {
-        Dynamic* dyn        = static_cast<Dynamic*>(obj);
-//        Vec3     globalMove = ent->str->toAbsoluteCS(localMove);
+        Dynamic* dyn = static_cast<Dynamic*>(obj);
 
         dyn->momentum -= 8.0f * collider.hit.normal;
         dyn->flags    &= ~Object::DISABLED_BIT;

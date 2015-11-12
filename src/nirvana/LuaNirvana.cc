@@ -108,7 +108,7 @@ void LuaNirvana::init()
 {
   Log::print("Initialising Nirvana Lua ...");
 
-  Lua::init();
+  Lua::init("tsm");
 
   ls.envName = "nirvana";
   ms.structs.reserve(32);
@@ -529,6 +529,7 @@ void LuaNirvana::destroy()
   OZ_ASSERT((l_pushnil(), true));
   OZ_ASSERT(!l_next(1));
 
+  l_settop(0);
   Lua::destroy();
 
   Log::printEnd(" OK");
