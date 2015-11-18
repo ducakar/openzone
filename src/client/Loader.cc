@@ -192,7 +192,7 @@ void Loader::cleanupRender()
         bsp.nUsers = 0;
       }
       else {
-        delete bsp.handle;
+        delete (BSPImago*) bsp.handle;
 
         bsp.handle = nullptr;
         bsp.nUsers = -1;
@@ -205,7 +205,7 @@ void Loader::cleanupRender()
       Context::Resource<Model*>& model = context.models[i];
 
       if (model.nUsers == 0) {
-        delete model.handle;
+        delete (Model*) model.handle;
 
         model.handle = nullptr;
         model.nUsers = -1;
@@ -234,7 +234,7 @@ void Loader::cleanupSound()
         bspAudio.nUsers = 0;
       }
       else {
-        delete bspAudio.handle;
+        delete (BSPAudio*) bspAudio.handle;
 
         bspAudio.handle = nullptr;
         bspAudio.nUsers = -1;

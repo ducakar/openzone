@@ -702,7 +702,7 @@ struct Hash<String> : Hash<const char*>
 {};
 
 /**
- * Stronger alternative for string hash function.
+ * Stronger alternative for the string hash function.
  */
 struct StrongHash
 {

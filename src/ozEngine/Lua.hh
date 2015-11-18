@@ -101,9 +101,19 @@ public:
     void read(int index, float& value) const;
 
     /**
-     * Read a String value at a given (1-based) stack index.
+     * Read a string value at a given (1-based) stack index.
      */
     void read(int index, String& value) const;
+
+    /**
+     * Read a C function value at a given (1-based) stack index.
+     */
+    void read(int index, Function*& value) const;
+
+    /**
+     * Read a (light) user data pointer at a given (1-based) stack index.
+     */
+    void read(int index, void*& value) const;
 
   public:
 
@@ -131,7 +141,7 @@ public:
     }
 
     /**
-     * Return the first value on the stack as an int.
+     * Return the first value on the stack as an integer.
      */
     operator int () const
     {
@@ -147,11 +157,28 @@ public:
     }
 
     /**
-     * Return the first value on the stack as a String.
+     * Return the first value on the stack as a string.
      */
     operator String () const
     {
       return toString(1);
+    }
+
+    /**
+     * Return the first value on the stack as C function.
+     */
+    operator Function* () const
+    {
+      return toFunction(1);
+    }
+
+    /**
+     * Return the first value on the stack as a (light) user data pointer.
+     */
+    template <typename Type>
+    operator Type* () const
+    {
+      return static_cast<Type*>(toPointer(1));
     }
 
     /**
@@ -165,7 +192,7 @@ public:
     }
 
     /**
-     * Return the stack value at a given (1-based) index as an int.
+     * Return the stack value at a given (1-based) index as an integer.
      */
     int toInt(int index = 1) const
     {
@@ -185,11 +212,31 @@ public:
     }
 
     /**
-     * Return the stack value at a given (1-based) index as a String.
+     * Return the stack value at a given (1-based) index as a string.
      */
     String toString(int index = 1) const
     {
       String value;
+      read(index, value);
+      return value;
+    }
+
+    /**
+     * Return the stack value at a given (1-based) index as a C function.
+     */
+    Function* toFunction(int index = 1) const
+    {
+      Function* value;
+      read(index, value);
+      return value;
+    }
+
+    /**
+     * Return the stack value at a given (1-based) index as a (light) user data pointer.
+     */
+    void* toPointer(int index = 1) const
+    {
+      void* value;
       read(index, value);
       return value;
     }
@@ -228,7 +275,7 @@ public:
 
     lua_State*   l;      ///< %Lua state.
     const Field* parent; ///< Parent field / global variable.
-    const char*  name;   ///< %String key..
+    const char*  name;   ///< %String key.
     int          index;  ///< Integer key.
 
   private:
@@ -245,11 +292,13 @@ public:
 
     /**
      * Recursively push all parent field values and finally this field value onto the stack.
+     *
+     * @return Number of values pushed onto the stack.
      */
-    void push() const;
+    int push() const;
 
     /**
-     * NOP.
+     * NOOP for `pushValue()` variadic template.
      */
     void pushValue() const
     {}
@@ -309,11 +358,6 @@ public:
     Field& operator = (Field&& s);
 
     /**
-     * Asssing nil to the field.
-     */
-    Field& operator = (nullptr_t);
-
-    /**
      * Assign boolean value to the field.
      */
     Field& operator = (bool value);
@@ -334,9 +378,19 @@ public:
     Field& operator = (const char* value);
 
     /**
-     * Assing a function to the field.
+     * Assing a C function to the field.
      */
     Field& operator = (Function* func);
+
+    /**
+     * Assign light user data pointer to the field.
+     */
+    Field& operator = (void* data);
+
+    /**
+     * Assing an empty value of a given type to the field.
+     */
+    Field& operator = (Type type);
 
     /**
      * Access a field of the current field (should be a table).
@@ -392,6 +446,23 @@ public:
     }
 
     /**
+     * Get value of the current field as a C function.
+     */
+    operator Function* () const
+    {
+      return toFunction();
+    }
+
+    /**
+     * Get value of the current field as a pointer to (light) user data.
+     */
+    template <typename Type>
+    operator Type* () const
+    {
+      return static_cast<Type*>(toPointer());
+    }
+
+    /**
      * Get value of the current field as a boolean.
      */
     bool toBool() const;
@@ -410,6 +481,16 @@ public:
      * Get value of the current field as a string.
      */
     String toString() const;
+
+    /**
+     * Get value of the current field as a C function.
+     */
+    Function* toFunction() const;
+
+    /**
+     * Get value of the current field as a pointer to (light) user data.
+     */
+    void* toPointer() const;
 
     /**
      * Determine type of the current field.

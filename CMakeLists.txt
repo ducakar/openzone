@@ -177,7 +177,7 @@ mark_as_advanced(MINGW32_LIBRARY)
 # Local libmad, faad and eSpeak headers.
 include_directories(SYSTEM etc/include)
 
-set(flags "-std=c++11 -pedantic -fstrict-enums -fvisibility-inlines-hidden -ffast-math")
+set(flags "-std=c++14 -pedantic -fstrict-enums -fvisibility-inlines-hidden -ffast-math -fsized-deallocation")
 
 if(BUILD_SHARED_LIBS)
   set(flags "${flags} -fPIC")
@@ -195,7 +195,7 @@ endif()
 # Additional warnings.
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
   set(flags "${flags} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-date-time")
-  set(flags "${flags} -Wno-shadow -Wno-switch-enum -Wno-sign-conversion -Wno-float-equal")
+  set(flags "${flags} -Wno-shadow -Wno-switch-enum -Wno-sign-conversion -Wno-float-equal -Wno-reserved-id-macro")
   set(flags "${flags} -Wno-padded -Wno-global-constructors -Wno-exit-time-destructors")
 else()
   set(flags "${flags} -Wall -Wextra -Wcast-align -Winit-self -Wlogical-op -Wundef")

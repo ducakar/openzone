@@ -22,6 +22,8 @@
 
 #include "Input.hh"
 
+#include <SDL.h>
+
 #ifdef __native_client__
 # include <ppapi/cpp/completion_callback.h>
 # include <ppapi_simple/ps.h>
@@ -56,7 +58,22 @@ SBitset<Input::MAX_ACTIONS> Input::pressedActions;
 SBitset<Input::MAX_ACTIONS> Input::releasedActions;
 bool                        Input::inputGrab;
 Input::Mouse                Input::mouse;
-Input::Config               Input::config;
+Input::Config               Input::config = {
+  {
+    Vec3(0.04f, 0.04f, 0.04f),
+    SDL_SCANCODE_LEFT,
+    SDL_SCANCODE_RIGHT,
+    SDL_SCANCODE_DOWN,
+    SDL_SCANCODE_UP,
+    SDL_SCANCODE_UNKNOWN,
+    SDL_SCANCODE_UNKNOWN
+  },
+  {
+    Vec4(0.003f, 0.003f, 0.003f, 0.003f),
+    0.3f,
+    false
+  }
+};
 
 void Input::setGrab(bool grab)
 {

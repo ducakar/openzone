@@ -174,7 +174,23 @@ void operator delete (void* ptr) noexcept
 }
 
 OZ_WEAK
+void operator delete (void* ptr, size_t) noexcept
+{
+  if (ptr != nullptr) {
+    oz::deallocate(oz::OBJECT, ptr);
+  }
+}
+
+OZ_WEAK
 void operator delete[] (void* ptr) noexcept
+{
+  if (ptr != nullptr) {
+    oz::deallocate(oz::ARRAY, ptr);
+  }
+}
+
+OZ_WEAK
+void operator delete[] (void* ptr, size_t) noexcept
 {
   if (ptr != nullptr) {
     oz::deallocate(oz::ARRAY, ptr);

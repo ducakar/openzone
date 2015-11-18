@@ -28,7 +28,7 @@
 
 #include "common.hh"
 
-#include <SDL.h>
+union SDL_Event;
 
 namespace oz
 {
@@ -49,6 +49,9 @@ public:
 
 public:
 
+  /**
+   * Modifier key.
+   */
   enum ModKey
   {
     NONE    = 0, ///< None.
@@ -57,62 +60,77 @@ public:
     ALT     = 4  ///< (Left or right) Alt or Alt Gr key.
   };
 
+  /**
+   * Key-to-action binding.
+   */
   struct Binding
   {
-    SDL_Scancode key;    ///< Primary key binding.
-    SDL_Scancode altKey; ///< Alternate key binding.
-    int          mod;    ///< ModKey bitmask for primary binding.
-    int          altMod; ///< ModKey bitmask for alternate binding.
-    int          button; ///< Mouse button (1 - left, 2 - right, 3 - middle/wheel).
-    int          action; ///< User's action id.
-    String       name;   ///< Action name.
+    int    key;    ///< Primary key binding.
+    int    altKey; ///< Alternate key binding.
+    int    mod;    ///< ModKey bitmask for primary binding.
+    int    altMod; ///< ModKey bitmask for alternate binding.
+    int    button; ///< Mouse button (1 - left, 2 - right, 3 - middle/wheel).
+    int    action; ///< User's action id.
+    String name;   ///< Action name.
   };
 
+  /**
+   * Input devices' settings.
+   */
   struct Config
   {
+    /**
+     * Keyboard settings.
+     */
     struct Keyboard
     {
-      Vec3         sensitivity = Vec3(0.04f, 0.04f, 0.04f);
-      SDL_Scancode leftKey     = SDL_SCANCODE_LEFT;
-      SDL_Scancode rightKey    = SDL_SCANCODE_RIGHT;
-      SDL_Scancode downKey     = SDL_SCANCODE_DOWN;
-      SDL_Scancode upKey       = SDL_SCANCODE_UP;
-      SDL_Scancode inKey       = SDL_SCANCODE_UNKNOWN;
-      SDL_Scancode outKey      = SDL_SCANCODE_UNKNOWN;
+      Vec3 sensitivity; ///< Sensitivity for movement along X, Y and Z axes.
+      int  leftKey;     ///< Left key.
+      int  rightKey;    ///< Right key.
+      int  downKey;     ///< Down key.
+      int  upKey;       ///< Up key.
+      int  inKey;       ///< Forward / zoom in key.
+      int  outKey;      ///< Backward / zoom out key.
     };
 
+    /**
+     * Mouse settings.
+     */
     struct Mouse
     {
-      Vec4  sensitivity = Vec4(0.003f, 0.003f, 0.003f, 0.003f);
-      float smoothing   = 0.3f;
-      bool  isRaw       = false;
+      Vec4  sensitivity; ///< Sensitivity for (X, Y, horizontal wheen, vertical wheel).
+      float smoothing;   ///< Input smoothing for movement and mouse wheel.
+      bool  isRaw;       ///< Whether the input is raw i.e. not accelerated by the OS.
     };
 
-    Keyboard keyboard;
-    Mouse    mouse;
+    Keyboard keyboard; ///< Keyboard settings.
+    Mouse    mouse;    ///< Mouse settings.
   };
 
+  /**
+   * Mouse state.
+   */
   struct Mouse
   {
-    float x;
-    float y;
+    float x;              ///< X-position in pixels.
+    float y;              ///< Y-position in pixels.
 
-    float dx;
-    float dy;
-    float dz;
-    float dw;
+    float dx;             ///< X-move in pixels in the last update.
+    float dy;             ///< Y-move in pixels in the last update.
+    float dz;             ///< Horizontal wheel scroll in pixels in the last update.
+    float dw;             ///< Vertical whell scroll in pixels in the last update.
 
-    bool  leftDown;
-    bool  leftPressed;
-    bool  leftReleased;
+    bool  leftDown;       ///< Left button was down during the last update.
+    bool  leftPressed;    ///< Left button pressed in the last update.
+    bool  leftReleased;   ///< Left button released in the last update.
 
-    bool  rightDown;
-    bool  rightPressed;
-    bool  rightReleased;
+    bool  rightDown;      ///< Right button was down during the last update.
+    bool  rightPressed;   ///< Right button pressed in the last update.
+    bool  rightReleased;  ///< Right button released in the last update.
 
-    bool  middleDown;
-    bool  middlePressed;
-    bool  middleReleased;
+    bool  middleDown;     ///< Middle button was down during the last update.
+    bool  middlePressed;  ///< Middle button pressed in the last update.
+    bool  middleReleased; ///< Middle button released in the last update.
   };
 
 private:

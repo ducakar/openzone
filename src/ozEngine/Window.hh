@@ -30,7 +30,7 @@
 
 #include "common.hh"
 
-#include <SDL.h>
+union SDL_Event;
 
 namespace oz
 {
