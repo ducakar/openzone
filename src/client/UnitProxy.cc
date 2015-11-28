@@ -432,12 +432,7 @@ void UnitProxy::update()
   if (veh != nullptr) {
     vehClazz = static_cast<const VehicleClass*>(veh->clazz);
 
-    Mat4 rotMat = veh->rot;
-    // TODO integrate this rotation into pilotPos.
-    rotMat.rotateX(-Math::TAU / 4.0f);
-
-    botEye = vehClazz->type == VehicleClass::MECH ? veh->p + vehClazz->pilotPos :
-                                                    veh->p + rotMat * vehClazz->pilotPos;
+    botEye = veh->p + veh->rot * vehClazz->pilotPos;
   }
   else {
     float actualZ = bot->p.z + bot->camZ;

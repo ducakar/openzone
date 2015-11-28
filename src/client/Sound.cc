@@ -690,9 +690,53 @@ void Sound::init()
 
   OZ_AL_CHECK_ERROR();
 
+  ALCcontext* soundContext = alcGetCurrentContext();
+  ALCdevice*  soundDevice  = alcGetContextsDevice(soundContext);
+
+  Log::println("OpenAL device: %s", alcGetString(soundDevice, ALC_DEVICE_SPECIFIER));
   Log::println("OpenAL vendor: %s", alGetString(AL_VENDOR));
   Log::println("OpenAL renderer: %s", alGetString(AL_RENDERER));
   Log::println("OpenAL version: %s", alGetString(AL_VERSION));
+
+  int nAttributes;
+  alcGetIntegerv(soundDevice, ALC_ATTRIBUTES_SIZE, 1, &nAttributes);
+
+  List<int> attributes(nAttributes);
+  alcGetIntegerv(soundDevice, ALC_ALL_ATTRIBUTES, nAttributes, attributes.begin());
+
+  Log::println("OpenAL attributes {");
+  Log::indent();
+
+  for (int i = 0; i < nAttributes; i += 2) {
+    switch (attributes[i]) {
+      case ALC_FREQUENCY: {
+        Log::println("ALC_FREQUENCY: %d Hz", attributes[i + 1]);
+        break;
+      }
+      case ALC_REFRESH: {
+        Log::println("ALC_REFRESH: %d Hz", attributes[i + 1]);
+        break;
+      }
+      case ALC_SYNC: {
+        Log::println("ALC_SYNC: %s", attributes[i + 1] != 0 ? "on" : "off");
+        break;
+      }
+      case ALC_MONO_SOURCES: {
+        Log::println("ALC_MONO_SOURCES: %d", attributes[i + 1]);
+        break;
+      }
+      case ALC_STEREO_SOURCES: {
+        Log::println("ALC_STEREO_SOURCES: %d", attributes[i + 1]);
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+
+  Log::unindent();
+  Log::println("}");
 
   const char* sExtensions = alGetString(AL_EXTENSIONS);
   List<String> extensions = String::trim(sExtensions).split(' ');

@@ -65,17 +65,20 @@ int main(int argc, char** argv)
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  while (true) {
+  bool isAlive = true;
+
+  while (isAlive) {
     SDL_Event event;
-    SDL_PollEvent(&event);
 
-    if (event.type == SDL_QUIT) {
-      break;
-    }
+    while (SDL_PollEvent(&event)) {
+      if (event.type == SDL_QUIT) {
+        isAlive = false;
+      }
 
-    if (event.type == SDL_KEYDOWN) {
-//      streamer.rewind();
-//      alSourcePlay(musicSource);
+      if (event.type == SDL_KEYDOWN) {
+        //      streamer.rewind();
+        //      alSourcePlay(musicSource);
+      }
     }
 
     glClearColor(1.0f, 0.0f, 1.0f, 0.0f);
@@ -98,10 +101,12 @@ int main(int argc, char** argv)
     glEnd();
 
     Window::swapBuffers();
+
     cursor.update(15);
+
 //    streamer.update();
 
-    Time::sleep(10);
+    Time::sleep(15);
   }
 
 //  streamer.destroy();

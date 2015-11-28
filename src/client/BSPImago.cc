@@ -74,7 +74,16 @@ void BSPImago::preload()
   Stream      is   = file->read(Endian::LITTLE);
 
   int modelEnd = is.readInt();
+
   is.seek(modelEnd);
+
+  int nLeaves = is.readInt();
+
+  leafClusters.resize(nLeaves);
+
+  for (int i = 0; i < leafClusters.length(); ++i) {
+    leafClusters[i] = is.readInt();
+  }
 
   nClusters      = is.readInt();
   nClusterBits   = is.readInt();

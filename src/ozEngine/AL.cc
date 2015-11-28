@@ -22,10 +22,10 @@
 
 #include "AL.hh"
 
-#include <cstring>
-
 // We don't use those callbacks anywhere and they don't compile on MinGW.
 #define OV_EXCLUDE_STATIC_CALLBACKS
+
+#include <cstring>
 #include <vorbis/vorbisfile.h>
 
 namespace oz
@@ -40,7 +40,7 @@ static size_t vorbisRead(void* buffer, size_t size, size_t n, void* handle)
   Stream* is = static_cast<Stream*>(handle);
 
   int blockSize = int(size);
-  int nBlocks   = min(int(n), is->available() / blockSize);
+  int nBlocks   = min<int>(int(n), is->available() / blockSize);
 
   is->read(static_cast<char*>(buffer), nBlocks * blockSize);
   return nBlocks;
@@ -398,7 +398,7 @@ AudioBuffer AL::decodeFromStream(Stream* is)
       return buffer;
     }
 
-    size = min(size, is->available());
+    size = min<int>(size, is->available());
 
     buffer.data.resize(size);
     buffer.format = nChannels == 1 ? (bits == 8 ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16) :

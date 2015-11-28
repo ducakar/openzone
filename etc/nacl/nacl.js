@@ -99,7 +99,7 @@ function updatePackages()
       }
       else {
         download(pkg, 'blob', function (e) {
-          hudText.innerHTML = MSG_DOWNLOADING + '<br/>' + pkg;
+          hudText.innerHTML = MSG_DOWNLOADING + '<br>' + pkg;
 
           if (e.lengthComputable && e.total > 0) {
             var percent = Math.round(e.loaded / e.total * 100.0);
@@ -152,7 +152,7 @@ function onProgress()
 
     if (event.lengthComputable && event.total > 0) {
       var percent = Math.round(event.loaded / event.total * 100.0);
-      hudText.innerHTML += '<br/>' + percent + ' %';
+      hudText.innerHTML += '<br>' + percent + ' %';
     }
   }
 }

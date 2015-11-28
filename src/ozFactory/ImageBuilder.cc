@@ -162,11 +162,11 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
     return false;
   }
 
-  int targetWidth    = max(Math::lround(width * ImageBuilder::scale), 1);
-  int targetHeight   = max(Math::lround(height * ImageBuilder::scale), 1);
+  int targetWidth    = max<int>(Math::lround(width * ImageBuilder::scale), 1);
+  int targetHeight   = max<int>(Math::lround(height * ImageBuilder::scale), 1);
   int targetBPP      = hasAlpha || compress || isArray ? 32 : 24;
   int pitchOrLinSize = ((targetWidth * targetBPP / 8 + 3) / 4) * 4;
-  int nMipmaps       = doMipmaps ? Math::index1(max(targetWidth, targetHeight)) + 1 : 1;
+  int nMipmaps       = doMipmaps ? Math::index1(max<int>(targetWidth, targetHeight)) + 1 : 1;
 
   int flags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
   flags |= doMipmaps ? DDSD_MIPMAPCOUNT : 0;
@@ -332,8 +332,8 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
         }
       }
 
-      levelWidth  = max(1, levelWidth / 2);
-      levelHeight = max(1, levelHeight / 2);
+      levelWidth  = max<int>(1, levelWidth / 2);
+      levelHeight = max<int>(1, levelHeight / 2);
 
       if (level != face) {
         FreeImage_Unload(level);

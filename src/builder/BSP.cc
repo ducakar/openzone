@@ -1188,6 +1188,8 @@ void BSP::saveClient()
 
   compiler.writeModel(&os, true);
 
+  os.writeInt(leafClusters.length());
+
   for (int i = 0; i < leafClusters.length(); ++i) {
     os.writeInt(leafClusters[i]);
   }

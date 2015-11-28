@@ -478,8 +478,8 @@ void Bot::onUpdate()
 
     state |= lower >= 0 || (flags & ON_FLOOR_BIT) ? GROUNDED_BIT  : 0;
     state |= (flags & ON_LADDER_BIT)              ? LADDER_BIT    : 0;
-    state |= depth > dim.z                          ? SWIMMING_BIT  : 0;
-    state |= depth > dim.z + camZ                   ? SUBMERGED_BIT : 0;
+    state |= depth > dim.z                        ? SWIMMING_BIT  : 0;
+    state |= depth > dim.z + camZ                 ? SUBMERGED_BIT : 0;
 
     if (state & SUBMERGED_BIT) {
       stamina -= clazz->staminaWaterDrain;
@@ -726,7 +726,7 @@ void Bot::onUpdate()
        *              \x<------o
        *               \----------
        */
-      if (!(state & (LADDER_BIT | LEDGE_BIT)) && stairRate <= clazz->stairRateLimit) {
+      if (!(state & LEDGE_BIT) && stairRate <= clazz->stairRateLimit) {
         Vec3 desiredMove = STEP_MOVE_AHEAD * move;
 
         collider.translate(this, desiredMove);

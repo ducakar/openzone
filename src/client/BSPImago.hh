@@ -34,21 +34,12 @@ class BSPImago
 {
 private:
 
-  struct Leaf
-  {
-    int cluster;
-    int firstFace;
-    int nFaces;
-  };
+  Model     model;
 
-private:
-
-  Model      model;
-
-  List<Leaf> leafClusters;
-  int        nClusters;
-  int        nClusterBits;
-  Bitset     clusters;
+  List<int> leafClusters;
+  int       nClusters;
+  int       nClusterBits;
+  Bitset    clusters;
 
 public:
 

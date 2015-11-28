@@ -88,6 +88,8 @@ private:
     };
   };
 
+  static const Image* lastImage;  ///< Keep track of the current image to avoid unnecessary updates.
+
   Mode        mode      = SYSTEM; ///< Render mode.
   int         frame     = 0;      ///< Current animation frame.
   int         lastFrame = -1;     ///< Last frame for OS cursor to avoid unnecessary updates.

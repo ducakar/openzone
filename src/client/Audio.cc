@@ -27,8 +27,7 @@ namespace oz
 namespace client
 {
 
-const float Audio::REFERENCE_DISTANCE   = 2.00f;
-const float Audio::ROLLOFF_FACTOR       = 0.35f;
+const float Audio::ROLLOFF_FACTOR       = 0.50f;
 const float Audio::COCKPIT_GAIN_FACTOR  = 0.35f;
 const float Audio::COCKPIT_PITCH_FACTOR = 0.95f;
 
@@ -47,7 +46,6 @@ void Audio::playSound(int sound, float volume, const Object* parent) const
 
   uint srcId = source->id;
 
-  alSourcef(srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE);
   alSourcef(srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR);
 
   // If the object moves since source starts playing and source stands still, it's usually
@@ -98,7 +96,6 @@ void Audio::playContSound(int sound, float volume, const Object* parent) const
     srcId = contSource->id;
 
     alSourcei(srcId, AL_LOOPING, AL_TRUE);
-    alSourcef(srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE);
     alSourcef(srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR);
   }
   else {
@@ -139,7 +136,6 @@ bool Audio::playSpeak(const char* text, float volume, const Object* parent) cons
 
     srcId = speakSource->id;
 
-    alSourcef(srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE);
     alSourcef(srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR);
   }
   else if (context.speakSource.owner == obj->index) {
@@ -189,7 +185,6 @@ void Audio::playEngineSound(int sound, float volume, float pitch, const Object* 
     srcId = contSource->id;
 
     alSourcei(srcId, AL_LOOPING, AL_TRUE);
-    alSourcef(srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE);
     alSourcef(srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR);
   }
   else {

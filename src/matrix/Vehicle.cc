@@ -426,8 +426,8 @@ void Vehicle::onUpdate()
     (this->*HANDLERS[clazz->type])();
   }
 
-  // move forwards (predicted movement) to prevent our bullets hitting us in the back when we are
-  // moving very fast
+  // Move forwards (predicted movement) to prevent our bullets hitting us in the back when we are
+  // moving very fast.
   Point oldPos = p;
   p += momentum * Timer::TICK_TIME;
 

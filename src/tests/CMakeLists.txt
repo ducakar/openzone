@@ -18,6 +18,9 @@ if(NOT OZ_GL_ES AND OZ_TOOLS)
   target_link_libraries(noise ozCore ozEngine ozFactory)
 endif()
 
+add_executable(opus opus.cc)
+target_link_libraries(opus ozEngine ozCore -lopus -logg)
+
 add_executable(quicksort quicksort.cc)
 target_link_libraries(quicksort ozCore)
 

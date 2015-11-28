@@ -338,7 +338,6 @@ Lua::Field& Lua::Field::operator = (Lua::Type type)
     case THREAD: {
       OZ_ERROR("oz::Lua: Assignment of an uninitialised function, user data or thread is not "
                "supported.");
-      break;
     }
   }
 

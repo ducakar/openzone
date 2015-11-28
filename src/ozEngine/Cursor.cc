@@ -35,6 +35,8 @@
 namespace oz
 {
 
+const Cursor::Image* Cursor::lastImage = nullptr;
+
 Cursor::Cursor(const File& file, Mode mode_, int size)
 {
   Stream is = file.read(Endian::LITTLE);
@@ -197,17 +199,19 @@ void Cursor::update(int millis)
   frame      = (frame + frameTime / delay) % images.length();
   frameTime  = frameTime % delay;
 
-  if (mode == SYSTEM && frame != lastFrame) {
-    lastFrame = frame;
-
-#ifdef __native_client__
+  if (mode == SYSTEM) {
     const Image& image = images[frame];
 
-    pp::MouseCursor().SetCursor(pp::InstanceHandle(PSGetInstanceId()), PP_MOUSECURSOR_TYPE_CUSTOM,
-                                *image.imageData, pp::Point(image.hotspotLeft, image.hotspotTop));
+    if (&image != lastImage) {
+      lastImage = &image;
+
+#ifdef __native_client__
+      pp::MouseCursor().SetCursor(pp::InstanceHandle(PSGetInstanceId()), PP_MOUSECURSOR_TYPE_CUSTOM,
+                                  *image.imageData, pp::Point(image.hotspotLeft, image.hotspotTop));
 #else
-    SDL_SetCursor(images[frame].sdlCursor);
+      SDL_SetCursor(image.sdlCursor);
 #endif
+    }
   }
 }
 

@@ -68,31 +68,31 @@ void VehicleClass::init(const Json& config, const char* name_)
   bool isTypeDetermined = false;
 
   if (config.contains("turret")) {
-    type = VehicleClass::TURRET;
+    type = TURRET;
     isTypeDetermined = true;
   }
   else if (!isTypeDetermined && config.contains("wheeled")) {
-    type = VehicleClass::WHEELED;
+    type = WHEELED;
     isTypeDetermined = true;
   }
   else if (!isTypeDetermined && config.contains("tracked")) {
-    type = VehicleClass::TRACKED;
+    type = TRACKED;
     isTypeDetermined = true;
   }
   else if (!isTypeDetermined && config.contains("mech")) {
-    type = VehicleClass::MECH;
+    type = MECH;
     isTypeDetermined = true;
   }
   else if (!isTypeDetermined && config.contains("hover")) {
-    type = VehicleClass::HOVER;
+    type = HOVER;
     isTypeDetermined = true;
   }
   else if (!isTypeDetermined && config.contains("air")) {
-    type = VehicleClass::AIR;
+    type = AIR;
     isTypeDetermined = true;
   }
   else if (!isTypeDetermined && config.contains("sub")) {
-    type = VehicleClass::SUB;
+    type = SUB;
     isTypeDetermined = true;
   }
 
@@ -109,6 +109,12 @@ void VehicleClass::init(const Json& config, const char* name_)
   lookHMax = config["lookHMax"].get(+120.0f);
   lookVMin = config["lookVMin"].get(-60.0f);
   lookVMax = config["lookVMax"].get(+60.0f);
+
+  if (type != MECH) {
+    // Forward -> down to avoid an additional camera transformation.
+    swap(pilotPos.y, pilotPos.z);
+    pilotPos.z = -pilotPos.z;
+  }
 
   if (lookHMin < -180.0f || lookHMin > 0.0f) {
     OZ_ERROR("%s: lookHMin must lie on interval [-180.0, 0.0]", name_);

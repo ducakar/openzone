@@ -197,7 +197,7 @@ int GL::textureDataFromStream(Stream* is, int bias)
   }
 
   OZ_ASSERT(nMipmaps >= 1);
-  bias = min(bias, nMipmaps - 1);
+  bias = min<int>(bias, nMipmaps - 1);
 
   is->seek(4 + 76);
 
@@ -306,8 +306,8 @@ int GL::textureDataFromStream(Stream* is, int bias)
           }
         }
 
-        mipmapWidth  = max(1, mipmapWidth / 2);
-        mipmapHeight = max(1, mipmapHeight / 2);
+        mipmapWidth  = max<int>(1, mipmapWidth / 2);
+        mipmapHeight = max<int>(1, mipmapHeight / 2);
         mipmapS3Size = ((mipmapWidth + 3) / 4) * ((mipmapHeight + 3) / 4) * blockSize;
       }
     }

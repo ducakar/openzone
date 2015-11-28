@@ -53,7 +53,9 @@
     * GL class for OpenGL utilities: error checks, DDS texture loader
     * AL class for OpenAL utilities: error checks, WAVE & Vorbis loader/decoder, Vorbis streamer
     * Window class based on client::Window
+    * Input class for reading input from devices and key bindings
     * Shader compilation utility, understands #include directive
+    * Lua class inspired by Selene: access to variables via operator [], function calls via ()
 - ozFactory: new builder building blocks library
     * ImageBuilder class for building DDS textures
     * ModelBuilder class for building OpenZone models using Assimp library
