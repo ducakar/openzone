@@ -218,7 +218,7 @@ Context::ContSource* Context::addContSource(int sound, int key)
   alSourcei(srcId, AL_BUFFER, sounds[sound].handle);
 
   ++sounds[sound].nUsers;
-  return &contSources.add(key, ContSource{ srcId, sound, true }).value;
+  return &contSources.add(key, ContSource{srcId, sound, true}).value;
 }
 
 void Context::removeContSource(ContSource* contSource, int key)

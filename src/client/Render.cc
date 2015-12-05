@@ -417,7 +417,7 @@ void Render::drawOrbis()
     glBindFramebuffer(GL_FRAMEBUFFER, mainFrame);
 
 #ifndef OZ_GL_ES
-    uint dbos[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    uint dbos[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
     glDrawBuffers(2, dbos);
 #endif
   }
@@ -769,13 +769,13 @@ void Render::init()
   shape.init();
 
   EnumMap<GLenum> scaleFilterMap = {
-    { GL_LINEAR,  "LINEAR"  },
-    { GL_NEAREST, "NEAREST" }
+    {GL_LINEAR,  "LINEAR" },
+    {GL_NEAREST, "NEAREST"}
   };
 
   EnumMap<Model::Collation> collationMap = {
-    { Model::DEPTH_MAJOR, "DEPTH_MAJOR" },
-    { Model::MODEL_MAJOR, "MODEL_MAJOR"  }
+    {Model::DEPTH_MAJOR, "DEPTH_MAJOR"},
+    {Model::MODEL_MAJOR, "MODEL_MAJOR"}
   };
 
   Model::setCollation(collationMap[config.include("render.collation", "MODEL_MAJOR").get("")]);

@@ -266,7 +266,7 @@ protected:
       entry = entry->next;
     }
 
-    data[index] = new(pool) Entry{ data[index], h, static_cast<Elem_&&>(elem) };
+    data[index] = new(pool) Entry{data[index], h, static_cast<Elem_&&>(elem)};
     return *data[index];
   }
 

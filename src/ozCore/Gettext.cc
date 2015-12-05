@@ -40,7 +40,7 @@ struct Gettext::Message
 
 const char* Gettext::systemLanguage(const char* fallback)
 {
-  for (const char* envVar : { "LC_ALL", "LC_MESSAGES", "LANG" }) {
+  for (const char* envVar : {"LC_ALL", "LC_MESSAGES", "LANG"}) {
     const char* lang = getenv(envVar);
 
     if (lang != nullptr && !String::isEmpty(lang)) {

@@ -292,10 +292,8 @@ public:
 
     /**
      * Recursively push all parent field values and finally this field value onto the stack.
-     *
-     * @return Number of values pushed onto the stack.
      */
-    int push() const;
+    void push() const;
 
     /**
      * NOOP for `pushValue()` variadic template.
@@ -339,6 +337,16 @@ public:
     }
 
     /**
+     * Helper for assigning light user data.
+     */
+    void assign(void* data) const;
+
+    /**
+     * Helper for assigning full user data.
+     */
+    void assign(const void* data, size_t size, const char* metatable = nullptr) const;
+
+    /**
      * Call a function with given number of arguments.
      *
      * Call is MULTRET so the stack contains all the returned values after the function finishes.
@@ -348,14 +356,24 @@ public:
   public:
 
     /**
-     * Move constructor.
+     * Copy constructor copies field accessor.
      */
-    Field(Field&& s);
+    Field(const Field& s) = default;
 
     /**
-     * Move operator.
+     * Copy operator assigns value of the target field.
      */
-    Field& operator = (Field&& s);
+    Field& operator = (const Field& s);
+
+    /**
+     * Assign first value of a function's result.
+     */
+    Field& operator = (const Result& s);
+
+    /**
+     * Assing an empty value of a given type to the field.
+     */
+    Field& operator = (Type type);
 
     /**
      * Assign boolean value to the field.
@@ -385,12 +403,22 @@ public:
     /**
      * Assign light user data pointer to the field.
      */
-    Field& operator = (void* data);
+    template <class Data>
+    Field& operator = (Data* data)
+    {
+      assign(data);
+      return *this;
+    }
 
     /**
-     * Assing an empty value of a given type to the field.
+     * Assign user data to the field.
      */
-    Field& operator = (Type type);
+    template <class Data>
+    Field& operator = (const Data& data)
+    {
+      assign(&data, sizeof(Data));
+      return *this;
+    }
 
     /**
      * Access a field of the current field (should be a table).
@@ -463,6 +491,11 @@ public:
     }
 
     /**
+     * Determine type of the current field.
+     */
+    Type type() const;
+
+    /**
      * Get value of the current field as a boolean.
      */
     bool toBool() const;
@@ -493,13 +526,13 @@ public:
     void* toPointer() const;
 
     /**
-     * Determine type of the current field.
+     * Set metatable or remove it if null.
      */
-    Type type() const;
+    void setMetatable(const char* name);
 
   };
 
-protected:
+public:
 
   lua_State* l = nullptr; ///< %Lua state escriptor.
 

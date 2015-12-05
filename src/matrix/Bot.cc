@@ -570,7 +570,7 @@ void Bot::onUpdate()
      * MOVE
      */
 
-    // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+    // {hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine}
     float hvsc[6];
 
     Math::sincos(h, &hvsc[0], &hvsc[1]);
@@ -1002,7 +1002,7 @@ stepSucceeded:
         if (cargoObj != nullptr && stamina >= clazz->staminaThrowDrain) {
           OZ_ASSERT(cargoObj->flags & DYNAMIC_BIT);
 
-          // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+          // {hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine}
           float hvsc[6];
 
           Math::sincos(h, &hvsc[0], &hvsc[1]);
@@ -1046,7 +1046,7 @@ stepSucceeded:
         if (item != nullptr && cargo < 0 && items.contains(instrument)) {
           OZ_ASSERT((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
 
-          // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+          // {hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine}
           float hvsc[6];
 
           Math::sincos(h, &hvsc[0], &hvsc[1]);

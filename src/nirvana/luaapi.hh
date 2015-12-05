@@ -302,7 +302,7 @@ static int ozSelfGetDir(lua_State* l)
 {
   ARG(0);
 
-  // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+  // {hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine}
   float hvsc[6];
 
   Math::sincos(ns.self->h, &hvsc[0], &hvsc[1]);

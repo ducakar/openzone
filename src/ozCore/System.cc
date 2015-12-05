@@ -191,7 +191,7 @@ static void* bellMain(void*)
   static_cast<void>(genBellSamples);
 
   SLObjectItf engine;
-  SLEngineOption engineOptions[] = { SL_ENGINEOPTION_THREADSAFE, true };
+  SLEngineOption engineOptions[] = {SL_ENGINEOPTION_THREADSAFE, true};
   slCreateEngine(&engine, 1, engineOptions, 0, nullptr, nullptr);
   (*engine)->Realize(engine, false);
 
@@ -203,15 +203,15 @@ static void* bellMain(void*)
   (*outputMix)->Realize(outputMix, false);
 
   SLObjectItf               player;
-  SLDataFormat_PCM          pcmFormat          = { SL_DATAFORMAT_PCM, 2, SL_SAMPLINGRATE_48,
-                                                   SL_PCMSAMPLEFORMAT_FIXED_16, 16,
-                                                   SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT,
-                                                   SL_BYTEORDER_LITTLEENDIAN
+  SLDataFormat_PCM          pcmFormat          = {SL_DATAFORMAT_PCM, 2, SL_SAMPLINGRATE_48,
+                                                  SL_PCMSAMPLEFORMAT_FIXED_16, 16,
+                                                  SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT,
+                                                  SL_BYTEORDER_LITTLEENDIAN
                                                  };
-  SLDataLocator_BufferQueue bufferQueueLocator = { SL_DATALOCATOR_BUFFERQUEUE, 1 };
-  SLDataLocator_OutputMix   outputMixLocator   = { SL_DATALOCATOR_OUTPUTMIX, outputMix };
-  SLDataSource              audioSource        = { &bufferQueueLocator, &pcmFormat };
-  SLDataSink                audioSink          = { &outputMixLocator, nullptr };
+  SLDataLocator_BufferQueue bufferQueueLocator = {SL_DATALOCATOR_BUFFERQUEUE, 1};
+  SLDataLocator_OutputMix   outputMixLocator   = {SL_DATALOCATOR_OUTPUTMIX, outputMix};
+  SLDataSource              audioSource        = {&bufferQueueLocator, &pcmFormat};
+  SLDataSink                audioSink          = {&outputMixLocator, nullptr};
 
   (*iEngine)->CreateAudioPlayer(iEngine, &player, &audioSource, &audioSink, 0, nullptr, nullptr);
   (*player)->Realize(player, false);
@@ -278,7 +278,7 @@ static void* bellMain(void*)
     int nFrameSamples = pp::AudioConfig::RecommendSampleFrameCount(ppInstance, rate, 4096);
     int nSamples      = min<int>(int(BELL_TIME * float(rate)), 2 * BELL_SAMPLES);
 
-    SampleInfo      info = { rate, nFrameSamples, nSamples, 0, false };
+    SampleInfo      info = {rate, nFrameSamples, nSamples, 0, false};
     pp::AudioConfig config(ppInstance, rate, nFrameSamples);
     pp::Audio       audio(ppInstance, config, bellCallback, &info);
 

@@ -50,7 +50,7 @@ static void readLuaChunk(const char* begin, int size, const char* path)
   LuaSyntaxState state          = NORMAL;
   int            lineNum        = 1;
   int            gettextLineNum = 1;
-  char           last[4]        = { '\0', '\0', '\0', '\0' };
+  char           last[4]        = {'\0', '\0', '\0', '\0'};
   List<char>     lastString;
   bool           restartString  = true;
   bool           inGettext      = false;

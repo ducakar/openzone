@@ -91,7 +91,7 @@ private:
     }
 
     data[index] = new(pool) Entry {
-      data[index], h, { static_cast<Key_&&>(key), static_cast<Value_&&>(value) }
+      data[index], h, {static_cast<Key_&&>(key), static_cast<Value_&&>(value)}
     };
     return data[index]->elem;
   }

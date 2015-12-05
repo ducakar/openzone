@@ -404,7 +404,7 @@ public:
   OZ_ALWAYS_INLINE
   static uint toBits(float x)
   {
-    return FloatToBits{ x }.bits;
+    return FloatToBits{x}.bits;
   }
 
   /**
@@ -413,7 +413,7 @@ public:
   OZ_ALWAYS_INLINE
   static float fromBits(uint b)
   {
-    return BitsToFloat{ b }.value;
+    return BitsToFloat{b}.value;
   }
 
   /**
@@ -424,7 +424,7 @@ public:
   {
     OZ_ASSERT(x >= 0.0f);
 
-    FloatToBits fb = { x };
+    FloatToBits fb = {x};
 
     fb.bits = 0x5f375a86 - (fb.bits >> 1);
     return x * fb.value * (1.5f - 0.5f * x * fb.value*fb.value);
@@ -438,7 +438,7 @@ public:
   {
     OZ_ASSERT(x > 0.0f);
 
-    FloatToBits fb = { x };
+    FloatToBits fb = {x};
 
     fb.bits = 0x5f375a86 - (fb.bits >> 1);
     return fb.value * (1.5f - 0.5f * x * fb.value*fb.value);

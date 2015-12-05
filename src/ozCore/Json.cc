@@ -593,11 +593,11 @@ struct Json::Formatter
   }
 };
 
-const Json::Format Json::DEFAULT_FORMAT = { 2, 32, "%.9g", "\n" };
+const Json::Format Json::DEFAULT_FORMAT = {2, 32, "%.9g", "\n"};
 
 OZ_INTERNAL
 Json::Json(const float* vector, int count) :
-  data(new ArrayData{ List<Json>(count) }), valueType(ARRAY)
+  data(new ArrayData{List<Json>(count)}), valueType(ARRAY)
 {
   List<Json>& list = static_cast<ArrayData*>(data)->list;
 
@@ -667,11 +667,11 @@ Json::Json(double value) :
 {}
 
 Json::Json(const String& value) :
-  data(new StringData{ value }), valueType(STRING)
+  data(new StringData{value}), valueType(STRING)
 {}
 
 Json::Json(const char* value) :
-  data(new StringData{ value }), valueType(STRING)
+  data(new StringData{value}), valueType(STRING)
 {}
 
 Json::Json(const Vec3& v) :
@@ -1289,7 +1289,7 @@ String Json::toString() const
 String Json::toFormattedString(const Format& format) const
 {
   Stream    os(0);
-  Formatter formatter = { &os, &format, String::length(format.lineEnd), 0 };
+  Formatter formatter = {&os, &format, String::length(format.lineEnd), 0};
 
   formatter.writeValue(*this);
   os.write(format.lineEnd, formatter.lineEndLength);
@@ -1311,7 +1311,7 @@ bool Json::load(const File& file)
 bool Json::save(const File& file, const Format& format) const
 {
   Stream os(0);
-  Formatter formatter = { &os, &format, String::length(format.lineEnd), 0 };
+  Formatter formatter = {&os, &format, String::length(format.lineEnd), 0};
 
   formatter.writeValue(*this);
   os.write(format.lineEnd, formatter.lineEndLength);

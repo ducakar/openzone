@@ -35,14 +35,14 @@ void Stream::readFloats(float* values, int count)
 
   if (order == Endian::NATIVE) {
     for (int i = 0; i < count; ++i, data += 4, ++values) {
-      Endian::ToValue<float> value = { { data[0], data[1], data[2], data[3] } };
+      Endian::ToValue<float> value = {{data[0], data[1], data[2], data[3]}};
 
       *values = value.value;
     }
   }
   else {
     for (int i = 0; i < count; ++i, data += 4, ++values) {
-      Endian::ToValue<float> value = { { data[3], data[2], data[1], data[0] } };
+      Endian::ToValue<float> value = {{data[3], data[2], data[1], data[0]}};
 
       *values = value.value;
     }
@@ -56,7 +56,7 @@ void Stream::writeFloats(const float* values, int count)
 
   if (order == Endian::NATIVE) {
     for (int i = 0; i < count; ++i, data += 4, ++values) {
-      Endian::ToBytes<float> value = { *values };
+      Endian::ToBytes<float> value = {*values};
 
       data[0] = value.data[0];
       data[1] = value.data[1];
@@ -66,7 +66,7 @@ void Stream::writeFloats(const float* values, int count)
   }
   else {
     for (int i = 0; i < count; ++i, data += 4, ++values) {
-      Endian::ToBytes<float> value = { *values };
+      Endian::ToBytes<float> value = {*values};
 
       data[0] = value.data[3];
       data[1] = value.data[2];
@@ -282,7 +282,7 @@ short Stream::readShort()
 
 void Stream::writeShort(short s)
 {
-  Endian::ToBytes<short> value = { order == Endian::NATIVE ? s : Endian::bswap(s) };
+  Endian::ToBytes<short> value = {order == Endian::NATIVE ? s : Endian::bswap(s)};
 
   write(value.data, sizeof(value.data));
 }
@@ -297,7 +297,7 @@ ushort Stream::readUShort()
 
 void Stream::writeUShort(ushort s)
 {
-  Endian::ToBytes<ushort> value = { order == Endian::NATIVE ? s : Endian::bswap(s) };
+  Endian::ToBytes<ushort> value = {order == Endian::NATIVE ? s : Endian::bswap(s)};
 
   write(value.data, sizeof(value.data));
 }
@@ -312,7 +312,7 @@ int Stream::readInt()
 
 void Stream::writeInt(int i)
 {
-  Endian::ToBytes<int> value = { order == Endian::NATIVE ? i : Endian::bswap(i) };
+  Endian::ToBytes<int> value = {order == Endian::NATIVE ? i : Endian::bswap(i)};
 
   write(value.data, sizeof(value.data));
 }
@@ -327,7 +327,7 @@ uint Stream::readUInt()
 
 void Stream::writeUInt(uint i)
 {
-  Endian::ToBytes<uint> value = { order == Endian::NATIVE ? i : Endian::bswap(i) };
+  Endian::ToBytes<uint> value = {order == Endian::NATIVE ? i : Endian::bswap(i)};
 
   write(value.data, sizeof(value.data));
 }
@@ -342,7 +342,7 @@ long64 Stream::readLong64()
 
 void Stream::writeLong64(long64 l)
 {
-  Endian::ToBytes<long64> value = { order == Endian::NATIVE ? l : Endian::bswap(l) };
+  Endian::ToBytes<long64> value = {order == Endian::NATIVE ? l : Endian::bswap(l)};
 
   write(value.data, sizeof(value.data));
 }
@@ -357,7 +357,7 @@ ulong64 Stream::readULong64()
 
 void Stream::writeULong64(ulong64 l)
 {
-  Endian::ToBytes<ulong64> value = { order == Endian::NATIVE ? l : Endian::bswap(l) };
+  Endian::ToBytes<ulong64> value = {order == Endian::NATIVE ? l : Endian::bswap(l)};
 
   write(value.data, sizeof(value.data));
 }
@@ -367,12 +367,12 @@ float Stream::readFloat()
   const char* data = readSkip(sizeof(float));
 
   if (order == Endian::NATIVE) {
-    Endian::ToValue<float> value = { { data[0], data[1], data[2], data[3] } };
+    Endian::ToValue<float> value = {{data[0], data[1], data[2], data[3]}};
 
     return value.value;
   }
   else {
-    Endian::ToValue<float> value = { { data[3], data[2], data[1], data[0] } };
+    Endian::ToValue<float> value = {{data[3], data[2], data[1], data[0]}};
 
     return value.value;
   }
@@ -382,7 +382,7 @@ void Stream::writeFloat(float f)
 {
   char* data = writeSkip(sizeof(float));
 
-  Endian::ToBytes<float> value = { f };
+  Endian::ToBytes<float> value = {f};
 
   if (order == Endian::NATIVE) {
     data[0] = value.data[0];
@@ -404,14 +404,14 @@ double Stream::readDouble()
 
   if (order == Endian::NATIVE) {
     Endian::ToValue<double> value = {
-      { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] }
+      {data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]}
     };
 
     return value.value;
   }
   else {
     Endian::ToValue<double> value = {
-      { data[7], data[6], data[5], data[4], data[3], data[2], data[1], data[0] }
+      {data[7], data[6], data[5], data[4], data[3], data[2], data[1], data[0]}
     };
 
     return value.value;
@@ -422,7 +422,7 @@ void Stream::writeDouble(double d)
 {
   char* data = writeSkip(sizeof(double));
 
-  Endian::ToBytes<double> value = { d };
+  Endian::ToBytes<double> value = {d};
 
   if (order == Endian::NATIVE) {
     data[0] = value.data[0];

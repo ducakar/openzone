@@ -29,7 +29,7 @@
 namespace oz
 {
 
-static const SDL_Color WHITE_COLOUR = { 0xff, 0xff, 0xff, 0xff };
+static const SDL_Color WHITE_COLOUR = {0xff, 0xff, 0xff, 0xff};
 
 Font::Font(const File& file, int height) :
   fontHeight(height), fileBuffer(file.read())

@@ -38,8 +38,8 @@ void Terra::load()
   }
 
   EnumMap<int> liquidMap = {
-    { Medium::WATER_BIT | Medium::SEA_BIT, "WATER" },
-    { Medium::LAVA_BIT  | Medium::SEA_BIT, "LAVA"  }
+    {Medium::WATER_BIT | Medium::SEA_BIT, "WATER"},
+    {Medium::LAVA_BIT  | Medium::SEA_BIT, "LAVA" }
   };
 
   detailTex     = config["detailTexture"].get("");
@@ -103,8 +103,8 @@ void Terra::load()
     };
 
     static const EnumMap<TerraBuilder::Module> controlMap = {
-      { TerraBuilder::COMBINER, "combiner" },
-      { TerraBuilder::PLAINS,   "plains"   },
+      {TerraBuilder::COMBINER, "combiner"},
+      {TerraBuilder::PLAINS,   "plains"  },
     };
 
     for (int i = 0; i < Arrays::length(MODULE_NAMES); ++i) {

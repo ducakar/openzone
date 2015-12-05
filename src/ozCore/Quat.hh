@@ -82,7 +82,7 @@ public:
   Quat operator * () const
   {
 #ifdef OZ_SIMD
-    return Quat(float4(uint4(f4) ^ uint4{ 0x80000000u, 0x80000000u, 0x80000000u, 0u }));
+    return Quat(float4(uint4(f4) ^ uint4{0x80000000u, 0x80000000u, 0x80000000u, 0u}));
 #else
     return Quat(-x, -y, -z, w);
 #endif
@@ -260,7 +260,7 @@ public:
     float4 k = vFill(s);
 
     k /= vDot(q.f4, q.f4);
-    k *= float4{ -1.0f, -1.0f, -1.0f, +1.0f };
+    k *= float4{-1.0f, -1.0f, -1.0f, +1.0f};
 
     return Quat(q.f4 * k);
 #else

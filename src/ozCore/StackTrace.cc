@@ -39,7 +39,7 @@ StackTrace StackTrace::current(int nSkippedFrames)
 {
   OZ_ASSERT(nSkippedFrames >= 0);
 
-  StackTrace st = { {}, 0, {} };
+  StackTrace st = {{}, 0, {}};
   memccpy(st.thread, Thread::name(), '\0', Thread::NAME_LENGTH);
 
 #ifdef __GLIBC__

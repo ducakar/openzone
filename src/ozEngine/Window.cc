@@ -169,7 +169,7 @@ void Window::screenshot(const File& file, int quality)
   int   pitch  = ((windowWidth * 3 + 3) / 4) * 4;
   char* pixels = new char[windowHeight * pitch];
 
-  ScreenshotInfo* info = new ScreenshotInfo{ file, quality, windowWidth, windowHeight, pixels };
+  ScreenshotInfo* info = new ScreenshotInfo{file, quality, windowWidth, windowHeight, pixels};
 
   glReadPixels(0, 0, windowWidth, windowHeight, GL_RGB, GL_UNSIGNED_BYTE, info->pixels);
   screenshotThread = Thread("screenshot", screenshotMain, info);

@@ -83,10 +83,10 @@ void BuildFrame::overlayCallback(Area* area, const Vec3& ray)
     if (!overlaps) {
       // Check if ground is plain enough.
       float corners[][2] = {
-        { bounds.mins.x, bounds.mins.y },
-        { bounds.maxs.x, bounds.mins.y },
-        { bounds.mins.x, bounds.maxs.y },
-        { bounds.maxs.x, bounds.maxs.y }
+        {bounds.mins.x, bounds.mins.y},
+        {bounds.maxs.x, bounds.mins.y},
+        {bounds.mins.x, bounds.maxs.y},
+        {bounds.maxs.x, bounds.maxs.y}
       };
 
       for (int i = 0; i < 4; ++i) {

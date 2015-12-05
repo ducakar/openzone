@@ -53,7 +53,7 @@ static OZ_DL_DEFINE(NeAACDecClose);
 static OZ_DL_DEFINE(NeAACDecDecode);
 
 static size_t vorbisRead(void* buffer, size_t size, size_t n, void* handle);
-static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, nullptr, nullptr, nullptr };
+static ov_callbacks VORBIS_CALLBACKS = {vorbisRead, nullptr, nullptr, nullptr};
 
 static size_t vorbisRead(void* buffer, size_t size, size_t n, void* handle)
 {

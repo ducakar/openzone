@@ -173,7 +173,7 @@ public:
           cw->semaphore->post();
         }
       };
-      CallbackWrapper cw = { function, localSemaphore };
+      CallbackWrapper cw = {function, localSemaphore};
 
       Pepper::mainCall(CallbackWrapper::callback, &cw);
       localSemaphore->wait();
@@ -211,7 +211,7 @@ public:
         cw->function();
       }
     };
-    CallbackWrapper cw = { function };
+    CallbackWrapper cw = {function};
 
     Pepper::mainCall(CallbackWrapper::callback, &cw);
 

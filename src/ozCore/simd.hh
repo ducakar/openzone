@@ -67,7 +67,7 @@ typedef uint __attribute__((vector_size(16))) uint4;
 OZ_ALWAYS_INLINE
 inline float4 vFill(float x)
 {
-  return float4{ x, x, x, x };
+  return float4{x, x, x, x};
 }
 
 /**
@@ -76,7 +76,7 @@ inline float4 vFill(float x)
 OZ_ALWAYS_INLINE
 inline uint4 vFill(uint x)
 {
-  return uint4{ x, x, x, x };
+  return uint4{x, x, x, x};
 }
 
 /**
@@ -86,7 +86,7 @@ inline uint4 vFill(uint x)
 #ifdef OZ_CLANG
 # define vShuffle(a, i, j, k, l) __builtin_shufflevector(a, a, i, j, k, l)
 #else
-# define vShuffle(a, i, j, k, l) __builtin_shuffle(a, uint4 { i, j, k, l })
+# define vShuffle(a, i, j, k, l) __builtin_shuffle(a, uint4{i, j, k, l})
 #endif
 
 /**
@@ -195,7 +195,7 @@ public:
 #ifdef OZ_SIMD
   __extension__ union
   {
-    float4 f4 = { 0.0f, 0.0f, 0.0f, 0.0f };
+    float4 f4 = {0.0f, 0.0f, 0.0f, 0.0f};
     __extension__ struct
     {
       float x;
@@ -224,7 +224,7 @@ protected:
   OZ_ALWAYS_INLINE
 #ifdef OZ_SIMD
   explicit VectorBase3(float x_, float y_, float z_, float w_) :
-    f4{ x_, y_, z_, w_ }
+    f4{x_, y_, z_, w_}
 #else
   explicit VectorBase3(float x_, float y_, float z_, float) :
     x(x_), y(y_), z(z_)

@@ -2046,7 +2046,7 @@ static int ozBotGetDir(lua_State* l)
   OBJ();
   OBJ_BOT();
 
-  // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+  // {hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine}
   float hvsc[6];
 
   Math::sincos(bot->h, &hvsc[0], &hvsc[1]);
@@ -2351,7 +2351,7 @@ static int ozVehicleGetDir(lua_State* l)
   OBJ();
   OBJ_VEHICLE();
 
-  // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+  // {hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine}
   float hvsc[6];
 
   Math::sincos(veh->h, &hvsc[0], &hvsc[1]);

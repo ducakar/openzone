@@ -54,7 +54,7 @@
  *
  * For a Java JNI application, you must implement this function and put `OZ_JAVA_ENTRY_POINT()`
  * macro in a `.cc` file (out of any namespace). An empty string is passed as the zero argument
- * (i.e. `argc = 1` and `argv = { "" }`).
+ * (i.e. `argc = 1` and `argv = {""}`).
  */
 int javaMain(int argc, char** argv);
 

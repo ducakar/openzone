@@ -200,7 +200,7 @@ bool Input::saveConfig(const File& file)
 {
   Json keyboard = Json::OBJECT;
   Json mouse    = Json::OBJECT;
-  Json root     = { keyboard, mouse };
+  Json root     = {keyboard, mouse};
 
   keyboard.add("sensitivity", config.keyboard.sensitivity);
   keyboard.add("leftKey", config.keyboard.leftKey);

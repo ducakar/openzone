@@ -27,7 +27,7 @@ namespace oz
 namespace client
 {
 
-const char* const Caelum::SKYBOX_FACES[]        = { "+x", "-x", "+y", "-y", "+z", "-z" };
+const char* const Caelum::SKYBOX_FACES[]        = {"+x", "-x", "+y", "-y", "+z", "-z"};
 const Vec4        Caelum::GLOBAL_AMBIENT_COLOUR = Vec4(0.12f, 0.12f, 0.15f, 1.00f);
 
 const float       Caelum::DAY_BIAS              = 0.40f;

@@ -47,7 +47,7 @@ void Java::application(JNIEnv* env, jclass clazz)
   env->GetJavaVM(&javaVM);
 
   char  argv0[] = "";
-  char* argv[]  = { argv0, nullptr };
+  char* argv[]  = {argv0, nullptr};
 
   javaMain(1, argv);
 }

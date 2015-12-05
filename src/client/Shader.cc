@@ -109,8 +109,8 @@ void Shader::compileShader(uint shaderId, const String& defines, const File& fil
 {
   Stream is = file.read();
 
-  const char* strings[] = { defines.begin(), is.begin() };
-  int         lengths[] = { defines.length(), is.available() };
+  const char* strings[] = {defines.begin(), is.begin()};
+  int         lengths[] = {defines.length(), is.available()};
   int         result;
   int         logLength;
 
@@ -316,7 +316,7 @@ void Shader::init()
     OZ_GL_CHECK_ERROR();
 
     // Bind white texture to id 0 to emulate fixed functionality that has white texture on id 0.
-    ubyte whitePixel[] = { 0xff, 0xff, 0xff };
+    ubyte whitePixel[] = {0xff, 0xff, 0xff};
 
     glGenTextures(1, &defaultTexture);
     glBindTexture(GL_TEXTURE_2D, defaultTexture);
@@ -325,7 +325,7 @@ void Shader::init()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, whitePixel);
 
     // Default masks: specular 0.0, emission 0.0, environment 0.0.
-    ubyte masksPixel[] = { 0x00, 0x00, 0x00 };
+    ubyte masksPixel[] = {0x00, 0x00, 0x00};
 
     glGenTextures(1, &defaultMasks);
     glBindTexture(GL_TEXTURE_2D, defaultMasks);
@@ -334,7 +334,7 @@ void Shader::init()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, masksPixel);
 
     // Default normal for bumpmap: [0, 0, 1].
-    ubyte normalsPixel[] = { 0x80, 0x80, 0xff, 0x80 };
+    ubyte normalsPixel[] = {0x80, 0x80, 0xff, 0x80};
 
     glGenTextures(1, &defaultNormals);
     glBindTexture(GL_TEXTURE_2D, defaultNormals);

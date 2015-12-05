@@ -116,8 +116,8 @@ public:
  * };
  *
  * EnumMap<MyEnum> myEnumMap = {
- *   { FOO, "FOO" },
- *   { BAR, "BAR" }
+ *   {FOO, "FOO"},
+ *   {BAR, "BAR"}
  * };
  * Log() << map[FOO];   // "FOO"
  * Log() << map["BAR"]; // 42

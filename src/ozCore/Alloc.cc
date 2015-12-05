@@ -37,7 +37,7 @@ enum AllocMode
   ARRAY
 };
 
-static const char* const       ALLOC_MODE_NAMES[2] = { "object", "array" };
+static const char* const       ALLOC_MODE_NAMES[2] = {"object", "array"};
 static Chain<Alloc::ChunkInfo> chunkInfos[2];
 static SpinLock                allocInfoLock;
 
@@ -67,7 +67,7 @@ static void* allocate(AllocMode mode, size_t size)
 
 #ifdef OZ_ALLOCATOR
 
-  Alloc::ChunkInfo* ci = new(ptr) Alloc::ChunkInfo{ {}, size, StackTrace::current(2) };
+  Alloc::ChunkInfo* ci = new(ptr) Alloc::ChunkInfo{{}, size, StackTrace::current(2)};
 
   allocInfoLock.lock();
 

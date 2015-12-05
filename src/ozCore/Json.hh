@@ -217,7 +217,7 @@ public:
    * This constructor might be ambiguous when elements appear in pairs. Adding `Json` before the
    * first array element solves the issue:
    * @code
-   * Json array = { Json { 0, 1 }, { 1, 2 }, { 2, 0 } };
+   * Json array = {Json {0, 1}, {1, 2}, {2, 0}};
    * @endcode
    */
   Json(InitialiserList<Json> l);
@@ -227,7 +227,7 @@ public:
    *
    * For disambiguation from array initialiser one should add `Json::Pair` before the first element:
    * @code
-   * Json object = { Json::Pair { "key1", 1 }, { "key2", 2 }, { "key3", 3 } };
+   * Json object = {Json::Pair {"key1", 1}, {"key2", 2}, {"key3", 3}};
    * @endcode
    */
   Json(InitialiserList<Pair> l);

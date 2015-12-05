@@ -89,7 +89,7 @@ void Model::addSceneLights()
       transf = node->transf ^ transf;
     }
 
-    sceneLights.add(LightEntry{ &light, transf, 0.0f });
+    sceneLights.add(LightEntry{&light, transf, 0.0f});
   }
 }
 
@@ -365,7 +365,7 @@ void Model::schedule(int mesh, QueueType queue)
     addSceneLights();
   }
 
-  list.add(Instance{ this, tf.model, tf.colour, mesh, 0, 0, 0.0f });
+  list.add(Instance{this, tf.model, tf.colour, mesh, 0, 0, 0.0f});
 }
 
 void Model::scheduleFrame(int mesh, int frame, QueueType queue)
@@ -376,7 +376,7 @@ void Model::scheduleFrame(int mesh, int frame, QueueType queue)
     addSceneLights();
   }
 
-  list.add(Instance{ this, tf.model, tf.colour, mesh, frame, 0, 0.0f });
+  list.add(Instance{this, tf.model, tf.colour, mesh, frame, 0, 0.0f});
 }
 
 void Model::scheduleAnimated(int mesh, int firstFrame, int secondFrame, float interpolation,
@@ -388,7 +388,7 @@ void Model::scheduleAnimated(int mesh, int firstFrame, int secondFrame, float in
     addSceneLights();
   }
 
-  list.add(Instance{ this, tf.model, tf.colour, mesh, firstFrame, secondFrame, interpolation });
+  list.add(Instance{this, tf.model, tf.colour, mesh, firstFrame, secondFrame, interpolation});
 }
 
 const File* Model::preload()
@@ -648,7 +648,7 @@ void Model::load()
     }
   }
 
-  loadedModels.include(Ref{ this });
+  loadedModels.include(Ref{this});
 
   delete preloadData;
   preloadData = nullptr;
@@ -705,7 +705,7 @@ void Model::unload()
   ibo = 0;
   vbo = 0;
 
-  loadedModels.exclude(Ref{ this });
+  loadedModels.exclude(Ref{this});
 
   OZ_GL_CHECK_ERROR();
 }

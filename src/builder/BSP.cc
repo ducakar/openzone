@@ -242,10 +242,10 @@ void BSP::load()
     model.title      = entityConfig["title"].get("");
 
     static const EnumMap<EntityClass::Type> entityMap = {
-      { EntityClass::STATIC, "STATIC" },
-      { EntityClass::MOVER,  "MOVER"  },
-      { EntityClass::DOOR,   "DOOR"   },
-      { EntityClass::PORTAL, "PORTAL" }
+      {EntityClass::STATIC, "STATIC"},
+      {EntityClass::MOVER,  "MOVER" },
+      {EntityClass::DOOR,   "DOOR"  },
+      {EntityClass::PORTAL, "PORTAL"}
     };
 
     model.type         = entityMap[entityConfig["type"].get("")];

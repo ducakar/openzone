@@ -83,7 +83,7 @@ public:
     int ix = int((x + DIM) / Quad::SIZE);
     int iy = int((y + DIM) / Quad::SIZE);
 
-    return { clamp(ix, 0, QUADS - 1), clamp(iy, 0, QUADS - 1) };
+    return {clamp(ix, 0, QUADS - 1), clamp(iy, 0, QUADS - 1)};
   }
 
   float getHeight(float x, float y) const

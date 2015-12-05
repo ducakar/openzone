@@ -454,7 +454,7 @@ void Compiler::end()
     case POLYGON: {
       OZ_ASSERT(vertNum >= 3);
 
-      int last[2] = { 0, 1 };
+      int last[2] = {0, 1};
       int top     = vertNum - 1;
       int bottom  = 2;
 
@@ -657,21 +657,21 @@ void Compiler::positionKey(const Point& pos, float time)
 {
   OZ_ASSERT(environment == CHANNEL);
 
-  channel.positionKeys.add(Animation::PositionKey{ pos, time });
+  channel.positionKeys.add(Animation::PositionKey{pos, time});
 }
 
 void Compiler::rotationKey(const Quat& rot, float time)
 {
   OZ_ASSERT(environment == CHANNEL);
 
-  channel.rotationKeys.add(Animation::RotationKey{ rot, time });
+  channel.rotationKeys.add(Animation::RotationKey{rot, time});
 }
 
 void Compiler::scalingKey(const Vec3& scale, float time)
 {
   OZ_ASSERT(environment == CHANNEL);
 
-  channel.scalingKeys.add(Animation::ScalingKey{ scale, time });
+  channel.scalingKeys.add(Animation::ScalingKey{scale, time});
 }
 
 void Compiler::writeModel(Stream* os, bool globalTextures)

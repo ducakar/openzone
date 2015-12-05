@@ -31,7 +31,7 @@
   { \
     auto i = citerator(container); \
     typedef decltype(i) CIterator; \
-    CIterator::ElemType array[] = { __VA_ARGS__ }; \
+    CIterator::ElemType array[] = {__VA_ARGS__}; \
     OZ_CHECK(iEquals(i, citerator(array))); \
   }
 

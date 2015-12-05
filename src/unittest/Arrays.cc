@@ -31,7 +31,7 @@ void test_arrays()
   Arrays::CIterator<Foo> ici;
   Arrays::Iterator<Foo>  ii;
 
-  Foo a[4] = { 1, 2, 3, 2 };
+  Foo a[4] = {1, 2, 3, 2};
   Foo b[4];
 
   Arrays::move(a, 4, b);

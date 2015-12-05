@@ -260,14 +260,14 @@ bool ModelBuilder::buildModel(const File& file, OutputStream* os)
       Vec3 centre = (a + b + c) / 3.0f;
 
       for (int k = 0; k < 8; ++k) {
-        triangles[k].add({ centre* DIRS[k], j });
+        triangles[k].add({centre* DIRS[k], j});
       }
     }
 
     int nIndices = indices.length() - firstIndex;
     int material = mesh->mMaterialIndex;
 
-    meshes.add({ firstIndex, nIndices, 0, 0, material });
+    meshes.add({firstIndex, nIndices, 0, 0, material});
   }
 
   for (uint i = 0; i < scene->mNumMaterials; ++i) {
@@ -281,7 +281,7 @@ bool ModelBuilder::buildModel(const File& file, OutputStream* os)
     float alpha = 1.0f;
     material->Get<float>(AI_MATKEY_OPACITY, alpha);
 
-    materials.add({ String::fileBaseName(path.C_Str()), alpha });
+    materials.add({String::fileBaseName(path.C_Str()), alpha});
 
     Log() << i << " texure: " << path.C_Str();
   }
@@ -304,8 +304,8 @@ bool ModelBuilder::buildModel(const File& file, OutputStream* os)
     lights.add(Light {
       Point(light->mPosition.x, light->mPosition.y, light->mPosition.z),
       Vec3(light->mDirection.x, light->mDirection.y, light->mDirection.z),
-      { Math::tan(light->mAngleInnerCone / 2.0f), Math::tan(light->mAngleOuterCone / 2.0f) },
-      { light->mAttenuationConstant, light->mAttenuationLinear, light->mAttenuationQuadratic },
+      {Math::tan(light->mAngleInnerCone / 2.0f), Math::tan(light->mAngleOuterCone / 2.0f)},
+      {light->mAttenuationConstant, light->mAttenuationLinear, light->mAttenuationQuadratic},
       Vec3(light->mColorDiffuse.r, light->mColorDiffuse.g, light->mColorDiffuse.b),
       Light::Type(light->mType - 1)
     });

@@ -33,7 +33,7 @@ void QuestList::add(const char* title, const char* description, const Point& pla
     activeQuest = 0;
   }
 
-  Quest quest = { title, description, place, state };
+  Quest quest = {title, description, place, state};
   quests.add(static_cast<Quest&&>(quest));
 }
 

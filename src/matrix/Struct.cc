@@ -50,8 +50,8 @@ static const Mat4 ROTATIONS[] =
         0.0f,  0.0f,  0.0f,  1.0f),
 };
 
-static const Entity::State OPPOSITE_STATES[] = { Entity::CLOSING, Entity::OPENING };
-static const Entity::State END_STATES[]      = { Entity::OPEN, Entity::CLOSED };
+//static const Entity::State OPPOSITE_STATES[] = {Entity::CLOSING, Entity::OPENING};
+//static const Entity::State END_STATES[]      = {Entity::OPEN, Entity::CLOSED};
 
 const Vec3  Struct::DESTRUCT_FRAG_VELOCITY   = Vec3(0.0f, 0.0f, 2.0f);
 const float Struct::DEMOLISH_SPEED           = 8.0f;
@@ -125,38 +125,38 @@ void Entity::moverHandler()
 {
   time += Timer::TICK_TIME;
 
-  float timeout[] { clazz->openTimeout, clazz->closeTimeout };
+//  float timeout[] {clazz->openTimeout, clazz->closeTimeout};
 
-  switch (state) {
-    case CLOSED:
-    case OPEN: {
-      bool isClosed = state == CLOSED;
+//  switch (state) {
+//    case CLOSED:
+//    case OPEN: {
+//      bool isClosed = state == CLOSED;
 
-      if (timeout[isClosed] != 0.0f && time > timeout[isClosed]) {
-        if (time > clazz->openTimeout) {
-          state = OPPOSITE_STATES[isClosed];
-          time  = 0.0f;
-        }
-      }
-      break;
-    }
-    case OPENING:
-    case CLOSING: {
-      Vec3 move = destination - offset;
+//      if (timeout[isClosed] != 0.0f && time > timeout[isClosed]) {
+//        if (time > clazz->openTimeout) {
+//          state = OPPOSITE_STATES[isClosed];
+//          time  = 0.0f;
+//        }
+//      }
+//      break;
+//    }
+//    case OPENING:
+//    case CLOSING: {
+//      Vec3 move = destination - offset;
 
-      if (move.sqN() <= EPSILON) {
-        bool isClosing = state == CLOSING;
+//      if (move.sqN() <= EPSILON) {
+//        bool isClosing = state == CLOSING;
 
-        state    = END_STATES[isClosing];
-        time     = 0.0f;
-        velocity = Vec3::ZERO;
-      }
-      else {
-        physics.updateEnt(this, move);
-      }
-      break;
-    }
-  }
+//        state    = END_STATES[isClosing];
+//        time     = 0.0f;
+//        velocity = Vec3::ZERO;
+//      }
+//      else {
+//        physics.updateEnt(this, move);
+//      }
+//      break;
+//    }
+//  }
 }
 
 void Entity::doorHandler()

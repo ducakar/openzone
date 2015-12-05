@@ -122,7 +122,7 @@ void Vehicle::mechHandler()
 
   stairRate *= clazz->mech.stairRateSupp;
 
-  // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+  // {hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine}
   float hvsc[6];
 
   Math::sincos(h, &hvsc[0], &hvsc[1]);
@@ -225,7 +225,7 @@ void Vehicle::hoverHandler()
 {
   const VehicleClass* clazz = static_cast<const VehicleClass*>(this->clazz);
 
-  // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+  // {hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine}
   float hvsc[6];
 
   Math::sincos(h, &hvsc[0], &hvsc[1]);

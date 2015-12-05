@@ -63,7 +63,7 @@ static long vorbisTell(void* handle)
   return is->tell();
 }
 
-static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, vorbisSeek, nullptr, vorbisTell };
+static ov_callbacks VORBIS_CALLBACKS = {vorbisRead, vorbisSeek, nullptr, vorbisTell};
 
 /*
  * Vorbis decoder helper function.

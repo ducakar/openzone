@@ -27,26 +27,26 @@ namespace client
 const MD2::AnimInfo MD2::ANIM_LIST[] =
 {
   // first, last, frequency (FPS), nextAnim
-  {   0,  39,  9.0f, ANIM_STAND         }, // STAND
-  {  40,  45, 10.0f, ANIM_RUN           }, // RUN
-  {  46,  53, 16.0f, ANIM_ATTACK        }, // ATTACK
-  {  54,  57,  7.0f, ANIM_STAND         }, // PAIN_A
-  {  58,  61,  7.0f, ANIM_STAND         }, // PAIN_B
-  {  62,  65,  7.0f, ANIM_STAND         }, // PAIN_C
-  {  67,  67,  9.0f, ANIM_NONE          }, // JUMP
-  {  72,  83,  7.0f, ANIM_STAND         }, // FLIP
-  {  84,  94,  7.0f, ANIM_STAND         }, // SALUTE
-  {  95, 111, 10.0f, ANIM_STAND         }, // WAVE
-  { 112, 122,  7.0f, ANIM_STAND         }, // FALLBACK
-  { 123, 134,  6.0f, ANIM_STAND         }, // POINT
-  { 135, 153, 10.0f, ANIM_CROUCH_STAND  }, // CROUCH_STAND
-  { 154, 159,  7.0f, ANIM_CROUCH_WALK   }, // CROUCH_WALK
-  { 160, 168, 18.0f, ANIM_CROUCH_ATTACK }, // CROUCH_ATTACK
-  { 169, 172,  7.0f, ANIM_CROUCH_STAND  }, // CROUCH_PAIN
-  { 173, 177,  5.0f, ANIM_NONE          }, // CROUCH_DEATH
-  { 178, 183,  7.0f, ANIM_NONE          }, // DEATH_FALLBACK
-  { 184, 189,  7.0f, ANIM_NONE          }, // DEATH_FALLFORWARD
-  { 190, 197,  7.0f, ANIM_NONE          }  // DEATH_FALLBACKSLOW
+  {  0,  39,  9.0f, ANIM_STAND        }, // STAND
+  { 40,  45, 10.0f, ANIM_RUN          }, // RUN
+  { 46,  53, 16.0f, ANIM_ATTACK       }, // ATTACK
+  { 54,  57,  7.0f, ANIM_STAND        }, // PAIN_A
+  { 58,  61,  7.0f, ANIM_STAND        }, // PAIN_B
+  { 62,  65,  7.0f, ANIM_STAND        }, // PAIN_C
+  { 67,  67,  9.0f, ANIM_NONE         }, // JUMP
+  { 72,  83,  7.0f, ANIM_STAND        }, // FLIP
+  { 84,  94,  7.0f, ANIM_STAND        }, // SALUTE
+  { 95, 111, 10.0f, ANIM_STAND        }, // WAVE
+  {112, 122,  7.0f, ANIM_STAND        }, // FALLBACK
+  {123, 134,  6.0f, ANIM_STAND        }, // POINT
+  {135, 153, 10.0f, ANIM_CROUCH_STAND }, // CROUCH_STAND
+  {154, 159,  7.0f, ANIM_CROUCH_WALK  }, // CROUCH_WALK
+  {160, 168, 18.0f, ANIM_CROUCH_ATTACK}, // CROUCH_ATTACK
+  {169, 172,  7.0f, ANIM_CROUCH_STAND }, // CROUCH_PAIN
+  {173, 177,  5.0f, ANIM_NONE         }, // CROUCH_DEATH
+  {178, 183,  7.0f, ANIM_NONE         }, // DEATH_FALLBACK
+  {184, 189,  7.0f, ANIM_NONE         }, // DEATH_FALLFORWARD
+  {190, 197,  7.0f, ANIM_NONE         }  // DEATH_FALLBACKSLOW
 };
 
 const float MD2::AnimState::MIN_SHOT_INTERVAL_SYNC = 0.2f;

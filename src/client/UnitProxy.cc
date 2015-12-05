@@ -566,7 +566,7 @@ void UnitProxy::update()
     camera.setTaggedObj(orbis.obj(bot->cargo));
   }
   else {
-    // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+    // {hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine}
     float hvsc[6];
 
     Math::sincos(bot->h, &hvsc[0], &hvsc[1]);
