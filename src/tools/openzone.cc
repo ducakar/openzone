@@ -19,7 +19,7 @@
 
 #include <client/Client.hh>
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #undef main
 
 #ifdef __native_client__

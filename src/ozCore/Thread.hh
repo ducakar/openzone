@@ -56,6 +56,13 @@ private:
 
   Descriptor* descriptor = nullptr; ///< Internal thread descriptor.
 
+private:
+
+  /**
+   * Helper function for constructors that create new threads.
+   */
+  void start(const char* name, Main* main, void* data);
+
 public:
 
   /**
@@ -83,21 +90,45 @@ public:
    * should be called later to ensure thread's termination and to release its resources or
    * `detach()` to detach the thread and automatically release its resources upon finishing.
    *
-   * After the thread has been either joined or detached the `Thread` object can be reused to start
-   * another thread.
-   *
-   * `System::threadInit()` is called implicitly on the new thread to set up signal handlers if
-   * necessary.
-   *
    * @note
-   * On Android, thread is registered at VM if `Java::vm()` returns a valid handle (i.e.
+   * On Android, the thread is registered at VM if `Java::vm()` returns a valid handle (i.e.
    * `JavaVM::AttachCurrentThread()` and `JavaVM::DetachCurrentThread()` are invoked).
    *
    * @param name thread name (copied to an internal buffer).
    * @param main pointer to the thread's main function.
    * @param data pointer to user data, passed to the thread's main function.
    */
-  explicit Thread(const char* name, Main* main, void* data = nullptr);
+  explicit Thread(const char* name, Main* main, void* data = nullptr)
+  {
+    start(name, main, data);
+  }
+
+  /**
+   * Create and start a new joinable thread.
+   *
+   * Same as the previous constructor but works with lambda functions.
+   *
+   * @param name thread name (copied to an internal buffer).
+   * @param main a (lambda) function without parameters.
+   */
+  template <typename MainFunc>
+  explicit Thread(const char* name, MainFunc main)
+  {
+    struct MainWrapper
+    {
+      MainFunc mainFunc;
+
+      static void main(void* data)
+      {
+        const MainWrapper* mw = static_cast<const MainWrapper*>(data);
+
+        mw->mainFunc();
+      }
+    };
+    MainWrapper mw = {main};
+
+    start(name, MainWrapper::main, &mw);
+  }
 
   /**
    * Join started but not yet joined thread if present.

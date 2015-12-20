@@ -37,7 +37,7 @@
 # include <GLES2/gl2.h>
 # include <GLES2/gl2ext.h>
 #else
-# include <SDL_opengl.h>
+# include <SDL2/SDL_opengl.h>
 #endif
 
 #ifndef GL_EXT_texture_compression_s3tc

@@ -50,9 +50,9 @@ namespace oz
  */
 struct AudioBuffer
 {
-  List<char> data;   ///< Samples.
-  ALenum     format; ///< OpenAL format.
-  int        rate;   ///< Sampling rate.
+  List<float> data;   ///< Samples.
+  ALenum      format; ///< OpenAL format.
+  int         rate;   ///< Sampling rate.
 };
 
 /**
@@ -61,6 +61,71 @@ struct AudioBuffer
 class AL
 {
 public:
+
+  /**
+   * Buffer with decoded audio data.
+   */
+  struct Decoder
+  {
+  private:
+
+    struct StreamBase;
+    struct WaveStream;
+    struct OpusStream;
+    struct VorbisStream;
+    struct MP3Stream;
+    struct AACStream;
+
+    float*      samples;  ///< Samples buffer.
+    int         nSamples; ///< Number of samples.
+    ALenum      format;   ///< OpenAL format (AL_FORMAT_MONO_FLOAT32 or AL_FORMAT_STEREO_FLOAT32).
+    int         rate;     ///< Sampling rate.
+    StreamBase* stream;   ///< Internal structures used for stream decoding.
+
+  public:
+
+    /**
+     * Create empty instance.
+     */
+    Decoder();
+
+    /**
+     * Initialise an instance and open a file for decoding.
+     *
+     * `nSamples` sets the size of the internal buffer in samples (for all channels together).
+     * Zero `nSamples` sets the buffer to the right size to load the whole file in the first
+     * `decode()` call.
+     */
+    Decoder(const File& file, int nSamples = 0);
+
+    /**
+     * Destructor.
+     */
+    ~Decoder();
+
+    /**
+     * Move constructor.
+     */
+    Decoder(Decoder&& d);
+
+    /**
+     * Move operator.
+     */
+    Decoder& operator = (Decoder&& d);
+
+    /**
+     * Decode next chunk of data into an internal buffer.
+     *
+     * @return true iff some data were decoded, false on EOF or an error.
+     */
+    bool decode();
+
+    /**
+     * Copy previously decoded data to an OpenAL buffer.
+     */
+    void load(ALuint buffer) const;
+
+  };
 
   /**
    * %Streamer for Ogg Vorbis files.

@@ -106,8 +106,6 @@ else()
   list(REMOVE_ITEM SDL_TTF_LIBRARIES ppapi_simple)
 endif()
 
-include_directories(SYSTEM ${SDL_INCLUDE_DIRS})
-
 if(OZ_GL_ES)
   # On embedded platforms, GLES is part of system libraries and is guaranteed to exist in toolchain
   # or platform directory, no need to explicitly check existence or to detect library names.
@@ -127,22 +125,20 @@ endif()
 
 find_package(OpenAL REQUIRED)
 find_package(JPEG REQUIRED)
+pkg_check_modules(OGG REQUIRED ogg)
+pkg_check_modules(OPUS REQUIRED opus)
+pkg_check_modules(VORBIS REQUIRED vorbis)
 pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 
 # On embedded platforms, linking is mostly static, so indirect dependencies must be linked too.
 if(PLATFORM_EMBEDDED)
   # Emscripten has SDL_ttf built-in and doesn't need Freetype.
   if(NOT EMSCRIPTEN)
-    find_package(PNG REQUIRED)              # required by FreeType
-    find_package(Freetype REQUIRED)         # required by SDL_ttf
+    find_package(PNG REQUIRED)      # required by FreeType.
+    find_package(Freetype REQUIRED) # required by SDL_ttf.
 
     list(APPEND SDL_TTF_LIBRARIES ${FREETYPE_LIBRARIES} ${PNG_LIBRARY})
   endif()
-
-  pkg_check_modules(OGG REQUIRED ogg)       # required by vorbisfile
-  pkg_check_modules(VORBIS REQUIRED vorbis) # required by vorbisfile
-
-  list(APPEND VORBISFILE_LIBRARIES ${VORBIS_LIBRARIES} ${OGG_LIBRARIES})
 endif()
 
 if(OZ_TOOLS)
@@ -177,7 +173,7 @@ mark_as_advanced(MINGW32_LIBRARY)
 # Local libmad, faad and eSpeak headers.
 include_directories(SYSTEM etc/include)
 
-set(flags "-std=c++14 -pedantic -fstrict-enums -fvisibility-inlines-hidden -ffast-math -fsized-deallocation")
+set(flags "-std=c++14 -ffast-math -fsized-deallocation -fstrict-enums -fvisibility-inlines-hidden")
 
 if(BUILD_SHARED_LIBS)
   set(flags "${flags} -fPIC")
@@ -195,8 +191,8 @@ endif()
 # Additional warnings.
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
   set(flags "${flags} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-date-time")
-  set(flags "${flags} -Wno-shadow -Wno-switch-enum -Wno-sign-conversion -Wno-float-equal -Wno-reserved-id-macro")
-  set(flags "${flags} -Wno-padded -Wno-global-constructors -Wno-exit-time-destructors")
+  set(flags "${flags} -Wno-exit-time-destructors -Wno-float-equal -Wno-global-constructors")
+  set(flags "${flags} -Wno-padded -Wno-sign-conversion -Wno-shadow -Wno-switch-enum")
 else()
   set(flags "${flags} -Wall -Wextra -Wcast-align -Winit-self -Wlogical-op -Wundef")
   set(flags "${flags} -Wmissing-declarations -Wnon-virtual-dtor -Woverloaded-virtual -Wformat=2")

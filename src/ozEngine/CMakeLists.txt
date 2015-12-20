@@ -24,6 +24,7 @@ add_library(ozEngine
 )
 
 target_link_libraries(ozEngine ${LUA_LIBRARIES} ${GL_LIBRARIES} ${OPENAL_LIBRARY} ${JPEG_LIBRARY}
+                               ${OGG_LIBRARIES} ${OPUS_LIBRARIES} ${VORBIS_LIBRARIES}
                                ${VORBISFILE_LIBRARIES} ${SDL_LIBRARIES} ${SDL_TTF_LIBRARIES})
 
 if(NOT NACL)

@@ -26,9 +26,9 @@
 #include "Input.hh"
 
 #include <AL/alc.h>
-#include <SDL.h>
 #include <cstdio>
 #include <jpeglib.h>
+#include <SDL2/SDL.h>
 
 #ifdef __native_client__
 # include <ppapi/cpp/completion_callback.h>

@@ -31,7 +31,7 @@
 #include <client/EditStage.hh>
 #include <client/ui/UI.hh>
 
-#include <SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 #include <unistd.h>
 #ifdef __native_client__
 # include <ppapi_simple/ps.h>

@@ -21,8 +21,8 @@
 #include <ozEngine/ozEngine.hh>
 #include <ozFactory/ozFactory.hh>
 
-#include <SDL.h>
 #include <noise/noise.h>
+#include <SDL2/SDL.h>
 
 using namespace oz;
 using namespace noise;

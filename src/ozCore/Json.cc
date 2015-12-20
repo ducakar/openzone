@@ -925,7 +925,12 @@ int Json::length() const
 {
   switch (valueType) {
     default: {
-      wasAccessed |= valueType == NIL;
+      wasAccessed = true;
+      return -1;
+    }
+    case BOOLEAN:
+    case NUMBER:
+    case STRING: {
       return -1;
     }
     case ARRAY: {

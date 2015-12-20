@@ -22,9 +22,9 @@
 #include <matrix/BotClass.hh>
 #include <matrix/WeaponClass.hh>
 
+#include <cstdlib>
 #include <cwchar>
 #include <cwctype>
-#include <SDL.h>
 
 namespace oz
 {
@@ -62,7 +62,7 @@ void Profile::init()
 
   // Get username and capitalise it (needs conversion to Unicode and back to UTF-8).
   if (name.isEmpty()) {
-    const char* userName = SDL_getenv("USER");
+    const char* userName = getenv("USER");
 
     if (userName == nullptr || String::isEmpty(userName)) {
       name = OZ_GETTEXT("Player");

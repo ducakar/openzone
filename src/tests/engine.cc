@@ -20,7 +20,7 @@
 #include <ozCore/ozCore.hh>
 #include <ozEngine/ozEngine.hh>
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 using namespace oz;
 
@@ -47,9 +47,14 @@ int main(int argc, char** argv)
   alGenSources(1, &soundSource);
   alGenSources(1, &musicSource);
 
-  AL::bufferDataFromFile(soundBuffer, "/usr/share/sounds/pop.wav");
+//  AL::bufferDataFromFile(soundBuffer, "/usr/share/sounds/Kopete_Event.ogg");
+  AL::Decoder decoder("/usr/share/sounds/uget/notification.wav");
+  decoder.decode();
+  decoder.load(soundBuffer);
   alSourcei(soundSource, AL_BUFFER, soundBuffer);
   alSourcePlay(soundSource);
+
+  OZ_AL_CHECK_ERROR();
 
 //  AL::Streamer streamer;
 //  streamer.open("/usr/share/sounds/Kopete_Sent.ogg");
@@ -76,8 +81,8 @@ int main(int argc, char** argv)
       }
 
       if (event.type == SDL_KEYDOWN) {
-        //      streamer.rewind();
-        //      alSourcePlay(musicSource);
+//        streamer.rewind();
+//        alSourcePlay(musicSource);
       }
     }
 

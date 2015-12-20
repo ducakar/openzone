@@ -23,7 +23,7 @@
 #include <client/Camera.hh>
 #include <client/eSpeak.hh>
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #ifdef __native_client__
 # include <ppapi/cpp/instance.h>
