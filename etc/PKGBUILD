@@ -10,21 +10,12 @@ arch=('i686' 'x86_64')
 makedepends=('cmake' 'gcc-libs' 'physfs' 'lua' 'mesa' 'sdl2_ttf' 'libjpeg' 'libvorbis' 'openal')
 source=("https://github.com/downloads/ducakar/openzone/${pkgbase}-src-${pkgver}.tar.xz"
         "https://github.com/downloads/ducakar/openzone/${pkgbase}-data-${pkgver}.tar.xz")
-sha256sums=('SKIP'
-            'SKIP')
-noextract=("${pkgbase}-src-${pkgver}.tar.xz"
-           "${pkgbase}-data-${pkgver}.tar.xz")
-
-function prepare()
-{
-  tar xf ${pkgbase}-src-${pkgver}.tar.xz
-  tar xf ${pkgbase}-data-${pkgver}.tar.xz
-}
+md5sums=('SKIP'
+         'SKIP')
 
 function build()
 {
-  cd "${srcdir}/${pkgbase}-${pkgver}"
-  mkdir -p build && cd build
+  cd "${srcdir}/${pkgbase}-${pkgver}" && mkdir -p build && cd build
 
   cmake \
     -D CMAKE_INSTALL_PREFIX=/usr \
@@ -38,7 +29,10 @@ function build()
 
   make
 
-  ./src/tools/openzone -l
+  export XDG_CONFIG_HOME="`pwd`"
+  export XDG_DATA_HOME="`pwd`"
+
+  ./src/tools/openzone -p .. -i 99_test -t 30
 
   cmake \
     -D CMAKE_CXX_FLAGS_RELEASE="-Ofast -flto -fprofile-use" \
@@ -51,11 +45,11 @@ function package_liboz()
 {
   pkgdesc='OpenZone ozCore, ozEngine and ozFactory libraries'
   license=('ZLIB')
-  depends=('gcc-libs' 'physfs' 'libgl' 'openal' 'libjpeg' 'libvorbis' 'sdl2_ttf')
+  depends=('gcc-libs' 'physfs' 'libgl' 'openal' 'libpng' 'libvorbis' 'sdl2_ttf')
 
   cd "${srcdir}/${pkgbase}-${pkgver}"
 
-  ( cd build && make install DESTDIR="${pkgdir}" )
+  ( cd build && cmake -D CMAKE_INSTALL_PREFIX="${pkgdir}" -P cmake_install.cmake )
 
   rm -rf "${pkgdir}"/usr/{bin,share}
 
@@ -74,14 +68,13 @@ function package_openzone()
 
   cd "${srcdir}/${pkgbase}-${pkgver}"
 
-  ( cd build && make install DESTDIR="${pkgdir}" )
+  ( cd build && cmake -D CMAKE_INSTALL_PREFIX="${pkgdir}" -P cmake_install.cmake )
 
   rm -rf "${pkgdir}/usr/"{lib,include}
 
-  install -dm755 "${pkgdir}/usr/share/doc/${pkgname}-${pkgver}/licences"
-  install -m644 AUTHORS ChangeLog.md README.md TODO.md doc/*.html \
-                "${pkgdir}/usr/share/doc/${pkgname}-${pkgver}"
-  install -m644 doc/licences/* "${pkgdir}/usr/share/doc/${pkgname}-${pkgver}/licences"
+  install -dm755 "${pkgdir}/usr/share/doc/${pkgname}/licences"
+  install -m644 AUTHORS *.md doc/*.html "${pkgdir}/usr/share/doc/${pkgname}"
+  install -m644 doc/licences/* "${pkgdir}/usr/share/doc/${pkgname}/licences"
 }
 
 function package_openzone-data()
@@ -93,5 +86,5 @@ function package_openzone-data()
   cd "${srcdir}/${pkgbase}-${pkgver}"
 
   install -dm755 "${pkgdir}/usr/share/openzone"
-  install -m644 "share/openzone/"*.zip "${pkgdir}/usr/share/openzone"
+  install -m644 share/openzone/*.zip "${pkgdir}/usr/share/openzone"
 }

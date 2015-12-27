@@ -25,5 +25,55 @@ using namespace oz;
 int main()
 {
   System::init();
+  Window::create("scratch", 640, 360);
+
+  ALuint buffers[2];
+  ALuint source;
+
+  alGenBuffers(2, buffers);
+  alGenSources(1, &source);
+
+  AL::Decoder decoder("/usr/share/sounds/uget/notification.wav", true);
+
+  decoder.decode();
+  decoder.load(buffers[0]);
+  alSourceQueueBuffers(source, 1, &buffers[0]);
+
+  if (decoder.decode()) {
+    decoder.load(buffers[1]);
+    alSourceQueueBuffers(source, 1, &buffers[1]);
+  }
+
+  alSourcePlay(source);
+
+  do {
+    Time::sleep(10);
+
+    ALint nProcessed;
+    alGetSourcei(source, AL_BUFFERS_PROCESSED, &nProcessed);
+
+    if (nProcessed != 0) {
+      ALuint buffer;
+      alSourceUnqueueBuffers(source, 1, &buffer);
+
+      if (decoder.decode()) {
+        decoder.load(buffer);
+        alSourceQueueBuffers(source, 1, &buffer);
+      }
+    }
+  }
+  while (decoder.isValid());
+
+  ALint state;
+  do {
+    Time::sleep(100);
+    alGetSourcei(source, AL_SOURCE_STATE, &state);
+  }
+  while (state == AL_PLAYING);
+
+  alDeleteSources(1, &source);
+  alDeleteBuffers(2, buffers);
+
+  Window::destroy();
   return 0;
 }

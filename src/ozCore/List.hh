@@ -104,8 +104,6 @@ public:
 
   /**
    * Create a list with a given initial length and capacity.
-   *
-   * Primitive types are not initialised to zero.
    */
   explicit List(int count_) :
     data(Arrays::reallocate<Elem>(nullptr, 0, count_)), count(count_), size(count_)
@@ -613,8 +611,6 @@ public:
 
   /**
    * Resize the list (and optionally its capacity too) to the specified number of elements.
-   *
-   * Primitive types are not initialised to zero.
    */
   void resize(int newCount, bool exactCapacity = false)
   {

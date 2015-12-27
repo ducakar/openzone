@@ -1,93 +1,65 @@
-html {
-  height: 100%;
-}
+@import url('http://fonts.googleapis.com/css?family=Droid+Sans+Mono');
+
 body {
-  font-family: "Droid Sans Mono", monospace;
-  font-size: 10pt;
+  font-family: 'Droid Sans Mono', monospace;
+  font-size: 10.5pt;
   text-shadow: black 1px 1px 1px;
-  height: 100%;
   color: #b0e0c8;
   background-color: #0a100c;
 }
+
+a {
+  text-decoration: none;
+  color: #40c0a0;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+b {
+  font-weight: normal;
+  color: #ffffff;
+}
+
 small {
   font-size: 8pt;
 }
-a {
-  color: #40c0a0;
-}
-a:visited {
-  color: #308066;
-}
+
 code {
+  font-family: 'Droid Sans Mono', monospace;
   color: #ffffff;
 }
-h1 {
-  font-size: 2.0em;
-  text-align: center;
-  color: #ffffff;
-}
-h2 {
-  font-size: 1.6em;
+
+h1, h2, h3, h4 {
   margin-bottom: 4pt;
   color: #ffffff;
 }
-h3 {
-  font-size: 1.3em;
-  margin-bottom: 4pt;
+h1 > a, h2 > a, h3 > a, h4 > a {
   color: #ffffff;
 }
-h4 {
-  font-size: 1.1em;
-  margin-bottom: 4pt;
+
+dt {
+  margin-bottom: 5px;
   color: #ffffff;
 }
-table {
-  font-size: 10pt;
+dd {
+  margin-bottom: 15px;
 }
-th {
+
+table th {
   font-weight: normal;
   text-align: left;
-  padding-right: 10pt;
   color: #ffffff;
 }
-table.keys th {
-  text-align: right;
-}
-td {
+table th, table td {
   padding-right: 10pt;
 }
-
-/* README. */
-table.settings td {
-  padding-left: 20pt;
-  padding-bottom: 10pt;
+table tr.spacing {
+  height: 10pt;
 }
-.centre {
-  text-align: center;
+table.headerRight th {
+  text-align: right;
 }
-
-/* NaCl game page. */
-table#hudArea {
-  position: absolute;
-  width: 100%;
-  height: 90%;
-  text-align: center;
-  vertical-align: middle;
-  font-weight: bold;
-  font-size: 1.5em;
-}
-table.module {
-  text-align: center;
-  padding: 0px;
-  width: 100%;
-  height: 90%;
-  background-color: #050806;
-}
-.detail {
-  font-size: 0.6em;
-  font-weight: normal
-}
-embed#module {
-  width: 100%;
-  height: 100%;
+table.firstRight td:first-child {
+  text-align: right;
 }

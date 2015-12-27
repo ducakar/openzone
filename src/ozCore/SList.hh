@@ -76,8 +76,6 @@ public:
 
   /**
    * Create a list with a given initial length.
-   *
-   * Primitive types are not initialised to zero.
    */
   explicit SList(int count_) :
     count(count_)
@@ -527,8 +525,6 @@ public:
 
   /**
    * Resize the list to the specified number of elements.
-   *
-   * Primitive types are not initialised to zero.
    */
   void resize(int newCount)
   {

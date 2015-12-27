@@ -1,916 +1,799 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<title>OpenZone :: Readme</title>
-<link href="http://fonts.googleapis.com/css?family=Droid+Sans+Mono" rel="stylesheet" type="text/css"/>
-<link href="style.css" rel="stylesheet" type="text/css"/>
+  <meta charset="UTF-8">
+  <title>OpenZone :: Readme</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
 
-<h1 class="centre">OpenZone</h1>
-<p class="centre"><b>version <!--OZ_VERSION-->0.3.95</b></p>
-<div class="centre">
-  <a href="http://ducakar.github.io/openzone/">http://ducakar.github.io/openzone/</a>
-</div>
+  <script>
+  document.body.onresize = function () {
+    if (window.innerWidth > 960) {
+      document.body.style.marginLeft  = (window.innerWidth - 900) / 2 + 'px'
+      document.body.style.marginRight = document.body.style.marginLeft
+    }
+    else {
+      document.body.style.marginLeft  = '30px'
+      document.body.style.marginRight = '30px'
+    }
+  }
+  document.body.onresize()
+  </script>
 
-<h2><a id="content" href="#">Contents</a></h2>
-<ol>
-  <li><a href="#controls">Controls</a></li>
-  <li><a href="#cmdline">Command Line</a></li>
-  <li><a href="#settings">Settings</a></li>
-  <li><a href="#dirs">Directories</a></li>
-  <li><a href="#vfs">Virtual Filesystem</a></li>
-  <li><a href="#deps">Dependencies</a></li>
-  <li><a href="#troubleshooting">Troubleshooting</a></li>
-  <li><a href="#legal">Legal</a></li>
-</ol>
+  <div style="text-align: center;">
+    <h1>OpenZone</h1>
+    <p>version <!--OZ_VERSION-->0.3.95</p>
+    <p><a href="http://ducakar.github.io/openzone/">http://ducakar.github.io/openzone/</a></p>
+  </div>
 
-<h2><a id="controls" href="#">Controls</a></h2>
-<table class="keys">
-  <tr>
-    <td colspan="2"><h4>Free Camera Controls</h4></td>
-  </tr>
-  <tr>
-    <th>mouse movement</th>
-    <td>rotate camera</td>
-  </tr>
-  <tr>
-    <th>arrow keys</th>
-    <td>rotate camera</td>
-  </tr>
-  <tr>
-    <th>w/a/s/d</th>
-    <td>move forwards / left / backwards / right</td>
-  </tr>
-  <tr>
-    <th>Space</th>
-    <td>up / increase height</td>
-  </tr>
-  <tr>
-    <th>LCtrl, c</th>
-    <td>down / decrease height</td>
-  </tr>
-  <tr>
-    <th>LShift</th>
-    <td>toggle fast move</td>
-  </tr>
-  <tr>
-    <th>Tab</th>
-    <td>toggle freelook / interface mode</td>
-  </tr>
-  <tr>
-    <th>Numpad Enter, Enter</th>
-    <td>switch between FreeCam and Strategic camera</td>
-  </tr>
-  <tr>
-    <th>n</th>
-    <td>toggle night vision</td>
-  </tr>
-  <tr>
-    <th>m</th>
-    <td>toggle minimap / maximised map</td>
-  </tr>
-  <tr>
-    <th>i</th>
-    <td>incarnate into the selected bot (or vehicle's pilot)</td>
-  </tr>
-  <tr>
-    <th>y</th>
-    <td>cycle switchable units</td>
-  </tr>
-  <tr>
-    <td colspan="2"><h4>Bot Controls</h4></td>
-  </tr>
-  <tr>
-    <th>mouse movement</th>
-    <td>look around</td>
-  </tr>
-  <tr>
-    <th>arrow keys</th>
-    <td>look around</td>
-  </tr>
-  <tr>
-    <th>w/a/s/d</th>
-    <td>move forwards / left / backwards / right</td>
-  </tr>
-  <tr>
-    <th>q/e</th>
-    <td>turn left / right</td>
-  </tr>
-  <tr>
-    <th>LShift</th>
-    <td>toggle run</td>
-  </tr>
-  <tr>
-    <th>LCtrl, c</th>
-    <td>toggle crouch</td>
-  </tr>
-  <tr>
-    <th>Space</th>
-    <td>jump</td>
-  </tr>
-  <tr>
-    <th>left click</th>
-    <td>trigger equipped weapon / rotate object you are holding</td>
-  </tr>
-  <tr>
-    <th>right click</th>
-    <td>perform action on tagged object</td>
-  </tr>
-  <tr>
-    <th>middle click</th>
-    <td>grab tagged object / drop object you are holding</td>
-  </tr>
-  <tr>
-    <th>wheel up</th>
-    <td>throw object you are holding</td>
-  </tr>
-  <tr>
-    <th>wheel down</th>
-    <td>put tagged object into inventory / open inventory to exchange objects</td>
-  </tr>
-  <tr>
-    <th>1 - 4</th>
-    <td>select n-th weapon from inventory or hide it if the current weapon is selected</td>
-  </tr>
-  <tr>
-    <th>n</th>
-    <td>toggle night vision (if available)</td>
-  </tr>
-  <tr>
-    <th>b</th>
-    <td>toggle binoculars (if available)</td>
-  </tr>
-  <tr>
-    <th>m</th>
-    <td>toggle minimap / maximised map (if available)</td>
-  </tr>
-  <tr>
-    <th>Alt + k</th>
-    <td>commit suicide (if available)</td>
-  </tr>
-  <tr>
-    <th>i</th>
-    <td>un-incarnate bot</td>
-  </tr>
-  <tr>
-    <th>Tab</th>
-    <td>toggle freelook / interface mode</td>
-  </tr>
-  <tr>
-    <th>Numpad Enter, Enter</th>
-    <td>switch between 1st person and 3rd person camera</td>
-  </tr>
-  <tr>
-    <th>Numpad *</th>
-    <td>toggle free camera rotation in 3rd person camera or in a vehicle</td>
-  </tr>
-  <tr>
-    <th>f</th>
-    <td>point gesture</td>
-  </tr>
-  <tr>
-    <th>g</th>
-    <td>fall back gesture</td>
-  </tr>
-  <tr>
-    <th>h</th>
-    <td>salute gesture</td>
-  </tr>
-  <tr>
-    <th>j</th>
-    <td>wave gesture</td>
-  </tr>
-  <tr>
-    <th>k</th>
-    <td>flip out gesture</td>
-  </tr>
-  <tr>
-    <th>l</th>
-    <td>play all animations</td>
-  </tr>
-  <tr>
-    <td colspan="2"><h4>Inventory</h4></td>
-  </tr>
-  <tr>
-    <th>left click</th>
-    <td>drop item / move item between inventories</td>
-  </tr>
-  <tr>
-    <th>middle click</th>
-    <td>grab item from inventory</td>
-  </tr>
-  <tr>
-    <th>right click</th>
-    <td>perform action on item / arm or holster a weapon</td>
-  </tr>
-  <tr>
-    <td colspan="2"><h4>Vehicle Controls</h4></td>
-  </tr>
-  <tr>
-    <th>mouse movement</th>
-    <td>rotate vehicle or turret</td>
-  </tr>
-  <tr>
-    <th>arrow keys</th>
-    <td>rotate vehicle or turret</td>
-  </tr>
-  <tr>
-    <th>w/a/s/d</th>
-    <td>move forwards / left / backwards / right</td>
-  </tr>
-  <tr>
-    <th>q/e</th>
-    <td>turn left / right</td>
-  </tr>
-  <tr>
-    <th>Space</th>
-    <td>up (air vehicles only)</td>
-  </tr>
-  <tr>
-    <th>LCtrl, c</th>
-    <td>down (air vehicles only)</td>
-  </tr>
-  <tr>
-    <th>left click</th>
-    <td>trigger selected weapon</td>
-  </tr>
-  <tr>
-    <th>right click</th>
-    <td>select next weapon</td>
-  </tr>
-  <tr>
-    <th>x</th>
-    <td>exit</td>
-  </tr>
-  <tr>
-    <th>Alt + x</th>
-    <td>eject</td>
-  </tr>
-  <tr>
-    <td colspan="2"><h4>Miscellaneous</h4></td>
-  </tr>
-  <tr>
-    <th>Alt + drag</th>
-    <td>move UI windows</td>
-  </tr>
-  <tr>
-    <th>o</th>
-    <td>rotate sky backward fast</td>
-  </tr>
-  <tr>
-    <th>p</th>
-    <td>rotate sky forward fast</td>
-  </tr>
-  <tr>
-    <th>F5</th>
-    <td>quick save</td>
-  </tr>
-  <tr>
-    <th>F7</th>
-    <td>quick load</td>
-  </tr>
-  <tr>
-    <th>F8</th>
-    <td>load autosaved</td>
-  </tr>
-  <tr>
-    <th>F9</th>
-    <td>take screenshot</td>
-  </tr>
-  <tr>
-    <th>Ctrl + F9</th>
-    <td>toggle UI visibility</td>
-  </tr>
-  <tr>
-    <th>F10, Esc</th>
-    <td>exit to main menu (only F10 works on NaCl)</td>
-  </tr>
-  <tr>
-    <th>F11</th>
-    <td>toggle fullscreen mode</td>
-  </tr>
-  <tr>
-    <th>Ctrl + F11</th>
-    <td>toggle mouse centring and system cursor visibility (and input grab on SDL 1.2)</td>
-  </tr>
-  <tr>
-    <th>F12</th>
-    <td>minimise and pause</td>
-  </tr>
-  <tr>
-    <th>Ctrl + F12</th>
-    <td>exit application</td>
-  </tr>
-</table>
+  <h2><a id="content" href="">Contents</a></h2>
+  <ol>
+    <li><a href="#controls">Controls</a></li>
+    <li><a href="#cmdline">Command Line</a></li>
+    <li><a href="#settings">Settings</a></li>
+    <li><a href="#dirs">Directories</a></li>
+    <li><a href="#vfs">Virtual Filesystem</a></li>
+    <li><a href="#deps">Dependencies</a></li>
+    <li><a href="#troubleshooting">Troubleshooting</a></li>
+    <li><a href="#legal">Legal</a></li>
+  </ol>
 
-<h2><a id="cmdline" href="#">Command Line</a></h2>
-<p><code>
-    openzone [-v] [-l | -i &lt;mission&gt;] [-t &lt;num&gt;] [-L &lt;lang&gt;] [-p &lt;prefix&gt;]
-</code></p>
-<table>
-  <tr>
-    <th>-v</th>
-    <td>
-      Print verbose log messages to terminal.
-    </td>
-  </tr>
-  <tr>
-    <th>-l</th>
-    <td>
-      Skip main menu and load the last autosaved game.
-    </td>
-  </tr>
-  <tr>
-    <th>-i &lt;mission&gt;</th>
-    <td>
-      Skip main menu and start mission &lt;mission&gt;.
-    </td>
-  </tr>
-  <tr>
-    <th>-t &lt;num&gt;</th>
-    <td>
-      Exit after &lt;num&gt; seconds (can be a floating-point number) and use 42 as the random seed.
-      Useful for benchmarking.
-    </td>
-  </tr>
-  <tr>
-    <th>-L &lt;lang&gt;</th>
-    <td>
-      Use language &lt;lang&gt;. Should match a subdirectory name in 'lingua/' directory inside game
-      data archives.
-    </td>
-  </tr>
-  <tr>
-    <th>-p &lt;prefix&gt;</th>
-    <td>
-      Sets data directory to '&lt;prefix&gt;/share/openzone'. Defaults to '/usr'.
-    </td>
-  </tr>
-</table>
+  <h2><a id="controls" href="">Controls</a></h2>
+  <table class="headerRight">
+    <tr>
+      <td colspan="2"><h4>Free Camera Controls</h4></td>
+    </tr>
+    <tr>
+      <th>mouse movement</th>
+      <td>rotate camera</td>
+    </tr>
+    <tr>
+      <th>arrow keys</th>
+      <td>rotate camera</td>
+    </tr>
+    <tr>
+      <th>w/a/s/d</th>
+      <td>move forwards / left / backwards / right</td>
+    </tr>
+    <tr>
+      <th>Space</th>
+      <td>up / increase height</td>
+    </tr>
+    <tr>
+      <th>LCtrl, c</th>
+      <td>down / decrease height</td>
+    </tr>
+    <tr>
+      <th>LShift</th>
+      <td>toggle fast move</td>
+    </tr>
+    <tr>
+      <th>Tab</th>
+      <td>toggle freelook / interface mode</td>
+    </tr>
+    <tr>
+      <th>Numpad Enter, Enter</th>
+      <td>switch between FreeCam and Strategic camera</td>
+    </tr>
+    <tr>
+      <th>n</th>
+      <td>toggle night vision</td>
+    </tr>
+    <tr>
+      <th>m</th>
+      <td>toggle minimap / maximised map</td>
+    </tr>
+    <tr>
+      <th>i</th>
+      <td>incarnate into the selected bot (or vehicle's pilot)</td>
+    </tr>
+    <tr>
+      <th>y</th>
+      <td>cycle switchable units</td>
+    </tr>
+    <tr>
+      <td colspan="2"><h4>Bot Controls</h4></td>
+    </tr>
+    <tr>
+      <th>mouse movement</th>
+      <td>look around</td>
+    </tr>
+    <tr>
+      <th>arrow keys</th>
+      <td>look around</td>
+    </tr>
+    <tr>
+      <th>w/a/s/d</th>
+      <td>move forwards / left / backwards / right</td>
+    </tr>
+    <tr>
+      <th>q/e</th>
+      <td>turn left / right</td>
+    </tr>
+    <tr>
+      <th>LShift</th>
+      <td>toggle run</td>
+    </tr>
+    <tr>
+      <th>LCtrl, c</th>
+      <td>toggle crouch</td>
+    </tr>
+    <tr>
+      <th>Space</th>
+      <td>jump</td>
+    </tr>
+    <tr>
+      <th>left click</th>
+      <td>trigger equipped weapon / rotate object you are holding</td>
+    </tr>
+    <tr>
+      <th>right click</th>
+      <td>perform action on tagged object</td>
+    </tr>
+    <tr>
+      <th>middle click</th>
+      <td>grab tagged object / drop object you are holding</td>
+    </tr>
+    <tr>
+      <th>wheel up</th>
+      <td>throw object you are holding</td>
+    </tr>
+    <tr>
+      <th>wheel down</th>
+      <td>put tagged object into inventory / open inventory to exchange objects</td>
+    </tr>
+    <tr>
+      <th>1 - 4</th>
+      <td>select n-th weapon from inventory or hide it if the current weapon is selected</td>
+    </tr>
+    <tr>
+      <th>n</th>
+      <td>toggle night vision (if available)</td>
+    </tr>
+    <tr>
+      <th>b</th>
+      <td>toggle binoculars (if available)</td>
+    </tr>
+    <tr>
+      <th>m</th>
+      <td>toggle minimap / maximised map (if a navigation is available)</td>
+    </tr>
+    <tr>
+      <th>Alt + k</th>
+      <td>commit suicide (if a weapon is available)</td>
+    </tr>
+    <tr>
+      <th>i</th>
+      <td>un-incarnate bot</td>
+    </tr>
+    <tr>
+      <th>Tab</th>
+      <td>toggle freelook / interface mode</td>
+    </tr>
+    <tr>
+      <th>Numpad Enter, Enter</th>
+      <td>switch between 1st person and 3rd person camera</td>
+    </tr>
+    <tr>
+      <th>Numpad *</th>
+      <td>toggle free camera rotation in 3rd person camera or in a vehicle</td>
+    </tr>
+    <tr>
+      <th>f</th>
+      <td>point gesture</td>
+    </tr>
+    <tr>
+      <th>g</th>
+      <td>fall back gesture</td>
+    </tr>
+    <tr>
+      <th>h</th>
+      <td>salute gesture</td>
+    </tr>
+    <tr>
+      <th>j</th>
+      <td>wave gesture</td>
+    </tr>
+    <tr>
+      <th>k</th>
+      <td>flip out gesture</td>
+    </tr>
+    <tr>
+      <th>l</th>
+      <td>play all animations</td>
+    </tr>
+    <tr>
+      <td colspan="2"><h4>Inventory</h4></td>
+    </tr>
+    <tr>
+      <th>left click</th>
+      <td>drop item / move item between inventories</td>
+    </tr>
+    <tr>
+      <th>middle click</th>
+      <td>grab item from inventory</td>
+    </tr>
+    <tr>
+      <th>right click</th>
+      <td>perform action on item / arm or holster a weapon</td>
+    </tr>
+    <tr>
+      <td colspan="2"><h4>Vehicle Controls</h4></td>
+    </tr>
+    <tr>
+      <th>mouse movement</th>
+      <td>rotate vehicle or turret</td>
+    </tr>
+    <tr>
+      <th>arrow keys</th>
+      <td>rotate vehicle or turret</td>
+    </tr>
+    <tr>
+      <th>w/a/s/d</th>
+      <td>move forwards / left / backwards / right</td>
+    </tr>
+    <tr>
+      <th>q/e</th>
+      <td>turn left / right</td>
+    </tr>
+    <tr>
+      <th>Space</th>
+      <td>up (air vehicles only)</td>
+    </tr>
+    <tr>
+      <th>LCtrl, c</th>
+      <td>down (air vehicles only)</td>
+    </tr>
+    <tr>
+      <th>left click</th>
+      <td>trigger selected weapon</td>
+    </tr>
+    <tr>
+      <th>right click</th>
+      <td>select next weapon</td>
+    </tr>
+    <tr>
+      <th>h</th>
+      <td>exit</td>
+    </tr>
+    <tr>
+      <th>Alt + j</th>
+      <td>eject</td>
+    </tr>
+    <tr>
+      <td colspan="2"><h4>Miscellaneous</h4></td>
+    </tr>
+    <tr>
+      <th>Alt + drag</th>
+      <td>move UI windows</td>
+    </tr>
+    <tr>
+      <th>o</th>
+      <td>rotate sky backward fast</td>
+    </tr>
+    <tr>
+      <th>p</th>
+      <td>rotate sky forward fast</td>
+    </tr>
+    <tr>
+      <th>F5</th>
+      <td>quick save</td>
+    </tr>
+    <tr>
+      <th>F7</th>
+      <td>quick load</td>
+    </tr>
+    <tr>
+      <th>F8</th>
+      <td>load autosaved</td>
+    </tr>
+    <tr>
+      <th>F9</th>
+      <td>take screenshot</td>
+    </tr>
+    <tr>
+      <th>Ctrl + F9</th>
+      <td>toggle UI visibility</td>
+    </tr>
+    <tr>
+      <th>F10, Esc</th>
+      <td>exit to main menu (only F10 works on NaCl)</td>
+    </tr>
+    <tr>
+      <th>F11</th>
+      <td>toggle fullscreen mode</td>
+    </tr>
+    <tr>
+      <th>Ctrl + F11</th>
+      <td>toggle mouse centring and system cursor visibility</td>
+    </tr>
+    <tr>
+      <th>F12</th>
+      <td>minimise and pause</td>
+    </tr>
+    <tr>
+      <th>Ctrl + F12</th>
+      <td>exit application</td>
+    </tr>
+  </table>
 
-<h2><a id="settings" href="#">Settings</a></h2>
-<p>
-  Settings file is located in <a href="#dirs">&lt;config&gt;</a>/client.json.
-</p>
+  <h2><a id="cmdline" href="">Command Line</a></h2>
+  <p><code>
+      openzone [-v] [-l | -i &lt;mission&gt;] [-t &lt;num&gt;] [-L &lt;lang&gt;] [-p &lt;prefix&gt;]
+  </code></p>
+  <table>
+    <tr>
+      <th>-v</th>
+      <td>
+        Print verbose log messages to terminal too, not only to the log file.
+      </td>
+    </tr>
+    <tr>
+      <th>-l</th>
+      <td>
+        Skip main menu and load the last autosaved game.
+      </td>
+    </tr>
+    <tr>
+      <th>-i &lt;mission&gt;</th>
+      <td>
+        Skip main menu and start mission &lt;mission&gt;.
+      </td>
+    </tr>
+    <tr>
+      <th>-t &lt;num&gt;</th>
+      <td>
+        Exit after &lt;num&gt; seconds (can be a floating-point number) and use 42 as the random
+        seed. Useful for benchmarking.
+      </td>
+    </tr>
+    <tr>
+      <th>-L &lt;lang&gt;</th>
+      <td>
+        Use language &lt;lang&gt;. Should match a subdirectory name in 'lingua/' directory inside
+        game data archives.
+      </td>
+    </tr>
+    <tr>
+      <th>-p &lt;prefix&gt;</th>
+      <td>
+        Sets data directory to '&lt;prefix&gt;/share/openzone'. Defaults to '/usr'.
+      </td>
+    </tr>
+  </table>
 
-<h4>Configuration variables</h4>
-<table class="settings">
-  <tr>
-    <th>_version [string] "<!--OZ_VERSION-->0.3.95"</th>
-  </tr>
-  <tr>
-    <td>
-      Version of OpenZone for which the settings file was created. If version doesn't match,
+  <h2><a id="settings" href="">Settings</a></h2>
+  <p>
+    Settings file is located in <a href="#dirs">&lt;config&gt;</a>/client.json.
+  </p>
+
+  <h4>Configuration variables</h4>
+  <dl>
+    <dt>_version [string] "<!--OZ_VERSION-->0.3.95"</dt>
+    <dd>
+      Version of OpenZone for which the settings file was created. If version does not match,
       OpenZone saves updated configuration on exit. Obsolete variables are lost during that process.
-    </td>
-  </tr>
-  <tr>
-    <th>camera.angle [float] 80.0</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>camera.angle [float] 80.0</dt>
+    <dd>
       Vertical camera angle in degrees. Horizontal angle adjusted depending on aspect ratio.
-    </td>
-  </tr>
-  <tr>
-    <th>camera.aspect [float] 0.0</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>camera.aspect [float] 0.0</dt>
+    <dd>
       Aspect ratio (width/height). If 0.0, it is determined from the screen resolution.
-    </td>
-  </tr>
-  <tr>
-    <th>dir.music [string] "<a href="#dirs">&lt;music&gt;</a>/OpenZone"</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>dir.music [string] "<a href="#dirs">&lt;music&gt;</a>/OpenZone"</dt>
+    <dd>
       Top directory that will be recursively searched for *.oga, *.ogg, *.mp3 and *.aac files. All
       found tracks will be accessible from Music Player along the original tracks included in game
       data.
-    </td>
-  </tr>
-  <tr>
-    <th>dir.prefix [string] Linux: "/usr", Windows: "."</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>dir.prefix [string] Linux: "/usr", OS X: "/Applications/OpenZone.app", Windows: "."</dt>
+    <dd>
       Prefix path to game directory structure. The share/openzone directory should be located inside
       the prefix directory.
-    </td>
-  </tr>
-  <tr>
-    <th>lingua [string] ""</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>lingua [string] ""</dt>
+    <dd>
       Language code for translations. Language code must correspond to a subdirectory of "lingua"
       directory in one of game data archives.
-    </td>
-  </tr>
-  <tr>
-    <th>render.postprocess [bool] true</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>render.postprocess [bool] true</dt>
+    <dd>
       Enable postprocessing. Also enables offscreen rendering.
-    </td>
-  </tr>
-  <tr>
-    <th>render.scale [float] 1.0</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>render.scale [float] 1.0</dt>
+    <dd>
       Scale of resolution of offscreen buffer where world is rendered to. Enables offscreen
       rendering if not 1.0.
-    </td>
-  </tr>
-  <tr>
-    <th>render.scaleFilter ["NEAREST" | "LINEAR"] "LINEAR"</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>render.scaleFilter ["NEAREST" | "LINEAR"] "LINEAR"</dt>
+    <dd>
       When using offscreen rendering, this specifies which filter to use when rendering offscreen
       buffer into the main buffer. "NEAREST" produces sharp edges but blocky image while "LINEAR"
       produces more smooth but blurry image.
-    </td>
-  </tr>
-  <tr>
-    <th>render.showAim [bool] false</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>render.showAim [bool] false</dt>
+    <dd>
       Draw a small green box at the point you are currenty aiming at. It was intended for testing
       collision detection.
-    </td>
-  </tr>
-  <tr>
-    <th>render.showBounds [bool] false</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>render.showBounds [bool] false</dt>
+    <dd>
       Show AABBs of objects. Green for solid objects, grey for non-solid objects, blue for
       structures and red for structure entities.
-    </td>
-  </tr>
-  <tr>
-    <th>render.visibilityRange [float] 350.0</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>render.visibilityRange [float] 350.0</dt>
+    <dd>
       Visible range.
-    </td>
-  </tr>
-  <tr>
-    <th>seed [int | "TIME"] "TIME"</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>seed [int | "TIME"] "TIME"</dt>
+    <dd>
       Seed for random number generator. Can be an integer or "TIME" to use the current time as the
       seed.
-    </td>
-  </tr>
-  <tr>
-    <th>shader.vertexTexture [bool] false</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>shader.vertexTexture [bool] false</dt>
+    <dd>
       Use vertex texture fetch feature to perform mesh animation in vertex shader. Should work on
       GeForce 6 or newer and Radeon HD 2xxx or newer. Does not work with Catalyst drivers.
-    </td>
-  </tr>
-  <tr>
-    <th>sound.device [string] ""</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>sound.device [string] ""</dt>
+    <dd>
       Sound device to pass to OpenAL. If empty string, choice is left to OpenAL. To see available
       devices look into log file <a href="#dirs">&lt;config&gt;</a>/client.log.
-    </td>
-  </tr>
-  <tr>
-    <th>sound.volume [float] 1.0</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>sound.volume [float] 1.0</dt>
+    <dd>
       Sound volume. 1.0 represents full volume.
-    </td>
-  </tr>
-  <tr>
-    <th>ui.showBuild [bool] false</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>ui.showBuild [bool] false</dt>
+    <dd>
       Show a windows with buttons to add various objects into the world. For development purpuses.
-    </td>
-  </tr>
-  <tr>
-    <th>ui.showDebug [bool] false</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>ui.showDebug [bool] false</dt>
+    <dd>
       Show a window that shows coordinates, orientation and other data about camera, controlled bot,
       tagged object etc. For development purposes.
-    </td>
-  </tr>
-  <tr>
-    <th>ui.showFPS [bool] false</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>ui.showFPS [bool] false</dt>
+    <dd>
       Show frames per second. Since world simulation runs on 60 Hz FPS cannot be higher than this
       value.
-    </td>
-  </tr>
-  <tr>
-    <th>window.fullscreen [bool] false</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>window.fullscreen [bool] false</dt>
+    <dd>
       Start in fullscreen mode.
-    </td>
-  </tr>
-  <tr>
-    <th>window.height [int] 0</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>window.height [int] 0</dt>
+    <dd>
       Vertical screen resolution. If either <code>window.width</code> or <code>window.height</code>
       is zero, desktop resolution is used.
-    </td>
-  </tr>
-  <tr>
-    <th>window.width [int] 0</th>
-  </tr>
-  <tr>
-    <td>
+    </dd>
+    <dt>window.width [int] 0</dt>
+    <dd>
       Horizontal screen resolution. If either <code>window.width</code> or
       <code>window.height</code> is zero, desktop resolution is used.
-    </td>
-  </tr>
-</table>
+    </dd>
+  </dl>
 
-<h2><a id="dirs" href="#">Directories</a></h2>
+  <h2><a id="dirs" href="">Directories</a></h2>
 
-<h4>&lt;config&gt; directory</h4>
-<table>
-  <tr>
-    <th>Platform</th>
-    <th>Exact location</th>
-    <th>Typical location</th>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td>$XDG_CONFIG_HOME/openzone</td>
-    <td>~/.config/openzone</td>
-  </tr>
-  <tr>
-    <td>Windows XP</td>
-    <td>%APPDATA%\openzone</td>
-    <td>C:\Documents and Settings\&lt;username&gt;\Application Data\openzone</td>
-  </tr>
-  <tr>
-    <td>Windows 7</td>
-    <td>%APPDATA%\openzone</td>
-    <td>C:\Users\&lt;username&gt;\AppData\Roaming\openzone</td>
-  </tr>
-</table>
+  <table>
+    <tr>
+      <th></th>
+      <th>Platform</th>
+      <th>Typical location</th>
+      <th>Exact location</th>
+    </tr>
+    <tr>
+      <th rowspan="3">&lt;config&gt;</th>
+      <td>Linux</td>
+      <td>~/.config/openzone</td>
+      <td>$XDG_CONFIG_HOME/openzone</td>
+    </tr>
+    <tr>
+      <td>OS X</td>
+      <td>~/Library/Preferences/openzone</td>
+      <td>~/Library/Preferences/openzone</td>
+    </tr>
+    <tr>
+      <td>Windows</td>
+      <td>C:\Users\<i>user</i>\AppData\Roaming\openzone</td>
+      <td>%APPDATA%\openzone</td>
+    </tr>
+    <tr class="spacing">
+      <td colspan="4"></td>
+    </tr>
+    <tr>
+      <th rowspan="3">&lt;local&gt;</th>
+      <td>Linux</td>
+      <td>~/.local/share/openzone</td>
+      <td>$XDG_DATA_HOME/openzone</td>
+    </tr>
+    <tr>
+      <td>OS X</td>
+      <td>~/Library/openzone</td>
+      <td>~/Library/openzone</td>
+    </tr>
+    <tr>
+      <td>Windows</td>
+      <td>C:\Users\<i>user</i>\AppData\Local\openzone</td>
+      <td>%LOCAL_APPDATA%\openzone</td>
+    </tr>
+    <tr class="spacing">
+      <td colspan="4"></td>
+    </tr>
+    <tr>
+      <th rowspan="3">&lt;music&gt;</th>
+      <td>Linux</td>
+      <td>~/Music/OpenZone</td>
+      <td>$XDG_MUSIC_DIR/OpenZone</td>
+    </tr>
+    <tr>
+      <td>OS X</td>
+      <td>~/Music/OpenZone</td>
+      <td>~/Music/OpenZone</td>
+    </tr>
+    <tr>
+      <td>Windows</td>
+      <td>C:\Users\<i>user</i>\Music\OpenZone</td>
+      <td>%MYMUSIC%\OpenZone</td>
+    </tr>
+    <tr class="spacing">
+      <td colspan="4"></td>
+    </tr>
+    <tr>
+      <th rowspan="3">&lt;data&gt;</th>
+      <td>Linux</td>
+      <td>/usr/share/openzone</td>
+      <td>&lt;install_dir&gt;/share/openzone</td>
+    </tr>
+    <tr>
+      <td>OS X</td>
+      <td>/Applications/Openzone.app/share/openzone</td>
+      <td>&lt;install_dir&gt;/share/openzone</td>
+    </tr>
+    <tr>
+      <td>Windows</td>
+      <td>C:\Program Files\OpenZone\share\openzone</td>
+      <td>&lt;install_dir&gt;\share\openzone</td>
+    </tr>
+  </table>
 
-<h4>&lt;local&gt; directory</h4>
-<table>
-  <tr>
-    <th>Platform</th>
-    <th>Exact location</th>
-    <th>Typical location</th>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td>$XDG_DATA_HOME/openzone</td>
-    <td>~/.local/share/openzone</td>
-  </tr>
-  <tr>
-    <td>Windows XP</td>
-    <td>%LOCAL_APPDATA%\openzone</td>
-    <td>C:\Documents and Settings\&lt;username&gt;\Local Settings\Application Data\openzone</td>
-  </tr>
-  <tr>
-    <td>Windows 7</td>
-    <td>%LOCAL_APPDATA%\openzone</td>
-    <td>C:\Users\&lt;username&gt;\AppData\Local\openzone</td>
-  </tr>
-</table>
+  <h2><a id="vfs" href="">Virtual Filesystem</a></h2>
+  <p>
+    Game data are read from internal virtual filesystem that is a union of the following locations:
+  </p>
+  <ol>
+    <li>contents of <a href="#dirs">&lt;local&gt;</a> directory</li>
+    <li>contents of <a href="#dirs">&lt;local&gt;</a>/*.zip archives</li>
+    <li>contents of <a href="#dirs">&lt;data&gt;</a> directory</li>
+    <li>contents of <a href="#dirs">&lt;local&gt;</a>/*.zip</li>
+  </ol>
+  <p>
+    If a file appears multiple times, the first appearance overrides the later ones. Locations are
+    searched in the same order as stated above. Archives of the same type in the same location are
+    searched in lexicographical order (sorted by file name using <code>strcmp()</code> function).
+  </p>
+  <p>
+    Extension checking is case-sensitive, so make sure lowercase letters are used for archive
+    extensions.
+  </p>
 
-<h4>&lt;data&gt; directory</h4>
-<table>
-  <tr>
-    <th>Platform</th>
-    <th>Exact location</th>
-    <th>Typical location</th>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td>&lt;install_prefix&gt;/share/openzone</td>
-    <td>/usr/share/openzone</td>
-  </tr>
-  <tr>
-    <td>Windows XP</td>
-    <td>&lt;install_dir&gt;\share\openzone</td>
-    <td>C:\Program Files\OpenZone\share\openzone</td>
-  </tr>
-  <tr>
-    <td>Windows 7</td>
-    <td>&lt;install_dir&gt;\share\openzone</td>
-    <td>C:\Program Files (x86)\OpenZone\share\openzone</td>
-  </tr>
-</table>
+  <h2><a id="deps" href="">Dependencies</a></h2>
+  <p>
+    Binary packages already either include all required libraries or list them as dependencies. The
+    following libraries are direct dependencies required in run-time:
+  </p>
+  <ul>
+    <li>ALSA (Linux only)</li>
+    <li>PhysicsFS 2.0</li>
+    <li>SDL 2.0</li>
+    <li>Lua 5.1+</li>
+    <li>OpenGL 2.1+</li>
+    <li>OpenAL 1.1</li>
+    <li>zlib</li>
+    <li>libpng</li>
+    <li>libvorbis</li>
+    <li>libmad (optional, to play MP3 files)</li>
+    <li>faad2 (optional, to play AAC files).</li>
+  </ul>
 
-<h4>&lt;music&gt; directory</h4>
-<table>
-  <tr>
-    <th>Platform</th>
-    <th>Exact location</th>
-    <th>Typical location</th>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td>$XDG_MUSIC_DIR/OpenZone</td>
-    <td>~/Music/OpenZone</td>
-  </tr>
-  <tr>
-    <td>Windows XP</td>
-    <td>%MYMUSIC%\OpenZone</td>
-    <td>C:\Documents and Settings\&lt;username&gt;\My Music\OpenZone</td>
-  </tr>
-  <tr>
-    <td>Windows 7</td>
-    <td>%MYMUSIC%\OpenZone</td>
-    <td>C:\Users\&lt;username&gt;\Music\OpenZone</td>
-  </tr>
-</table>
+  <h2><a id="troubleshooting" href="">Troubleshooting</a></h2>
+  <ul>
+    <li>
+      Make sure you have the <b>LATEST</b> display drivers.
+    </li>
+    <li>
+      You need at least OpenGL 2.1 compatible graphic card and driver with support of the following
+      extensions:
+      <ul>
+        <li>
+          GL_ARB_framebuffer_object,
+        </li>
+        <li>
+          GL_ARB_texture_float and
+        </li>
+        <li>
+          GL_EXT_texture_compression_s3tc.
+        </li>
+      </ul>
+    </li>
+  </ul>
 
-<h2><a id="vfs" href="#">Virtual Filesystem</a></h2>
-<p>
-  Game data are read from internal virtual filesystem that is a union of the following locations:
-</p>
-<ol>
-  <li>contents of <a href="#dirs">&lt;local&gt;</a> directory</li>
-  <li>contents of *.7z and *.zip archives found in <a href="#dirs">&lt;local&gt;</a> directory</li>
-  <li>contents of <a href="#dirs">&lt;data&gt;</a> directory</li>
-  <li>contents of *.7z and *.zip archives found in <a href="#dirs">&lt;data&gt;</a> directory.</li>
-</ol>
-<p>
-  If a file appears multiple times, the first appearance overrides the later ones. Locations are
-  searched in the same order as stated above. 7zip archives are searched before ZIP ones in the same
-  directory. Archives of the same type in the same location are searched in lexicographical order
-  (sorted by file name using <code>strcmp()</code> function).
-</p>
-<p>
-  Extension checking is case-sensitive, so make sure lowercase letters are used for archive
-  extensions.
-</p>
+  <h2><a id="performance" href="">Performance Tips</a></h2>
+  <ul>
+    <li>
+      If you use dynamic CPU frequency scaling turn that feature off and set the highest CPU
+      frequency. This may significantly improve frame-rate.
+    </li>
+    <li>
+      Turning off desktop effects or switching to fullscreen mode (<code>F11</code>) may
+      significantly improve performance.
+    </li>
+  </ul>
 
-<h2><a id="deps" href="#">Dependencies</a></h2>
-<p>
-  Binary packages already either include all required libraries or list them as dependencies. The
-  following libraries are direct dependencies required in run-time:
-</p>
-<ul>
-  <li>ALSA</li>
-  <li>PhysFS 2.0</li>
-  <li>SDL 2.0 (or 1.2, depends on build)</li>
-  <li>Lua 5.2 (or 5.1, depends on build)</li>
-  <li>OpenGL 2.1+</li>
-  <li>OpenAL 1.1+</li>
-  <li>zlib</li>
-  <li>libpng</li>
-  <li>libvorbis</li>
-  <li>libmad (optional, to play MP3 files)</li>
-  <li>faad2 (optional, to play AAC files).</li>
-</ul>
+  <h2><a id="legal" href="">Legal</a></h2>
+  <h3>OpenZone Engine</h3>
+  <div>
+    Copyright © 2002-2016 Davorin Učakar
+    &lt;<a href="mailto:davorin.ucakar@gmail.com?Subject=OpenZone">davorin.ucakar@gmail.com</a>&gt;
+  </div>
+  <p>
+    This program comes with ABSOLUTELY NO WARRANTY. This is free software under
+    <a href="licences/COPYING.GPL3.txt">GNU General Public License version 3</a> or (at your option)
+    any later version.
+  </p>
+  <p>
+    ozCore, ozEngine and ozFactory libraries are part of OpenZone engine but can also be distributed
+    or modified alone under the <a href="licences/COPYING.liboz.txt">zlib licence</a>.
+  </p>
 
-<h2><a id="troubleshooting" href="#">Troubleshooting</a></h2>
-<ul>
-  <li>
-    Make sure you have the <b>LATEST</b> display drivers.
-  </li>
-  <li>
-    You need at least OpenGL 2.1 compatible graphic card and driver with support of the following
-    extensions:
-    <ul>
-      <li>
-        GL_ARB_framebuffer_object,
-      </li>
-      <li>
-        GL_ARB_texture_float and
-      </li>
-      <li>
-        GL_EXT_texture_compression_s3tc.
-      </li>
-    </ul>
-    Cards with complete DirectX 9.0c support should do. On Linux, the engine works with both
-    proprietary and open-source Gallium3D-based drivers with Mesa 8.0+.
-  </li>
-</ul>
+  <h3>Game Data</h3>
+  <p>
+    Game data are obtained from various sources and covered by many different licences. See
+    individual <code>README.txt</code> and <code>COPYING.txt</code> files in game data archives for
+    details.
+  </p>
 
-<h2><a id="performance" href="#">Performance Tips</a></h2>
-<ul>
-  <li>
-    If you use dynamic CPU frequency scaling turn that feature off and set the highest CPU
-    frequency. This may significantly improve frame-rate.
-  </li>
-  <li>
-    Turning off desktop effects or switching to fullscreen mode (<code>F11</code>) may significantly
-    improve performance.
-  </li>
-</ul>
+  <h3>Third-party Libraries</h3>
+  <p>
+    Unless OpenZone is built as a package for some Linux distribution it also includes (most) of the
+    following 3rd party libraries:
+  </p>
 
-<h2><a id="legal" href="#">Legal</a></h2>
-<h3>OpenZone Engine</h3>
-<div>
-  Copyright © 2002-2014 Davorin Učakar
-</div>
-<table>
-  <tr>
-    <td>Author:</td>
-    <td>Davorin Učakar</td>
-  </tr>
-  <tr>
-    <td>Contact:</td>
-    <td><a href="mailto:davorin.ucakar@gmail.com">davorin.ucakar@gmail.com</a></td>
-  </tr>
-  <tr>
-    <td>Web page:</td>
-    <td><a href="http://ducakar.github.com/openzone/">ducakar.github.com/openzone</a></td>
-  </tr>
-</table>
-<p>
-  This program comes with ABSOLUTELY NO WARRANTY. This is free software under
-  <a href="licences/COPYING.GPL3.txt">GNU General Public License version 3</a> or (at your option)
-  any later version.
-</p>
+  <h4>FreeType</h4>
+  <table class="firstRight">
+    <tr>
+      <td>Web page</td>
+      <td><a href="http://freetype.sourceforge.net/">freetype.sourceforge.net</a></td>
+    </tr>
+    <tr>
+      <td>Licence</td>
+      <td><a href="licences/COPYING.FreeType.txt">FreeType Project License</a></td>
+    </tr>
+  </table>
 
-<p>
-  ozCore, ozDynamics, ozEngine and ozFactory libraries are part of OpenZone engine but can also be
-  distributed or modified alone under the <a href="licences/COPYING.liboz.txt">zlib licence</a>.
-</p>
+  <h4>libogg</h4>
+  <table class="firstRight">
+    <tr>
+      <td>Web page</td>
+      <td><a href="http://www.xiph.org/ogg/">www.xiph.org/ogg</a></td>
+    </tr>
+    <tr>
+      <td>Licence</td>
+      <td><a href="licences/COPYING.libogg.txt">BSD</a></td>
+    </tr>
+  </table>
 
-<h3>Game Data</h3>
-<p>
-  Game data are obtained from various sources and covered by many different licences. See individual
-  README.txt and COPYING.txt files in game data archives for details.
-</p>
+  <h4>libpng</h4>
+  <table class="firstRight">
+    <tr>
+      <td>Web page</td>
+      <td><a href="http://www.libpng.org/">www.libpng.org</a></td>
+    </tr>
+    <tr>
+      <td>Licence</td>
+      <td><a href="licences/COPYING.libpng.txt">libpng</a></td>
+    </tr>
+  </table>
 
-<h3>Third-party Libraries</h3>
-<p>
-  Unless OpenZone is built as a package for some Linux distribution it also includes (most) of the
-  following 3rd party libraries:
-</p>
+  <h4>libvorbis</h4>
+  <table class="firstRight">
+    <tr>
+      <td>Web page</td>
+      <td><a href="http://www.xiph.org/vorbis/">www.xiph.org/vorbis</a></td>
+    </tr>
+    <tr>
+      <td>Licence</td>
+      <td><a href="licences/COPYING.libvorbis.txt">BSD</a></td>
+    </tr>
+  </table>
 
-<h4>FreeType</h4>
-<table>
-  <tr>
-    <td>Web page:</td>
-    <td><a href="http://freetype.sourceforge.net/">freetype.sourceforge.net</a></td>
-  </tr>
-  <tr>
-    <td>Licence:</td>
-    <td><a href="licences/COPYING.FreeType.txt">FreeType Project License</a></td>
-  </tr>
-</table>
+  <h4>Lua</h4>
+  <table class="firstRight">
+    <tr>
+      <td>Web page</td>
+      <td><a href="http://www.lua.org/">www.lua.org</a></td>
+    </tr>
+    <tr>
+      <td>Licence</td>
+      <td><a href="licences/COPYING.Lua.txt">MIT</a></td>
+    </tr>
+  </table>
 
-<h4>libogg</h4>
-<table>
-  <tr>
-    <td>Web page:</td>
-    <td><a href="http://www.xiph.org/ogg/">www.xiph.org/ogg</a></td>
-  </tr>
-  <tr>
-    <td>Licence:</td>
-    <td><a href="licences/COPYING.libogg.txt">BSD</a></td>
-  </tr>
-</table>
+  <h4>MinGW runtime</h4>
+  <table class="firstRight">
+    <tr>
+      <td>Web page</td>
+      <td><a href="http://www.mingw.org/">www.mingw.org</a></td>
+    </tr>
+    <tr>
+      <td>Licence</td>
+      <td>Public Domain</td>
+    </tr>
+  </table>
 
-<h4>libpng</h4>
-<table>
-  <tr>
-    <td>Web page:</td>
-    <td><a href="http://www.libpng.org/">http://www.libpng.org/</a></td>
-  </tr>
-  <tr>
-    <td>Licence:</td>
-    <td><a href="licences/COPYING.libpng.txt">libpng</a></td>
-  </tr>
-</table>
+  <h4>OpenAL Soft</h4>
+  <table class="firstRight">
+    <tr>
+      <td>Web page</td>
+      <td><a href="http://www.openal.org/">www.openal.org</a></td>
+    </tr>
+    <tr>
+      <td>Licence</td>
+      <td><a href="licences/COPYING.LGPL2.1.txt">LGPL 2.1</a></td>
+    </tr>
+  </table>
 
-<h4>libvorbis</h4>
-<table>
-  <tr>
-    <td>Web page:</td>
-    <td><a href="http://www.xiph.org/vorbis/">www.xiph.org/vorbis</a></td>
-  </tr>
-  <tr>
-    <td>Licence:</td>
-    <td><a href="licences/COPYING.libvorbis.txt">BSD</a></td>
-  </tr>
-</table>
+  <h4>PhysicsFS</h4>
+  <table class="firstRight">
+    <tr>
+      <td>Web page</td>
+      <td><a href="http://icculus.org/physfs/">icculus.org/physfs</a></td>
+    </tr>
+    <tr>
+      <td>Licence</td>
+      <td><a href="licences/COPYING.PhysFS.txt">zlib</a></td>
+    </tr>
+  </table>
 
-<h4>Lua</h4>
-<table>
-  <tr>
-    <td>Web page:</td>
-    <td><a href="http://www.lua.org/">www.lua.org</a></td>
-  </tr>
-  <tr>
-    <td>Licence:</td>
-    <td><a href="licences/COPYING.Lua.txt">MIT</a></td>
-  </tr>
-</table>
+  <h4>SDL</h4>
+  <table class="firstRight">
+    <tr>
+      <td>Web page</td>
+      <td><a href="http://www.libsdl.org/">www.libsdl.org</a></td>
+    </tr>
+    <tr>
+      <td>Licence</td>
+      <td><a href="licences/COPYING.SDL2.txt">zlib</a></td>
+    </tr>
+  </table>
 
-<h4>MinGW runtime</h4>
-<table>
-  <tr>
-    <td>Web page:</td>
-    <td><a href="http://www.mingw.org/">www.mingw.org</a></td>
-  </tr>
-  <tr>
-    <td>Licence:</td>
-    <td>Public Domain</td>
-  </tr>
-</table>
+  <h4>SDL_ttf</h4>
+  <table class="firstRight">
+    <tr>
+      <td>Web page</td>
+      <td><a href="http://www.libsdl.org/projects/SDL_ttf/">www.libsdl.org/projects/SDL_ttf</a></td>
+    </tr>
+    <tr>
+      <td>Licence</td>
+      <td><a href="licences/COPYING.SDL_ttf.txt">zlib</a></td>
+    </tr>
+  </table>
 
-<h4>OpenAL Soft</h4>
-<table>
-  <tr>
-    <td>Web page:</td>
-    <td><a href="http://www.openal.org/">www.openal.org</a></td>
-  </tr>
-  <tr>
-    <td>Licence:</td>
-    <td><a href="licences/COPYING.LGPL2.1.txt">GNU Lesser General Public License 2.1</a></td>
-  </tr>
-</table>
-
-<h4>PhysicsFS</h4>
-<table>
-  <tr>
-    <td>Web page:</td>
-    <td><a href="http://icculus.org/physfs/">icculus.org/physfs</a></td>
-  </tr>
-  <tr>
-    <td>Licence:</td>
-    <td><a href="licences/COPYING.PhysFS.txt">zlib</a></td>
-  </tr>
-</table>
-
-<h4>SDL 1.2</h4>
-<table>
-  <tr>
-    <td>Web page:</td>
-    <td><a href="http://www.libsdl.org/">www.libsdl.org</a></td>
-  </tr>
-  <tr>
-    <td>Licence:</td>
-    <td><a href="licences/COPYING.LGPL2.1.txt">GNU Lesser General Public License 2.1</a></td>
-  </tr>
-</table>
-
-<h4>SDL 2.0</h4>
-<table>
-  <tr>
-    <td>Web page:</td>
-    <td><a href="http://www.libsdl.org/">www.libsdl.org</a></td>
-  </tr>
-  <tr>
-    <td>Licence:</td>
-    <td><a href="licences/COPYING.SDL2.txt">zlib</a></td>
-  </tr>
-</table>
-
-<h4>SDL_ttf</h4>
-<table>
-  <tr>
-    <td>Web page:</td>
-    <td><a href="http://www.libsdl.org/projects/SDL_ttf/">www.libsdl.org/projects/SDL_ttf</a></td>
-  </tr>
-  <tr>
-    <td>Licence:</td>
-    <td><a href="licences/COPYING.SDL_ttf.txt">zlib</a></td>
-  </tr>
-</table>
-
-<h4>zlib</h4>
-<table>
-  <tr>
-    <td>Web page:</td>
-    <td><a href="http://www.zlib.net/">www.zlib.net</a></td>
-  </tr>
-  <tr>
-    <td>Licence:</td>
-    <td><a href="licences/COPYING.zlib.txt">zlib</a></td>
-  </tr>
-</table>
+  <h4>zlib</h4>
+  <table class="firstRight">
+    <tr>
+      <td>Web page</td>
+      <td><a href="http://www.zlib.net/">www.zlib.net</a></td>
+    </tr>
+    <tr>
+      <td>Licence</td>
+      <td><a href="licences/COPYING.zlib.txt">zlib</a></td>
+    </tr>
+  </table>
 
 </body>
 </html>

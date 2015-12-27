@@ -18,8 +18,8 @@ platforms=(
 #  Android14-i686
 #  Android14-ARMv7a
 #  Emscripten
-#  Linux-i686
-#  Linux-i686-Clang
+  Linux-i686
+  Linux-i686-Clang
   Linux-x86_64
   Linux-x86_64-Clang
 #  PNaCl
@@ -54,14 +54,13 @@ function build()
 	( cd build/$platform && emcmake cmake -Wdev --warn-uninitialized \
 	  -G Ninja \
 	  -D CMAKE_BUILD_TYPE=$buildType \
-	  -D CMAKE_EXPORT_COMPILE_COMMANDS=ON \
 	  ../.. )
       else
 	( cd build/$platform && cmake -Wdev --warn-uninitialized \
 	  -G Ninja \
 	  -D CMAKE_TOOLCHAIN_FILE=../../cmake/$platform.Toolchain.cmake \
 	  -D CMAKE_BUILD_TYPE=$buildType \
-	  -D CMAKE_EXPORT_COMPILE_COMMANDS=ON \
+	  -D OZ_TOOLS=ON \
 	  ../.. )
       fi
     fi

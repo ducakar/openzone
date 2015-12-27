@@ -126,7 +126,7 @@ endif()
 find_package(OpenAL REQUIRED)
 find_package(JPEG REQUIRED)
 pkg_check_modules(OGG REQUIRED ogg)
-pkg_check_modules(OPUS REQUIRED opus)
+#pkg_check_modules(OPUS REQUIRED opus)
 pkg_check_modules(VORBIS REQUIRED vorbis)
 pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 

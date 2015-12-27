@@ -76,8 +76,8 @@ public:
     struct MP3Stream;
     struct AACStream;
 
-    float*      samples;  ///< Samples buffer.
-    int         nSamples; ///< Number of samples.
+    List<float> samples;  ///< Samples buffer.
+    int         nSamples; ///< Number of contained samples.
     ALenum      format;   ///< OpenAL format (AL_FORMAT_MONO_FLOAT32 or AL_FORMAT_STEREO_FLOAT32).
     int         rate;     ///< Sampling rate.
     StreamBase* stream;   ///< Internal structures used for stream decoding.
@@ -92,11 +92,10 @@ public:
     /**
      * Initialise an instance and open a file for decoding.
      *
-     * `nSamples` sets the size of the internal buffer in samples (for all channels together).
-     * Zero `nSamples` sets the buffer to the right size to load the whole file in the first
-     * `decode()` call.
+     * @param file WAVE, Ogg Vorbis or Ogg Opus file.
+     * @param isStreaming whether to decode incrementally or whole file in the first step.
      */
-    Decoder(const File& file, int nSamples = 0);
+    Decoder(const File& file, bool isStreaming = false);
 
     /**
      * Destructor.
@@ -114,9 +113,20 @@ public:
     Decoder& operator = (Decoder&& d);
 
     /**
+     * True iff a stream is opened.
+     */
+    OZ_ALWAYS_INLINE
+    bool isValid() const
+    {
+      return stream != nullptr;
+    }
+
+    /**
      * Decode next chunk of data into an internal buffer.
      *
-     * @return true iff some data were decoded, false on EOF or an error.
+     * The stream is automatically closed on an error or EOF.
+     *
+     * @return true iff the stream is still opened.
      */
     bool decode();
 

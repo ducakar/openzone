@@ -88,7 +88,7 @@ make %{?_smp_mflags}
 %install
 rm -rf "$RPM_BUILD_ROOT"
 
-( cd build && make install DESTDIR="$RPM_BUILD_ROOT" )
+( cd build && cmake -D CMAKE_INSTALL_PREFIX="$RPM_BUILD_ROOT" -P cmake_install.cmake )
 
 if [[ %{_libdir} != /usr/lib ]]; then
   sed -ri 's|libdir=.*|libdir=%{_libdir}|' "$RPM_BUILD_ROOT"/usr/lib/pkgconfig/*

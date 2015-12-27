@@ -272,9 +272,7 @@ void UnitProxy::prepare()
     bot->actions |= Bot::ACTION_EJECT;
   }
   if (input.keys[Input::KEY_SUICIDE] && !input.oldKeys[Input::KEY_SUICIDE]) {
-    if (bot->hasAttribute(ObjectClass::SUICIDE_BIT)) {
-      bot->actions |= Bot::ACTION_SUICIDE;
-    }
+    bot->actions |= Bot::ACTION_SUICIDE;
   }
 
   int weaponIndex = -1;

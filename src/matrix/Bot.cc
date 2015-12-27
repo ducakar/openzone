@@ -453,7 +453,7 @@ void Bot::onUpdate()
     return;
   }
 
-  if (actions & ~oldActions & ACTION_SUICIDE) {
+  if ((actions & ~oldActions & ACTION_SUICIDE) && hasAttribute(ObjectClass::SUICIDE_BIT)) {
     kill();
     return;
   }

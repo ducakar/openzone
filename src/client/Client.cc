@@ -537,13 +537,11 @@ int Client::init(int argc, char** argv)
   if (dataDir.mountAt(nullptr, true)) {
     Log::println("%s", dataDir.c());
 
-    for (const File& file : dataDir.list()) {
-      if (file.hasExtension("7z") || file.hasExtension("zip")) {
-        if (!file.mountAt(nullptr)) {
-          OZ_ERROR("Failed to mount '%s' on / in PhysicsFS: %s", file.c(), PHYSFS_getLastError());
-        }
-        Log::println("%s", file.c());
+    for (const File& file : dataDir.list("zip")) {
+      if (!file.mountAt(nullptr)) {
+        OZ_ERROR("Failed to mount '%s' on / in PhysicsFS: %s", file.c(), PHYSFS_getLastError());
       }
+      Log::println("%s", file.c());
     }
   }
 
@@ -552,13 +550,11 @@ int Client::init(int argc, char** argv)
   if (globalDataDir.mountAt(nullptr, true)) {
     Log::println("%s", globalDataDir.c());
 
-    for (const File& file : File(globalDataDir).list()) {
-      if (file.hasExtension("7z") || file.hasExtension("zip")) {
-        if (!file.mountAt(nullptr)) {
-          OZ_ERROR("Failed to mount '%s' on / in PhysicsFS: %s", file.c(), PHYSFS_getLastError());
-        }
-        Log::println("%s", file.c());
+    for (const File& file : globalDataDir.list("zip")) {
+      if (!file.mountAt(nullptr)) {
+        OZ_ERROR("Failed to mount '%s' on / in PhysicsFS: %s", file.c(), PHYSFS_getLastError());
       }
+      Log::println("%s", file.c());
     }
   }
 

@@ -36,6 +36,8 @@
 namespace oz
 {
 
+static const int FRAME_SAMPLES = 960 * 6;
+
 /*
  * Vorbis stream reader callbacks.
  */
@@ -128,9 +130,10 @@ AL::Decoder::StreamBase::~StreamBase()
 struct AL::Decoder::WaveStream : AL::Decoder::StreamBase
 {
   int sampleSize;
+  int samplesLeft;
 
   OZ_INTERNAL
-  explicit WaveStream(AL::Decoder* decoder, Stream&& is_, int nSamples) :
+  explicit WaveStream(AL::Decoder* decoder, Stream&& is_, bool isStreaming) :
     StreamBase(decoder, static_cast<Stream&&>(is_))
   {
     if (is.available() < 44) {
@@ -156,11 +159,9 @@ struct AL::Decoder::WaveStream : AL::Decoder::StreamBase
       OZ_ERROR("oz::AL::Decoder: Only mono and stereo, 8-bit and 16-bit WAVE PCM supported");
     }
 
-    OZ_ASSERT(size <= is.available());
-
-    decoder->format   = nChannels == 1 ? AL_FORMAT_MONO_FLOAT32 : AL_FORMAT_STEREO_FLOAT32;
-    decoder->nSamples = nSamples == 0 ? size / sampleSize : nSamples;
-    decoder->samples  = new float[decoder->nSamples];
+    samplesLeft = size / sampleSize;
+    decoder->format = nChannels == 1 ? AL_FORMAT_MONO_FLOAT32 : AL_FORMAT_STEREO_FLOAT32;
+    decoder->samples.resize(isStreaming ? FRAME_SAMPLES * nChannels : samplesLeft);
   }
 
   bool decode() override;
@@ -169,23 +170,24 @@ struct AL::Decoder::WaveStream : AL::Decoder::StreamBase
 OZ_INTERNAL
 bool AL::Decoder::WaveStream::decode()
 {
-  int nSamples = min<int>(is.available() / sampleSize, decoder->nSamples);
-
-  if (nSamples == 0) {
+  decoder->nSamples = min<int>(decoder->samples.capacity(), samplesLeft);
+  if (decoder->nSamples == 0) {
     return false;
   }
 
-  if (sampleSize == 1) {
-    const ubyte* samples = reinterpret_cast<const ubyte*>(is.readSkip(nSamples));
+  samplesLeft -= decoder->nSamples;
 
-    for (int i = 0; i < nSamples; ++i) {
+  if (sampleSize == 1) {
+    const ubyte* samples = reinterpret_cast<const ubyte*>(is.readSkip(decoder->nSamples));
+
+    for (int i = 0; i < decoder->nSamples; ++i) {
       decoder->samples[i] = float(*samples++) - 128 / 127.0f;
     }
   }
   else {
-    const short* samples = reinterpret_cast<const short*>(is.readSkip(nSamples * 2));
+    const short* samples = reinterpret_cast<const short*>(is.readSkip(decoder->nSamples * 2));
 
-    for (int i = 0; i < nSamples; ++i) {
+    for (int i = 0; i < decoder->nSamples; ++i) {
       decoder->samples[i] = float(*samples++) / 32767.0f;
     }
   }
@@ -247,8 +249,7 @@ struct AL::Decoder::OpusStream : AL::Decoder::StreamBase
     opus = opus_decoder_create(decoder->rate, nChannels, nullptr);
 
     if (nSamples != 0) {
-      decoder->samples = new float[FRAME_SIZE];
-      decoder->nSamples = FRAME_SIZE;
+      decoder->samples.resize(FRAME_SIZE * nChannels);
     }
   }
 
@@ -308,26 +309,25 @@ void AL::Decoder::OpusStream::decodeMain(void*)
 }
 
 AL::Decoder::Decoder() :
-  samples(nullptr), nSamples(0), format(AL_FORMAT_MONO_FLOAT32), rate(48000), stream(nullptr)
+  nSamples(0), format(AL_FORMAT_MONO_FLOAT32), rate(48000), stream(nullptr)
 {}
 
-AL::Decoder::Decoder(const File& file, int nSamples)
+AL::Decoder::Decoder(const File& file, bool isStreaming)
 {
   if (file.hasExtension("wav")) {
-    stream = new WaveStream(this, file.read(Endian::LITTLE), nSamples);
+    stream = new WaveStream(this, file.read(Endian::LITTLE), isStreaming);
   }
 }
 
 AL::Decoder::~Decoder()
 {
-  delete samples;
   delete stream;
 }
 
 AL::Decoder::Decoder(Decoder&& d) :
-  samples(d.samples), nSamples(d.nSamples), format(d.format), rate(d.rate), stream(d.stream)
+  samples(static_cast<List<float>&&>(d.samples)), nSamples(d.nSamples), format(d.format),
+  rate(d.rate), stream(d.stream)
 {
-  samples  = nullptr;
   nSamples = 0;
   format   = AL_FORMAT_MONO_FLOAT32;
   rate     = 48000;
@@ -337,16 +337,14 @@ AL::Decoder::Decoder(Decoder&& d) :
 AL::Decoder& AL::Decoder::operator = (AL::Decoder&& d)
 {
   if (&d != this) {
-    delete samples;
     delete stream;
 
-    samples  = d.samples;
+    samples  = static_cast<List<float>&&>(d.samples);
     nSamples = d.nSamples;
     format   = d.format;
     rate     = d.rate;
     stream   = d.stream;
 
-    d.samples  = nullptr;
     d.nSamples = 0;
     d.format   = AL_FORMAT_MONO_FLOAT32;
     d.rate     = 48000;
@@ -357,12 +355,16 @@ AL::Decoder& AL::Decoder::operator = (AL::Decoder&& d)
 
 bool AL::Decoder::decode()
 {
-  return stream == nullptr ? false : stream->decode();
+  if (stream != nullptr && !stream->decode()) {
+    delete stream;
+    stream = nullptr;
+  }
+  return stream != nullptr;
 }
 
 void AL::Decoder::load(ALuint buffer) const
 {
-  alBufferData(buffer, format, samples, nSamples * sizeof(float), rate);
+  alBufferData(buffer, format, samples.begin(), nSamples * sizeof(float), rate);
 }
 
 struct AL::Streamer::Data
@@ -661,11 +663,11 @@ AudioBuffer AL::decodeFromStream(Stream* is)
 
     int size = is->readInt();
 
+    OZ_ASSERT(size <= is->available());
+
     if ((nChannels != 1 && nChannels != 2) || (bits != 8 && bits != 16)) {
       return buffer;
     }
-
-    OZ_ASSERT(size <= is->available());
 
     buffer.format = nChannels == 1 ? AL_FORMAT_MONO_FLOAT32 : AL_FORMAT_STEREO_FLOAT32;
 
