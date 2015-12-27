@@ -56,13 +56,6 @@ int main(int argc, char** argv)
 
   OZ_AL_CHECK_ERROR();
 
-//  AL::Streamer streamer;
-//  streamer.open("/usr/share/sounds/Kopete_Sent.ogg");
-//  streamer.attach(musicSource);
-//  streamer.close();
-//  streamer.open("/usr/share/sounds/Kopete_Sent.ogg");
-//  alSourcePlay(musicSource);
-
   if (!cursor.isValid()) {
     return EXIT_FAILURE;
   }
@@ -78,11 +71,6 @@ int main(int argc, char** argv)
     while (SDL_PollEvent(&event)) {
       if (event.type == SDL_QUIT) {
         isAlive = false;
-      }
-
-      if (event.type == SDL_KEYDOWN) {
-//        streamer.rewind();
-//        alSourcePlay(musicSource);
       }
     }
 
@@ -109,12 +97,8 @@ int main(int argc, char** argv)
 
     cursor.update(15);
 
-//    streamer.update();
-
     Time::sleep(15);
   }
-
-//  streamer.destroy();
 
   alDeleteSources(1, &musicSource);
   alDeleteSources(1, &soundSource);

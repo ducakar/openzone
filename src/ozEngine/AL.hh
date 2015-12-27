@@ -46,16 +46,6 @@ namespace oz
 {
 
 /**
- * Buffer with decoded audio data.
- */
-struct AudioBuffer
-{
-  List<float> data;   ///< Samples.
-  ALenum      format; ///< OpenAL format.
-  int         rate;   ///< Sampling rate.
-};
-
-/**
  * OpenAL utilities.
  */
 class AL
@@ -73,11 +63,10 @@ public:
     struct WaveStream;
     struct OpusStream;
     struct VorbisStream;
-    struct MP3Stream;
-    struct AACStream;
 
-    List<float> samples;  ///< Samples buffer.
-    int         nSamples; ///< Number of contained samples.
+    float*      samples;  ///< Samples buffer.
+    int         count;    ///< Number of samples written in buffer (total sum per all channels).
+    int         capacity; ///< Buffer capacity (total sum per all channels).
     ALenum      format;   ///< OpenAL format (AL_FORMAT_MONO_FLOAT32 or AL_FORMAT_STEREO_FLOAT32).
     int         rate;     ///< Sampling rate.
     StreamBase* stream;   ///< Internal structures used for stream decoding.
@@ -137,95 +126,6 @@ public:
 
   };
 
-  /**
-   * %Streamer for Ogg Vorbis files.
-   */
-  class Streamer
-  {
-  private:
-
-    struct Data;
-
-    ALuint source; ///< Target OpenAL source for which buffers are queued, 0 if none.
-    Data*  data;   ///< Internal buffers, Ogg Vorbis stream state, format description ...
-
-  public:
-
-    /**
-     * Create an empty instance (no internal OpenAL buffers are created).
-     */
-    Streamer();
-
-    /**
-     * Destructor.
-     */
-    ~Streamer();
-
-    /**
-     * Move constructor.
-     */
-    Streamer(Streamer&& s);
-
-    /**
-     * Move operator.
-     */
-    Streamer& operator = (Streamer&& s);
-
-    /**
-     * True iff streaming.
-     */
-    bool isStreaming() const
-    {
-      return data != nullptr;
-    }
-
-    /**
-     * True iff a source is attached.
-     */
-    bool hasSource() const
-    {
-      return source != 0;
-    }
-
-    /**
-     * Set OpenAL source which buffers with streamed data will be queued for.
-     */
-    void attach(ALuint source);
-
-    /**
-     * Unset OpenAL source for buffer queuing.
-     */
-    void detach();
-
-    /**
-     * Start streaming a given Ogg Vorbis file.
-     */
-    bool open(const File& file);
-
-    /**
-     * Stop streaming and free file buffers and stream state.
-     */
-    void close();
-
-    /**
-     * Stop attached source and rewind the stream to the beginning.
-     */
-    bool rewind();
-
-    /**
-     * Update processed buffers in the queue, decode new data into them.
-     *
-     * When the end of the stream is reached it invokes `close()`.
-     */
-    bool update();
-
-    /**
-     * Deinitialise, detach source and delete all buffers.
-     */
-    void destroy();
-
-  };
-
 public:
 
   /**
@@ -237,21 +137,6 @@ public:
    * Helper function for `OZ_AL_CHECK_ERROR` macro.
    */
   static void checkError(const char* function, const char* file, int line);
-
-  /**
-   * Read WAVE or Ogg Vorbis file stream and decode data into a buffer.
-   */
-  static AudioBuffer decodeFromStream(Stream* is);
-
-  /**
-   * Read WAVE or Ogg Vorbis file and decode data into a buffer.
-   */
-  static AudioBuffer decodeFromFile(const File& file);
-
-  /**
-   * Load OpenAL buffer from a WAVE or Ogg Vorbis file stream.
-   */
-  static bool bufferDataFromStream(ALuint bufferId, Stream* is);
 
   /**
    * Load OpenAL buffer from a WAVE or Ogg Vorbis file.

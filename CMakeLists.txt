@@ -124,20 +124,18 @@ else()
 endif()
 
 find_package(OpenAL REQUIRED)
-find_package(JPEG REQUIRED)
-pkg_check_modules(OGG REQUIRED ogg)
-#pkg_check_modules(OPUS REQUIRED opus)
-pkg_check_modules(VORBIS REQUIRED vorbis)
+find_package(PNG REQUIRED)
+pkg_check_modules(OPUSFILE REQUIRED opusfile)
 pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
+
+include_directories(SYSTEM ${OPUSFILE_INCLUDE_DIRS})
 
 # On embedded platforms, linking is mostly static, so indirect dependencies must be linked too.
 if(PLATFORM_EMBEDDED)
   # Emscripten has SDL_ttf built-in and doesn't need Freetype.
   if(NOT EMSCRIPTEN)
-    find_package(PNG REQUIRED)      # required by FreeType.
     find_package(Freetype REQUIRED) # required by SDL_ttf.
-
-    list(APPEND SDL_TTF_LIBRARIES ${FREETYPE_LIBRARIES} ${PNG_LIBRARY})
+    list(APPEND SDL_TTF_LIBRARIES ${FREETYPE_LIBRARIES})
   endif()
 endif()
 

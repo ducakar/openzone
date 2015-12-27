@@ -64,8 +64,7 @@ struct Context::TextureResource::PreloadData
 
 struct Context::SoundResource::PreloadData
 {
-  Stream      fileBuffer;
-  AudioBuffer audioBuffer;
+  AL::Decoder decoder;
 };
 
 Pool<Context::Source> Context::Source::pool;

@@ -133,13 +133,13 @@ public:
   static void swapBuffers();
 
   /**
-   * Save screenshot in a JPEG file.
+   * Save screenshot in a PNG file.
    *
-   * Creation of JPEG is performed on a background thread. Only one screenshot thread at a time is
-   * possible, so making two screenshots in a short time will block the second call until the first
-   * screenshot is written.
+   * Creation of PNG is performed on a background thread as the best compression is used and it may
+   * take some time. Only one screenshot thread at a time is possible, so making two screenshots in
+   * a short time will block the second call until the first screenshot is written.
    */
-  static void screenshot(const File& file, int quality = 85);
+  static void screenshot(const File& file);
 
   /**
    * Resize window and/or toggle full-screen mode.

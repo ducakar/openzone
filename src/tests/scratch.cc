@@ -33,11 +33,15 @@ int main()
   alGenBuffers(2, buffers);
   alGenSources(1, &source);
 
-  AL::Decoder decoder("/usr/share/sounds/uget/notification.wav", true);
+//  AL::Decoder decoder("/home/davorin/Glasba/Whatever.wav", true);
+  AL::Decoder decoder("/home/davorin/Razvoj/openzone/data/oz_base/snd/sfxr/click.wav", false);
+//  AL::Decoder decoder("/usr/share/sounds/Oxygen-Sys-App-Error-Critical.ogg", false);
 
   decoder.decode();
   decoder.load(buffers[0]);
   alSourceQueueBuffers(source, 1, &buffers[0]);
+
+  OZ_AL_CHECK_ERROR();
 
   if (decoder.decode()) {
     decoder.load(buffers[1]);
@@ -46,7 +50,9 @@ int main()
 
   alSourcePlay(source);
 
-  do {
+  OZ_AL_CHECK_ERROR();
+
+  while (decoder.isValid()) {
     Time::sleep(10);
 
     ALint nProcessed;
@@ -62,7 +68,6 @@ int main()
       }
     }
   }
-  while (decoder.isValid());
 
   ALint state;
   do {
@@ -71,8 +76,14 @@ int main()
   }
   while (state == AL_PLAYING);
 
+  Time::sleep(100);
+
+  OZ_AL_CHECK_ERROR();
+
   alDeleteSources(1, &source);
   alDeleteBuffers(2, buffers);
+
+  OZ_AL_CHECK_ERROR();
 
   Window::destroy();
   return 0;

@@ -585,7 +585,7 @@ void Lua::readValue(lua_State* l, Stream* is)
     case '[': {
       lua_newtable(l);
 
-      while (is->available() != 0 && (*is)[is->tell()] != ']') {
+      while (is->available() != 0 && *is->pos() != ']') {
         readValue(l, is); // Key.
         readValue(l, is); // Value.
 

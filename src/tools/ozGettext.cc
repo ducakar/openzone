@@ -64,7 +64,7 @@ static void readLuaChunk(const char* begin, int size, const char* path)
     switch (state) {
       case NORMAL: {
         if (last[0] == '(') {
-          if (is.tell() >= 10 && Arrays::equals(&is[is.tell() - 10], 9, "ozGettext")) {
+          if (is.tell() >= 10 && Arrays::equals(is.pos() - 10, 9, "ozGettext")) {
             inGettext = true;
             gettextLineNum = lineNum;
           }

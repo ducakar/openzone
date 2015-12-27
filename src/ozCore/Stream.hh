@@ -148,6 +148,24 @@ public:
   }
 
   /**
+   * Pointer to the current stream position.
+   */
+  OZ_ALWAYS_INLINE
+  const char* pos() const
+  {
+    return streamPos;
+  }
+
+  /**
+   * Pointer to the current stream position.
+   */
+  OZ_ALWAYS_INLINE
+  char* pos()
+  {
+    return streamPos;
+  }
+
+  /**
    * Length of the stream.
    */
   OZ_ALWAYS_INLINE

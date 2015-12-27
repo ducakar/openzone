@@ -27,7 +27,7 @@
 
 #include <AL/alc.h>
 #include <cstdio>
-#include <jpeglib.h>
+#include <png.h>
 #include <SDL2/SDL.h>
 
 #ifdef __native_client__
@@ -45,7 +45,6 @@ namespace oz
 struct ScreenshotInfo
 {
   File  file;
-  int   quality;
   int   width;
   int   height;
   char* pixels;
@@ -78,36 +77,29 @@ static void screenshotMain(void* data)
   const ScreenshotInfo* info = static_cast<const ScreenshotInfo*>(data);
 
   FILE* file = fopen(info->file, "wb");
-
-  if (file != nullptr) {
-    jpeg_compress_struct cinfo;
-    jpeg_error_mgr       jerr;
-
-    cinfo.err = jpeg_std_error(&jerr);
-    jpeg_create_compress(&cinfo);
-    jpeg_stdio_dest(&cinfo, file);
-
-    cinfo.image_width      = info->width;
-    cinfo.image_height     = info->height;
-    cinfo.input_components = 3;
-    cinfo.in_color_space   = JCS_RGB;
-
-    jpeg_set_defaults(&cinfo);
-    jpeg_set_quality(&cinfo, info->quality, boolean(true));
-    jpeg_start_compress(&cinfo, boolean(true));
-
-    int pitch = ((info->width * 3 + 3) / 4) * 4;
-
-    while (cinfo.next_scanline < cinfo.image_height) {
-      int      line = cinfo.image_height - 1 - cinfo.next_scanline;
-      JSAMPROW row  = reinterpret_cast<ubyte*>(&info->pixels[line * pitch]);
-
-      jpeg_write_scanlines(&cinfo, &row, 1);
-    }
-
-    jpeg_finish_compress(&cinfo);
-    fclose(file);
+  if (file == nullptr) {
+    return;
   }
+
+  png_struct* png     = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+  png_info*   pngInfo = png_create_info_struct(png);
+
+  png_set_IHDR(png, pngInfo, info->width, info->height, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+               PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+
+  png_init_io(png, file);
+  png_write_info(png, pngInfo);
+
+  int pitch = ((info->width * 3 + 3) / 4) * 4;
+
+  for (int i = info->height - 1; i >= 0; --i) {
+    const char* row = &info->pixels[i * pitch];
+
+    png_write_row(png, reinterpret_cast<const ubyte*>(row));
+  }
+
+  png_write_end(png, pngInfo);
+  png_destroy_write_struct(&png, &pngInfo);
 
   delete[] info->pixels;
   delete info;
@@ -160,7 +152,7 @@ void Window::swapBuffers()
 #endif
 }
 
-void Window::screenshot(const File& file, int quality)
+void Window::screenshot(const File& file)
 {
   if (screenshotThread.isValid()) {
     screenshotThread.join();
@@ -169,7 +161,7 @@ void Window::screenshot(const File& file, int quality)
   int   pitch  = ((windowWidth * 3 + 3) / 4) * 4;
   char* pixels = new char[windowHeight * pitch];
 
-  ScreenshotInfo* info = new ScreenshotInfo{file, quality, windowWidth, windowHeight, pixels};
+  ScreenshotInfo* info = new ScreenshotInfo{file, windowWidth, windowHeight, pixels};
 
   glReadPixels(0, 0, windowWidth, windowHeight, GL_RGB, GL_UNSIGNED_BYTE, info->pixels);
   screenshotThread = Thread("screenshot", screenshotMain, info);
