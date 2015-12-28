@@ -434,7 +434,7 @@ const File* Model::preload()
     textures.resize(nTextures, true);
 
     for (int i = 0; i < nTextures; ++i) {
-      const String& name = is.readString();
+      String name = is.readString();
 
       preloadData->textures.add(PreloadData::TexFiles());
 
@@ -589,7 +589,7 @@ void Model::load()
     nTextures = ~nTextures;
 
     for (int i = 0; i < nTextures; ++i) {
-      const String& name = is.readString();
+      String name = is.readString();
 
       int id = name.beginsWith("@sea:") ? terra.liquidTexId : liber.textureIndex(name);
       textures[i] = context.requestTexture(id);

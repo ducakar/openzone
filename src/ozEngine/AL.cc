@@ -73,16 +73,10 @@ static ov_callbacks VORBIS_CALLBACKS = {vorbisRead, vorbisSeek, nullptr, vorbisT
 
 struct AL::Decoder::StreamBase
 {
-  AL::Decoder* decoder;
-
-  OZ_INTERNAL
-  explicit StreamBase(AL::Decoder* decoder_) :
-    decoder(decoder_)
-  {}
+  Stream is;
 
   virtual ~StreamBase();
-
-  virtual bool decode() = 0;
+  virtual bool decode(AL::Decoder* decoder) = 0;
 };
 
 OZ_INTERNAL
@@ -91,12 +85,10 @@ AL::Decoder::StreamBase::~StreamBase()
 
 struct AL::Decoder::WaveStream : AL::Decoder::StreamBase
 {
-  Stream is;
-  int    sampleSize;
+  int sampleSize;
 
   OZ_INTERNAL
-  explicit WaveStream(AL::Decoder* decoder, const File& file) :
-    StreamBase(decoder)
+  explicit WaveStream(AL::Decoder* decoder, const File& file)
   {
     is = file.read(Endian::LITTLE);
 
@@ -130,11 +122,11 @@ struct AL::Decoder::WaveStream : AL::Decoder::StreamBase
     decoder->samples  = new float[decoder->capacity];
   }
 
-  bool decode() override;
+  bool decode(AL::Decoder* decoder) override;
 };
 
 OZ_INTERNAL
-bool AL::Decoder::WaveStream::decode()
+bool AL::Decoder::WaveStream::decode(AL::Decoder* decoder)
 {
   if (decoder->count != 0) {
     return false;
@@ -196,12 +188,10 @@ struct AL::Decoder::OpusStream : AL::Decoder::StreamBase
 {
   static const int FRAME_SIZE = 120 * 48;
 
-  Stream       is;
   OggOpusFile* opFile = nullptr;
 
   OZ_INTERNAL
-  explicit OpusStream(AL::Decoder* decoder, const File& file, bool isStreaming) :
-    StreamBase(decoder)
+  explicit OpusStream(AL::Decoder* decoder, const File& file, bool isStreaming)
   {
     is = file.read();
     if (is.available() == 0) {
@@ -229,7 +219,7 @@ struct AL::Decoder::OpusStream : AL::Decoder::StreamBase
 
   ~OpusStream() override;
 
-  bool decode() override;
+  bool decode(AL::Decoder* decoder) override;
 };
 
 OZ_INTERNAL
@@ -244,7 +234,7 @@ AL::Decoder::OpusStream::~OpusStream()
 }
 
 OZ_INTERNAL
-bool AL::Decoder::OpusStream::decode()
+bool AL::Decoder::OpusStream::decode(AL::Decoder* decoder)
 {
   decoder->count = 0;
 
@@ -273,12 +263,10 @@ bool AL::Decoder::OpusStream::decode()
 
 struct AL::Decoder::VorbisStream : AL::Decoder::StreamBase
 {
-  Stream         is;
   OggVorbis_File ovFile;
 
   OZ_INTERNAL
-  explicit VorbisStream(AL::Decoder* decoder, const File& file, bool isStreaming) :
-    StreamBase(decoder)
+  explicit VorbisStream(AL::Decoder* decoder, const File& file, bool isStreaming)
   {
     is = file.read();
     if (is.available() == 0) {
@@ -309,7 +297,7 @@ struct AL::Decoder::VorbisStream : AL::Decoder::StreamBase
 
   ~VorbisStream() override;
 
-  bool decode() override;
+  bool decode(AL::Decoder* decoder) override;
 };
 
 OZ_INTERNAL
@@ -319,7 +307,7 @@ AL::Decoder::VorbisStream::~VorbisStream()
 }
 
 OZ_INTERNAL
-bool AL::Decoder::VorbisStream::decode()
+bool AL::Decoder::VorbisStream::decode(AL::Decoder* decoder)
 {
   int stereo = decoder->format == AL_FORMAT_STEREO_FLOAT32;
 
@@ -328,9 +316,10 @@ bool AL::Decoder::VorbisStream::decode()
   do {
     float** samples;
     long    result;
+    int     section;
 
     result = ov_read_float(&ovFile, &samples, (decoder->capacity - decoder->count) >> stereo,
-                           nullptr);
+                           &section);
 
     if (result <= 0) {
       return decoder->count != 0;
@@ -379,8 +368,8 @@ AL::Decoder::Decoder(const File& file, bool isStreaming) :
 
 AL::Decoder::~Decoder()
 {
+  delete[] samples;
   delete stream;
-  delete samples;
 }
 
 AL::Decoder::Decoder(Decoder&& d) :
@@ -398,8 +387,8 @@ AL::Decoder::Decoder(Decoder&& d) :
 AL::Decoder& AL::Decoder::operator = (AL::Decoder&& d)
 {
   if (&d != this) {
+    delete[] samples;
     delete stream;
-    delete samples;
 
     samples  = d.samples;
     count    = d.count;
@@ -420,7 +409,7 @@ AL::Decoder& AL::Decoder::operator = (AL::Decoder&& d)
 
 bool AL::Decoder::decode()
 {
-  if (stream != nullptr && !stream->decode()) {
+  if (stream != nullptr && !stream->decode(this)) {
     delete stream;
     stream = nullptr;
   }
@@ -429,7 +418,6 @@ bool AL::Decoder::decode()
 
 void AL::Decoder::load(ALuint buffer) const
 {
-  Log() << count;
   alBufferData(buffer, format, samples, count * sizeof(float), rate);
 }
 

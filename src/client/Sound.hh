@@ -25,14 +25,8 @@
 
 #include <client/common.hh>
 
-// We don't use those callbacks anywhere and they don't compile on MinGW.
-#define OV_EXCLUDE_STATIC_CALLBACKS
-
 #include <physfs.h>
 #include <AL/alc.h>
-#include <vorbis/vorbisfile.h>
-#include <mad.h>
-#include <neaacdec.h>
 
 namespace oz
 {
@@ -47,54 +41,20 @@ private:
   static const int   MUSIC_INPUT_BUFFER_SIZE = 64 * 1024;
   static const float SOUND_DISTANCE;
 
-  enum StreamType
-  {
-    NONE,
-    OGG,
-    MP3,
-    AAC
-  };
-
   SharedLib                   libeSpeak;
-  SharedLib                   libMad;
-  SharedLib                   libFaad;
 
   SBitset<Orbis::MAX_STRUCTS> playedStructs;
   float                       volume;
 
-  StreamType                  musicStreamType;
-
-  int                         musicRate;
-  int                         musicChannels;
-  int                         musicFormat;
   uint                        musicSource;
   uint                        musicBufferIds[2];
   int                         musicBuffersQueued;
-  char                        musicBuffer[MUSIC_BUFFER_SIZE];
-  ubyte                       musicInputBuffer[MUSIC_INPUT_BUFFER_SIZE + MAD_BUFFER_GUARD];
-
-  PHYSFS_File*                musicFile;
-
-  OggVorbis_File              oggStream;
-
-  mad_stream                  madStream;
-  mad_frame                   madFrame;
-  mad_synth                   madSynth;
-
-  int                         madWrittenSamples;
-  int                         madFrameSamples;
-
-  NeAACDecHandle              aacDecoder;
-
-  char*                       aacOutputBuffer;
-  int                         aacWrittenBytes;
-  int                         aacBufferBytes;
-  int                         aacInputBytes;
+  AL::Decoder                 musicDecoder;
 
   // Music track id to switch to, -1 to do nothing, -2 stop playing.
   int                         selectedTrack;
   volatile int                streamedTrack;
-  volatile int                streamedBytes;
+  volatile bool               streamedBytes;
 
   Thread                      musicThread;
   Thread                      soundThread;
@@ -117,9 +77,6 @@ private:
   static void musicMain(void*);
   static void soundMain(void*);
 
-  void musicOpen(const File& file);
-  void musicClear();
-  int  musicDecode();
   void musicRun();
 
   void playCell(int cellX, int cellY);

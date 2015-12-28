@@ -27,63 +27,7 @@ int main()
   System::init();
   Window::create("scratch", 640, 360);
 
-  ALuint buffers[2];
-  ALuint source;
 
-  alGenBuffers(2, buffers);
-  alGenSources(1, &source);
-
-//  AL::Decoder decoder("/home/davorin/Glasba/Whatever.wav", true);
-  AL::Decoder decoder("/home/davorin/Razvoj/openzone/data/oz_base/snd/sfxr/click.wav", false);
-//  AL::Decoder decoder("/usr/share/sounds/Oxygen-Sys-App-Error-Critical.ogg", false);
-
-  decoder.decode();
-  decoder.load(buffers[0]);
-  alSourceQueueBuffers(source, 1, &buffers[0]);
-
-  OZ_AL_CHECK_ERROR();
-
-  if (decoder.decode()) {
-    decoder.load(buffers[1]);
-    alSourceQueueBuffers(source, 1, &buffers[1]);
-  }
-
-  alSourcePlay(source);
-
-  OZ_AL_CHECK_ERROR();
-
-  while (decoder.isValid()) {
-    Time::sleep(10);
-
-    ALint nProcessed;
-    alGetSourcei(source, AL_BUFFERS_PROCESSED, &nProcessed);
-
-    if (nProcessed != 0) {
-      ALuint buffer;
-      alSourceUnqueueBuffers(source, 1, &buffer);
-
-      if (decoder.decode()) {
-        decoder.load(buffer);
-        alSourceQueueBuffers(source, 1, &buffer);
-      }
-    }
-  }
-
-  ALint state;
-  do {
-    Time::sleep(100);
-    alGetSourcei(source, AL_SOURCE_STATE, &state);
-  }
-  while (state == AL_PLAYING);
-
-  Time::sleep(100);
-
-  OZ_AL_CHECK_ERROR();
-
-  alDeleteSources(1, &source);
-  alDeleteBuffers(2, buffers);
-
-  OZ_AL_CHECK_ERROR();
 
   Window::destroy();
   return 0;

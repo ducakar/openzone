@@ -301,7 +301,7 @@ void Liber::initTextures()
 
 void Liber::initSounds()
 {
-  Log::println("Sounds (*.wav, *.oga, *.ogg in 'snd') {");
+  Log::println("Sounds (*.wav, *.opus, *.oga, *.ogg in 'snd') {");
   Log::indent();
 
   File dir = "@snd";
@@ -312,7 +312,9 @@ void Liber::initSounds()
     }
 
     for (const File& file : subDir.list()) {
-      if (!file.hasExtension("wav") && !file.hasExtension("oga") && !file.hasExtension("ogg")) {
+      if (!file.hasExtension("wav") && !file.hasExtension("opus") &&
+          !file.hasExtension("oga") && !file.hasExtension("ogg"))
+      {
         continue;
       }
 
@@ -517,7 +519,7 @@ void Liber::initClasses()
     }
 
     String name = file.baseName();
-    const String& base = config["base"].get("");
+    String base = config["base"].get("");
 
     if (objClassMap.contains(name)) {
       OZ_ERROR("Duplicated class '%s'", name.c());
@@ -532,9 +534,9 @@ void Liber::initClasses()
       OZ_ERROR("%s: Invalid class base '%s'", name.c(), base.c());
     }
 
-    const String& deviceType = config["deviceType"].get("");
-    const String& imagoType  = config["imagoType"].get("");
-    const String& audioType  = config["audioType"].get("");
+    String deviceType = config["deviceType"].get("");
+    String imagoType  = config["imagoType"].get("");
+    String audioType  = config["audioType"].get("");
 
     if (!deviceType.isEmpty()) {
       devices.include(deviceType);
@@ -662,9 +664,7 @@ void Liber::initMusicRecurse(const File& dir)
     if (file.isDirectory()) {
       initMusicRecurse(file);
     }
-    if (file.hasExtension("oga") || file.hasExtension("ogg") ||
-        (mapMP3s && file.hasExtension("mp3")) || (mapAACs && file.hasExtension("aac")))
-    {
+    if (file.hasExtension("opus") || file.hasExtension("oga") || file.hasExtension("ogg")) {
       Log::println("%s", file.c());
 
       musicTracks.add(Resource{file.baseName(), file});
@@ -675,12 +675,10 @@ void Liber::initMusicRecurse(const File& dir)
 void Liber::initMusic(const char* userMusicPath)
 {
   if (userMusicPath == nullptr || String::isEmpty(userMusicPath)) {
-    Log::println("Music (*.oga, *.ogg%s%s in 'music') {",
-                 mapMP3s ? ", *.mp3" : "", mapAACs ? "*.aac" : "");
+    Log::println("Music (*.opus, *.oga, *.ogg in 'music') {");
   }
   else {
-    Log::println("Music (*.oga, *.ogg%s%s in 'music' and '%s') {",
-                 mapMP3s ? ", *.mp3" : "", mapAACs ? ", *.aac" : "", userMusicPath);
+    Log::println("Music (*.opus, *.oga, *.ogg in 'music' and '%s') {", userMusicPath);
   }
   Log::indent();
 

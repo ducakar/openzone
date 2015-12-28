@@ -185,8 +185,11 @@ char* Stream::writeSkip(int count)
       size  = size < newLength ? (newLength + GRANULARITY - 1) & ~(GRANULARITY - 1) : size;
 
       char* newData = new char[size];
-      memcpy(newData, streamBegin, length);
-      delete[] streamBegin;
+
+      if (streamBegin != nullptr) {
+        memcpy(newData, streamBegin, length);
+        delete[] streamBegin;
+      }
 
       streamBegin = newData;
       streamEnd   = newData + size;

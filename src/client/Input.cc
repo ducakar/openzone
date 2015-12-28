@@ -215,7 +215,7 @@ void Input::loadKeyMap(const Json& keyConfig)
     }
 
     for (int j = 0; j < nBindings; ++j) {
-      const String& keyDesc = keyBindings[j].get("?");
+      String keyDesc = keyBindings[j].get("?");
 
       if (keyDesc.isEmpty()) {
         OZ_ERROR("Empty key description string for '%s'", KEY_NAMES[i]);

@@ -35,24 +35,33 @@ int main(int argc, char** argv)
   uint texId;
   glGenTextures(1, &texId);
   glBindTexture(GL_TEXTURE_2D, texId);
-//  GL::textureDataIdenticon(String::strongHash("Davorin"), 600, Vec4(0.20f, 0.30f, 0.25f, 1.00f));
-  GL::textureDataFromFile("/home/davorin/gvim.png");
-//  GL::textureDataFromFile("/usr/share/pixmaps/netbeans.png");
+  GL::textureDataIdenticon(StrongHash()("Davorin"), 600, Vec4(0.20f, 0.30f, 0.25f, 1.00f));
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
   Cursor cursor(file, Cursor::SYSTEM);
 
-  uint soundBuffer, soundSource, musicSource;
-  alGenBuffers(1, &soundBuffer);
-  alGenSources(1, &soundSource);
-  alGenSources(1, &musicSource);
+  ALuint buffers[2];
+  ALuint source;
 
-//  AL::bufferDataFromFile(soundBuffer, "/usr/share/sounds/Kopete_Event.ogg");
-  AL::Decoder decoder("/usr/share/sounds/uget/notification.wav");
+  alGenBuffers(2, buffers);
+  alGenSources(1, &source);
+
+  AL::Decoder decoder("/home/davorin/Glasba/Whatever.opus", true);
+//  AL::Decoder decoder("/home/davorin/Razvoj/openzone/data/oz_base/snd/sfxr/click.wav", false);
+//  AL::Decoder decoder("/usr/share/sounds/Oxygen-Sys-App-Error-Critical.ogg", false);
+
   decoder.decode();
-  decoder.load(soundBuffer);
-  alSourcei(soundSource, AL_BUFFER, soundBuffer);
-  alSourcePlay(soundSource);
+  decoder.load(buffers[0]);
+  alSourceQueueBuffers(source, 1, &buffers[0]);
+
+  OZ_AL_CHECK_ERROR();
+
+  if (decoder.decode()) {
+    decoder.load(buffers[1]);
+    alSourceQueueBuffers(source, 1, &buffers[1]);
+  }
+
+  alSourcePlay(source);
 
   OZ_AL_CHECK_ERROR();
 
@@ -97,12 +106,26 @@ int main(int argc, char** argv)
 
     cursor.update(15);
 
+    if (decoder.isValid()) {
+      ALint nProcessed;
+      alGetSourcei(source, AL_BUFFERS_PROCESSED, &nProcessed);
+
+      if (nProcessed != 0) {
+        ALuint buffer;
+        alSourceUnqueueBuffers(source, 1, &buffer);
+
+        if (decoder.decode()) {
+          decoder.load(buffer);
+          alSourceQueueBuffers(source, 1, &buffer);
+        }
+      }
+    }
+
     Time::sleep(15);
   }
 
-  alDeleteSources(1, &musicSource);
-  alDeleteSources(1, &soundSource);
-  alDeleteBuffers(1, &soundBuffer);
+  alDeleteSources(1, &source);
+  alDeleteBuffers(2, buffers);
 
   cursor.destroy();
 
