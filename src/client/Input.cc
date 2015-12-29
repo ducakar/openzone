@@ -514,10 +514,6 @@ void Input::init()
 
 void Input::destroy()
 {
-  if (configExists) {
-    return;
-  }
-
   File configFile = config["dir.config"].get(File::CONFIG) + "/input.json";
 
   Log::print("Writing Input configuration to '%s' ...", configFile.c());
@@ -527,15 +523,19 @@ void Input::destroy()
   inputConfig.add("_version", OZ_VERSION);
 
   Json& mouseConfig = inputConfig.add("mouse", Json::OBJECT);
-  mouseConfig.add("sensitivity.x", mouseSensX);
-  mouseConfig.add("sensitivity.y", mouseSensY);
-  mouseConfig.add("sensitivity.w", mouseSensW);
-  mouseConfig.add("smoothing", mouseSmoothing);
-  mouseConfig.add("rawInput", mouseRawInput);
+  OZ_CONF_ADD(mouseConfig, "sensitivity.x", mouseSensX, "Mouse X sensitivity. [0.003]");
+  OZ_CONF_ADD(mouseConfig, "sensitivity.y", mouseSensY, "Mouse Y sensitivity. [0.003]");
+  OZ_CONF_ADD(mouseConfig, "sensitivity.w", mouseSensW, "Mouse wheel sensitivity. [3.0]");
+  OZ_CONF_ADD(mouseConfig, "smoothing", mouseSmoothing, "Interpolation factor between the current "
+              "input (0.0) and the previous value (1.0). [0.3]");
+  OZ_CONF_ADD(mouseConfig, "rawInput", mouseRawInput, "Use raw input, not accelerated or adjusted "
+              "by the OS. [false]");
 
   Json& keyboardConfig = inputConfig.add("keyboard", Json::OBJECT);
-  keyboardConfig.add("sensitivity.x", keySensX);
-  keyboardConfig.add("sensitivity.y", keySensY);
+  OZ_CONF_ADD(keyboardConfig, "sensitivity.x", keySensX, "Left/right key sensitivity when rotating "
+              "camera.");
+  OZ_CONF_ADD(keyboardConfig, "sensitivity.y", keySensY, "Up/down key sensitivity when rotating "
+              "camera.");
 
   Json& keyMapConfig = inputConfig.add("bindings", Json::OBJECT);
   keyMapConfig = keyMapToJson();

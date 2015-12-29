@@ -109,17 +109,17 @@ namespace oz
 /**
  * Null pointer type.
  */
-using std::nullptr_t;
+typedef std::nullptr_t nullptr_t;
 
 /**
  * Platform-dependent unsigned integer type for memory offsets and sizes.
  */
-using std::size_t;
+typedef std::size_t size_t;
 
 /**
  * Platform-dependent signed integer type for memory offsets and pointer differences.
  */
-using std::ptrdiff_t;
+typedef std::ptrdiff_t ptrdiff_t;
 
 /**
  * Initialiser list.

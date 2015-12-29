@@ -300,10 +300,14 @@ void Shader::init()
 {
   Log::print("Initialising Shader ...");
 
-  doVertexEffects = config.include("shader.vertexEffects", true ).get(false);
-  doEnvMap        = config.include("shader.envMap",        true ).get(false);
-  doBumpMap       = config.include("shader.bumpMap",       true ).get(false);
-  doPostprocess   = config.include("shader.postprocess",   false).get(false);
+  doVertexEffects = OZ_CONF_INC(config, "shader.vertexEffects", true, "Perform vertex shader "
+                                "effects (e.g. trees swaying in wind).").get(false);
+  doEnvMap        = OZ_CONF_INC(config, "shader.envMap", true, "Fake reflections, makes nice shiny "
+                                "surfaces.").get(false);
+  doBumpMap       = OZ_CONF_INC(config, "shader.bumpMap", true, "Visual effect that renders (fake) "
+                                "relief on flat surfaces.").get(false);
+  doPostprocess   = OZ_CONF_INC(config, "shader.postprocess", false, "Postprocesses image and add "
+                                "bloom effect. Severly impacts performance.").get(false);
 
 #ifdef OZ_GL_ES
   doPostprocess = false;

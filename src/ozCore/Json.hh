@@ -40,7 +40,7 @@ namespace oz
  * This implementation strictly follows JSON standard with the following exceptions:
  * - `inf` and `-inf` (case-sensitive) represent positive and negative infinity respectively,
  * - `nan` (case-sensitive) represents not-a-number and
- * - C++-style comments are allowed.
+ * - C++-style comments are supported.
  */
 class Json
 {
@@ -107,19 +107,30 @@ private:
 
   union
   {
-    bool       boolean;             ///< Boolean value storage.
-    double     number      = 0.0;   ///< Number value storage.
-    void*      data;                ///< Pointer to other, complex, value storage.
+    bool       boolean;               ///< Boolean value storage.
+    double     number      = 0.0;     ///< Number value storage.
+    void*      data;                  ///< Pointer to other, complex, value storage.
   };
-  Type         valueType   = NIL;   ///< Value type, `Json::Type`.
-  mutable bool wasAccessed = false; ///< For warnings about unused variables.
+  char*        comment     = nullptr; ///< Comment (dynamically allocated).
+  Type         valueType   = NIL;     ///< Value type, `Json::Type`.
+  mutable bool wasAccessed = false;   ///< For warnings about unused variables.
 
 private:
 
   /**
    * Internal constructor for linear algebra types.
    */
-  explicit Json(const float* vector, int count);
+  explicit Json(const float* vector, int count, const char* comment);
+
+  /**
+   * Helper function for setting copying a value to avoid code duplication.
+   */
+  void copyValue(const Json& j);
+
+  /**
+   * Helper function for setting a comment to avoid code duplication.
+   */
+  Json& copyComment(const char* comment);
 
   /**
    * Helper function for `get()` for reading vectors, quaternions, matrices etc.
@@ -144,72 +155,72 @@ public:
   /**
    * Create null value.
    */
-  Json(nullptr_t);
+  Json(nullptr_t, const char* comment = nullptr);
 
   /**
    * Create a boolean value.
    */
-  Json(bool value);
+  Json(bool value, const char* comment = nullptr);
 
   /**
    * Create a number value for an integer.
    */
-  Json(int value);
+  Json(int value, const char* comment = nullptr);
 
   /**
    * Create a number value for a float.
    */
-  Json(float value);
+  Json(float value, const char* comment = nullptr);
 
   /**
    * Create a number value for a double.
    */
-  Json(double value);
+  Json(double value, const char* comment = nullptr);
 
   /**
    * Create a string value for a given string.
    */
-  Json(const String& value);
+  Json(const String& value, const char* comment = nullptr);
 
   /**
    * Create a string value for a given string.
    */
-  Json(const char* value);
+  Json(const char* value, const char* comment = nullptr);
 
   /**
    * Create an array of 3 numbers representing `Vec3` components.
    */
-  Json(const Vec3& v);
+  Json(const Vec3& v, const char* comment = nullptr);
 
   /**
    * Create an array of 4 numbers representing `Point` components.
    */
-  Json(const Point& p);
+  Json(const Point& p, const char* comment = nullptr);
 
   /**
    * Create an array of 4 numbers representing `Plane` components.
    */
-  Json(const Plane& p);
+  Json(const Plane& p, const char* comment = nullptr);
 
   /**
    * Create an array of 4 numbers representing `Vec4` components.
    */
-  Json(const Vec4& v);
+  Json(const Vec4& v, const char* comment = nullptr);
 
   /**
    * Create an array of 4 numbers representing `Quat` components.
    */
-  Json(const Quat& q);
+  Json(const Quat& q, const char* comment = nullptr);
 
   /**
    * Create an array of 9 numbers representing `Mat3` components.
    */
-  Json(const Mat3& m);
+  Json(const Mat3& m, const char* comment = nullptr);
 
   /**
    * Create an array of 16 numbers representing `Mat4` components.
    */
-  Json(const Mat4& m);
+  Json(const Mat4& m, const char* comment = nullptr);
 
   /**
    * Create an array from initialiser list of JSON values.
@@ -220,7 +231,7 @@ public:
    * Json array = {Json {0, 1}, {1, 2}, {2, 0}};
    * @endcode
    */
-  Json(InitialiserList<Json> l);
+  Json(InitialiserList<Json> l, const char* comment = nullptr);
 
   /**
    * Create an object from initialiser list of string-JSON pairs.
@@ -230,12 +241,7 @@ public:
    * Json object = {Json::Pair {"key1", 1}, {"key2", 2}, {"key3", 3}};
    * @endcode
    */
-  Json(InitialiserList<Pair> l);
-
-  /**
-   * Load from a file.
-   */
-  explicit Json(const File& file);
+  Json(InitialiserList<Pair> l, const char* comment = nullptr);
 
   /**
    * Destructor.
@@ -444,6 +450,16 @@ public:
     }
     return count;
   }
+
+  /**
+   * Get comment assigned to this value.
+   */
+  const char* getComment() const;
+
+  /**
+   * Assign a new comment to this value. Null or empty string clears it.
+   */
+  void setComment(const char* comment);
 
   /**
    * Append a value to array (copy).

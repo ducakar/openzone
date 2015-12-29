@@ -25,10 +25,5 @@ using namespace oz;
 int main()
 {
   System::init();
-  Window::create("scratch", 640, 360);
-
-
-
-  Window::destroy();
   return 0;
 }

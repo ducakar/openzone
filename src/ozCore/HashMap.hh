@@ -43,14 +43,14 @@ namespace oz
  * @sa `oz::HashSet`, `oz::Map`
  */
 template <typename Key, typename Value, class HashFunc = Hash<Key>>
-class HashMap : private HashSet<detail::MapPair<Key, Value, Less<Key>>, HashFunc>
+class HashMap : private HashSet<MapPair<Key, Value, Less<Key>>, HashFunc>
 {
 public:
 
   /**
    * Shortcut for key-value pair type.
    */
-  typedef detail::MapPair<Key, Value, Less<Key>> Pair;
+  typedef MapPair<Key, Value, Less<Key>> Pair;
 
   using typename HashSet<Pair, HashFunc>::CIterator;
   using typename HashSet<Pair, HashFunc>::Iterator;

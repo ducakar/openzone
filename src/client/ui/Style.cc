@@ -88,8 +88,8 @@ void Style::init()
 {
   Log::print("Initialising Style ...");
 
-  File configFile = "@ui/style.json";
-  Json config(configFile);
+  Json config;
+  config.load("@ui/style.json");
 
   const Json& fontsConfig = config["fonts"];
 

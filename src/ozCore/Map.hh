@@ -33,13 +33,10 @@
 namespace oz
 {
 
-namespace detail
-{
-
 /**
  * Key-value pair.
  */
-template <typename Key, typename Value, class LessFunc>
+template <typename Key, typename Value, class LessFunc = Less<Key>>
 struct MapPair
 {
   Key   key;   ///< Key.
@@ -84,8 +81,6 @@ struct MapPair
   }
 };
 
-}
-
 /**
  * Sorted array list of unique key-value pairs.
  *
@@ -101,14 +96,14 @@ struct MapPair
  * @sa `oz::Set`, `oz::HashMap`
  */
 template <typename Key, typename Value, class LessFunc = Less<Key>>
-class Map : private Set<detail::MapPair<Key, Value, LessFunc>>
+class Map : private Set<MapPair<Key, Value, LessFunc>>
 {
 public:
 
   /**
    * Shortcut for key-value pair type.
    */
-  typedef detail::MapPair<Key, Value, LessFunc> Pair;
+  typedef MapPair<Key, Value, LessFunc> Pair;
 
   using typename Set<Pair>::CIterator;
   using typename Set<Pair>::Iterator;

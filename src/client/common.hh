@@ -33,6 +33,12 @@
 // SDL macro named `main` causes havoc in several places in OpenZone engine.
 #define SDL_MAIN_HANDLED
 
+#define OZ_CONF_ADD(root, name, value, description) \
+  root.add(name, oz::Json(value, OZ_GETTEXT(description)))
+
+#define OZ_CONF_INC(root, name, value, description) \
+  root.include(name, oz::Json(value, OZ_GETTEXT(description)))
+
 namespace oz
 {
 namespace client
