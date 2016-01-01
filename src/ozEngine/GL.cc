@@ -1,7 +1,7 @@
 /*
  * ozEngine - OpenZone Engine Library.
  *
- * Copyright © 2002-2014 Davorin Učakar
+ * Copyright © 2002-2016 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -186,7 +186,7 @@ int GL::textureDataFromStream(Stream* is, int bias)
   int flags  = is->readInt();
   int height = is->readInt();
   int width  = is->readInt();
-  int pitch  = is->readInt();
+  int stride = is->readInt();
 
   is->readInt();
 
@@ -267,7 +267,7 @@ int GL::textureDataFromStream(Stream* is, int bias)
 
       int mipmapWidth  = width;
       int mipmapHeight = height;
-      int mipmapS3Size = pitch;
+      int mipmapS3Size = stride;
 
       for (int j = 0; j < nMipmaps; ++j) {
         if (pixelFlags & DDPF_FOURCC) {
@@ -279,7 +279,7 @@ int GL::textureDataFromStream(Stream* is, int bias)
           }
         }
         else {
-          int mipmapPitch = ((mipmapWidth * pixelSize + 3) / 4) * 4;
+          int mipmapPitch = Alloc::alignUp<int>(mipmapWidth * pixelSize, 4);
           int mipmapSize  = mipmapHeight * mipmapPitch;
 
           if (j < bias) {
@@ -351,12 +351,12 @@ void GL::textureDataIdenticon(int hash, int size, const Vec4& backgroundColour)
 
   int fieldSize = size / 6;
   int fieldHalf = fieldSize / 2;
-  int pitch     = ((size * 3 + 3) / 4) * 4;
+  int stride    = Alloc::alignUp(size * 3, 4);
 
-  List<char> data(size * pitch);
+  List<char> data(size * stride);
 
   for (int i = 0; i < size; ++i) {
-    char* pixel = &data[i * pitch];
+    char* pixel = &data[i * stride];
 
     for (int j = 0; j < size; ++j) {
       int x = j - fieldHalf;

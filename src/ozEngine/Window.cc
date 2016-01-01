@@ -1,7 +1,7 @@
 /*
  * ozEngine - OpenZone Engine Library.
  *
- * Copyright © 2002-2014 Davorin Učakar
+ * Copyright © 2002-2016 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -44,16 +44,18 @@ namespace oz
 
 struct ScreenshotInfo
 {
-  File  file;
-  int   width;
-  int   height;
-  char* pixels;
+  String basePath;
+  int    width;
+  int    height;
+  ubyte* pixels;
 };
 
 #ifdef __native_client__
 static const PPB_Fullscreen* ppbFullscreen      = nullptr;
+static const PPB_MouseLock*  ppbMouseLock       = nullptr;
 static pp::Graphics3D*       glContext          = nullptr;
 static Semaphore             flushSemaphore;
+static Semaphore             mouseLockSemaphore;
 #else
 static SDL_GLContext         glContext          = nullptr;
 #endif
@@ -61,7 +63,6 @@ static ALCdevice*            alDevice           = nullptr;
 static ALCcontext*           alContext          = nullptr;
 static SDL_Window*           window             = nullptr;
 static Thread                screenshotThread;
-static bool                  inputGrab          = false;
 
 #ifdef __native_client__
 
@@ -76,11 +77,14 @@ static void screenshotMain(void* data)
 {
   const ScreenshotInfo* info = static_cast<const ScreenshotInfo*>(data);
 
-  FILE* file = fopen(info->file, "wb");
+  String path = String::format("%s %s.png", info->basePath.c(), Time::local().toString().c());
+  FILE*  file = fopen(path, "wb");
+
   if (file == nullptr) {
     return;
   }
 
+  int         stride  = Alloc::alignUp<int>(info->width * 3, 4);
   png_struct* png     = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
   png_info*   pngInfo = png_create_info_struct(png);
 
@@ -90,12 +94,8 @@ static void screenshotMain(void* data)
   png_init_io(png, file);
   png_write_info(png, pngInfo);
 
-  int pitch = ((info->width * 3 + 3) / 4) * 4;
-
   for (int i = info->height - 1; i >= 0; --i) {
-    const char* row = &info->pixels[i * pitch];
-
-    png_write_row(png, reinterpret_cast<const ubyte*>(row));
+    png_write_row(png, &info->pixels[i * stride]);
   }
 
   png_write_end(png, pngInfo);
@@ -105,12 +105,14 @@ static void screenshotMain(void* data)
   delete info;
 }
 
-int  Window::screenWidth  = 0;
-int  Window::screenHeight = 0;
-int  Window::windowWidth  = 0;
-int  Window::windowHeight = 0;
-bool Window::fullscreen   = false;
-bool Window::windowFocus  = true;
+int          Window::screenWidth  = 0;
+int          Window::screenHeight = 0;
+int          Window::windowWidth  = 0;
+int          Window::windowHeight = 0;
+Window::Mode Window::windowMode   = Window::WINDOWED;
+bool         Window::windowActive = true;
+bool         Window::windowFocus  = true;
+bool         Window::windowGrab   = false;
 
 void Window::measureScreen()
 {
@@ -135,6 +137,39 @@ void Window::warpMouse()
   SDL_WarpMouseInWindow(window, windowWidth / 2, windowHeight / 2);
 }
 
+void Window::setGrab(bool grab)
+{
+#ifdef __native_client__
+
+  if (grab && !windowGrab) {
+    MainCall() += []
+    {
+      ppbMouseLock->LockMouse(PSGetInstanceId(), PP_MakeCompletionCallback([](void*, int result)
+      {
+        windowGrab = result == PP_OK;
+        mouseLockSemaphore.post();
+      },
+      nullptr));
+    };
+    mouseLockSemaphore.wait();
+  }
+  else if (!grab && windowGrab) {
+    MainCall() << []
+    {
+      ppbMouseLock->UnlockMouse(PSGetInstanceId());
+      windowGrab = false;
+    };
+  }
+
+#else
+
+  bool success = SDL_SetRelativeMouseMode(SDL_bool(grab)) == 0;
+
+  windowGrab = grab && success;
+
+#endif
+}
+
 void Window::swapBuffers()
 {
 #ifdef __native_client__
@@ -152,35 +187,38 @@ void Window::swapBuffers()
 #endif
 }
 
-void Window::screenshot(const File& file)
+void Window::screenshot(const char* basePath)
 {
   if (screenshotThread.isValid()) {
     screenshotThread.join();
   }
 
-  int   pitch  = ((windowWidth * 3 + 3) / 4) * 4;
-  char* pixels = new char[windowHeight * pitch];
+  int    stride = Alloc::alignUp<int>(windowWidth * 3, 4);
+  ubyte* pixels = new ubyte[windowHeight * stride];
 
-  ScreenshotInfo* info = new ScreenshotInfo{file, windowWidth, windowHeight, pixels};
+  ScreenshotInfo* info = new ScreenshotInfo{basePath, windowWidth, windowHeight, pixels};
 
   glReadPixels(0, 0, windowWidth, windowHeight, GL_RGB, GL_UNSIGNED_BYTE, info->pixels);
   screenshotThread = Thread("screenshot", screenshotMain, info);
 }
 
-void Window::resize(int newWidth, int newHeight, bool fullscreen_)
+void Window::resize(int newWidth, int newHeight, Mode newMode)
 {
-  newWidth  = newWidth  == 0 ? screenWidth  : newWidth;
-  newHeight = newHeight == 0 ? screenHeight : newHeight;
+  if (windowMode != WINDOWED) {
+    SDL_SetWindowFullscreen(window, 0);
+    SDL_RestoreWindow(window);
+  }
 
-  if (fullscreen) {
-    SDL_SetWindowFullscreen(window, SDL_bool(fullscreen_));
+  if (newWidth != 0 && newHeight != 0) {
     SDL_SetWindowSize(window, newWidth, newHeight);
-    fullscreen = false;
   }
-  else {
-    SDL_SetWindowSize(window, newWidth, newHeight);
-    fullscreen = SDL_SetWindowFullscreen(window, SDL_bool(fullscreen_)) == 0;
+
+  if (newMode != WINDOWED) {
+    SDL_SetWindowFullscreen(window, newMode == EXCLUSIVE ? SDL_WINDOW_FULLSCREEN :
+                                                           SDL_WINDOW_FULLSCREEN_DESKTOP);
   }
+
+  windowMode = newMode;
 }
 
 void Window::minimise()
@@ -191,49 +229,48 @@ void Window::minimise()
 bool Window::processEvent(const SDL_Event* event)
 {
   switch (event->type) {
-    case SDL_WINDOWEVENT_FOCUS_GAINED: {
-      windowFocus = true;
-
-      Input::setGrab(inputGrab);
-      break;
-    }
-    case SDL_WINDOWEVENT_FOCUS_LOST: {
-      windowFocus = false;
-      inputGrab   = Input::hasGrab();
-
-      Input::setGrab(false);
-      break;
-    }
-    case SDL_WINDOWEVENT_RESIZED: {
-      windowWidth  = event->window.data1;
-      windowHeight = event->window.data2;
-
-      Log::print("Resizing window to %dx%d [%s] ... ",
-                 windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed");
+    case SDL_WINDOWEVENT: {
+      switch (event->window.event) {
+        case SDL_WINDOWEVENT_FOCUS_GAINED: {
+          windowFocus = true;
+          break;
+        }
+        case SDL_WINDOWEVENT_FOCUS_LOST: {
+          windowFocus = false;
+          break;
+        }
+        case SDL_WINDOWEVENT_RESIZED: {
+          windowWidth  = event->window.data1;
+          windowHeight = event->window.data2;
 
 #ifdef __native_client__
-      MainCall() << []
-      {
-        ppbFullscreen->SetFullscreen(PSGetInstanceId(), PP_Bool(fullscreen));
+          MainCall() << []
+          {
+            ppbFullscreen->SetFullscreen(PSGetInstanceId(), PP_Bool(fullscreen));
 
-        glSetCurrentContextPPAPI(0);
-        glContext->ResizeBuffers(windowWidth, windowHeight);
-        glSetCurrentContextPPAPI(glContext->pp_resource());
-      };
+            glSetCurrentContextPPAPI(0);
+            glContext->ResizeBuffers(windowWidth, windowHeight);
+            glSetCurrentContextPPAPI(glContext->pp_resource());
+          };
 #endif
-
-      Log::printEnd("OK");
+          break;
+        }
+        case SDL_WINDOWEVENT_MINIMIZED: {
+          alcSuspendContext(alContext);
+          windowActive = false;
+          break;
+        }
+        case SDL_WINDOWEVENT_RESTORED: {
+          alcProcessContext(alContext);
+          windowActive = true;
+          break;
+        }
+        case SDL_WINDOWEVENT_CLOSE: {
+          return false;
+        }
+      }
       break;
     }
-    case SDL_WINDOWEVENT_MINIMIZED: {
-      alcSuspendContext(alContext);
-      break;
-    }
-    case SDL_WINDOWEVENT_RESTORED: {
-      alcProcessContext(alContext);
-      break;
-    }
-    case SDL_WINDOWEVENT_CLOSE:
     case SDL_QUIT: {
       return false;
     }
@@ -241,7 +278,7 @@ bool Window::processEvent(const SDL_Event* event)
   return true;
 }
 
-bool Window::create(const char* title, int width, int height, bool fullscreen_)
+bool Window::create(const char* title, int width, int height, Mode mode)
 {
   destroy();
 
@@ -254,14 +291,15 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
 
   windowWidth  = width  == 0 ? screenWidth  : width;
   windowHeight = height == 0 ? screenHeight : height;
-  fullscreen   = fullscreen_;
+  windowMode   = mode;
   windowFocus  = true;
 
   uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE |
-               (fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
+               (mode == EXCLUSIVE ? SDL_WINDOW_FULLSCREEN :
+                mode == DESKTOP ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 
-  Log::print("Creating window %dx%d [%s] ... ",
-             windowWidth, windowHeight, fullscreen ? "fullscreen" : "windowed");
+  Log::print("Creating window %dx%d [%s] ... ", windowWidth, windowHeight,
+             mode == EXCLUSIVE ? "exclusive" : mode == DESKTOP ? "desktop" : "windowed");
 
   // Force old Mesa drivers to turn on partial S3TC support even when libtxc_dxtn is not present.
   // We don't use online texture compression anywhere so partial S3TC support is enough.
@@ -294,6 +332,7 @@ bool Window::create(const char* title, int width, int height, bool fullscreen_)
 #ifdef __native_client__
 
   ppbFullscreen = static_cast<const PPB_Fullscreen*>(PSGetInterface(PPB_FULLSCREEN_INTERFACE));
+  ppbMouseLock  = static_cast<const PPB_MouseLock*>(PSGetInterface(PPB_MOUSELOCK_INTERFACE));
   fullscreen    = false;
 
   MainCall() << []

@@ -1,7 +1,7 @@
 /*
  * ozEngine - OpenZone Engine Library.
  *
- * Copyright © 2002-2014 Davorin Učakar
+ * Copyright © 2002-2016 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -40,14 +40,30 @@ namespace oz
  */
 class Window
 {
+public:
+
+  /**
+   * %Window mode.
+   */
+  enum Mode
+  {
+    WINDOWED,  ///< Windowed.
+    DESKTOP,   ///< Desktop fullscreen. Always uses desktop resolution.
+    EXCLUSIVE  ///< Exclusive fullscreen. Switches desktop resolution if necessary.
+  };
+
 private:
 
   static int  screenWidth;  ///< Screen width (desktop resolution).
   static int  screenHeight; ///< Screen height (desktop resolution).
-  static int  windowWidth;  ///< Window inner width.
-  static int  windowHeight; ///< Window inner height.
-  static bool fullscreen;   ///< True iff in full screen mode;
-  static bool windowFocus;  ///< True iff window has (input) focus.
+
+  static int  windowWidth;  ///< %Window inner width.
+  static int  windowHeight; ///< %Window inner height.
+  static Mode windowMode;   ///< True iff in full screen mode;
+
+  static bool windowActive; ///< True iff shown (not minimised).
+  static bool windowFocus;  ///< True iff the window has (input) focus.
+  static bool windowGrab;   ///< True if in relative mouse mode.
 
 private:
 
@@ -91,7 +107,7 @@ public:
   }
 
   /**
-   * Window width.
+   * %Window width.
    */
   static int width()
   {
@@ -99,7 +115,7 @@ public:
   }
 
   /**
-   * Window height.
+   * %Window height.
    */
   static int height()
   {
@@ -109,13 +125,21 @@ public:
   /**
    * True iff in fullscreen mode.
    */
-  static bool isFullscreen()
+  static Mode mode()
   {
-    return fullscreen;
+    return windowMode;
   }
 
   /**
-   * True iff the window has focus (must be set by `setFocus()`).
+   * True iff the window is shown (not minimised).
+   */
+  static bool isActive()
+  {
+    return windowActive;
+  }
+
+  /**
+   * True iff the window has focus.
    */
   static bool hasFocus()
   {
@@ -128,6 +152,19 @@ public:
   static void warpMouse();
 
   /**
+   * True iff the window has input grab.
+   */
+  static bool hasGrab()
+  {
+    return windowGrab;
+  }
+
+  /**
+   * Toggle input grab.
+   */
+  static void setGrab(bool grab);
+
+  /**
    * Swap OpenGL buffers.
    */
   static void swapBuffers();
@@ -138,15 +175,18 @@ public:
    * Creation of PNG is performed on a background thread as the best compression is used and it may
    * take some time. Only one screenshot thread at a time is possible, so making two screenshots in
    * a short time will block the second call until the first screenshot is written.
+   *
+   * @param basePath the screenshot is witten to a file named "<basePath>-<dataAndTime>.png".
    */
-  static void screenshot(const File& file);
+  static void screenshot(const char* basePath);
 
   /**
    * Resize window and/or toggle full-screen mode.
    *
-   * If width (or height) is 0, desktop width (or height) is used.
+   * Size is not changed if either dimension is zero. That should always be the case when switching
+   * into "desktop" fullscreen mode.
    */
-  static void resize(int newWidth, int newHeight, bool fullscreen);
+  static void resize(int newWidth, int newHeight, Mode newMode);
 
   /**
    * Minimise window.
@@ -167,7 +207,7 @@ public:
    * If width (or height) is 0, desktop width (or height) is used.
    * Invoking this function when the window is already created is an error.
    */
-  static bool create(const char* title, int width, int height, bool fullscreen = false);
+  static bool create(const char* title, int width, int height, Mode mode = WINDOWED);
 
   /**
    * Destroy the window.

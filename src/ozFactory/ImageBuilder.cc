@@ -1,7 +1,7 @@
 /*
  * ozFactory - OpenZone Assets Builder Library.
  *
- * Copyright © 2002-2014 Davorin Učakar
+ * Copyright © 2002-2016 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -165,7 +165,7 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
   int targetWidth    = max<int>(Math::lround(width * ImageBuilder::scale), 1);
   int targetHeight   = max<int>(Math::lround(height * ImageBuilder::scale), 1);
   int targetBPP      = hasAlpha || compress || isArray ? 32 : 24;
-  int pitchOrLinSize = ((targetWidth * targetBPP / 8 + 3) / 4) * 4;
+  int pitchOrLinSize = Alloc::alignUp<int>(targetWidth * targetBPP / 8 , 4);
   int nMipmaps       = doMipmaps ? Math::index1(max<int>(targetWidth, targetHeight)) + 1 : 1;
 
   int flags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
@@ -324,11 +324,11 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
       }
       else {
         const char* pixels = reinterpret_cast<const char*>(FreeImage_GetBits(level));
-        int         pitch  = FreeImage_GetPitch(level);
+        int         stride = FreeImage_GetPitch(level);
 
         for (int k = 0; k < levelHeight; ++k) {
           os.write(pixels, levelWidth * targetBPP / 8);
-          pixels += pitch;
+          pixels += stride;
         }
       }
 

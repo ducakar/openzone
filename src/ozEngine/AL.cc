@@ -1,7 +1,7 @@
 /*
  * ozEngine - OpenZone Engine Library.
  *
- * Copyright © 2002-2014 Davorin Učakar
+ * Copyright © 2002-2016 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -27,7 +27,9 @@
 
 #include <AL/alext.h>
 #include <cstring>
+# ifdef OZ_OPUS
 #include <opus/opusfile.h>
+# endif
 #include <vorbis/vorbisfile.h>
 
 namespace oz
@@ -184,6 +186,8 @@ bool AL::Decoder::WaveStream::decode(AL::Decoder* decoder)
   return true;
 }
 
+#ifdef OZ_OPUS
+
 struct AL::Decoder::OpusStream : AL::Decoder::StreamBase
 {
   static const int FRAME_SIZE = 120 * 48;
@@ -260,6 +264,8 @@ bool AL::Decoder::OpusStream::decode(AL::Decoder* decoder)
 
   return true;
 }
+
+#endif
 
 struct AL::Decoder::VorbisStream : AL::Decoder::StreamBase
 {
@@ -355,9 +361,11 @@ AL::Decoder::Decoder(const File& file, bool isStreaming) :
   if (file.hasExtension("wav")) {
     stream = new WaveStream(this, file);
   }
+#ifdef OZ_OPUS
   else if (file.hasExtension("opus")) {
     stream = new OpusStream(this, file, isStreaming);
   }
+#endif
   else if (file.hasExtension("oga") || file.hasExtension("ogg")) {
     stream = new VorbisStream(this, file, isStreaming);
   }

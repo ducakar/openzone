@@ -20,15 +20,61 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-/**
- * @file ozEngine/common.hh
- *
- * Common include file for ozEngine.
- */
-
 #pragma once
 
-#include <ozCore/ozCore.hh>
-#include <ozEngine/config.hh>
+#include "Window.hh"
 
-#define SDL_MAIN_HANDLED
+namespace oz
+{
+
+class Application
+{
+public:
+
+  class Stage
+  {
+  public:
+
+    virtual ~Stage();
+
+    virtual void load();
+    virtual void unload();
+
+    virtual void update();
+    virtual void present(bool isEnoughTime);
+  };
+
+  struct Config
+  {
+    struct WindowConfig
+    {
+      const char*  title  = "Untitled";
+      int          width  = 800;
+      int          height = 600;
+      Window::Mode mode   = Window::WINDOWED;
+    };
+
+    struct TimingConfig
+    {
+      float tickTime = 1.0f / 60.0f;
+      bool  isFixed  = true;
+    };
+
+    const char*  name;
+    WindowConfig window;
+    TimingConfig timing;
+  };
+
+  static Config config;
+
+public:
+
+  Application() = delete;
+
+  static void setStage(Stage* stage);
+
+  static void run(Stage* initialStage);
+
+};
+
+}

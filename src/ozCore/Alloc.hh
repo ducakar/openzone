@@ -1,7 +1,7 @@
 /*
  * ozCore - OpenZone Core Library.
  *
- * Copyright © 2002-2014 Davorin Učakar
+ * Copyright © 2002-2016 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -103,29 +103,11 @@ public:
   /**
    * Align to the previous boundary.
    */
-  OZ_ALWAYS_INLINE
-  static constexpr size_t alignDown(size_t size, size_t alignment = OZ_ALIGNMENT)
-  {
-    return size & ~(alignment - 1);
-  }
-
-  /**
-   * Align to the next boundary.
-   */
-  OZ_ALWAYS_INLINE
-  static constexpr size_t alignUp(size_t size, size_t alignment = OZ_ALIGNMENT)
-  {
-    return (size + alignment - 1) & ~(alignment - 1);
-  }
-
-  /**
-   * Align to the previous boundary.
-   */
   template <typename Type>
   OZ_ALWAYS_INLINE
-  static constexpr Type* alignDown(Type* p, size_t alignment = OZ_ALIGNMENT)
+  static constexpr Type alignDown(Type size, size_t alignment = OZ_ALIGNMENT)
   {
-    return reinterpret_cast<Type*>(size_t(p) & ~(alignment - 1));
+    return Type(size_t(size) & ~(alignment - 1));
   }
 
   /**
@@ -133,9 +115,9 @@ public:
    */
   template <typename Type>
   OZ_ALWAYS_INLINE
-  static constexpr Type* alignUp(Type* p, size_t alignment = OZ_ALIGNMENT)
+  static constexpr Type alignUp(Type size, size_t alignment = OZ_ALIGNMENT)
   {
-    return reinterpret_cast<Type*>(size_t(p + alignment - 1) & ~(alignment - 1));
+    return Type((size_t(size) + alignment - 1) & ~(alignment - 1));
   }
 
 };

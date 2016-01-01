@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2014 Davorin Učakar
+ * Copyright © 2002-2016 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,41 @@
 
 using namespace oz;
 
+class MainStage : public Application::Stage
+{
+public:
+
+  void update() override;
+  void present(bool isEnoughTime) override;
+
+};
+
+void MainStage::update()
+{}
+
+void MainStage::present(bool isEnoughTime)
+{
+  if (isEnoughTime) {
+    glClearColor(0.2f, 0.2f, 0.4f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    Window::swapBuffers();
+  }
+}
+
+static MainStage mainStage;
+
 int main()
 {
   System::init();
+
+  Application::config.name          = "openzone";
+
+  Application::config.window.title  = "OpenZone";
+  Application::config.window.width  = 800;
+  Application::config.window.height = 450;
+  Application::config.window.mode   = Window::WINDOWED;
+
+  Application::run(&mainStage);
   return 0;
 }

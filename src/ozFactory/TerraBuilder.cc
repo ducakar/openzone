@@ -1,7 +1,7 @@
 /*
  * ozFactory - OpenZone Assets Builder Library.
  *
- * Copyright © 2002-2014 Davorin Učakar
+ * Copyright © 2002-2016 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -316,12 +316,12 @@ ImageData TerraBuilder::generateImage(int width, int height)
   ensureInitialised();
 
   ImageData  image(width, height);
-  int    pitch   = width * 4;
+  int    stride  = width * 4;
   double dWidth  = width;
   double dHeight = height;
 
   for (int y = 0; y < height; ++y) {
-    char* pixels = &image.pixels[y * pitch];
+    char* pixels = &image.pixels[y * stride];
 
     for (int x = 0; x < width; ++x) {
       uint pixelColour = getColour(x / dWidth, 1.0 - y / dHeight);
@@ -340,7 +340,7 @@ ImageData* TerraBuilder::generateCubeNoise(int size)
 {
   ensureInitialised();
 
-  int    pitch  = size * 4;
+  int    stride = size * 4;
   double dim    = size / 2.0;
 
   ImageData* images = new ImageData[6] {
@@ -354,7 +354,7 @@ ImageData* TerraBuilder::generateCubeNoise(int size)
 
   // +X.
   for (int y = 0; y < size; ++y) {
-    char* line = &images[0].pixels[(size - 1 - y) * pitch];
+    char* line = &images[0].pixels[(size - 1 - y) * stride];
 
     for (int x = 0; x < size; ++x) {
       double u      = x / (dim - 0.5);
@@ -370,7 +370,7 @@ ImageData* TerraBuilder::generateCubeNoise(int size)
   }
   // -X.
   for (int y = 0; y < size; ++y) {
-    char* line = &images[1].pixels[(size - 1 - y) * pitch];
+    char* line = &images[1].pixels[(size - 1 - y) * stride];
 
     for (int x = 0; x < size; ++x) {
       double u      = x / (dim - 0.5);
@@ -387,7 +387,7 @@ ImageData* TerraBuilder::generateCubeNoise(int size)
 
   // +Y.
   for (int y = 0; y < size; ++y) {
-    char* line = &images[2].pixels[(size - 1 - y) * pitch];
+    char* line = &images[2].pixels[(size - 1 - y) * stride];
 
     for (int x = 0; x < size; ++x) {
       double u      = x / (dim - 0.5);
@@ -404,7 +404,7 @@ ImageData* TerraBuilder::generateCubeNoise(int size)
 
   // -Y.
   for (int y = 0; y < size; ++y) {
-    char* line = &images[3].pixels[(size - 1 - y) * pitch];
+    char* line = &images[3].pixels[(size - 1 - y) * stride];
 
     for (int x = 0; x < size; ++x) {
       double u      = x / (dim - 0.5);
@@ -421,7 +421,7 @@ ImageData* TerraBuilder::generateCubeNoise(int size)
 
   // +Z.
   for (int y = 0; y < size; ++y) {
-    char* line = &images[4].pixels[(size - 1 - y) * pitch];
+    char* line = &images[4].pixels[(size - 1 - y) * stride];
 
     for (int x = 0; x < size; ++x) {
       double u      = x / (dim - 0.5);
@@ -438,7 +438,7 @@ ImageData* TerraBuilder::generateCubeNoise(int size)
 
   // -Z.
   for (int y = 0; y < size; ++y) {
-    char* line = &images[5].pixels[(size - 1 - y) * pitch];
+    char* line = &images[5].pixels[(size - 1 - y) * stride];
 
     for (int x = 0; x < size; ++x) {
       double u      = x / (dim - 0.5);

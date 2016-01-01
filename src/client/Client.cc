@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2014 Davorin Učakar
+ * Copyright © 2002-2016 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -171,21 +171,15 @@ int Client::main()
           }
           else if (keysym.sym == SDLK_F11) {
             if (keysym.mod & KMOD_CTRL) {
-              oz::Input::setGrab(!oz::Input::hasGrab()); // TODO remove oz::
+              Window::setGrab(!Window::hasGrab());
             }
-#ifdef __native_client__
-            else {
-              Window::resize(Window::width(), Window::height(), !Window::isFullscreen());
-            }
-#else
-            else if (Window::isFullscreen()) {
-              Window::resize(windowWidth, windowHeight, false);
+            else if (Window::mode() == Window::WINDOWED) {
+              Window::resize(0, 0, Window::DESKTOP);
             }
             else {
-              Window::resize(screenWidth, screenHeight, true);
+              Window::resize(windowWidth, windowHeight, Window::WINDOWED);
             }
             input.reset();
-#endif
           }
 #ifndef __native_client__
           else if (keysym.sym == SDLK_F12) {
@@ -499,12 +493,12 @@ int Client::init(int argc, char** argv)
   bool fullscreen = config.include("window.fullscreen", true).get(false);
 
   Window::create("OpenZone " OZ_VERSION,
-                 fullscreen ? screenWidth  : windowWidth,
+                 fullscreen ? screenWidth : windowWidth,
                  fullscreen ? screenHeight : windowHeight,
-                 fullscreen);
+                 fullscreen ? Window::DESKTOP : Window::WINDOWED);
+
   initFlags |= INIT_WINDOW;
 
-  oz::Input::init();
   input.init();
   initFlags |= INIT_INPUT;
 
@@ -655,7 +649,7 @@ int Client::init(int argc, char** argv)
   stage->load();
 
 #ifndef __native_client__
-  oz::Input::setGrab(true); // TODO remove oz::
+  Window::setGrab(true);
 #endif
   input.reset();
 

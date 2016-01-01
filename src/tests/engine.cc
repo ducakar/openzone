@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2014 Davorin Učakar
+ * Copyright © 2002-2016 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 {
   System::init();
   SDL_Init(SDL_INIT_VIDEO);
-  Window::create("Test", 600, 600, false);
+  Window::create("Test", 600, 600);
 
   File file = argc < 2 ? "/usr/share/icons/OpenZone_Ice_Slim/cursors/wait" : argv[1];
 

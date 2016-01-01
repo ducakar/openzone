@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2014 Davorin Učakar
+ * Copyright © 2002-2016 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -306,7 +306,7 @@ void Loader::preloadRun()
 void Loader::makeScreenshot()
 {
   File picturesDir = config["dir.pictures"].get(File::PICTURES);
-  File screenshot  = picturesDir / "OpenZone " + Time::local().toString() + ".png";
+  File screenshot  = picturesDir / "OpenZone";
 
   picturesDir.mkdir();
 

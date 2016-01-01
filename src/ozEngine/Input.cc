@@ -1,7 +1,7 @@
 /*
  * ozEngine - OpenZone Engine Library.
  *
- * Copyright © 2002-2014 Davorin Učakar
+ * Copyright © 2002-2016 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -24,22 +24,12 @@
 
 #include <SDL2/SDL.h>
 
-#ifdef __native_client__
-# include <ppapi/cpp/completion_callback.h>
-# include <ppapi_simple/ps.h>
-# include <ppapi_simple/ps_interface.h>
-#endif
-
 namespace oz
 {
 
 // Char type is used to map actions, so no more than 256 are possible.
 static_assert(Input::MAX_ACTIONS <= 128, "MAX_ACTIONS must be <= 128");
 
-#ifdef __native_client__
-static const PPB_MouseLock*        ppbMouseLock       = nullptr;
-static Semaphore                   mouseLockSemaphore;
-#endif
 static byte                        keyMaps[4][SDL_NUM_SCANCODES];
 static byte                        buttonMaps[4][8];
 static SBitset<Input::MAX_ACTIONS> previousActions;
@@ -48,15 +38,14 @@ static Input::ModKey               modKey = Input::NONE;
 
 static inline void updateModKey(ushort modMask)
 {
-  modKey = modMask & KMOD_ALT ? Input::ALT :
-           modMask & KMOD_CTRL ? Input::CONTROL :
+  modKey = modMask & KMOD_ALT   ? Input::ALT :
+           modMask & KMOD_CTRL  ? Input::CONTROL :
            modMask & KMOD_SHIFT ? Input::SHIFT : Input::NONE;
 }
 
 SBitset<Input::MAX_ACTIONS> Input::downActions;
 SBitset<Input::MAX_ACTIONS> Input::pressedActions;
 SBitset<Input::MAX_ACTIONS> Input::releasedActions;
-bool                        Input::inputGrab;
 Input::Mouse                Input::mouse;
 Input::Config               Input::config = {
   {
@@ -74,37 +63,6 @@ Input::Config               Input::config = {
     false
   }
 };
-
-void Input::setGrab(bool grab)
-{
-#ifdef __native_client__
-
-  if (grab && !inputGrab) {
-    MainCall() += []
-    {
-      ppbMouseLock->LockMouse(PSGetInstanceId(), PP_MakeCompletionCallback([](void*, int result)
-      {
-        inputGrab = result == PP_OK;
-        mouseLockSemaphore.post();
-      },
-      nullptr));
-    };
-    mouseLockSemaphore.wait();
-  }
-  else if (!grab && inputGrab) {
-    MainCall() << []
-    {
-      ppbMouseLock->UnlockMouse(PSGetInstanceId());
-      inputGrab = false;
-    };
-  }
-
-#else
-
-  inputGrab = SDL_SetRelativeMouseMode(SDL_bool(grab)) == 0 && grab;
-
-#endif
-}
 
 void Input::processEvent(const SDL_Event* event)
 {
@@ -215,13 +173,6 @@ bool Input::saveConfig(const File& file)
   mouse.add("isRaw", config.mouse.isRaw);
 
   return root.save(file);
-}
-
-void Input::init()
-{
-#ifdef __native_client__
-  ppbMouseLock = static_cast<const PPB_MouseLock*>(PSGetInterface(PPB_MOUSELOCK_INTERFACE));
-#endif
 }
 
 }

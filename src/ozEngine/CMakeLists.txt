@@ -5,6 +5,7 @@ add_library(ozEngine
   ${CMAKE_CURRENT_BINARY_DIR}/config.hh
 #BEGIN SOURCES
   AL.hh
+  Application.hh
   common.hh
   Cursor.hh
   Font.hh
@@ -14,6 +15,7 @@ add_library(ozEngine
   ozEngine.hh
   Window.hh
   AL.cc
+  Application.cc
   Cursor.cc
   Font.cc
   GL.cc
@@ -24,8 +26,8 @@ add_library(ozEngine
 )
 
 target_link_libraries(ozEngine ${LUA_LIBRARIES} ${GL_LIBRARIES} ${OPENAL_LIBRARY} ${PNG_LIBRARY}
-                               ${OPUSFILE_LIBRARIES} ${VORBISFILE_LIBRARIES} mad faad
-                               ${SDL_LIBRARIES} ${SDL_TTF_LIBRARIES})
+#                               ${OPUSFILE_LIBRARIES}
+                               ${VORBISFILE_LIBRARIES} ${SDL_LIBRARIES} ${SDL_TTF_LIBRARIES})
 
 if(NOT NACL)
 #  target_link_libraries(ozEngine ${SDL_NET_LIBRARIES})

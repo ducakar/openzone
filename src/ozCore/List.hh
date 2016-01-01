@@ -1,7 +1,7 @@
 /*
  * ozCore - OpenZone Core Library.
  *
- * Copyright © 2002-2014 Davorin Učakar
+ * Copyright © 2002-2016 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -47,11 +47,6 @@ namespace oz
 template <typename Elem>
 class List
 {
-protected:
-
-  /// Granularity for automatic storage allocations.
-  static const int GRANULARITY = 8;
-
 public:
 
   /**
@@ -75,22 +70,15 @@ protected:
   /**
    * Ensure a given capacity.
    *
-   * Capacity is doubled if neccessary. If that doesn't suffice it is set to the least multiple of
-   * `GRANULARITY` able to hold the requested number of elements.
+   * If the current capacity is not sufficent it is set to `max(1.5 * currentCap, requestedCap)`.
    */
-  void ensureCapacity(int capacity)
+  void ensureCapacity(int requesteCapacity)
   {
-    if (capacity < 0) {
+    if (requesteCapacity < 0) {
       OZ_ERROR("oz::List: Capacity overflow");
     }
-    else if (size < capacity) {
-      size *= 2;
-      size  = size < capacity ? (capacity + GRANULARITY - 1) & ~(GRANULARITY - 1) : size;
-
-      if (size <= 0) {
-        OZ_ERROR("oz::List: Capacity overflow");
-      }
-
+    else if (size < requesteCapacity) {
+      size = max<int>(size + size / 2, requesteCapacity);
       data = Arrays::reallocate<Elem>(data, count, size);
     }
   }

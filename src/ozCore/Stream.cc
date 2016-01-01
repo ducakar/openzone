@@ -1,7 +1,7 @@
 /*
  * ozCore - OpenZone Core Library.
  *
- * Copyright © 2002-2014 Davorin Učakar
+ * Copyright © 2002-2016 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -21,6 +21,8 @@
  */
 
 #include "Stream.hh"
+
+#include "Alloc.hh"
 
 #include <cstring>
 #include <zlib.h>
@@ -144,9 +146,9 @@ void Stream::resize(int newSize)
   memcpy(newData, streamBegin, length);
   delete[] streamBegin;
 
+  streamPos   = newData + length;
   streamBegin = newData;
   streamEnd   = newData + newSize;
-  streamPos   = newData + length;
 }
 
 const char* Stream::readSkip(int count)
@@ -177,12 +179,12 @@ char* Stream::writeSkip(int count)
   }
   else if (streamPos > streamEnd) {
     if (flags & BUFFERED) {
-      size_t size      = streamEnd - streamBegin;
-      size_t length    = streamPos - streamBegin - count;
       size_t newLength = streamPos - streamBegin;
+      size_t length    = newLength - count;
+      size_t size      = streamEnd - streamBegin;
 
-      size *= 2;
-      size  = size < newLength ? (newLength + GRANULARITY - 1) & ~(GRANULARITY - 1) : size;
+      size = size + size / 2;
+      size = size < newLength ? Alloc::alignUp<size_t>(newLength, GRANULARITY) : size;
 
       char* newData = new char[size];
 

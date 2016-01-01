@@ -1,7 +1,7 @@
 /*
  * ozEngine - OpenZone Engine Library.
  *
- * Copyright © 2002-2014 Davorin Učakar
+ * Copyright © 2002-2016 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -138,7 +138,6 @@ private:
   static SBitset<MAX_ACTIONS> downActions;     ///< Action for which keys were down.
   static SBitset<MAX_ACTIONS> pressedActions;  ///< Action for which keys were pressed.
   static SBitset<MAX_ACTIONS> releasedActions; ///< Action for which keys were released.
-  static bool                 inputGrab;       ///< True if in relative mouse mode.
 
 public:
 
@@ -177,19 +176,6 @@ public:
   }
 
   /**
-   * True iff the window has input grab.
-   */
-  static bool hasGrab()
-  {
-    return inputGrab;
-  }
-
-  /**
-   * Toggle input grab.
-   */
-  static void setGrab(bool grab);
-
-  /**
    * Process an input-replated SDL event.
    */
   static void processEvent(const SDL_Event* event);
@@ -208,11 +194,6 @@ public:
    * Save configuration to a file.
    */
   static bool saveConfig(const File& file);
-
-  /**
-   * Initialise PPAPI interfaces.
-   */
-  static void init();
 
 };
 
