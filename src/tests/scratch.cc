@@ -50,13 +50,10 @@ int main()
 {
   System::init();
 
-  Application::config.name          = "openzone";
-
-  Application::config.window.title  = "OpenZone";
-  Application::config.window.width  = 800;
-  Application::config.window.height = 450;
-  Application::config.window.mode   = Window::WINDOWED;
-
+  Application::defaults.name         = "scratch";
+  Application::defaults.window.title = "Scratch";
+  Application::defaults.loadConfig   = true;
+  Application::defaults.saveConfig   = true;
   Application::run(&mainStage);
   return 0;
 }

@@ -35,12 +35,37 @@ public:
   {
   public:
 
+    /**
+     * Destructor.
+     */
     virtual ~Stage();
 
+    /**
+     * Load stage, called after the previous stage was unloaded.
+     */
     virtual void load();
+
+    /**
+     * Unload stage.
+     */
     virtual void unload();
 
+    /**
+     * Update game world, called once per update.
+     *
+     * This function should update the game world, not perform any rendering or frontend stuff.
+     */
     virtual void update();
+
+    /**
+     * Present game world, called after `update()`.
+     *
+     * In case there is not enough time left this function should skip frame rendering and only do
+     * some non-demanding things that mus be performed even if the frame is dropped (e.g. play sound
+     * effects).
+     *
+     * @param isEnoughTime whether there is still enough time to render full frame.
+     */
     virtual void present(bool isEnoughTime);
   };
 
@@ -49,27 +74,39 @@ public:
     struct WindowConfig
     {
       const char*  title  = "Untitled";
-      int          width  = 800;
-      int          height = 600;
+      int          width  = 1280;
+      int          height = 720;
       Window::Mode mode   = Window::WINDOWED;
     };
 
     struct TimingConfig
     {
-      float tickTime = 1.0f / 60.0f;
-      bool  isFixed  = true;
+      int  fps      = 60;
+      bool isFixed  = true;
     };
 
-    const char*  name;
+    const char*  name       = "untitled";
+    bool         loadConfig = false;
+    bool         saveConfig = false;
     WindowConfig window;
     TimingConfig timing;
   };
 
-  static Config config;
+public:
+
+  static const File& CONFIG_DIR;
+  static const File& DATA_DIR;
+
+public:
+
+  static Config defaults;
+  static Json   config;
 
 public:
 
   Application() = delete;
+
+  static float dt();
 
   static void setStage(Stage* stage);
 

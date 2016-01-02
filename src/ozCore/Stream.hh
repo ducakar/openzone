@@ -42,9 +42,6 @@ class Stream
 {
 private:
 
-  /// Granularity used for internal buffer resizing.
-  static const int GRANULARITY = 4096;
-
   /// Writing to stream is enabled.
   static const int WRITABLE = 0x1;
 
@@ -269,7 +266,8 @@ public:
   /**
    * Skip `count` bytes.
    *
-   * Internal buffer is resized if necessary.
+   * Internal buffer is increased if necessary with growth factor 1.5 or to (at least) 4 KiB as the
+   * initial allocation.
    *
    * @return Pointer to the beginning of the skipped bytes.
    */

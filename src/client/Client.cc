@@ -395,7 +395,6 @@ int Client::init(int argc, char** argv)
 #endif
 
   File::init();
-  initFlags |= INIT_PHYSFS;
 
 #ifdef __ANDROID__
 
@@ -441,17 +440,6 @@ int Client::init(int argc, char** argv)
 
   dataDir.mountAt("/");
 
-  if (SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO) != 0) {
-    OZ_ERROR("Failed to initialise SDL: %s", SDL_GetError());
-  }
-
-  initFlags |= INIT_SDL;
-
-  if (TTF_Init() < 0) {
-    OZ_ERROR("Failed to initialise SDL_ttf");
-  }
-  initFlags |= INIT_SDL_TTF;
-
   // Clean up after previous versions. Be evil. Delete screenshots.
   File screenshotDir = configDir + "/screenshots";
 
@@ -484,11 +472,6 @@ int Client::init(int argc, char** argv)
   windowHeight = config.include("window.windowHeight", 720 ).get(0);
   screenWidth  = config.include("window.screenWidth",  0   ).get(0);
   screenHeight = config.include("window.screenHeight", 0   ).get(0);
-
-  windowWidth  = windowWidth  == 0 ? Window::desktopWidth()  : windowWidth;
-  windowHeight = windowHeight == 0 ? Window::desktopHeight() : windowHeight;
-  screenWidth  = screenWidth  == 0 ? Window::desktopWidth()  : screenWidth;
-  screenHeight = screenHeight == 0 ? Window::desktopHeight() : screenHeight;
 
   bool fullscreen = config.include("window.fullscreen", true).get(false);
 
@@ -605,6 +588,11 @@ int Client::init(int argc, char** argv)
   initFlags |= INIT_LIBRARY;
   liber.init(config["dir.music"].get(""));
 
+  if (TTF_Init() < 0) {
+    OZ_ERROR("Failed to initialise SDL_ttf");
+  }
+  initFlags |= INIT_SDL_TTF;
+
   initFlags |= INIT_CONTEXT;
   context.init();
 
@@ -675,6 +663,9 @@ void Client::shutdown()
   if (initFlags & INIT_CONTEXT) {
     context.destroy();
   }
+  if (initFlags & INIT_SDL_TTF) {
+    TTF_Quit();
+  }
   if (initFlags & INIT_LIBRARY) {
     liber.destroy();
   }
@@ -705,18 +696,7 @@ void Client::shutdown()
 
   config.clear(initFlags & INIT_CONFIG);
 
-  if (initFlags & INIT_SDL_TTF) {
-    TTF_Quit();
-  }
-  if (initFlags & INIT_SDL) {
-    // HACK Crashes on NaCl.
-#ifndef __native_client__
-    SDL_Quit();
-#endif
-  }
-  if (initFlags & INIT_PHYSFS) {
-    File::destroy();
-  }
+  File::destroy();
 
   Log::printProfilerStatistics();
   Profiler::clear();

@@ -29,8 +29,16 @@
 namespace oz
 {
 
+static const EnumMap<Window::Mode> WINDOW_MODES = {
+  {Window::WINDOWED, "WINDOWED"},
+  {Window::DESKTOP, "DESKTOP"},
+  {Window::EXCLUSIVE, "EXCLUSIVE"}
+};
+
 static Application::Stage* currentStage = nullptr;
 static Application::Stage* nextStage    = nullptr;
+static File                configDir;
+static File                dataDir;
 
 Application::Stage::~Stage()
 {}
@@ -47,7 +55,10 @@ void Application::Stage::update()
 void Application::Stage::present(bool)
 {}
 
-Application::Config Application::config;
+const File&         Application::CONFIG_DIR = configDir;
+const File&         Application::DATA_DIR   = dataDir;
+Application::Config Application::defaults;
+Json                Application::config;
 
 void Application::setStage(Stage* stage)
 {
@@ -56,20 +67,66 @@ void Application::setStage(Stage* stage)
 
 void Application::run(Stage* initialStage)
 {
-  currentStage = initialStage;
-  nextStage    = initialStage;
+  if (initialStage == nullptr) {
+    OZ_ERROR("oz::Application: initialStage must point to a valid stage");
+  }
+
+  nextStage = initialStage;
+
+#ifdef __native_client__
+
+  Pepper::init();
+
+  const PPB_View* view = PSInterfaceView();
+
+  PSEventSetFilter(PSE_INSTANCE_DIDCHANGEVIEW);
+
+  PP_Rect  rect;
+  PSEvent* event = PSEventWaitAcquire();
+  view->GetRect(event->as_resource, &rect);
+
+  PSEventRelease(event);
+
+  NACL_SetScreenResolution(rect.size.width, rect.size.height, 0);
+  SDL_SetMainReady();
+
+#endif
 
   File::init();
 
-  if (!Window::create(config.window.title, config.window.width, config.window.height,
-                      config.window.mode))
+  configDir = File::CONFIG + "/" + defaults.name;
+  dataDir   = File::DATA + "/" + defaults.name;
+
+  if (defaults.loadConfig) {
+    File configFile = configDir + "/config.json";
+
+    Log::print("Loading configuration from `%s' ... ", configFile.c());
+
+    bool success = config.load(configDir + "/config.json");
+
+    Log::printEnd(success ? "OK" : "Failed");
+  }
+
+  if (config.type() != Json::OBJECT) {
+    config = Json::OBJECT;
+  }
+
+  Json& windowConfig = config.include("window", Json::OBJECT);
+
+  if (!Window::create(defaults.window.title,
+                      windowConfig.include("width", defaults.window.width).get(0),
+                      windowConfig.include("height", defaults.window.height).get(0),
+                      windowConfig.include("mode", WINDOW_MODES[defaults.window.mode])
+                      .get(Window::WINDOWED, WINDOW_MODES)))
   {
     OZ_ERROR("oz::Application: Window creation failed");
   }
 
+  uint fps        = config["timing"]["fps"].get(defaults.timing.fps);
+  uint nTicks     = 0;
+  uint tickTime   = 0;
   uint timeLast   = Time::uclock();
   uint timeSpent  = 0;
-  uint tickTime   = Math::lround(config.timing.tickTime * 1000000.0f);
   uint frameTicks = 0;
 
   do {
@@ -176,30 +233,36 @@ void Application::run(Stage* initialStage)
 
 #endif
 
-    if (nextStage != currentStage) {
-      currentStage->unload();
+    // Waste time when iconified.
+    if (!Window::isActive()) {
+      Time::usleep(1000000 / fps);
 
-      if (nextStage == nullptr) {
+      timeSpent = Time::uclock() - timeLast;
+      timeLast += timeSpent;
+      continue;
+    }
+
+    if (nextStage != currentStage) {
+      if (currentStage != nullptr) {
+        currentStage->unload();
+      }
+
+      currentStage = nextStage;
+
+      if (currentStage == nullptr) {
         break;
       }
 
-      //input.reset();
+//      input.reset();
 
-      currentStage = nextStage;
       currentStage->load();
 
       timeLast = Time::uclock();
       continue;
     }
 
-    // Waste time when iconified.
-    if (!Window::isActive()) {
-      Time::usleep(tickTime);
-
-      timeSpent = Time::uclock() - timeLast;
-      timeLast += timeSpent;
-      continue;
-    }
+    tickTime = (nTicks + 1) * 1000000 / fps - nTicks * 1000000 / fps;
+    nTicks   = (nTicks + 1) % fps;
 
     currentStage->update();
 
@@ -224,12 +287,24 @@ void Application::run(Stage* initialStage)
     }
 
     // Drop skip time if we are more than 100 ms behind.
-    if (timeSpent > 100 * 1000) {
+    if (timeSpent > 100000) {
       timeLast += timeSpent - tickTime;
     }
+
     timeLast += tickTime;
   }
   while (true);
+
+  if (defaults.saveConfig) {
+    File configFile = configDir + "/config.json";
+
+    Log::print("Saving configuration to %s ... ", configFile.c());
+
+    configDir.mkdir();
+    bool success = config.save(configFile);
+
+    Log::printEnd(success ? "OK" : "Failed");
+  }
 
   Window::destroy();
   File::destroy();

@@ -183,8 +183,8 @@ char* Stream::writeSkip(int count)
       size_t length    = newLength - count;
       size_t size      = streamEnd - streamBegin;
 
-      size = size + size / 2;
-      size = size < newLength ? Alloc::alignUp<size_t>(newLength, GRANULARITY) : size;
+      size = size == 0 ? 4096 : size + size / 2;
+      size = max<size_t>(size, newLength);
 
       char* newData = new char[size];
 

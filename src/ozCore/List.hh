@@ -70,15 +70,17 @@ protected:
   /**
    * Ensure a given capacity.
    *
-   * If the current capacity is not sufficent it is set to `max(1.5 * currentCap, requestedCap)`.
+   * The capacity is increased if necessary with growth factor 1.5 or to (at least) 8 slots as the
+   * initial allocation.
    */
-  void ensureCapacity(int requesteCapacity)
+  void ensureCapacity(int requestedCapacity)
   {
-    if (requesteCapacity < 0) {
+    if (requestedCapacity < 0) {
       OZ_ERROR("oz::List: Capacity overflow");
     }
-    else if (size < requesteCapacity) {
-      size = max<int>(size + size / 2, requesteCapacity);
+    else if (size < requestedCapacity) {
+      size = size == 0 ? 8 : size + size / 2;
+      size = max<int>(size, requestedCapacity);
       data = Arrays::reallocate<Elem>(data, count, size);
     }
   }
@@ -612,6 +614,7 @@ public:
       ensureCapacity(newCount);
       Arrays::clear<Elem>(data + newCount, count - newCount);
     }
+
     count = newCount;
   }
 

@@ -30,6 +30,7 @@
 
 #include "Map.hh"
 #include "File.hh"
+#include "EnumMap.hh"
 
 namespace oz
 {
@@ -332,7 +333,8 @@ public:
   /**
    * True iff `length() <= 0`.
    */
-  int isEmpty() const
+  OZ_ALWAYS_INLINE
+  bool isEmpty() const
   {
     return length() <= 0;
   }
@@ -340,7 +342,7 @@ public:
   /**
    * Returns value at position `i` in an array.
    *
-   * If the index is out of bounds or the value not an array null, a null value is returned.
+   * If the index is out of bounds or the value not an array, a null value is returned.
    */
   const Json& operator [] (int i) const;
 
@@ -449,6 +451,15 @@ public:
       array[i] = iter->get(defaultValue);
     }
     return count;
+  }
+
+  /**
+   * If a string convert it to the respective enum according to `enumMap`, `defaultValue` otherwise.
+   */
+  template <class Enum>
+  Enum get(Enum defaultValue, const EnumMap<Enum>& enumMap) const
+  {
+    return enumMap[get(enumMap[int(defaultValue)])];
   }
 
   /**
