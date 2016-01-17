@@ -622,12 +622,12 @@ void Context::loadResources()
 void Context::unloadResources()
 {
   for (int i = 0; i < liber.bsps.length(); ++i) {
-    delete (BSPImago*) bspImagines[i].handle;
+    delete bspImagines[i].handle;
 
     bspImagines[i].handle = nullptr;
     bspImagines[i].nUsers = -1;
 
-    delete (BSPAudio*) bspAudios[i].handle;
+    delete bspAudios[i].handle;
 
     bspAudios[i].handle = nullptr;
     bspAudios[i].nUsers = -1;
@@ -636,7 +636,7 @@ void Context::unloadResources()
   Arrays::free(fragPools, liber.fragPools.length());
 
   for (int i = 0; i < liber.models.length(); ++i) {
-    delete (Model*) models[i].handle;
+    delete models[i].handle;
 
     models[i].handle = nullptr;
     models[i].nUsers = -1;

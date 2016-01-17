@@ -80,8 +80,7 @@ endif()
 
 find_package(ZLIB REQUIRED)
 find_package(PhysFS REQUIRED)
-mark_as_advanced(PHYSFS_INCLUDE_DIR)
-mark_as_advanced(PHYSFS_LIBRARY)
+mark_as_advanced(PHYSFS_INCLUDE_DIR PHYSFS_LIBRARY)
 
 if(OZ_LUAJIT)
   pkg_check_modules(LUAJIT REQUIRED luajit)
@@ -134,8 +133,10 @@ pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 if(PLATFORM_EMBEDDED)
   # Emscripten has SDL_ttf built-in and doesn't need Freetype.
   if(NOT EMSCRIPTEN)
-    find_package(Freetype REQUIRED) # required by SDL_ttf.
-    list(APPEND SDL_TTF_LIBRARIES ${FREETYPE_LIBRARIES})
+    find_package(BZip2 REQUIRED)    # Required by FreeType.
+    find_package(Freetype REQUIRED) # Required by SDL_ttf.
+
+    list(APPEND SDL_TTF_LIBRARIES ${FREETYPE_LIBRARIES} ${BZIP2_LIBRARIES})
   endif()
 endif()
 
@@ -143,23 +144,20 @@ if(OZ_TOOLS)
   pkg_check_modules(ASSIMP REQUIRED assimp)
 
   find_library(FREEIMAGE_LIBRARY NAMES freeimage FreeImage)
-  mark_as_advanced(FREEIMAGE_LIBRARY)
+  find_library(NOISE_LIBRARY noise)
+  find_library(SQUISH_LIBRARY squish)
+
   if(NOT FREEIMAGE_LIBRARY)
     message(FATAL_ERROR "FreeImage library is missing")
   endif()
-
-  find_library(NOISE_LIBRARY noise)
-  mark_as_advanced(NOISE_LIBRARY)
   if(NOT NOISE_LIBRARY)
     message(FATAL_ERROR "libnoise library is missing")
   endif()
-
-  find_library(SQUISH_LIBRARY squish)
-  mark_as_advanced(SQUISH_LIBRARY)
-
   if(NOT SQUISH_LIBRARY)
     message(FATAL_ERROR "libsquish library is missing")
   endif()
+
+  mark_as_advanced(FREEIMAGE_LIBRARY NOISE_LIBRARY SQUISH_LIBRARY)
 endif()
 
 mark_as_advanced(MINGW32_LIBRARY)
@@ -186,7 +184,7 @@ endif()
 # Undefined behaviour sanitizer.
 #set(flags "${flags} -fsanitize=undefined")
 
-# Additional warnings.
+# Additional flags.
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
   set(flags "${flags} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-date-time")
   set(flags "${flags} -Wno-exit-time-destructors -Wno-float-equal -Wno-global-constructors")

@@ -34,9 +34,12 @@
 # include <ppapi/cpp/completion_callback.h>
 # include <ppapi/cpp/graphics_3d.h>
 # include <ppapi/cpp/instance.h>
+# include <ppapi/cpp/module.h>
 # include <ppapi/gles2/gl2ext_ppapi.h>
 # include <ppapi_simple/ps.h>
 # include <ppapi_simple/ps_interface.h>
+
+extern "C" void alSetPpapiInfo(PP_Instance instance, PPB_GetInterface getInterface);
 #endif
 
 namespace oz
@@ -246,7 +249,7 @@ bool Window::processEvent(const SDL_Event* event)
 #ifdef __native_client__
           MainCall() << []
           {
-            ppbFullscreen->SetFullscreen(PSGetInstanceId(), PP_Bool(fullscreen));
+            ppbFullscreen->SetFullscreen(PSGetInstanceId(), PP_Bool(windowMode != WINDOWED));
 
             glSetCurrentContextPPAPI(0);
             glContext->ResizeBuffers(windowWidth, windowHeight);
@@ -282,8 +285,21 @@ bool Window::create(const char* title, int width, int height, Mode mode)
 {
   destroy();
 
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_NOPARACHUTE) != 0) {
-    Log::println("Failed to initialise SDL");
+  bool success = false;
+
+  Log::print("Initialising SDL ... ");
+
+#ifdef __native_client__
+  success = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) == 0;
+#else
+  success = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_NOPARACHUTE) == 0;
+#endif
+
+  if (success) {
+    Log::printEnd("OK");
+  }
+  else {
+    Log::printEnd("Failed");
     return false;
   }
 
@@ -294,12 +310,12 @@ bool Window::create(const char* title, int width, int height, Mode mode)
   windowMode   = mode;
   windowFocus  = true;
 
+  Log::print("Creating window %dx%d [%s] ... ", windowWidth, windowHeight,
+             mode == EXCLUSIVE ? "exclusive" : mode == DESKTOP ? "desktop" : "windowed");
+
   uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE |
                (mode == EXCLUSIVE ? SDL_WINDOW_FULLSCREEN :
                 mode == DESKTOP ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-
-  Log::print("Creating window %dx%d [%s] ... ", windowWidth, windowHeight,
-             mode == EXCLUSIVE ? "exclusive" : mode == DESKTOP ? "desktop" : "windowed");
 
   // Force old Mesa drivers to turn on partial S3TC support even when libtxc_dxtn is not present.
   // We don't use online texture compression anywhere so partial S3TC support is enough.
@@ -333,7 +349,7 @@ bool Window::create(const char* title, int width, int height, Mode mode)
 
   ppbFullscreen = static_cast<const PPB_Fullscreen*>(PSGetInterface(PPB_FULLSCREEN_INTERFACE));
   ppbMouseLock  = static_cast<const PPB_MouseLock*>(PSGetInterface(PPB_MOUSELOCK_INTERFACE));
-  fullscreen    = false;
+  windowMode    = WINDOWED;
 
   MainCall() << []
   {
@@ -398,6 +414,10 @@ bool Window::create(const char* title, int width, int height, Mode mode)
 
 #endif
 
+#ifdef __native_client__
+  alSetPpapiInfo(PSGetInstanceId(), pp::Module::Get()->get_browser_interface());
+#endif
+
   alDevice = alcOpenDevice(nullptr);
   if (alDevice == nullptr) {
     Log::printEnd("Failed to open default OpenAL device");
@@ -452,9 +472,9 @@ void Window::destroy()
 
     SDL_DestroyWindow(window);
     window = nullptr;
-  }
 
-  SDL_Quit();
+    SDL_Quit();
+  }
 }
 
 }

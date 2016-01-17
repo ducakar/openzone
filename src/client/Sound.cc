@@ -25,14 +25,6 @@
 
 #include <SDL2/SDL.h>
 
-#ifdef __native_client__
-# include <ppapi/cpp/instance.h>
-# include <ppapi/cpp/module.h>
-# include <ppapi_simple/ps.h>
-
-extern "C" void alSetPpapiInfo(PP_Instance instance, PPB_GetInterface getInterface);
-#endif
-
 namespace oz
 {
 namespace client
@@ -302,10 +294,6 @@ void Sound::init()
 {
   Log::println("Initialising Sound {");
   Log::indent();
-
-#ifdef __native_client__
-  alSetPpapiInfo(PSGetInstanceId(), pp::Module::Get()->get_browser_interface());
-#endif
 
   const char* deviceSpec = alcGetString(nullptr, ALC_DEVICE_SPECIFIER);
 

@@ -136,7 +136,7 @@ bool AL::Decoder::WaveStream::decode(AL::Decoder* decoder)
 
   float* begin      = decoder->samples;
   float* end        = decoder->samples + decoder->capacity;
-  float* alignedEnd = begin + (end - begin & ~3);
+  float* alignedEnd = begin + Alloc::alignDown<ptrdiff_t>(end - begin, 4);
 
   if (sampleSize == 1) {
     const ubyte* samples = reinterpret_cast<const ubyte*>(is.pos());

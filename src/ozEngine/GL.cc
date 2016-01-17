@@ -25,8 +25,7 @@
 #include <cstring>
 
 #ifdef _WIN32
-# include <SDL.h>
-# pragma GCC diagnostic ignored "-Wstrict-aliasing"
+# include <SDL2/SDL.h>
 # define OZ_DL_GLLOAD(func) \
   *(void**) &func = SDL_GL_GetProcAddress(#func); \
   if (func == nullptr) { \
@@ -351,7 +350,7 @@ void GL::textureDataIdenticon(int hash, int size, const Vec4& backgroundColour)
 
   int fieldSize = size / 6;
   int fieldHalf = fieldSize / 2;
-  int stride    = Alloc::alignUp(size * 3, 4);
+  int stride    = Alloc::alignUp<int>(size * 3, 4);
 
   List<char> data(size * stride);
 

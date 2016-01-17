@@ -373,7 +373,7 @@ static void writePOT(const HashMap<String, String>* hs, const File& outFile)
     os.writeLine("msgstr \"\"");
   }
 
-  if (!outFile.write(os.begin(), os.tell())) {
+  if (!outFile.write(os)) {
     OZ_ERROR("Failed to write '%s'", outFile.c());
   }
 }

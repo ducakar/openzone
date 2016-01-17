@@ -292,7 +292,7 @@ void AssImp::build(const File& path)
 
   Log::print("Writing to '%s' ...", outFile.c());
 
-  if (!outFile.write(os.begin(), os.tell())) {
+  if (!outFile.write(os)) {
     OZ_ERROR("Failed to write %s", outFile.c());
   }
 

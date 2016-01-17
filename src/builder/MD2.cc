@@ -399,7 +399,7 @@ void MD2::build(const File& path)
 
   Log::print("Writing to '%s' ...", destFile.c());
 
-  if (!destFile.write(os.begin(), os.tell())) {
+  if (!destFile.write(os)) {
     OZ_ERROR("Failed to write '%s'", destFile.c());
   }
 

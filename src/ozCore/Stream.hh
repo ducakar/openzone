@@ -448,7 +448,7 @@ public:
   {
     for (size_t& unit : b) {
 #if __SIZEOF_SIZE_T__ == 4
-      unit = readUInt();
+      unit = size_t(readUInt());
 #else
       unit = size_t(readULong64());
 #endif
@@ -463,9 +463,9 @@ public:
   {
     for (size_t unit : b) {
 #if __SIZEOF_SIZE_T__ == 4
-      writeUInt(unit);
+      writeUInt(uint(unit));
 #else
-      writeULong64(unit);
+      writeULong64(ulong64(unit));
 #endif
     }
   }

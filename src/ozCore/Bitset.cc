@@ -22,98 +22,47 @@
 
 #include "Bitset.hh"
 
+#include "Alloc.hh"
 #include "String.hh"
 
 namespace oz
 {
 
-Bitset::Bitset(int nBits)
-{
-  resize(nBits);
-}
+Bitset::Bitset(int nBits) :
+  data(Alloc::alignUp<int>(nBits, PORT_BITS) / UNIT_BITS)
+{}
 
 Bitset::Bitset(const char* s) :
   Bitset(String::length(s))
 {
-  for (int i = 0; i < bitSize; ++i) {
+  for (int i = 0; s[i] != '\0'; ++i) {
     data[i / UNIT_BITS] |= size_t(s[i] != '0') << (i % UNIT_BITS);
   }
 }
 
-Bitset::~Bitset()
-{
-  delete[] data;
-}
-
-Bitset::Bitset(const Bitset& b) :
-  data(Arrays::reallocate<size_t>(nullptr, 0, b.size)), size(b.size), bitSize(b.bitSize)
-{
-  Arrays::copy<size_t>(b.data, b.size, data);
-}
-
-Bitset::Bitset(Bitset&& b) :
-  data(b.data), size(b.size), bitSize(b.bitSize)
-{
-  b.data    = nullptr;
-  b.size    = 0;
-  b.bitSize = 0;
-}
-
-Bitset& Bitset::operator = (const Bitset& b)
-{
-  if (&b != this) {
-    if (size != b.size) {
-      delete[] data;
-
-      data = b.size == 0 ? nullptr : new size_t[b.size];
-      size = b.size;
-    }
-
-    Arrays::copy<size_t>(b.data, b.size, data);
-    bitSize = b.bitSize;
-  }
-  return *this;
-}
-
-Bitset& Bitset::operator = (Bitset&& b)
-{
-  if (&b != this) {
-    delete[] data;
-
-    data    = b.data;
-    size    = b.size;
-    bitSize = b.bitSize;
-
-    b.data    = nullptr;
-    b.size    = 0;
-    b.bitSize = 0;
-  }
-  return *this;
-}
-
 bool Bitset::operator == (const Bitset& b) const
 {
-  return bitSize == b.bitSize && Arrays::equals<size_t>(data, size, b.data);
+  return data == b.data;
 }
 
 bool Bitset::operator != (const Bitset& b) const
 {
-  return !operator == (b);
+  return data != b.data;
 }
 
 bool Bitset::isAllSet() const
 {
-  for (int i = 0; i < size - 1; ++i) {
+  for (int i = 0; i < data.length(); ++i) {
     if (~data[i] != 0) {
       return false;
     }
   }
-  return data[size - 1] == ~(size_t(-1) << (bitSize % UNIT_BITS));
+  return true;
 }
 
 bool Bitset::isAnySet() const
 {
-  for (int i = 0; i < size; ++i) {
+  for (int i = 0; i < data.length(); ++i) {
     if (data[i] != 0) {
       return true;
     }
@@ -128,9 +77,9 @@ bool Bitset::isNoneSet() const
 
 bool Bitset::isSubset(const Bitset& b) const
 {
-  OZ_ASSERT(size == b.size);
+  OZ_ASSERT(data.length() == b.data.length());
 
-  for (int i = 0; i < size; ++i) {
+  for (int i = 0; i < data.length(); ++i) {
     if ((data[i] & ~b.data[i]) != 0) {
       return false;
     }
@@ -140,7 +89,7 @@ bool Bitset::isSubset(const Bitset& b) const
 
 void Bitset::clear()
 {
-  Arrays::fill<size_t, size_t>(data, size, 0);
+  Arrays::fill<size_t, size_t>(data.begin(), data.length(), 0);
 }
 
 Bitset Bitset::operator ~ () const
@@ -151,7 +100,7 @@ Bitset Bitset::operator ~ () const
 
 Bitset Bitset::operator & (const Bitset& b) const
 {
-  OZ_ASSERT(size == b.size);
+  OZ_ASSERT(data.length() == b.data.length());
 
   Bitset r = *this;
   return r &= b;
@@ -159,7 +108,7 @@ Bitset Bitset::operator & (const Bitset& b) const
 
 Bitset Bitset::operator | (const Bitset& b) const
 {
-  OZ_ASSERT(size == b.size);
+  OZ_ASSERT(data.length() == b.data.length());
 
   Bitset r = *this;
   return r |= b;
@@ -167,7 +116,7 @@ Bitset Bitset::operator | (const Bitset& b) const
 
 Bitset Bitset::operator ^ (const Bitset& b) const
 {
-  OZ_ASSERT(size == b.size);
+  OZ_ASSERT(data.length() == b.data.length());
 
   Bitset r = *this;
   return r ^= b;
@@ -175,16 +124,15 @@ Bitset Bitset::operator ^ (const Bitset& b) const
 
 Bitset& Bitset::flip()
 {
-  for (int i = 0; i < size - 1; ++i) {
+  for (int i = 0; i < data.length(); ++i) {
     data[i] = ~data[i];
   }
-  data[size - 1] ^= ~(size_t(-1) << (bitSize % UNIT_BITS));
   return *this;
 }
 
 Bitset& Bitset::operator &= (const Bitset& b)
 {
-  for (int i = 0; i < size; ++i) {
+  for (int i = 0; i < data.length(); ++i) {
     data[i] &= b.data[i];
   }
   return *this;
@@ -192,7 +140,7 @@ Bitset& Bitset::operator &= (const Bitset& b)
 
 Bitset& Bitset::operator |= (const Bitset& b)
 {
-  for (int i = 0; i < size; ++i) {
+  for (int i = 0; i < data.length(); ++i) {
     data[i] |= b.data[i];
   }
   return *this;
@@ -200,7 +148,7 @@ Bitset& Bitset::operator |= (const Bitset& b)
 
 Bitset& Bitset::operator ^= (const Bitset& b)
 {
-  for (int i = 0; i < size; ++i) {
+  for (int i = 0; i < data.length(); ++i) {
     data[i] ^= b.data[i];
   }
   return *this;
@@ -210,13 +158,7 @@ void Bitset::resize(int nBits)
 {
   OZ_ASSERT(nBits >= 0);
 
-  int nUnits = (nBits + PORT_BITS - 1) / PORT_BITS * (PORT_BITS / UNIT_BITS);
-
-  if (nUnits != size) {
-    data = Arrays::reallocate<size_t>(data, size, nUnits);
-    size = nUnits;
-  }
-  bitSize = nBits;
+  data.resize(Alloc::alignUp(nBits, PORT_BITS) / UNIT_BITS, true);
 }
 
 }

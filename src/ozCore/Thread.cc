@@ -119,12 +119,22 @@ void* Thread::Descriptor::threadMain(void* descriptor_)
 #endif
 }
 
-void Thread::start(const char* name, Main* main, void* data)
+const char* Thread::name()
 {
-  if (descriptor != nullptr) {
-    OZ_ERROR("oz::Thread: Thread is already started");
-  }
+  return isMain() ? "MAIN" : threadName;
+}
 
+bool Thread::isMain()
+{
+#ifdef _WIN32
+  return GetCurrentThread() == MAIN_THREAD;
+#else
+  return pthread_equal(pthread_self(), MAIN_THREAD);
+#endif
+}
+
+Thread::Thread(const char* name, Main* main, void* data)
+{
   descriptor = new(malloc(sizeof(Descriptor))) Descriptor;
   if (descriptor == nullptr) {
     OZ_ERROR("oz::Thread: Descriptor allocation failed");
@@ -148,20 +158,6 @@ void Thread::start(const char* name, Main* main, void* data)
 
   // Wait while the thread accesses name pointer and descriptor during its initialisation.
   descriptor->lock.lock();
-}
-
-const char* Thread::name()
-{
-  return isMain() ? "MAIN" : threadName;
-}
-
-bool Thread::isMain()
-{
-#ifdef _WIN32
-  return GetCurrentThread() == MAIN_THREAD;
-#else
-  return pthread_equal(pthread_self(), MAIN_THREAD);
-#endif
 }
 
 Thread::~Thread()

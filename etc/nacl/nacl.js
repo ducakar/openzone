@@ -170,7 +170,7 @@ function onLoad()
 
   module.addEventListener('message', onMessage, true);
   module.addEventListener('progress', onProgress, true);
-  module.addEventListener("loadend", onLoadEnd, true);
+  module.addEventListener('loadend', onLoadEnd, true);
 
   window.webkitRequestFileSystem(TEMPORARY, 0, function (fs) {
     fileSystem = fs;

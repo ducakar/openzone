@@ -343,8 +343,7 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
     FreeImage_Unload(face);
   }
 
-  bool success = destFile.write(os.begin(), os.tell());
-  if (!success) {
+  if (!destFile.write(os)) {
     snprintf(errorBuffer, ERROR_LENGTH, "Failed to write '%s'.", destFile.c());
     return false;
   }

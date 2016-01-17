@@ -21,9 +21,7 @@ function run()
   mkdir -p build/PNaCl/src/tools
 
   # Just create symlinks instead of copying.
-  for i in share/openzone/*.{7z,zip,json} doc etc/nacl/openzone.??.html etc/nacl/nacl.js \
-           etc/nacl/openzone.nmf
-  do
+  for i in doc etc/nacl/nacl.* etc/nacl/openzone.* share/openzone/*.{zip,json}; do
     [[ -e $i ]] && ln -sf ../../../../$i build/PNaCl/src/tools
   done
 
@@ -32,8 +30,7 @@ function run()
   serverPID=$!
 
   sleep 3
-  $chromium --user-data-dir="$HOME/.config/chromium-test" \
-	    "http://localhost:8000/openzone.sl.html" || true
+  $chromium "http://localhost:8000/openzone.en.html" || true
 
   kill $serverPID
 }

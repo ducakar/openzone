@@ -357,7 +357,7 @@ void MD3::save()
 
     Log::print("Writing to '%s' ...", destFile.c());
 
-    if (!destFile.write(os.begin(), os.tell())) {
+    if (!destFile.write(os)) {
       OZ_ERROR("Failed to write '%s'", destFile.c());
     }
 
@@ -368,7 +368,7 @@ void MD3::save()
 
     Log::print("Writing to '%s' ...", destFile.c());
 
-    if (!destFile.write(os.begin(), os.tell())) {
+    if (!destFile.write(os)) {
       OZ_ERROR("Failed to write '%s'", destFile.c());
     }
 

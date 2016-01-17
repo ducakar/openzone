@@ -36,6 +36,7 @@
 #ifdef __native_client__
 # include <ppapi_simple/ps.h>
 # include <ppapi_simple/ps_event.h>
+# include <ppapi_simple/ps_instance.h>
 # include <ppapi_simple/ps_interface.h>
 # include <sys/mount.h>
 #endif
@@ -48,6 +49,7 @@ namespace client
 {
 
 #ifdef __native_client__
+static const PPB_View*            ppbView            = nullptr;
 static const PPB_InputEvent*      ppbInputEvent      = nullptr;
 static const PPB_MouseInputEvent* ppbMouseInputEvent = nullptr;
 #endif
@@ -71,6 +73,11 @@ void Client::printUsage()
 
 int Client::main()
 {
+#ifdef __native_client__
+  List<PSEvent*> eventQueue(8);
+  PSEvent*       psEvent;
+#endif
+
   SDL_Event event;
 
   bool isAlive   = true;
@@ -93,39 +100,39 @@ int Client::main()
 
 #ifdef __native_client__
 
-    PSEventSetFilter(PSE_INSTANCE_HANDLEINPUT | PSE_INSTANCE_DIDCHANGEVIEW |
-                     PSE_MOUSELOCK_MOUSELOCKLOST);
+    eventQueue.clear();
 
-    List<PSEvent*> eventQueue;
-    PSEvent*       psEvent;
-
+    // SDL implementation for NaCl is still incomplete and it doesn't handle certain events, so we
+    // have to do them manually.
     while ((psEvent = PSEventTryAcquire()) != nullptr) {
       switch (psEvent->type) {
         case PSE_INSTANCE_HANDLEINPUT: {
-          PP_InputEvent_Type type = ppbInputEvent->GetType(psEvent->as_resource);
+          if (ppbInputEvent->GetType(psEvent->as_resource) == PP_INPUTEVENT_TYPE_MOUSEMOVE) {
+            PP_Point point = ppbMouseInputEvent->GetMovement(psEvent->as_resource);
 
-          switch (type) {
-            case PP_INPUTEVENT_TYPE_MOUSEMOVE: {
-              PP_Point point = ppbMouseInputEvent->GetMovement(psEvent->as_resource);
-
-              input.mouseX += point.x;
-              input.mouseY -= point.y;
-              break;
-            }
-            default: {
-              eventQueue.add(psEvent);
-              continue;
-            }
+            input.mouseX += point.x;
+            input.mouseY -= point.y;
+          }
+          else {
+            eventQueue.add(psEvent);
           }
           break;
         }
-        case PSE_INSTANCE_DIDCHANGEFOCUS:
-        case PSE_MOUSELOCK_MOUSELOCKLOST:
         case PSE_INSTANCE_DIDCHANGEVIEW: {
-          eventQueue.add(psEvent);
+          PP_Rect rect;
+          ppbView->GetRect(psEvent->as_resource, &rect);
+
+          SDL_Event event;
+          event.type = SDL_WINDOWEVENT;
+          event.window.event = SDL_WINDOWEVENT_RESIZED;
+          event.window.data1 = rect.size.width;
+          event.window.data2 = rect.size.height;
+
+          SDL_PushEvent(&event);
           break;
         }
         default: {
+          eventQueue.add(psEvent);
           break;
         }
       }
@@ -138,7 +145,10 @@ int Client::main()
       PSEventPostResource(event->type, event->as_resource);
     }
 
-    PSEventSetFilter(PSE_ALL);
+    // Make sure it doesn't grow too much.
+    if (eventQueue.length() > 8) {
+      eventQueue.resize(8, true);
+    }
 
 #endif
 
@@ -475,10 +485,13 @@ int Client::init(int argc, char** argv)
 
   bool fullscreen = config.include("window.fullscreen", true).get(false);
 
-  Window::create("OpenZone " OZ_VERSION,
-                 fullscreen ? screenWidth : windowWidth,
-                 fullscreen ? screenHeight : windowHeight,
-                 fullscreen ? Window::DESKTOP : Window::WINDOWED);
+  if (!Window::create("OpenZone " OZ_VERSION,
+                      fullscreen ? screenWidth : windowWidth,
+                      fullscreen ? screenHeight : windowHeight,
+                      fullscreen ? Window::DESKTOP : Window::WINDOWED))
+  {
+    OZ_ERROR("Window creation failed");
+  }
 
   initFlags |= INIT_WINDOW;
 
@@ -609,6 +622,7 @@ int Client::init(int argc, char** argv)
 #ifdef __native_client__
   Pepper::post("none");
 
+  ppbView            = PSInterfaceView();
   ppbInputEvent      = PSInterfaceInputEvent();
   ppbMouseInputEvent = static_cast<const PPB_MouseInputEvent*>(
                          PSGetInterface(PPB_MOUSE_INPUT_EVENT_INTERFACE));

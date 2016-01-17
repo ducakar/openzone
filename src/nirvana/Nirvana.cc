@@ -77,8 +77,6 @@ void Nirvana::read(Stream* is)
 
   luaNirvana.read(is);
 
-  String typeName;
-
   int nDevices = is->readInt();
   int nMinds   = is->readInt();
 

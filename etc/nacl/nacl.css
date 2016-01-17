@@ -1,28 +1,22 @@
-@import url('../doc/style.css');
+@import url('doc/style.css');
 
 table#hudArea {
   position: absolute;
   width: 100%;
-  height: 90%;
+  height: 100%;
   text-align: center;
   vertical-align: middle;
   font-weight: bold;
-  font-size: 1.5em;
-}
-table.module {
-  text-align: center;
-  padding: 0px;
-  width: 100%;
-  height: 90%;
-  background-color: #050806;
-}
-
-.detail {
-  font-size: 0.6em;
-  font-weight: normal
+  font-size: 1.25em;
 }
 
 embed#module {
+  display: block;
   width: 100%;
+  height: 100%;
+}
+
+* {
+  margin: 0;
   height: 100%;
 }

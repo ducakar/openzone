@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "System.hh"
+#include "List.hh"
 
 namespace oz
 {
@@ -36,7 +36,7 @@ namespace oz
 /**
  * Bit array with dynamically allocated storage.
  *
- * Bits are stored in an array of `size_t`s, size of which if a multiple of 64 bits.
+ * Bits are stored in an array of `size_t`s and its size is always a multiple of 64 bits.
  *
  * @sa `oz::SBitset`
  */
@@ -52,9 +52,7 @@ private:
 
 private:
 
-  size_t* data    = nullptr; ///< Pointer to array of units that holds the data.
-  int     size    = 0;       ///< Size of data array in units.
-  int     bitSize = 0;       ///< Size in bits.
+  List<size_t> data; ///< Bit storage.
 
 public:
 
@@ -79,33 +77,6 @@ public:
   explicit Bitset(const char* s);
 
   /**
-   * Destructor.
-   */
-  ~Bitset();
-
-  /**
-   * Copy constructor, copies storage.
-   */
-  Bitset(const Bitset& b);
-
-  /**
-   * Move constructor, moves storage.
-   */
-  Bitset(Bitset&& b);
-
-  /**
-   * Copy operator, copies storage.
-   *
-   * Existing storage is reused if its size matches.
-   */
-  Bitset& operator = (const Bitset& b);
-
-  /**
-   * Move operator, moves storage.
-   */
-  Bitset& operator = (Bitset&& b);
-
-  /**
    * True iff same size and respective bits are equal.
    */
   bool operator == (const Bitset& b) const;
@@ -121,7 +92,7 @@ public:
   OZ_ALWAYS_INLINE
   const size_t* begin() const
   {
-    return data;
+    return data.begin();
   }
 
   /**
@@ -130,7 +101,7 @@ public:
   OZ_ALWAYS_INLINE
   size_t* begin()
   {
-    return data;
+    return data.begin();
   }
 
   /**
@@ -139,7 +110,7 @@ public:
   OZ_ALWAYS_INLINE
   const size_t* end() const
   {
-    return data + size;
+    return data.end();
   }
 
   /**
@@ -148,7 +119,7 @@ public:
   OZ_ALWAYS_INLINE
   size_t* end()
   {
-    return data + size;
+    return data.end();
   }
 
   /**
@@ -157,7 +128,7 @@ public:
   OZ_ALWAYS_INLINE
   int length() const
   {
-    return bitSize;
+    return data.length() * UNIT_BITS;
   }
 
   /**
@@ -166,7 +137,7 @@ public:
   OZ_ALWAYS_INLINE
   bool isEmpty() const
   {
-    return size == 0;
+    return data.isEmpty();
   }
 
   /**
@@ -197,8 +168,6 @@ public:
   OZ_ALWAYS_INLINE
   bool get(int i) const
   {
-    OZ_ASSERT(uint(i) < uint(bitSize));
-
     return (data[i / UNIT_BITS] & (size_t(1) << (i % UNIT_BITS))) != 0;
   }
 
@@ -208,8 +177,6 @@ public:
   OZ_ALWAYS_INLINE
   void set(int i)
   {
-    OZ_ASSERT(uint(i) < uint(bitSize));
-
     data[i / UNIT_BITS] |= size_t(1) << (i % UNIT_BITS);
   }
 
@@ -219,8 +186,6 @@ public:
   OZ_ALWAYS_INLINE
   void clear(int i)
   {
-    OZ_ASSERT(uint(i) < uint(bitSize));
-
     data[i / UNIT_BITS] &= ~(size_t(1) << (i % UNIT_BITS));
   }
 
@@ -230,8 +195,6 @@ public:
   OZ_ALWAYS_INLINE
   void flip(int i)
   {
-    OZ_ASSERT(uint(i) < uint(bitSize));
-
     data[i / UNIT_BITS] ^= size_t(1) << (i % UNIT_BITS);
   }
 

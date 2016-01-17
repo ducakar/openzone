@@ -487,7 +487,7 @@ String Stream::readLine()
   int length = int(streamPos - begin);
 
   streamPos += (streamPos < streamEnd) +
-               (streamPos < streamEnd - 1 && streamPos[0] == '\r' && streamPos[1] == '\n');
+               (streamPos + 2 == streamEnd && streamPos[0] == '\r' && streamPos[1] == '\n');
 
   return String(begin, length);
 }

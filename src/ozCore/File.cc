@@ -526,15 +526,20 @@ bool File::write(const char* buffer, int size) const
   }
 }
 
+bool File::write(const Stream& is) const
+{
+  return write(is.begin(), is.tell());
+}
+
 bool File::copyTo(const File& dest) const
 {
-  Stream stream = read();
-  if (stream.available() == 0) {
+  Stream is = read();
+  if (is.available() == 0) {
     return false;
   }
 
   File destFile = Stat(dest).type == Stat::DIRECTORY ? dest / name() : dest;
-  return destFile.write(stream.begin(), stream.capacity());
+  return destFile.write(is.begin(), is.capacity());
 }
 
 bool File::copyTreeTo(const File& dest, const char* ext) const

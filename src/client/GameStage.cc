@@ -47,8 +47,7 @@ void GameStage::saveMain(void*)
 {
   Log::print("Saving state to %s ...", gameStage.saveFile.c());
 
-  Stream outStream = gameStage.saveStream.compress();
-  if (!gameStage.saveFile.write(outStream.begin(), outStream.capacity())) {
+  if (!gameStage.saveFile.write(gameStage.saveStream.compress())) {
     Log::printEnd(" Failed");
     System::bell();
   }
@@ -91,6 +90,10 @@ void GameStage::write()
   if (saveThread.isValid()) {
     saveThread.join();
   }
+
+  OZ_ASSERT(saveStream.capacity() == 0);
+  OZ_ASSERT(saveStream.tell() == 0);
+  OZ_ASSERT(saveStream.available() == 0);
 
   matrix.write(&saveStream);
   nirvana.write(&saveStream);

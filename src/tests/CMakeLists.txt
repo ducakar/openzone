@@ -22,7 +22,7 @@ add_executable(quicksort quicksort.cc)
 target_link_libraries(quicksort ozCore)
 
 add_executable(scratch scratch.cc)
-target_link_libraries(scratch ozEngine ozCore)
+target_link_libraries(scratch ozEngine ozCore ogg opus)
 
 add_executable(simd simd.cc)
 target_link_libraries(simd ozCore)

@@ -431,10 +431,9 @@ void Builder::copySounds()
         File("snd").mkdir();
         subDir.toNative().mkdir();
 
-        File   destFile = file.toNative();
-        Stream stream   = file.read();
+        File destFile = file.toNative();
 
-        if (!destFile.write(stream.begin(), stream.capacity())) {
+        if (!file.copyTo(destFile)) {
           OZ_ERROR("Failed to write '%s'", destFile.c());
         }
 

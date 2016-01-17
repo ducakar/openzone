@@ -226,7 +226,7 @@ void Terra::saveMatrix()
 
   os.writeInt(liquid);
 
-  if (!destFile.write(os.begin(), os.tell())) {
+  if (!destFile.write(os)) {
     OZ_ERROR("Failed to write '%s'", destFile.c());
   }
 
@@ -336,7 +336,7 @@ void Terra::saveClient()
   os.writeString(liquidTex);
   os.write<Vec4>(liquidColour);
 
-  if (!destFile.write(os.begin(), os.tell())) {
+  if (!destFile.write(os)) {
     OZ_ERROR("Failed to write '%s'", destFile.c());
   }
 

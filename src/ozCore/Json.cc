@@ -1371,7 +1371,7 @@ bool Json::save(const File& file, const Format& format) const
   formatter.writeValue(*this);
   os.write(format.lineEnd, formatter.lineEndLength);
 
-  return file.write(os.begin(), os.tell());
+  return file.write(os);
 }
 
 }

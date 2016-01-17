@@ -26,6 +26,16 @@
 
 #include <SDL2/SDL.h>
 
+#ifdef __native_client__
+# include <ppapi_simple/ps.h>
+# include <ppapi_simple/ps_event.h>
+# include <ppapi_simple/ps_interface.h>
+# include <ppapi_simple/ps_main.h>
+# include <sys/mount.h>
+
+extern "C" void NACL_SetScreenResolution(int width, int height, Uint32 format);
+#endif
+
 namespace oz
 {
 
@@ -35,10 +45,13 @@ static const EnumMap<Window::Mode> WINDOW_MODES = {
   {Window::EXCLUSIVE, "EXCLUSIVE"}
 };
 
-static Application::Stage* currentStage = nullptr;
-static Application::Stage* nextStage    = nullptr;
-static File                configDir;
-static File                dataDir;
+static Application::Stage*   currentStage       = nullptr;
+static Application::Stage*   nextStage          = nullptr;
+static File                  configDir;
+static File                  dataDir;
+#ifdef __native_client__
+static const PPB_InputEvent* ppbInputEvent      = nullptr;
+#endif
 
 Application::Stage::~Stage()
 {}
@@ -148,10 +161,10 @@ void Application::run(Stage* initialStage)
 
           switch (type) {
             case PP_INPUTEVENT_TYPE_MOUSEMOVE: {
-              PP_Point point = ppbMouseInputEvent->GetMovement(psEvent->as_resource);
+//              PP_Point point = ppbMouseInputEvent->GetMovement(psEvent->as_resource);
 
-              input.mouseX += point.x;
-              input.mouseY -= point.y;
+//              input.mouseX += point.x;
+//              input.mouseY -= point.y;
               break;
             }
             default: {
@@ -228,8 +241,8 @@ void Application::run(Stage* initialStage)
 
 #ifdef __native_client__
 
-    input.keys[SDLK_ESCAPE]    = false;
-    input.oldKeys[SDLK_ESCAPE] = false;
+//    input.keys[SDLK_ESCAPE]    = false;
+//    input.oldKeys[SDLK_ESCAPE] = false;
 
 #endif
 

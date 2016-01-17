@@ -273,7 +273,7 @@ public:
    * Create string form a given C string.
    */
   String(const char* s) :
-    String(s, length(s))
+    String(s, int(__builtin_strlen(s)))
   {}
 
   /**

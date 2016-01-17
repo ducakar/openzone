@@ -56,13 +56,6 @@ private:
 
   Descriptor* descriptor = nullptr; ///< Internal thread descriptor.
 
-private:
-
-  /**
-   * Helper function for constructors that create new threads.
-   */
-  void start(const char* name, Main* main, void* data);
-
 public:
 
   /**
@@ -98,37 +91,7 @@ public:
    * @param main pointer to the thread's main function.
    * @param data pointer to user data, passed to the thread's main function.
    */
-  explicit Thread(const char* name, Main* main, void* data = nullptr)
-  {
-    start(name, main, data);
-  }
-
-  /**
-   * Create and start a new joinable thread.
-   *
-   * Same as the previous constructor but works with lambda functions.
-   *
-   * @param name thread name (copied to an internal buffer).
-   * @param main a (lambda) function without parameters.
-   */
-  template <typename MainFunc>
-  explicit Thread(const char* name, MainFunc main)
-  {
-    struct MainWrapper
-    {
-      MainFunc mainFunc;
-
-      static void main(void* data)
-      {
-        const MainWrapper* mw = static_cast<const MainWrapper*>(data);
-
-        mw->mainFunc();
-      }
-    };
-    MainWrapper mw = {main};
-
-    start(name, MainWrapper::main, &mw);
-  }
+  explicit Thread(const char* name, Main* main, void* data = nullptr);
 
   /**
    * Join started but not yet joined thread if present.

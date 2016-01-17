@@ -28,7 +28,8 @@
 
 #pragma once
 
-#include "Arrays.hh"
+#include "Alloc.hh"
+#include "SList.hh"
 
 namespace oz
 {
@@ -54,18 +55,20 @@ private:
   static const int PORT_BITS = sizeof(ulong64) * 8;
 
   /// Number of units.
-  static const int SIZE = (BITS + PORT_BITS - 1) / PORT_BITS * (PORT_BITS / UNIT_BITS);
+  static const int SIZE = Alloc::alignUp<int>(BITS, PORT_BITS) / UNIT_BITS;
 
 private:
 
-  size_t data[SIZE] = {}; ///< Pointer to array of units that hold the data.
+  SList<size_t, SIZE> data; ///< Bit storage.
 
 public:
 
   /**
    * Initialise all bits to zero.
    */
-  SBitset() = default;
+  SBitset() :
+    data(SIZE)
+  {}
 
   /**
    * Initialise from a string of zeros and ones.
@@ -73,9 +76,10 @@ public:
    * Characters other than '0' are treated as ones. The rest of the bitset is initialised to zeros
    * if the string is shorter than the bitset.
    */
-  explicit SBitset(const char* s)
+  explicit SBitset(const char* s) :
+    data(SIZE)
   {
-    for (int i = 0; i < BITS && s[i] != '\0'; ++i) {
+    for (int i = 0; s[i] != '\0'; ++i) {
       data[i / UNIT_BITS] |= size_t(s[i] != '0') << (i % UNIT_BITS);
     }
   }
@@ -85,7 +89,7 @@ public:
    */
   bool operator == (const SBitset& b) const
   {
-    return Arrays::equals<size_t>(data, SIZE, b.data);
+    return data == b.data;
   }
 
   /**
@@ -93,7 +97,7 @@ public:
    */
   bool operator != (const SBitset& b) const
   {
-    return !operator == (b);
+    return data != b.data;
   }
 
   /**
@@ -102,7 +106,7 @@ public:
   OZ_ALWAYS_INLINE
   const size_t* begin() const
   {
-    return data;
+    return data.begin();
   }
 
   /**
@@ -111,7 +115,7 @@ public:
   OZ_ALWAYS_INLINE
   size_t* begin()
   {
-    return data;
+    return data.begin();
   }
 
   /**
@@ -120,7 +124,7 @@ public:
   OZ_ALWAYS_INLINE
   const size_t* end() const
   {
-    return data + SIZE;
+    return data.end();
   }
 
   /**
@@ -129,7 +133,7 @@ public:
   OZ_ALWAYS_INLINE
   size_t* end()
   {
-    return data + SIZE;
+    return data.end();
   }
 
   /**
@@ -138,7 +142,7 @@ public:
   OZ_ALWAYS_INLINE
   int length() const
   {
-    return BITS;
+    return SIZE * UNIT_BITS;
   }
 
   /**
@@ -146,12 +150,12 @@ public:
    */
   bool isAllSet() const
   {
-    for (int i = 0; i < SIZE - 1; ++i) {
+    for (int i = 0; i < SIZE; ++i) {
       if (~data[i] != 0) {
         return false;
       }
     }
-    return data[SIZE - 1] == ~(size_t(-1) << (BITS % UNIT_BITS));
+    return true;
   }
 
   /**
@@ -199,8 +203,6 @@ public:
   OZ_ALWAYS_INLINE
   bool get(int i) const
   {
-    OZ_ASSERT(uint(i) < uint(BITS));
-
     return (data[i / UNIT_BITS] & (size_t(1) << (i % UNIT_BITS))) != 0;
   }
 
@@ -210,8 +212,6 @@ public:
   OZ_ALWAYS_INLINE
   void set(int i)
   {
-    OZ_ASSERT(uint(i) < uint(BITS));
-
     data[i / UNIT_BITS] |= size_t(1) << (i % UNIT_BITS);
   }
 
@@ -221,8 +221,6 @@ public:
   OZ_ALWAYS_INLINE
   void clear(int i)
   {
-    OZ_ASSERT(uint(i) < uint(BITS));
-
     data[i / UNIT_BITS] &= ~(size_t(1) << (i % UNIT_BITS));
   }
 
@@ -232,8 +230,6 @@ public:
   OZ_ALWAYS_INLINE
   void flip(int i)
   {
-    OZ_ASSERT(uint(i) < uint(BITS));
-
     data[i / UNIT_BITS] ^= size_t(1) << (i % UNIT_BITS);
   }
 
@@ -242,7 +238,7 @@ public:
    */
   void clear()
   {
-    Arrays::fill<size_t, size_t>(data, SIZE, 0);
+    Arrays::fill<size_t, size_t>(data.begin(), SIZE, 0);
   }
 
   /**
@@ -286,10 +282,9 @@ public:
    */
   SBitset& flip()
   {
-    for (int i = 0; i < SIZE - 1; ++i) {
+    for (int i = 0; i < SIZE; ++i) {
       data[i] = ~data[i];
     }
-    data[SIZE - 1] ^= ~(size_t(-1) << (BITS % UNIT_BITS));
     return *this;
   }
 

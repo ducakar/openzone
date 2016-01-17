@@ -39,7 +39,7 @@
 # define _Exit(c) _exit(c)
 #elif defined(__EMSCRIPTEN__)
 # include <pthread.h>
-# include <SDL.h>
+# include <SDL2/SDL.h>
 #elif defined(__native_client__)
 # include <ppapi/cpp/audio.h>
 # include <ppapi/cpp/completion_callback.h>

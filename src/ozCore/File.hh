@@ -278,11 +278,13 @@ public:
 
   /**
    * Write buffer contents to the file.
-   *
-   * @note
-   * - Write operation is not possible while the file is mapped.
    */
   bool write(const char* data, int size) const;
+
+  /**
+   * Write contents of a stream, equivalent to `write(is.begin(), is.tell())`.
+   */
+  bool write(const Stream& is) const;
 
   /**
    * Copy a file.
