@@ -35,7 +35,7 @@ int EnumMapImpl::defaultValue() const
   return entries[0].key;
 }
 
-int EnumMapImpl::operator [] (const char* name) const
+int EnumMapImpl::operator [](const char* name) const
 {
   for (const Pair& pair : entries) {
     if (String::equals(pair.value, name)) {
@@ -70,7 +70,7 @@ bool EnumMapImpl::has(const char* name) const
   return false;
 }
 
-const char* EnumMapImpl::operator [] (int value) const
+const char* EnumMapImpl::operator [](int value) const
 {
   const char* const* name = entries.find(value);
 

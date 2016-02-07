@@ -87,7 +87,7 @@ public:
   /**
    * True iff all bits are equal.
    */
-  bool operator == (const SBitset& b) const
+  bool operator ==(const SBitset& b) const
   {
     return data == b.data;
   }
@@ -95,7 +95,7 @@ public:
   /**
    * True any bit differ.
    */
-  bool operator != (const SBitset& b) const
+  bool operator !=(const SBitset& b) const
   {
     return data != b.data;
   }
@@ -244,7 +244,7 @@ public:
   /**
    * NOT of the bitset.
    */
-  SBitset operator ~ () const
+  SBitset operator ~() const
   {
     SBitset r = *this;
     return r.flip();
@@ -253,7 +253,7 @@ public:
   /**
    * Return AND of two bitsets.
    */
-  SBitset operator & (const SBitset& b) const
+  SBitset operator &(const SBitset& b) const
   {
     SBitset r = *this;
     return r &= b;
@@ -262,7 +262,7 @@ public:
   /**
    * Return OR of two bitsets.
    */
-  SBitset operator | (const SBitset& b) const
+  SBitset operator |(const SBitset& b) const
   {
     SBitset r = *this;
     return r |= b;
@@ -271,7 +271,7 @@ public:
   /**
    * Return XOR of two bitsets.
    */
-  SBitset operator ^ (const SBitset& b) const
+  SBitset operator ^(const SBitset& b) const
   {
     SBitset r = *this;
     return r ^= b;
@@ -291,7 +291,7 @@ public:
   /**
    * AND of two bitsets.
    */
-  SBitset& operator &= (const SBitset& b)
+  SBitset& operator &=(const SBitset& b)
   {
     for (int i = 0; i < SIZE; ++i) {
       data[i] &= b.data[i];
@@ -302,7 +302,7 @@ public:
   /**
    * OR of two bitsets.
    */
-  SBitset& operator |= (const SBitset& b)
+  SBitset& operator |=(const SBitset& b)
   {
     for (int i = 0; i < SIZE; ++i) {
       data[i] |= b.data[i];
@@ -313,7 +313,7 @@ public:
   /**
    * XOR of two bitsets.
    */
-  SBitset& operator ^= (const SBitset& b)
+  SBitset& operator ^=(const SBitset& b)
   {
     for (int i = 0; i < SIZE; ++i) {
       data[i] ^= b.data[i];

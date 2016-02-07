@@ -147,17 +147,17 @@ public:
   /**
    * Copy operator, copies elements but does not preserve bucket array length.
    */
-  HashMap& operator = (const HashMap& ht) = default;
+  HashMap& operator =(const HashMap& ht) = default;
 
   /**
    * Move operator, moves storage.
    */
-  HashMap& operator = (HashMap&& ht) = default;
+  HashMap& operator =(HashMap&& ht) = default;
 
   /**
    * Assign from an initialiser list.
    */
-  HashMap& operator = (InitialiserList<Pair> l)
+  HashMap& operator =(InitialiserList<Pair> l)
   {
     clear();
     ensureCapacity(int(l.size()) * 4 / 3);
@@ -171,7 +171,7 @@ public:
   /**
    * True iff contained elements are equal.
    */
-  bool operator == (const HashMap& ht) const
+  bool operator ==(const HashMap& ht) const
   {
     if (pool.length() != ht.pool.length()) {
       return false;
@@ -192,9 +192,9 @@ public:
   /**
    * False iff contained elements are equal.
    */
-  bool operator != (const HashMap& ht) const
+  bool operator !=(const HashMap& ht) const
   {
-    return !operator == (ht);
+    return !operator ==(ht);
   }
 
   /**

@@ -180,7 +180,7 @@ namespace detail
  *
  * It should only be used as a base class. The following functions have to be implemented:
  * - default constructor that creates an invalid iterator and
- * - `Iterator& operator ++ ()`.
+ * - `Iterator& operator ++()`.
  */
 template <typename Elem>
 class IteratorBase
@@ -217,7 +217,7 @@ public:
    * True iff iterators point to the same element.
    */
   OZ_ALWAYS_INLINE
-  bool operator == (const IteratorBase& i) const
+  bool operator ==(const IteratorBase& i) const
   {
     return elem == i.elem;
   }
@@ -226,7 +226,7 @@ public:
    * False iff iterators point to the same element.
    */
   OZ_ALWAYS_INLINE
-  bool operator != (const IteratorBase& i) const
+  bool operator !=(const IteratorBase& i) const
   {
     return elem != i.elem;
   }
@@ -244,7 +244,7 @@ public:
    * Pointer to the current element.
    */
   OZ_ALWAYS_INLINE
-  operator Elem* () const
+  operator Elem*() const
   {
     return elem;
   }
@@ -253,7 +253,7 @@ public:
    * Reference to the current element.
    */
   OZ_ALWAYS_INLINE
-  Elem& operator * () const
+  Elem& operator *() const
   {
     return *elem;
   }
@@ -262,7 +262,7 @@ public:
    * Access to the current element's member.
    */
   OZ_ALWAYS_INLINE
-  Elem* operator -> () const
+  Elem* operator ->() const
   {
     return elem;
   }
@@ -270,7 +270,7 @@ public:
   /**
    * Advance to the next element; should be implemented in derived classes.
    */
-  IteratorBase& operator ++ () = delete;
+  IteratorBase& operator ++() = delete;
 
   /**
    * STL-style begin iterator; should be implemented in derived classes.
@@ -370,7 +370,7 @@ struct Less
    */
   template <typename TypeA, typename TypeB>
   OZ_ALWAYS_INLINE
-  constexpr bool operator () (const TypeA& a, const TypeB& b) const
+  constexpr bool operator ()(const TypeA& a, const TypeB& b) const
   {
     return a < b;
   }
@@ -387,7 +387,7 @@ struct Greater
    */
   template <typename TypeA, typename TypeB>
   OZ_ALWAYS_INLINE
-  constexpr bool operator () (const TypeA& a, const TypeB& b) const
+  constexpr bool operator ()(const TypeA& a, const TypeB& b) const
   {
     return Less<Type>()(b, a);
   }
@@ -403,7 +403,7 @@ struct Less<const char*>
    * Compare using `strcmp`.
    */
   OZ_ALWAYS_INLINE
-  bool operator () (const char* a, const char* b) const
+  bool operator ()(const char* a, const char* b) const
   {
     return __builtin_strcmp(a, b) < 0;
   }
@@ -419,7 +419,7 @@ struct Hash
    * Return value as integer.
    */
   OZ_ALWAYS_INLINE
-  constexpr int operator () (const Number& value) const
+  constexpr int operator ()(const Number& value) const
   {
     return int(value);
   }
@@ -438,7 +438,7 @@ struct Hash<const char*>
    * (Modified) Bernstein's hash.
    */
   OZ_ALWAYS_INLINE
-  int operator () (const char* s) const
+  int operator ()(const char* s) const
   {
     uint value = EMPTY;
 

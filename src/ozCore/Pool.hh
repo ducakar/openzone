@@ -42,14 +42,14 @@
  * Array versions of `new`/`delete` operator are disabled for the enclosing class.
  */
 #define OZ_STATIC_POOL_ALLOC(pool)                                                                 \
-  void* operator new      (size_t)                                 { return pool.allocate(); }     \
-  void* operator new[]    (size_t)                                 = delete;                       \
-  void  operator delete   (void* ptr)                     noexcept { pool.deallocate(ptr); }       \
-  void  operator delete[] (void*)                         noexcept = delete;                       \
-  void* operator new      (size_t, const std::nothrow_t&) noexcept { return pool.allocate(); }     \
-  void* operator new[]    (size_t, const std::nothrow_t&) noexcept = delete;                       \
-  void  operator delete   (void* ptr, std::nothrow_t&)    noexcept { pool.deallocate(ptr); }       \
-  void  operator delete[] (void*, std::nothrow_t&)        noexcept = delete;
+  void* operator new     (size_t)                                 { return pool.allocate(); }     \
+  void* operator new[]   (size_t)                                 = delete;                       \
+  void  operator delete  (void* ptr)                     noexcept { pool.deallocate(ptr); }       \
+  void  operator delete[](void*)                         noexcept = delete;                       \
+  void* operator new     (size_t, const std::nothrow_t&) noexcept { return pool.allocate(); }     \
+  void* operator new[]   (size_t, const std::nothrow_t&) noexcept = delete;                       \
+  void  operator delete  (void* ptr, std::nothrow_t&)    noexcept { pool.deallocate(ptr); }       \
+  void  operator delete[](void*, std::nothrow_t&)        noexcept = delete;
 
 /**
  * @def OZ_PLACEMENT_POOL_ALLOC
@@ -61,16 +61,16 @@
  * All standard `new`/`delete` operators are disabled for the enclosing class.
  */
 #define OZ_PLACEMENT_POOL_ALLOC(Type)                                                              \
-  void* operator new      (size_t)                                  = delete;                      \
-  void* operator new[]    (size_t)                                  = delete;                      \
-  void  operator delete   (void*)                          noexcept = delete;                      \
-  void  operator delete[] (void*)                          noexcept = delete;                      \
-  void* operator new      (size_t, const std::nothrow_t&)  noexcept = delete;                      \
-  void* operator new[]    (size_t, const std::nothrow_t&)  noexcept = delete;                      \
-  void  operator delete   (void*, const std::nothrow_t&)   noexcept = delete;                      \
-  void  operator delete[] (void*, const std::nothrow_t&)   noexcept = delete;                      \
-  void* operator new      (size_t, oz::PoolAlloc& pool)             { return pool.allocate(); }    \
-  void  operator delete   (void* ptr, oz::PoolAlloc& pool) noexcept { pool.deallocate(ptr); }
+  void* operator new     (size_t)                                  = delete;                      \
+  void* operator new[]   (size_t)                                  = delete;                      \
+  void  operator delete  (void*)                          noexcept = delete;                      \
+  void  operator delete[](void*)                          noexcept = delete;                      \
+  void* operator new     (size_t, const std::nothrow_t&)  noexcept = delete;                      \
+  void* operator new[]   (size_t, const std::nothrow_t&)  noexcept = delete;                      \
+  void  operator delete  (void*, const std::nothrow_t&)   noexcept = delete;                      \
+  void  operator delete[](void*, const std::nothrow_t&)   noexcept = delete;                      \
+  void* operator new     (size_t, oz::PoolAlloc& pool)             { return pool.allocate(); }    \
+  void  operator delete  (void* ptr, oz::PoolAlloc& pool) noexcept { pool.deallocate(ptr); }
 
 namespace oz
 {
@@ -119,7 +119,7 @@ public:
   /**
    * Move operator, moves storage.
    */
-  PoolAlloc& operator = (PoolAlloc&& p);
+  PoolAlloc& operator =(PoolAlloc&& p);
 
   /**
    * Number of used slots in the pool.

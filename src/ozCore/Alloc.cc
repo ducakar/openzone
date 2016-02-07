@@ -154,19 +154,19 @@ Alloc::CIterator Alloc::arrayCIter()
 }
 
 OZ_WEAK
-void* operator new (std::size_t size)
+void* operator new(std::size_t size)
 {
   return oz::allocate(oz::OBJECT, size);
 }
 
 OZ_WEAK
-void* operator new[] (std::size_t size)
+void* operator new[](std::size_t size)
 {
   return oz::allocate(oz::ARRAY, size);
 }
 
 OZ_WEAK
-void operator delete (void* ptr) noexcept
+void operator delete(void* ptr) noexcept
 {
   if (ptr != nullptr) {
     oz::deallocate(oz::OBJECT, ptr);
@@ -174,7 +174,7 @@ void operator delete (void* ptr) noexcept
 }
 
 OZ_WEAK
-void operator delete (void* ptr, size_t) noexcept
+void operator delete(void* ptr, size_t) noexcept
 {
   if (ptr != nullptr) {
     oz::deallocate(oz::OBJECT, ptr);
@@ -182,7 +182,7 @@ void operator delete (void* ptr, size_t) noexcept
 }
 
 OZ_WEAK
-void operator delete[] (void* ptr) noexcept
+void operator delete[](void* ptr) noexcept
 {
   if (ptr != nullptr) {
     oz::deallocate(oz::ARRAY, ptr);
@@ -190,7 +190,7 @@ void operator delete[] (void* ptr) noexcept
 }
 
 OZ_WEAK
-void operator delete[] (void* ptr, size_t) noexcept
+void operator delete[](void* ptr, size_t) noexcept
 {
   if (ptr != nullptr) {
     oz::deallocate(oz::ARRAY, ptr);
@@ -198,19 +198,19 @@ void operator delete[] (void* ptr, size_t) noexcept
 }
 
 OZ_WEAK
-void* operator new (std::size_t size, const std::nothrow_t&) noexcept
+void* operator new(std::size_t size, const std::nothrow_t&) noexcept
 {
   return oz::allocate(oz::OBJECT, size);
 }
 
 OZ_WEAK
-void* operator new[] (std::size_t size, const std::nothrow_t&) noexcept
+void* operator new[](std::size_t size, const std::nothrow_t&) noexcept
 {
   return oz::allocate(oz::ARRAY, size);
 }
 
 OZ_WEAK
-void operator delete (void* ptr, const std::nothrow_t&) noexcept
+void operator delete(void* ptr, const std::nothrow_t&) noexcept
 {
   if (ptr != nullptr) {
     oz::deallocate(oz::OBJECT, ptr);
@@ -218,7 +218,7 @@ void operator delete (void* ptr, const std::nothrow_t&) noexcept
 }
 
 OZ_WEAK
-void operator delete[] (void* ptr, const std::nothrow_t&) noexcept
+void operator delete[](void* ptr, const std::nothrow_t&) noexcept
 {
   if (ptr != nullptr) {
     oz::deallocate(oz::ARRAY, ptr);

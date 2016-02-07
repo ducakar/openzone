@@ -111,7 +111,7 @@ public:
   /**
    * Equality.
    */
-  bool operator == (const Mat4& m) const
+  bool operator ==(const Mat4& m) const
   {
     return x == m.x && y == m.y && z == m.z && w == m.w;
   }
@@ -119,16 +119,16 @@ public:
   /**
    * Inequality.
    */
-  bool operator != (const Mat4& m) const
+  bool operator !=(const Mat4& m) const
   {
-    return !operator == (m);
+    return !operator ==(m);
   }
 
   /**
    * Constant pointer to the members.
    */
   OZ_ALWAYS_INLINE
-  operator const float* () const
+  operator const float*() const
   {
     return &x.x;
   }
@@ -137,7 +137,7 @@ public:
    * Pointer to the members.
    */
   OZ_ALWAYS_INLINE
-  operator float* ()
+  operator float*()
   {
     return &x.x;
   }
@@ -146,7 +146,7 @@ public:
    * Constant reference to the `i`-th column.
    */
   OZ_ALWAYS_INLINE
-  const Vec4& operator [] (int i) const
+  const Vec4& operator [](int i) const
   {
     return (&x)[i];
   }
@@ -155,7 +155,7 @@ public:
    * Reference to the `i`-th column.
    */
   OZ_ALWAYS_INLINE
-  Vec4& operator [] (int i)
+  Vec4& operator [](int i)
   {
     return (&x)[i];
   }
@@ -172,7 +172,7 @@ public:
   /**
    * Transposed matrix.
    */
-  Mat4 operator ~ () const
+  Mat4 operator ~() const
   {
     return Mat4(x.x, y.x, z.x, w.x,
                 x.y, y.y, z.y, w.y,
@@ -247,7 +247,7 @@ public:
    * Original matrix.
    */
   OZ_ALWAYS_INLINE
-  Mat4 operator + () const
+  Mat4 operator +() const
   {
     return *this;
   }
@@ -256,7 +256,7 @@ public:
    * Matrix with negated elements.
    */
   OZ_ALWAYS_INLINE
-  Mat4 operator - () const
+  Mat4 operator -() const
   {
     return Mat4(-x, -y, -z, -w);
   }
@@ -264,7 +264,7 @@ public:
   /**
    * Sum.
    */
-  Mat4 operator + (const Mat4& a) const
+  Mat4 operator +(const Mat4& a) const
   {
     return Mat4(x + a.x, y + a.y, z + a.z, w + a.w);
   }
@@ -272,7 +272,7 @@ public:
   /**
    * Difference.
    */
-  Mat4 operator - (const Mat4& a) const
+  Mat4 operator -(const Mat4& a) const
   {
     return Mat4(x - a.x, y - a.y, z - a.z, w - a.w);
   }
@@ -280,7 +280,7 @@ public:
   /**
    * Product.
    */
-  Mat4 operator * (float s) const
+  Mat4 operator *(float s) const
   {
     return Mat4(x * s, y * s, z * s, w * s);
   }
@@ -288,7 +288,7 @@ public:
   /**
    * Product.
    */
-  friend Mat4 operator * (float s, const Mat4& m)
+  friend Mat4 operator *(float s, const Mat4& m)
   {
     return Mat4(s * m.x, s * m.y, s * m.z, s * m.w);
   }
@@ -296,7 +296,7 @@ public:
   /**
    * Product, composite of linear transformations.
    */
-  Mat4 operator * (const Mat4& m) const
+  Mat4 operator *(const Mat4& m) const
   {
     return Mat4(x * m.x.x + y * m.x.y + z * m.x.z + w * m.x.w,
                 x * m.y.x + y * m.y.y + z * m.y.z + w * m.y.w,
@@ -308,7 +308,7 @@ public:
    * Transformed 3D vector (no translation is applied).
    */
   OZ_ALWAYS_INLINE
-  Vec3 operator * (const Vec3& v) const
+  Vec3 operator *(const Vec3& v) const
   {
     return Vec3(x * v.x + y * v.y + z * v.z);
   }
@@ -317,7 +317,7 @@ public:
    * Transformed point (translation is applied).
    */
   OZ_ALWAYS_INLINE
-  Point operator * (const Point& p) const
+  Point operator *(const Point& p) const
   {
     return Point(x * p.x + y * p.y + z * p.z + w);
   }
@@ -326,7 +326,7 @@ public:
    * Transformed plane.
    */
   OZ_ALWAYS_INLINE
-  Plane operator * (const Plane& p) const
+  Plane operator *(const Plane& p) const
   {
     return Plane(*this * p.n, p.d + Vec3(w) * p.n);
   }
@@ -335,7 +335,7 @@ public:
    * Product with a four-component vector.
    */
   OZ_ALWAYS_INLINE
-  Vec4 operator * (const Vec4& v) const
+  Vec4 operator *(const Vec4& v) const
   {
     return x * v.x + y * v.y + z * v.z + w * v.w;
   }
@@ -343,7 +343,7 @@ public:
   /**
    * Quotient.
    */
-  Mat4 operator / (float s) const
+  Mat4 operator /(float s) const
   {
     OZ_ASSERT(s != 0.0f);
 
@@ -358,7 +358,7 @@ public:
    * be [0, 0, 0, 1].
    */
   OZ_ALWAYS_INLINE
-  Mat4 operator ^ (const Mat4& m) const
+  Mat4 operator ^(const Mat4& m) const
   {
     return Mat4(x * m.x.x + y * m.x.y + z * m.x.z,
                 x * m.y.x + y * m.y.y + z * m.y.z,
@@ -369,7 +369,7 @@ public:
   /**
    * Addition.
    */
-  Mat4& operator += (const Mat4& a)
+  Mat4& operator +=(const Mat4& a)
   {
     x += a.x;
     y += a.y;
@@ -381,7 +381,7 @@ public:
   /**
    * Subtraction.
    */
-  Mat4& operator -= (const Mat4& a)
+  Mat4& operator -=(const Mat4& a)
   {
     x -= a.x;
     y -= a.y;
@@ -393,7 +393,7 @@ public:
   /**
    * Multiplication.
    */
-  Mat4& operator *= (float s)
+  Mat4& operator *=(float s)
   {
     x *= s;
     y *= s;
@@ -405,7 +405,7 @@ public:
   /**
    * Division.
    */
-  Mat4& operator /= (float s)
+  Mat4& operator /=(float s)
   {
     OZ_ASSERT(s != 0.0f);
 

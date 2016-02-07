@@ -106,7 +106,7 @@ public:
   /**
    * Move operator.
    */
-  Thread& operator = (Thread&& t);
+  Thread& operator =(Thread&& t);
 
   /**
    * True iff a joinable thread has been started but not yet joined or detached.

@@ -67,7 +67,7 @@ Gettext::Gettext(Gettext&& gt) :
   gt.stringsSize = 0;
 }
 
-Gettext& Gettext::operator = (Gettext&& gt)
+Gettext& Gettext::operator =(Gettext&& gt)
 {
   if (&gt != this) {
     clear();

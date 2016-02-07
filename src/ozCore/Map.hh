@@ -46,7 +46,7 @@ struct MapPair
    * Equality operator.
    */
   OZ_ALWAYS_INLINE
-  constexpr bool operator == (const MapPair& p) const
+  constexpr bool operator ==(const MapPair& p) const
   {
     return key == p.key;
   }
@@ -55,7 +55,7 @@ struct MapPair
    * Less-than operator.
    */
   OZ_ALWAYS_INLINE
-  constexpr bool operator < (const MapPair& p) const
+  constexpr bool operator <(const MapPair& p) const
   {
     return LessFunc()(key, p.key);
   }
@@ -65,7 +65,7 @@ struct MapPair
    */
   template <typename Key_>
   OZ_ALWAYS_INLINE
-  constexpr bool operator == (const Key_& k) const
+  constexpr bool operator ==(const Key_& k) const
   {
     return key == k;
   }
@@ -75,7 +75,7 @@ struct MapPair
    */
   template <typename Key_>
   OZ_ALWAYS_INLINE
-  constexpr bool operator < (const Key_& k) const
+  constexpr bool operator <(const Key_& k) const
   {
     return LessFunc()(key, k);
   }
@@ -190,37 +190,37 @@ public:
    *
    * Existing storage is reused if it suffices.
    */
-  Map& operator = (const Map& m) = default;
+  Map& operator =(const Map& m) = default;
 
   /**
    * Move operator, moves element storage.
    */
-  Map& operator = (Map&& m) = default;
+  Map& operator =(Map&& m) = default;
 
   /**
    * Assign from an initialiser list.
    *
    * Existing storage is reused if it suffices.
    */
-  Map& operator = (InitialiserList<Pair> l)
+  Map& operator =(InitialiserList<Pair> l)
   {
-    return Set<Pair>::operator = (l);
+    return Set<Pair>::operator =(l);
   }
 
   /**
    * True iff respective elements are equal.
    */
-  bool operator == (const Map& m) const
+  bool operator ==(const Map& m) const
   {
-    return Set<Pair>::operator == (m);
+    return Set<Pair>::operator ==(m);
   }
 
   /**
    * False iff respective elements are equal.
    */
-  bool operator != (const Map& m) const
+  bool operator !=(const Map& m) const
   {
-    return Set<Pair>::operator != (m);
+    return Set<Pair>::operator !=(m);
   }
 
   /**

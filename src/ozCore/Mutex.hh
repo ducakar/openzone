@@ -66,7 +66,7 @@ public:
   /**
    * Copying or moving is not possible.
    */
-  Mutex& operator = (const Mutex&) = delete;
+  Mutex& operator =(const Mutex&) = delete;
 
   /**
    * Wait until lock is obtained.

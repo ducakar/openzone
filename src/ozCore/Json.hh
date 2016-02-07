@@ -262,22 +262,22 @@ public:
   /**
    * Copy operator.
    */
-  Json& operator = (const Json& j);
+  Json& operator =(const Json& j);
 
   /**
    * Move operator.
    */
-  Json& operator = (Json&& j);
+  Json& operator =(Json&& j);
 
   /**
    * Equality.
    */
-  bool operator == (const Json& j) const;
+  bool operator ==(const Json& j) const;
 
   /**
    * Inequality.
    */
-  bool operator != (const Json& j) const;
+  bool operator !=(const Json& j) const;
 
   /**
    * JSON array iterator with constant access.
@@ -333,7 +333,6 @@ public:
   /**
    * True iff `length() <= 0`.
    */
-  OZ_ALWAYS_INLINE
   bool isEmpty() const
   {
     return length() <= 0;
@@ -344,14 +343,14 @@ public:
    *
    * If the index is out of bounds or the value not an array, a null value is returned.
    */
-  const Json& operator [] (int i) const;
+  const Json& operator [](int i) const;
 
   /**
    * Returns value for `key` in an object.
    *
    * If the key does not exist or the value not an object, a null value is returned.
    */
-  const Json& operator [] (const char* key) const;
+  const Json& operator [](const char* key) const;
 
   /**
    * True iff value is an object and contains a given key.

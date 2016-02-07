@@ -115,7 +115,7 @@ protected:
      * Advance to the next element.
      */
     OZ_ALWAYS_INLINE
-    ChainIterator& operator ++ ()
+    ChainIterator& operator ++()
     {
       OZ_ASSERT(elem != nullptr);
 
@@ -178,7 +178,7 @@ public:
   /**
    * Move operator, rebinds elements to the destination chain.
    */
-  Chain& operator = (Chain&& c)
+  Chain& operator =(Chain&& c)
   {
     if (&c != this) {
       firstElem = c.firstElem;
@@ -194,7 +194,7 @@ public:
    * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
    * copies always differ in `prev[INDEX]` and `next[INDEX]` members.
    */
-  bool operator == (const Chain& c) const
+  bool operator ==(const Chain& c) const
   {
     const Elem* e1 = firstElem;
     const Elem* e2 = c.firstElem;

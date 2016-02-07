@@ -146,7 +146,7 @@ public:
    *
    * Existing storage is reused if it suffices.
    */
-  List& operator = (const List& l)
+  List& operator =(const List& l)
   {
     if (&l != this) {
       clear();
@@ -158,7 +158,7 @@ public:
   /**
    * Move operator, moves element storage.
    */
-  List& operator = (List&& l)
+  List& operator =(List&& l)
   {
     if (&l != this) {
       delete[] data;
@@ -179,7 +179,7 @@ public:
    *
    * Existing storage is reused if it suffices.
    */
-  List& operator = (InitialiserList<Elem> l)
+  List& operator =(InitialiserList<Elem> l)
   {
     clear();
     addAll(l.begin(), int(l.size()));
@@ -190,7 +190,7 @@ public:
   /**
    * True iff respective elements are equal.
    */
-  bool operator == (const List& l) const
+  bool operator ==(const List& l) const
   {
     return count == l.count && Arrays::equals<Elem>(data, count, l.data);
   }
@@ -198,9 +198,9 @@ public:
   /**
    * False iff respective elements are equal.
    */
-  bool operator != (const List& l) const
+  bool operator !=(const List& l) const
   {
-    return !operator == (l);
+    return !operator ==(l);
   }
 
   /**
@@ -288,7 +288,7 @@ public:
    * Constant reference to the `i`-th element.
    */
   OZ_ALWAYS_INLINE
-  const Elem& operator [] (int i) const
+  const Elem& operator [](int i) const
   {
     OZ_ASSERT(uint(i) < uint(count));
 
@@ -299,7 +299,7 @@ public:
    * Reference to the `i`-th element.
    */
   OZ_ALWAYS_INLINE
-  Elem& operator [] (int i)
+  Elem& operator [](int i)
   {
     OZ_ASSERT(uint(i) < uint(count));
 

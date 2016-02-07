@@ -127,7 +127,7 @@ public:
   /**
    * Move operator, rebinds elements to the destination chain.
    */
-  DChain& operator = (DChain&& c)
+  DChain& operator =(DChain&& c)
   {
     if (&c != this) {
       firstElem = c.firstElem;
@@ -145,7 +145,7 @@ public:
    * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
    * copies always differ in `prev[INDEX]` and `next[INDEX]` members.
    */
-  bool operator == (const DChain& c) const
+  bool operator ==(const DChain& c) const
   {
     return Chain<Elem, INDEX>::equals(c);
   }

@@ -39,11 +39,13 @@ Font::Font(const File& file, int height) :
   }
 
   SDL_RWops* rwOps = SDL_RWFromConstMem(fileBuffer.begin(), fileBuffer.capacity());
+  TTF_Font*  font  = TTF_OpenFontRW(rwOps, true, height);
 
-  handle = TTF_OpenFontRW(rwOps, true, height);
-  if (handle == nullptr) {
+  if (font == nullptr) {
     OZ_ERROR("%s", TTF_GetError());
   }
+
+  handle = font;
 }
 
 Font::~Font()

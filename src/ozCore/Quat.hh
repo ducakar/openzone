@@ -79,7 +79,7 @@ public:
    * Conjugated quaternion.
    */
   OZ_ALWAYS_INLINE
-  Quat operator * () const
+  Quat operator *() const
   {
 #ifdef OZ_SIMD
     return Quat(float4(uint4(f4) ^ uint4{0x80000000u, 0x80000000u, 0x80000000u, 0u}));
@@ -92,7 +92,7 @@ public:
    * Norm.
    */
   OZ_ALWAYS_INLINE
-  float operator ! () const
+  float operator !() const
   {
 #ifdef OZ_SIMD
     return vDot(f4, f4)[0];
@@ -104,7 +104,7 @@ public:
   /**
    * Unit quaternion.
    */
-  Quat operator ~ () const
+  Quat operator ~() const
   {
     OZ_ASSERT(x*x + y*y + z*z + w*w > 0.0f);
 
@@ -137,7 +137,7 @@ public:
    * Original quaternion.
    */
   OZ_ALWAYS_INLINE
-  Quat operator + () const
+  Quat operator +() const
   {
     return *this;
   }
@@ -146,7 +146,7 @@ public:
    * Opposite quaternion.
    */
   OZ_ALWAYS_INLINE
-  Quat operator - () const
+  Quat operator -() const
   {
 #ifdef OZ_SIMD
     return Quat(-f4);
@@ -159,7 +159,7 @@ public:
    * Sum.
    */
   OZ_ALWAYS_INLINE
-  Quat operator + (const Quat& q) const
+  Quat operator +(const Quat& q) const
   {
 #ifdef OZ_SIMD
     return Quat(f4 + q.f4);
@@ -172,7 +172,7 @@ public:
    * Difference.
    */
   OZ_ALWAYS_INLINE
-  Quat operator - (const Quat& q) const
+  Quat operator -(const Quat& q) const
   {
 #ifdef OZ_SIMD
     return Quat(f4 - q.f4);
@@ -185,7 +185,7 @@ public:
    * Product.
    */
   OZ_ALWAYS_INLINE
-  Quat operator * (float s) const
+  Quat operator *(float s) const
   {
 #ifdef OZ_SIMD
     return Quat(f4 * vFill(s));
@@ -198,7 +198,7 @@ public:
    * Product.
    */
   OZ_ALWAYS_INLINE
-  friend Quat operator * (float s, const Quat& q)
+  friend Quat operator *(float s, const Quat& q)
   {
 #ifdef OZ_SIMD
     return Quat(vFill(s) * q.f4);
@@ -210,7 +210,7 @@ public:
   /**
    * Quaternion product.
    */
-  Quat operator * (const Quat& q) const
+  Quat operator *(const Quat& q) const
   {
 #ifdef OZ_SIMD
     float4 k0 = vFill(w);
@@ -239,7 +239,7 @@ public:
    * Quotient.
    */
   OZ_ALWAYS_INLINE
-  Quat operator / (float s) const
+  Quat operator /(float s) const
   {
     OZ_ASSERT(s != 0.0f);
 
@@ -254,7 +254,7 @@ public:
   /**
    * Quotient.
    */
-  friend Quat operator / (float s, const Quat& q)
+  friend Quat operator /(float s, const Quat& q)
   {
 #ifdef OZ_SIMD
     float4 k = vFill(s);
@@ -274,7 +274,7 @@ public:
   /**
    * Quaternion quotient.
    */
-  Quat operator / (const Quat& q) const
+  Quat operator /(const Quat& q) const
   {
 #ifdef OZ_SIMD
     float4 k0 = f4;
@@ -305,7 +305,7 @@ public:
    * Addition.
    */
   OZ_ALWAYS_INLINE
-  Quat& operator += (const Quat& q)
+  Quat& operator +=(const Quat& q)
   {
 #ifdef OZ_SIMD
     f4 += q.f4;
@@ -322,7 +322,7 @@ public:
    * Subtraction.
    */
   OZ_ALWAYS_INLINE
-  Quat& operator -= (const Quat& q)
+  Quat& operator -=(const Quat& q)
   {
 #ifdef OZ_SIMD
     f4 -= q.f4;
@@ -339,7 +339,7 @@ public:
    * Multiplication.
    */
   OZ_ALWAYS_INLINE
-  Quat& operator *= (float s)
+  Quat& operator *=(float s)
   {
 #ifdef OZ_SIMD
     f4 *= vFill(s);
@@ -355,7 +355,7 @@ public:
   /**
    * Quaternion multiplication.
    */
-  Quat& operator *= (const Quat& q)
+  Quat& operator *=(const Quat& q)
   {
 #ifdef OZ_SIMD
     float4 k0 = vFill(w);
@@ -385,7 +385,7 @@ public:
    * Division.
    */
   OZ_ALWAYS_INLINE
-  Quat& operator /= (float s)
+  Quat& operator /=(float s)
   {
 #ifdef OZ_SIMD
     f4 /= vFill(s);
@@ -404,7 +404,7 @@ public:
   /**
    * Quaternion division.
    */
-  Quat& operator /= (const Quat& q)
+  Quat& operator /=(const Quat& q)
   {
 #ifdef OZ_SIMD
     float4 k0 = f4;
@@ -438,7 +438,7 @@ public:
   /**
    * Vector rotation.
    */
-  Vec3 operator * (const Vec3& v) const
+  Vec3 operator *(const Vec3& v) const
   {
     float x2  = x + x;
     float y2  = y + y;
@@ -524,8 +524,8 @@ inline Quat min(const Quat& a, const Quat& b)
 #ifdef OZ_SIMD
   return Quat(vMin(a.f4, b.f4));
 #else
-  return Quat(min<float>(a.x, b.x), min<float>(a.y, b.y), min<float>(a.z, b.z),
-              min<float>(a.w, b.w));
+  return Quat(min<float>(a.x, b.x), min<float>(a.y, b.y),
+              min<float>(a.z, b.z), min<float>(a.w, b.w));
 #endif
 }
 
@@ -538,8 +538,8 @@ inline Quat max(const Quat& a, const Quat& b)
 #ifdef OZ_SIMD
   return Quat(vMax(a.f4, b.f4));
 #else
-  return Quat(max<float>(a.x, b.x), max<float>(a.y, b.y), max<float>(a.z, b.z),
-              max<float>(a.w, b.w));
+  return Quat(max<float>(a.x, b.x), max<float>(a.y, b.y),
+              max<float>(a.z, b.z), max<float>(a.w, b.w));
 #endif
 }
 

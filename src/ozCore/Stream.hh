@@ -106,7 +106,7 @@ public:
   /**
    * Move operator, moves internal buffer.
    */
-  Stream& operator = (Stream&& s);
+  Stream& operator =(Stream&& s);
 
   /**
    * Constant pointer to the beginning of the stream.
@@ -206,7 +206,7 @@ public:
    * Constant reference to the `i`-th byte from the beginning of the stream.
    */
   OZ_ALWAYS_INLINE
-  const char& operator [] (int i) const
+  const char& operator [](int i) const
   {
     OZ_ASSERT(uint(i) < uint(streamEnd - streamBegin));
 
@@ -217,7 +217,7 @@ public:
    * Reference to the `i`-th byte from the beginning of the stream.
    */
   OZ_ALWAYS_INLINE
-  char& operator [] (int i)
+  char& operator [](int i)
   {
     OZ_ASSERT(uint(i) < uint(streamEnd - streamBegin));
 

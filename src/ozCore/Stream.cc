@@ -108,7 +108,7 @@ Stream::Stream(Stream&& s) :
   s.order       = Endian::NATIVE;
 }
 
-Stream& Stream::operator = (Stream&& s)
+Stream& Stream::operator =(Stream&& s)
 {
   if (&s != this) {
     free();

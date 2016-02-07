@@ -92,8 +92,6 @@ void GameStage::write()
   }
 
   OZ_ASSERT(saveStream.capacity() == 0);
-  OZ_ASSERT(saveStream.tell() == 0);
-  OZ_ASSERT(saveStream.available() == 0);
 
   matrix.write(&saveStream);
   nirvana.write(&saveStream);
@@ -486,10 +484,12 @@ void GameStage::init()
   Log::println("Initialising GameStage {");
   Log::indent();
 
-  File profilePath = config["dir.config"].get(String::EMPTY);
+  File statePath = config["dir.data"].get(String::EMPTY) + "/state";
 
-  autosaveFile  = profilePath / "saves/autosave.ozState";
-  quicksaveFile = profilePath / "saves/quicksave.ozState";
+  statePath.mkdir();
+
+  autosaveFile  = statePath / "autosave.ozState";
+  quicksaveFile = statePath / "quicksave.ozState";
 
   matrix.init();
   nirvana.init();

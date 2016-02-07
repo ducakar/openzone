@@ -88,7 +88,6 @@ if(OZ_LUAJIT)
   include_directories(SYSTEM ${LUAJIT_INCLUDE_DIRS})
 elseif(EMSCRIPTEN)
   find_package(Lua REQUIRED)
-  set(LUA_LIBRARIES ${LUA_LIBRARY})
   include_directories(SYSTEM ${LUA_INCLUDE_DIR})
 else()
   pkg_check_modules(LUA REQUIRED lua)
@@ -136,7 +135,7 @@ if(PLATFORM_EMBEDDED)
     find_package(BZip2 REQUIRED)    # Required by FreeType.
     find_package(Freetype REQUIRED) # Required by SDL_ttf.
 
-    list(APPEND SDL_TTF_LIBRARIES ${FREETYPE_LIBRARIES} ${BZIP2_LIBRARIES})
+    list(APPEND SDL_TTF_LIBRARIES ${FREETYPE_LIBRARIES} ${BZIP2_LIBRARIES} ${PNG_LIBRARIES})
   endif()
 endif()
 
@@ -170,6 +169,7 @@ mark_as_advanced(MINGW32_LIBRARY)
 include_directories(SYSTEM etc/include)
 
 set(flags "-std=c++14 -ffast-math -fsized-deallocation -fstrict-enums -fvisibility-inlines-hidden")
+set(flags "${flags} -fno-exceptions -fno-rtti")
 
 if(BUILD_SHARED_LIBS)
   set(flags "${flags} -fPIC")

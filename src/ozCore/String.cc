@@ -308,7 +308,7 @@ String::String(String&& s)
   s.baseBuffer[0] = '\0';
 }
 
-String& String::operator = (const String& s)
+String& String::operator =(const String& s)
 {
   if (&s != this) {
     assign(s, s.count);
@@ -316,7 +316,7 @@ String& String::operator = (const String& s)
   return *this;
 }
 
-String& String::operator = (String&& s)
+String& String::operator =(String&& s)
 {
   if (&s != this) {
     if (count >= BUFFER_SIZE) {
@@ -435,22 +435,22 @@ double String::parseDouble(const char** end) const
   return parseDouble(begin(), end);
 }
 
-String String::operator + (const String& s) const
+String String::operator +(const String& s) const
 {
   return String(begin(), count, s.begin(), s.count);
 }
 
-String String::operator + (const char* s) const
+String String::operator +(const char* s) const
 {
   return String(begin(), count, s, length(s));
 }
 
-String operator + (const char* s, const String& t)
+String operator +(const char* s, const String& t)
 {
   return String(s, String::length(s), t.begin(), t.count);
 }
 
-String& String::operator += (const String& s)
+String& String::operator +=(const String& s)
 {
   int oCount = count;
 
@@ -460,7 +460,7 @@ String& String::operator += (const String& s)
   return *this;
 }
 
-String& String::operator += (const char* s)
+String& String::operator +=(const char* s)
 {
   int oCount  = count;
   int sLength = length(s);

@@ -60,7 +60,7 @@ SharedLib::SharedLib(SharedLib&& l) :
   l.handle = nullptr;
 }
 
-SharedLib& SharedLib::operator = (SharedLib&& l)
+SharedLib& SharedLib::operator =(SharedLib&& l)
 {
   if (&l != this) {
     close();

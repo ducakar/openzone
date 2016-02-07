@@ -820,7 +820,7 @@ Json::Json(Json&& j) :
   j.wasAccessed = true;
 }
 
-Json& Json::operator = (const Json& j)
+Json& Json::operator =(const Json& j)
 {
   if (&j != this) {
     clear();
@@ -829,7 +829,7 @@ Json& Json::operator = (const Json& j)
   return *this;
 }
 
-Json& Json::operator = (Json&& j)
+Json& Json::operator =(Json&& j)
 {
   if (&j != this) {
     clear();
@@ -847,7 +847,7 @@ Json& Json::operator = (Json&& j)
   return *this;
 }
 
-bool Json::operator == (const Json& j) const
+bool Json::operator ==(const Json& j) const
 {
   if (valueType != j.valueType) {
     return false;
@@ -884,9 +884,9 @@ bool Json::operator == (const Json& j) const
   }
 }
 
-bool Json::operator != (const Json& j) const
+bool Json::operator !=(const Json& j) const
 {
-  return !operator == (j);
+  return !operator ==(j);
 }
 
 Json::ArrayCIterator Json::arrayCIter() const
@@ -972,7 +972,7 @@ int Json::length() const
   }
 }
 
-const Json& Json::operator [] (int i) const
+const Json& Json::operator [](int i) const
 {
   if (valueType != ARRAY) {
     wasAccessed |= valueType == NIL;
@@ -991,7 +991,7 @@ const Json& Json::operator [] (int i) const
   return list[i];
 }
 
-const Json& Json::operator [] (const char* key) const
+const Json& Json::operator [](const char* key) const
 {
   if (valueType != OBJECT) {
     wasAccessed |= valueType == NIL;

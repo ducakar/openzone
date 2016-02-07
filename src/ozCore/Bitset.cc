@@ -40,12 +40,12 @@ Bitset::Bitset(const char* s) :
   }
 }
 
-bool Bitset::operator == (const Bitset& b) const
+bool Bitset::operator ==(const Bitset& b) const
 {
   return data == b.data;
 }
 
-bool Bitset::operator != (const Bitset& b) const
+bool Bitset::operator !=(const Bitset& b) const
 {
   return data != b.data;
 }
@@ -92,13 +92,13 @@ void Bitset::clear()
   Arrays::fill<size_t, size_t>(data.begin(), data.length(), 0);
 }
 
-Bitset Bitset::operator ~ () const
+Bitset Bitset::operator ~() const
 {
   Bitset r = *this;
   return r.flip();
 }
 
-Bitset Bitset::operator & (const Bitset& b) const
+Bitset Bitset::operator &(const Bitset& b) const
 {
   OZ_ASSERT(data.length() == b.data.length());
 
@@ -106,7 +106,7 @@ Bitset Bitset::operator & (const Bitset& b) const
   return r &= b;
 }
 
-Bitset Bitset::operator | (const Bitset& b) const
+Bitset Bitset::operator |(const Bitset& b) const
 {
   OZ_ASSERT(data.length() == b.data.length());
 
@@ -114,7 +114,7 @@ Bitset Bitset::operator | (const Bitset& b) const
   return r |= b;
 }
 
-Bitset Bitset::operator ^ (const Bitset& b) const
+Bitset Bitset::operator ^(const Bitset& b) const
 {
   OZ_ASSERT(data.length() == b.data.length());
 
@@ -130,7 +130,7 @@ Bitset& Bitset::flip()
   return *this;
 }
 
-Bitset& Bitset::operator &= (const Bitset& b)
+Bitset& Bitset::operator &=(const Bitset& b)
 {
   for (int i = 0; i < data.length(); ++i) {
     data[i] &= b.data[i];
@@ -138,7 +138,7 @@ Bitset& Bitset::operator &= (const Bitset& b)
   return *this;
 }
 
-Bitset& Bitset::operator |= (const Bitset& b)
+Bitset& Bitset::operator |=(const Bitset& b)
 {
   for (int i = 0; i < data.length(); ++i) {
     data[i] |= b.data[i];
@@ -146,7 +146,7 @@ Bitset& Bitset::operator |= (const Bitset& b)
   return *this;
 }
 
-Bitset& Bitset::operator ^= (const Bitset& b)
+Bitset& Bitset::operator ^=(const Bitset& b)
 {
   for (int i = 0; i < data.length(); ++i) {
     data[i] ^= b.data[i];

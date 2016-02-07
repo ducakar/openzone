@@ -84,7 +84,7 @@ public:
    * Equality.
    */
   OZ_ALWAYS_INLINE
-  bool operator == (const Plane& p) const
+  bool operator ==(const Plane& p) const
   {
     return n == p.n && d == p.d;
   }
@@ -93,16 +93,16 @@ public:
    * Inequality.
    */
   OZ_ALWAYS_INLINE
-  bool operator != (const Plane& p) const
+  bool operator !=(const Plane& p) const
   {
-    return !operator == (p);
+    return !operator ==(p);
   }
 
   /**
    * Constant float pointer to the members.
    */
   OZ_ALWAYS_INLINE
-  operator const float* () const
+  operator const float*() const
   {
     return n;
   }
@@ -111,7 +111,7 @@ public:
    * Float pointer to the members.
    */
   OZ_ALWAYS_INLINE
-  operator float* ()
+  operator float*()
   {
     return n;
   }
@@ -120,7 +120,7 @@ public:
    * Constant reference to the `i`-th member.
    */
   OZ_ALWAYS_INLINE
-  const float& operator [] (int i) const
+  const float& operator [](int i) const
   {
     return n[i];
   }
@@ -129,7 +129,7 @@ public:
    * Reference to the `i`-th member.
    */
   OZ_ALWAYS_INLINE
-  float& operator [] (int i)
+  float& operator [](int i)
   {
     return n[i];
   }
@@ -138,7 +138,7 @@ public:
    * Projection of a vector to a plane's normal.
    */
   OZ_ALWAYS_INLINE
-  friend float operator * (const Vec3& v, const Plane& plane)
+  friend float operator *(const Vec3& v, const Plane& plane)
   {
 #ifdef OZ_SIMD
     return vDot(v.f4, plane.n.f4)[0];
@@ -151,7 +151,7 @@ public:
    * Distance between a point and a plane.
    */
   OZ_ALWAYS_INLINE
-  friend float operator * (const Point& p, const Plane& plane)
+  friend float operator *(const Point& p, const Plane& plane)
   {
 #ifdef OZ_SIMD
     return vDot(p.f4, plane.n.f4)[0] - plane.d;

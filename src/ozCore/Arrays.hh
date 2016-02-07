@@ -85,7 +85,7 @@ private:
      * Advance to the next element.
      */
     OZ_ALWAYS_INLINE
-    ArrayIterator& operator ++ ()
+    ArrayIterator& operator ++()
     {
       OZ_ASSERT(elem != past);
 
@@ -133,7 +133,7 @@ private:
    * Helper function for `sort()`.
    *
    * @note
-   * `Elem` type must have `operator < (const Elem&)` defined.
+   * `Elem` type must have `operator <(const Elem&)` defined.
    *
    * Quicksort algorithm is used which takes last element in a partition as a pivot so sorting a
    * sorted or nearly sorted array will take O(n^2) time instead of O(n log n) as in average case.
@@ -397,7 +397,7 @@ public:
    * Find index in a sorted array such that `array[index - 1] < key && key <= array[index]`.
    *
    * @note
-   * `Elem` type must have `bool operator < (const Elem&, const Key&) const` defined.
+   * `Elem` type must have `bool operator <(const Elem&, const Key&) const` defined.
    *
    * If all elements are lesser return `count` and if all elements are greater return 0.
    *

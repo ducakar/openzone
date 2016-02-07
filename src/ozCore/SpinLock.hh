@@ -59,7 +59,7 @@ public:
   /**
    * Copying or moving is not possible.
    */
-  SpinLock& operator = (const SpinLock&) = delete;
+  SpinLock& operator =(const SpinLock&) = delete;
 
   /**
    * Loop performing a lock operation until it succeeds.

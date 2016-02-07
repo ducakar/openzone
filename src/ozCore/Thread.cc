@@ -173,7 +173,7 @@ Thread::Thread(Thread&& t) :
   t.descriptor = nullptr;
 }
 
-Thread& Thread::operator = (Thread&& t)
+Thread& Thread::operator =(Thread&& t)
 {
   if (&t != this) {
     if (descriptor != nullptr) {

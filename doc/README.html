@@ -7,27 +7,13 @@
 </head>
 <body>
 
-  <script>
-  document.body.onresize = function () {
-    if (window.innerWidth > 960) {
-      document.body.style.marginLeft  = (window.innerWidth - 900) / 2 + 'px'
-      document.body.style.marginRight = document.body.style.marginLeft
-    }
-    else {
-      document.body.style.marginLeft  = '30px'
-      document.body.style.marginRight = '30px'
-    }
-  }
-  document.body.onresize()
-  </script>
-
   <div style="text-align: center;">
     <h1>OpenZone</h1>
     <p>version <!--OZ_VERSION-->0.3.95</p>
     <p><a href="http://ducakar.github.io/openzone/">http://ducakar.github.io/openzone/</a></p>
   </div>
 
-  <h2><a id="content" href="">Contents</a></h2>
+  <h2 id="content">Contents</h2>
   <ol>
     <li><a href="#controls">Controls</a></li>
     <li><a href="#cmdline">Command Line</a></li>
@@ -39,7 +25,7 @@
     <li><a href="#legal">Legal</a></li>
   </ol>
 
-  <h2><a id="controls" href="">Controls</a></h2>
+  <h2 id="controls">Controls</h2>
   <table class="headerRight">
     <tr>
       <td colspan="2"><h4>Free Camera Controls</h4></td>
@@ -318,166 +304,166 @@
     </tr>
   </table>
 
-  <h2><a id="cmdline" href="">Command Line</a></h2>
-  <p><code>
-      openzone [-v] [-l | -i &lt;mission&gt;] [-t &lt;num&gt;] [-L &lt;lang&gt;] [-p &lt;prefix&gt;]
-  </code></p>
+  <h2 id="cmdline">Command Line</h2>
+  <p>
+    <code>openzone [-v] [-l | -i &lt;mission&gt;] [-t &lt;num&gt;] [-L &lt;lang&gt;] [-p &lt;prefix&gt;]</code>
+  </p>
   <table>
     <tr>
-      <th>-v</th>
+      <td><code>-v</code></td>
       <td>
         Print verbose log messages to terminal too, not only to the log file.
       </td>
     </tr>
     <tr>
-      <th>-l</th>
+      <td><code>-l</code></td>
       <td>
         Skip main menu and load the last autosaved game.
       </td>
     </tr>
     <tr>
-      <th>-i &lt;mission&gt;</th>
+      <td><code>-i &lt;mission&gt;</code></td>
       <td>
-        Skip main menu and start mission &lt;mission&gt;.
+        Skip main menu and start mission <code>&lt;mission&gt;</code>.
       </td>
     </tr>
     <tr>
-      <th>-t &lt;num&gt;</th>
+      <td><code>-t &lt;num&gt;</code></td>
       <td>
-        Exit after &lt;num&gt; seconds (can be a floating-point number) and use 42 as the random
-        seed. Useful for benchmarking.
+        Exit after <code>&lt;num&gt;</code> seconds (can be a floating-point number) and use <code>42</code> as the
+        random seed. Useful for benchmarking.
       </td>
     </tr>
     <tr>
-      <th>-L &lt;lang&gt;</th>
+      <td><code>-L &lt;lang&gt;</code></td>
       <td>
-        Use language &lt;lang&gt;. Should match a subdirectory name in 'lingua/' directory inside
-        game data archives.
+        Use language <code>&lt;lang&gt;</code>. Should match a subdirectory name in <code>lingua/</code> directory
+        inside game data archives.
       </td>
     </tr>
     <tr>
-      <th>-p &lt;prefix&gt;</th>
+      <td><code>-p &lt;prefix&gt;</code></td>
       <td>
-        Sets data directory to '&lt;prefix&gt;/share/openzone'. Defaults to '/usr'.
+        Sets data directory to <code>&lt;prefix&gt;/share/openzone</code>. Defaults to <code>/usr</code>.
       </td>
     </tr>
   </table>
 
-  <h2><a id="settings" href="">Settings</a></h2>
+  <h2 id="settings">Settings</h2>
   <p>
-    Settings file is located in <a href="#dirs">&lt;config&gt;</a>/client.json.
+    Settings file is located in <code><a href="#dirs">&lt;config&gt;</a>/client.json</code>.
   </p>
 
   <h4>Configuration variables</h4>
   <dl>
-    <dt>_version [string] "<!--OZ_VERSION-->0.3.95"</dt>
+    <dt><code>_version [string] "<!--OZ_VERSION-->0.3.95"</code></dt>
     <dd>
       Version of OpenZone for which the settings file was created. If version does not match,
       OpenZone saves updated configuration on exit. Obsolete variables are lost during that process.
     </dd>
-    <dt>camera.angle [float] 80.0</dt>
+    <dt><code>camera.angle [float] 80.0</code></dt>
     <dd>
       Vertical camera angle in degrees. Horizontal angle adjusted depending on aspect ratio.
     </dd>
-    <dt>camera.aspect [float] 0.0</dt>
+    <dt><code>camera.aspect [float] 0.0</code></dt>
     <dd>
-      Aspect ratio (width/height). If 0.0, it is determined from the screen resolution.
+      Aspect ratio (width/height). If <code>0.0</code>, it is determined from the screen resolution.
     </dd>
-    <dt>dir.music [string] "<a href="#dirs">&lt;music&gt;</a>/OpenZone"</dt>
+    <dt><code>dir.music [string] "<a href="#dirs">&lt;music&gt;</a>/OpenZone"</code></dt>
     <dd>
-      Top directory that will be recursively searched for *.oga, *.ogg, *.mp3 and *.aac files. All
-      found tracks will be accessible from Music Player along the original tracks included in game
-      data.
+      Top directory that will be recursively searched for <code>*.oga</code>, <code>*.ogg</code>, <code>*.mp3</code> and
+      <code>*.aac</code> files. All found tracks will be accessible from Music Player along the original tracks included
+      in game data.
     </dd>
-    <dt>dir.prefix [string] Linux: "/usr", OS X: "/Applications/OpenZone.app", Windows: "."</dt>
+    <dt><code>dir.prefix [string] Linux: "/usr", OS X: "/Applications/OpenZone.app", Windows: "."</code></dt>
     <dd>
       Prefix path to game directory structure. The share/openzone directory should be located inside
       the prefix directory.
     </dd>
-    <dt>lingua [string] ""</dt>
+    <dt><code>lingua [string] ""</code></dt>
     <dd>
-      Language code for translations. Language code must correspond to a subdirectory of "lingua"
+      Language code for translations. Language code must correspond to a subdirectory of <code>lingua</code>
       directory in one of game data archives.
     </dd>
-    <dt>render.postprocess [bool] true</dt>
+    <dt><code>render.postprocess [bool] true</code></dt>
     <dd>
       Enable postprocessing. Also enables offscreen rendering.
     </dd>
-    <dt>render.scale [float] 1.0</dt>
+    <dt><code>render.scale [float] 1.0</code></dt>
     <dd>
       Scale of resolution of offscreen buffer where world is rendered to. Enables offscreen
-      rendering if not 1.0.
+      rendering if not <code>1.0</code>.
     </dd>
-    <dt>render.scaleFilter ["NEAREST" | "LINEAR"] "LINEAR"</dt>
+    <dt><code>render.scaleFilter ["NEAREST" | "LINEAR"] "LINEAR"</code></dt>
     <dd>
       When using offscreen rendering, this specifies which filter to use when rendering offscreen
-      buffer into the main buffer. "NEAREST" produces sharp edges but blocky image while "LINEAR"
+      buffer into the main buffer. <code>NEAREST</code> produces sharp edges but blocky image while <code>LINEAR</code>
       produces more smooth but blurry image.
     </dd>
-    <dt>render.showAim [bool] false</dt>
+    <dt><code>render.showAim [bool] false</code></dt>
     <dd>
       Draw a small green box at the point you are currenty aiming at. It was intended for testing
       collision detection.
     </dd>
-    <dt>render.showBounds [bool] false</dt>
+    <dt><code>render.showBounds [bool] false</code></dt>
     <dd>
       Show AABBs of objects. Green for solid objects, grey for non-solid objects, blue for
       structures and red for structure entities.
     </dd>
-    <dt>render.visibilityRange [float] 350.0</dt>
+    <dt><code>render.visibilityRange [float] 350.0</code></dt>
     <dd>
       Visible range.
     </dd>
-    <dt>seed [int | "TIME"] "TIME"</dt>
+    <dt><code>seed [int | "TIME"] "TIME"</code></dt>
     <dd>
-      Seed for random number generator. Can be an integer or "TIME" to use the current time as the
+      Seed for random number generator. Can be an integer or <code>TIME</code> to use the current time as the
       seed.
     </dd>
-    <dt>shader.vertexTexture [bool] false</dt>
+    <dt><code>shader.vertexTexture [bool] false</code></dt>
     <dd>
       Use vertex texture fetch feature to perform mesh animation in vertex shader. Should work on
       GeForce 6 or newer and Radeon HD 2xxx or newer. Does not work with Catalyst drivers.
     </dd>
-    <dt>sound.device [string] ""</dt>
+    <dt><code>sound.device [string] ""</code></dt>
     <dd>
       Sound device to pass to OpenAL. If empty string, choice is left to OpenAL. To see available
-      devices look into log file <a href="#dirs">&lt;config&gt;</a>/client.log.
+      devices look into log file <code><a href="#dirs">&lt;config&gt;</a>/client.log</code>.
     </dd>
-    <dt>sound.volume [float] 1.0</dt>
+    <dt><code>sound.volume [float] 1.0</code></dt>
     <dd>
-      Sound volume. 1.0 represents full volume.
+      Sound volume. <code>1.0</code> represents full volume.
     </dd>
-    <dt>ui.showBuild [bool] false</dt>
+    <dt><code>ui.showBuild [bool] false</code></dt>
     <dd>
       Show a windows with buttons to add various objects into the world. For development purpuses.
     </dd>
-    <dt>ui.showDebug [bool] false</dt>
+    <dt><code>ui.showDebug [bool] false</code></dt>
     <dd>
       Show a window that shows coordinates, orientation and other data about camera, controlled bot,
       tagged object etc. For development purposes.
     </dd>
-    <dt>ui.showFPS [bool] false</dt>
+    <dt><code>ui.showFPS [bool] false</code></dt>
     <dd>
       Show frames per second. Since world simulation runs on 60 Hz FPS cannot be higher than this
       value.
     </dd>
-    <dt>window.fullscreen [bool] false</dt>
+    <dt><code>window.fullscreen [bool] false</code></dt>
     <dd>
       Start in fullscreen mode.
     </dd>
-    <dt>window.height [int] 0</dt>
+    <dt><code>window.height [int] 0</code></dt>
     <dd>
       Vertical screen resolution. If either <code>window.width</code> or <code>window.height</code>
       is zero, desktop resolution is used.
     </dd>
-    <dt>window.width [int] 0</dt>
+    <dt><code>window.width [int] 0</code></dt>
     <dd>
       Horizontal screen resolution. If either <code>window.width</code> or
       <code>window.height</code> is zero, desktop resolution is used.
     </dd>
   </dl>
 
-  <h2><a id="dirs" href="">Directories</a></h2>
+  <h2 id="dirs">Directories</h2>
 
   <table>
     <tr>
@@ -487,7 +473,7 @@
       <th>Exact location</th>
     </tr>
     <tr>
-      <th rowspan="3">&lt;config&gt;</th>
+      <th rowspan="3"><code>&lt;config&gt;</code></th>
       <td>Linux</td>
       <td>~/.config/openzone</td>
       <td>$XDG_CONFIG_HOME/openzone</td>
@@ -506,7 +492,7 @@
       <td colspan="4"></td>
     </tr>
     <tr>
-      <th rowspan="3">&lt;local&gt;</th>
+      <th rowspan="3"><code>&lt;local&gt;</code></th>
       <td>Linux</td>
       <td>~/.local/share/openzone</td>
       <td>$XDG_DATA_HOME/openzone</td>
@@ -525,7 +511,7 @@
       <td colspan="4"></td>
     </tr>
     <tr>
-      <th rowspan="3">&lt;music&gt;</th>
+      <th rowspan="3"><code>&lt;music&gt;</code></th>
       <td>Linux</td>
       <td>~/Music/OpenZone</td>
       <td>$XDG_MUSIC_DIR/OpenZone</td>
@@ -544,7 +530,7 @@
       <td colspan="4"></td>
     </tr>
     <tr>
-      <th rowspan="3">&lt;data&gt;</th>
+      <th rowspan="3"><code>&lt;data&gt;</code></th>
       <td>Linux</td>
       <td>/usr/share/openzone</td>
       <td>&lt;install_dir&gt;/share/openzone</td>
@@ -561,15 +547,15 @@
     </tr>
   </table>
 
-  <h2><a id="vfs" href="">Virtual Filesystem</a></h2>
+  <h2 id="vfs">Virtual Filesystem</h2>
   <p>
     Game data are read from internal virtual filesystem that is a union of the following locations:
   </p>
   <ol>
-    <li>contents of <a href="#dirs">&lt;local&gt;</a> directory</li>
-    <li>contents of <a href="#dirs">&lt;local&gt;</a>/*.zip archives</li>
-    <li>contents of <a href="#dirs">&lt;data&gt;</a> directory</li>
-    <li>contents of <a href="#dirs">&lt;local&gt;</a>/*.zip</li>
+    <li>contents of <code><a href="#dirs">&lt;local&gt;</a></code> directory</li>
+    <li>contents of <code><a href="#dirs">&lt;local&gt;</a>/*.zip</code> archives</li>
+    <li>contents of <code><a href="#dirs">&lt;data&gt;</a></code> directory</li>
+    <li>contents of <code><a href="#dirs">&lt;local&gt;</a>/*.zip</code></li>
   </ol>
   <p>
     If a file appears multiple times, the first appearance overrides the later ones. Locations are
@@ -581,7 +567,7 @@
     extensions.
   </p>
 
-  <h2><a id="deps" href="">Dependencies</a></h2>
+  <h2 id="deps">Dependencies</h2>
   <p>
     Binary packages already either include all required libraries or list them as dependencies. The
     following libraries are direct dependencies required in run-time:
@@ -600,7 +586,7 @@
     <li>faad2 (optional, to play AAC files).</li>
   </ul>
 
-  <h2><a id="troubleshooting" href="">Troubleshooting</a></h2>
+  <h2 id="troubleshooting">Troubleshooting</h2>
   <ul>
     <li>
       Make sure you have the <b>LATEST</b> display drivers.
@@ -622,7 +608,7 @@
     </li>
   </ul>
 
-  <h2><a id="performance" href="">Performance Tips</a></h2>
+  <h2 id="performance">Performance Tips</h2>
   <ul>
     <li>
       If you use dynamic CPU frequency scaling turn that feature off and set the highest CPU
@@ -634,7 +620,7 @@
     </li>
   </ul>
 
-  <h2><a id="legal" href="">Legal</a></h2>
+  <h2 id="legal">Legal</h2>
   <h3>OpenZone Engine</h3>
   <div>
     Copyright © 2002-2016 Davorin Učakar

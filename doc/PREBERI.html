@@ -7,27 +7,13 @@
 </head>
 <body>
 
-  <script>
-  document.body.onresize = function () {
-    if (window.innerWidth > 960) {
-      document.body.style.marginLeft  = (window.innerWidth - 900) / 2 + 'px'
-      document.body.style.marginRight = document.body.style.marginLeft
-    }
-    else {
-      document.body.style.marginLeft  = '30px'
-      document.body.style.marginRight = '30px'
-    }
-  }
-  document.body.onresize()
-  </script>
-
   <div style="text-align: center;">
     <h1>OpenZone</h1>
     <p>različica <!--OZ_VERSION-->0.3.95</p>
     <p><a href="http://ducakar.github.io/openzone/">http://ducakar.github.io/openzone/</a></p>
   </div>
 
-  <h2><a id="content" href="">Vsebina</a></h2>
+  <h2 id="content">Vsebina</h2>
   <ol>
     <li><a href="#controls">Nadzor</a></li>
     <li><a href="#cmdline">Ukazna vrstica</a></li>
@@ -35,11 +21,11 @@
     <li><a href="#dirs">Imeniki</a></li>
     <li><a href="#vfs">Navidezni datotečni sistem</a></li>
     <li><a href="#deps">Odvisnosti</a></li>
-    <li><a href="#troubleshooting">Problemi</a></li>
+    <li><a href="#troubleshooting">Težave</a></li>
     <li><a href="#legal">Avtorske pravice</a></li>
   </ol>
 
-  <h2><a id="controls" href="">Nadzor</a></h2>
+  <h2 id="controls">Nadzor</h2>
   <table class="headerRight">
     <tr>
       <td colspan="2"><h4>Nadzor proste kamere</h4></td>
@@ -318,134 +304,134 @@
     </tr>
   </table>
 
-  <h2><a id="cmdline" href="">Ukazna vrstica</a></h2>
-  <p><code>
-    openzone [-v] [-l | -i &lt;misija&gt;] [-t &lt;št&gt;] [-L &lt;jezik&gt;] [-p &lt;predpona&gt;]
-  </code></p>
+  <h2 id="cmdline">Ukazna vrstica</h2>
+  <p>
+    <code>openzone [-v] [-l | -i &lt;misija&gt;] [-t &lt;št&gt;] [-L &lt;jezik&gt;] [-p &lt;predpona&gt;]</code>
+  </p>
   <table>
     <tr>
-      <th>-v</th>
+      <td><code>-v</code></td>
       <td>
         Izpisuj podrobna dnevniška sporočila tudi na terminal, ne zgolj v dnevniško datoteko.
       </td>
     </tr>
     <tr>
-      <th>-l</th>
+      <td><code>-l</code></td>
       <td>
         Preskoči glavni meni in naloži nazadnje samodejno shranjeno stanje.
       </td>
     </tr>
     <tr>
-      <th>-i &lt;misija&gt;</th>
+      <td><code>-i &lt;misija&gt;</code></td>
       <td>
-        Preskoči glavni meni in poženi misijo &lt;misija&gt;.
+        Preskoči glavni meni in poženi misijo <code>&lt;misija&gt;</code>.
       </td>
     </tr>
     <tr>
-      <th>-t &lt;št&gt;</th>
+      <td>-t &lt;št&gt;</td>
       <td>
-        Končaj po &lt;št&gt; sekundah (lahko je decimalno število) in kot naključnostno seme uporabi
-        42. Uporabno za benchmark.
+        Končaj po <code>&lt;št&gt;</code> sekundah (lahko je decimalno število) in kot naključnostno seme uporabi
+        <code>42</code>. Uporabno za »benchmark«.
       </td>
     </tr>
     <tr>
-      <th>-L &lt;jezik&gt;</th>
+      <td><code>-L &lt;jezik&gt;</code></td>
       <td>
-        Nastavi jezik &lt;jezik&gt;. Mora sovpadati z imenom podimenika v imeniku »lingua/« v
+        Nastavi jezik <code>&lt;jezik&gt;</code>. Mora sovpadati z imenom podimenika v imeniku <code>lingua/</code> v
         podatkovnih arhivih.
       </td>
     </tr>
     <tr>
-      <th>-p &lt;predpona&gt;</th>
+      <td><code>-p &lt;predpona&gt;</code></td>
       <td>
-        Nastavi podatkovni imenik na »&lt;predpona&gt;/share/openzone«. Privzeto: »/usr«.
+        Nastavi podatkovni imenik na <code>&lt;predpona&gt;/share/openzone</code>. Privzeto: <code>/usr</code>.
       </td>
     </tr>
   </table>
 
-  <h2><a id="settings" href="">Nastavitve</a></h2>
+  <h2 id="settings">Nastavitve</h2>
   <p>
-    Datoteka z nastavitvami se nahaja v <a href="#dirs">&lt;config&gt;</a>/client.json.
+    Datoteka z nastavitvami se nahaja v <a href="#dirs"><code>&lt;config&gt;</code></a>/client.json.
   </p>
 
   <h4>Nastavitvene spremenljivke</h4>
   <dl>
-    <dt>_version [string] "<!--OZ_VERSION-->0.3.95"</dt>
+    <dt><code>_version [string] "<!--OZ_VERSION-->0.3.95"</code></dt>
     <dd>
       Različica OpenZone, za katero so pisane nastavitve. Če se različici ne ujemata, se ob izhodu
       shranijo posodobljene nastavitve. Spremenljivke, ki so v novi verziji opuščene, so
       odstranjene.
     </dd>
-    <dt>camera.angle [float] 80.0</dt>
+    <dt><code>camera.angle [float] 80.0</code></dt>
     <dd>
       Navpični kot kamere. Vodoravni kot je prilagojen glede na razmerje stranic ločljivosti.
     </dd>
-    <dt>camera.aspect [float] 0.0</dt>
+    <dt><code>camera.aspect [float] 0.0</code></dt>
     <dd>
-      Razmerje stranic širina / višina. Če je 0.0, je enak razmerju ločljivosti.
+      Razmerje stranic širina / višina. Če je <code>0.0</code>, je enak razmerju ločljivosti.
     </dd>
-    <dt>dir.music [string] "<a href="#dirs">&lt;music&gt;</a>/OpenZone"</dt>
+    <dt><code>dir.music [string] "<a href="#dirs">&lt;music&gt;</a>/OpenZone"</code></dt>
     <dd>
-      Vrhnji imenik, ki se rekurzivno preišče za datoteke *.oga, *.ogg, *.mp3 in *.aac. Vse najdene
-      datoteke so skladbe v Predvajalniku glasbe poleg glasbe, ki je priložena igri.
+      Vrhnji imenik, ki se rekurzivno preišče za datoteke <code>*.oga</code>, <code>*.ogg</code>, <code>*.mp3</code> in
+      <code>*.aac</code>. Vse najdene datoteke so skladbe v Predvajalniku glasbe poleg glasbe, ki je priložena igri.
     </dd>
-    <dt>dir.prefix [string] Linux: "/usr", OS X: "/Applications/OpenZone.app", Windows: "."</dt>
+    <dt><code>dir.prefix [string] Linux: "/usr", OS X: "/Applications/OpenZone.app", Windows: "."</code></dt>
     <dd>
-      Predpona za imenike v katerih se nahajajo podatki za igro. Imenik »share/openzone« se mora
+      Predpona za imenike v katerih se nahajajo podatki za igro. Imenik <code>share/openzone</code> se mora
       nahajati v tem imeniku.
     </dd>
-    <dt>lingua [string] ""</dt>
+    <dt><code>lingua [string] ""</code></dt>
     <dd>
       Koda jezika, za katerega naj se naložijo prevodi. Ta mora ustrezati imenu katerega od
-      podimenikov imenika »lingua«, ki se nahaja v katerem od arhivov s podatki.
+      podimenikov imenika <code>lingua</code>, ki se nahaja v katerem od arhivov s podatki.
     </dd>
-    <dt>render.postprocess [bool] true</dt>
+    <dt><code>render.postprocess [bool] true</code></dt>
     <dd>
       Vključi postprocesiranje in upodabljanje v medpomnilnik.
     </dd>
-    <dt>render.scale [float] 1.0</dt>
+    <dt><code>render.scale [float] 1.0</code></dt>
     <dd>
       Povečava medpomnilnika za upodabljanje glede na zaslonsko ločljivost. Vklopi upodabljanje v
-      medpomnilnik, če je različno od 1.0.
+      medpomnilnik, če je različno od <code>1.0</code>.
     </dd>
-    <dt>render.scaleFilter ["NEAREST" | "LINEAR"] "LINEAR"</dt>
+    <dt><code>render.scaleFilter ["NEAREST" | "LINEAR"] "LINEAR"</code></dt>
     <dd>
       Če je vklopljeno upodabljanje v medpomnilnik, ta nastavitev poda filter, ki se uporabi pri
-      izrisu tega medpomnilnika na zaslon. »NEAREST« izrisuje ostro, vendar kockasto sliko, medtem
-      ko »LINEAR« izriše gladko, vendar bolj medlo sliko.
+      izrisu tega medpomnilnika na zaslon. <code>NEAREST</code> izrisuje ostro, vendar kockasto sliko, medtem
+      ko <code>LINEAR</code> izriše gladko, vendar bolj medlo sliko.
     </dd>
-    <dt>render.showAim [bool] false</dt>
+    <dt><code>render.showAim [bool] false</code></dt>
     <dd>
       Prikaže majhen zelen kvadratek v smeri, v katero gleda kamera. To je namenjeno preverjanju
       zaznave trkov.
     </dd>
-    <dt>render.showBounds [bool] false</dt>
+    <dt><code>render.showBounds [bool] false</code></dt>
     <dd>
       Prikaže mejne kvadre predmetov. Za trdne predmete so zelene barve, za trke prosojne predmete
       sive, za zgradbe modre in za premične dele zgradb rdeče.
     </dd>
-    <dt>render.visibilityRange [float] 350.0</dt>
+    <dt><code>render.visibilityRange [float] 350.0</code></dt>
     <dd>
       Razdalja vidljivosti.
     </dd>
-    <dt>seed [int | "TIME"] "TIME"</dt>
+    <dt><code>seed [int | "TIME"] "TIME"</code></dt>
     <dd>
       Seme za generator naključnih števil. Lahko je celo število ali, če naj se uporabi trenutni
-      čas, »TIME«.
+      čas, <code>TIME</code>.
     </dd>
-    <dt>shader.vertexTexture [bool] false</dt>
+    <dt><code>shader.vertexTexture [bool] false</code></dt>
     <dd>
       Omogoči teksture za senčilnike oglišč, s katerimi se lahko animira površine na senčilnikih.
       Potreben je vsaj GeForce 6 ali Radeon HD 2xxx. Ne deluje na gonilnikih ATI/AMD Catalyst.
     </dd>
-    <dt>sound.device [string] ""</dt>
+    <dt><code>sound.device [string] ""</code></dt>
     <dd>
       Zvočna naprava, ki naj jo uporabi OpenAL. Če je niz prazen, se izbira prepusti OpenAL.
-      Razpoložljive naprave se da videti v dnevniku <a href="#dirs">&lt;config&gt;</a>/client.log.
+      Razpoložljive naprave se da videti v dnevniku <code><a href="#dirs">&lt;config&gt;</a>/client.log</code>.
     </dd>
     <dt>sound.volume [float] 1.0</dt>
     <dd>
-      Glasnost. 1.0 predstavlja polno glasnost.
+      Glasnost. <code>1.0</code> predstavlja polno glasnost.
     </dd>
     <dt>ui.showBuild [bool] false</dt>
     <dd>
@@ -454,7 +440,7 @@
     <dt>ui.showDebug [bool] false</dt>
     <dd>
       Prikaži okno, ki prikazuje koordinate, usmeritev in druge podatke o kameri, nadzorovanem botu,
-      označenem predmetu ... Za potrebe razvoja.
+      označenem predmetu … Za potrebe razvoja.
     </dd>
     <dt>ui.showFPS [bool] false</dt>
     <dd>
@@ -477,7 +463,7 @@
     </dd>
   </dl>
 
-  <h2><a id="dirs" href="">Imeniki</a></h2>
+  <h2 id="dirs">Imeniki</h2>
 
   <table>
     <tr>
@@ -487,7 +473,7 @@
       <th>Natančna pot</th>
     </tr>
     <tr>
-      <th rowspan="3">&lt;config&gt;</th>
+      <th rowspan="3"><code>&lt;config&gt;</code></th>
       <td>Linux</td>
       <td>~/.config/openzone</td>
       <td>$XDG_CONFIG_HOME/openzone</td>
@@ -506,7 +492,7 @@
       <td colspan="4"></td>
     </tr>
     <tr>
-      <th rowspan="3">&lt;local&gt;</th>
+      <th rowspan="3"><code>&lt;local&gt;</code></th>
       <td>Linux</td>
       <td>~/.local/share/openzone</td>
       <td>$XDG_DATA_HOME/openzone</td>
@@ -525,7 +511,7 @@
       <td colspan="4"></td>
     </tr>
     <tr>
-      <th rowspan="3">&lt;music&gt;</th>
+      <th rowspan="3"><code>&lt;music&gt;</code></th>
       <td>Linux</td>
       <td>~/Music/OpenZone</td>
       <td>$XDG_MUSIC_DIR/OpenZone</td>
@@ -544,7 +530,7 @@
       <td colspan="4"></td>
     </tr>
     <tr>
-      <th rowspan="3">&lt;data&gt;</th>
+      <th rowspan="3"><code>&lt;data&gt;</code></th>
       <td>Linux</td>
       <td>/usr/share/openzone</td>
       <td>&lt;namestitveni_imenik&gt;/share/openzone</td>
@@ -561,16 +547,16 @@
     </tr>
   </table>
 
-  <h2><a id="vfs" href="">Navidezni datotečni sistem</a></h2>
+  <h2 id="vfs">Navidezni datotečni sistem</h2>
   <p>
     Podatki za igro se preberejo iz notranjega navideznega datotečnega sistema, ki je unija
     naslednjih mest:
   </p>
   <ol>
-    <li>vsebina imenika <a href="#dirs">&lt;local&gt;</a></li>
-    <li>vsebina arhivov <a href="#dirs">&lt;local&gt;</a>/*.zip</li>
-    <li>vsebina imenika <a href="#dirs">&lt;data&gt;</a></li>
-    <li>vsebina arhivov <a href="#dirs">&lt;data&gt;</a>/*.zip</li>
+    <li>vsebina imenika <code><a href="#dirs">&lt;local&gt;</a></code></li>
+    <li>vsebina arhivov <code><a href="#dirs">&lt;local&gt;</a>/*.zip</code></li>
+    <li>vsebina imenika <code><a href="#dirs">&lt;data&gt;</a></code></li>
+    <li>vsebina arhivov <code><a href="#dirs">&lt;data&gt;</a>/*.zip</code></li>
   </ol>
   <p>
     Če se datoteka nahaja na več mestih, se uporabi prva pojavitev. Mesta se preiščejo v zgoraj
@@ -582,7 +568,7 @@
     uporabljati izključno male črke.
   </p>
 
-  <h2><a id="deps" href="">Odvisnosti</a></h2>
+  <h2 id="deps">Odvisnosti</h2>
   <p>
     Binarni paketi bodisi že vsebujejo potrebne knjižnice ali jih imajo navedene kot odvisnosti.
     Naslednje knjižnice so neposredne odvisnosti, potrebne za poganjanje:
@@ -601,7 +587,7 @@
     <li>faad2 (neobvezno, za predvajanje datotek AAC).</li>
   </ul>
 
-  <h2><a id="troubleshooting" href="">Problemi</a></h2>
+  <h2 id="troubleshooting">Težave</h2>
   <ul>
     <li>
       Prepričaj se, da imaš <b>NAJNOVEJŠE</b> gonilnike za grafično kartico.
@@ -623,7 +609,7 @@
     </li>
   </ul>
 
-  <h2><a id="performance" href="">Nasveti za boljše delovanje</a></h2>
+  <h2 id="performance">Nasveti za boljše delovanje</h2>
   <ul>
     <li>
       V primeru, da uporabljaš dinamično prilagajanje frekvence procesorja, to možnost izklopi in
@@ -635,7 +621,7 @@
     </li>
   </ul>
 
-  <h2><a id="legal" href="">Avtorske pravice</a></h2>
+  <h2 id="legal">Avtorske pravice</h2>
   <h3>Pogon OpenZone</h3>
   <div>
     Copyright © 2002-2016 Davorin Učakar

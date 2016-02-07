@@ -79,12 +79,12 @@ public:
   /**
    * True iff same size and respective bits are equal.
    */
-  bool operator == (const Bitset& b) const;
+  bool operator ==(const Bitset& b) const;
 
   /**
    * True iff different size or any respective bits differ.
    */
-  bool operator != (const Bitset& b) const;
+  bool operator !=(const Bitset& b) const;
 
   /**
    * Constant pointer to the first unit.
@@ -206,22 +206,22 @@ public:
   /**
    * NOT of the bitset.
    */
-  Bitset operator ~ () const;
+  Bitset operator ~() const;
 
   /**
    * Return AND of two same-length bitsets.
    */
-  Bitset operator & (const Bitset& b) const;
+  Bitset operator &(const Bitset& b) const;
 
   /**
    * Return OR of two same-length bitsets.
    */
-  Bitset operator | (const Bitset& b) const;
+  Bitset operator |(const Bitset& b) const;
 
   /**
    * Return XOR of two same-length bitsets.
    */
-  Bitset operator ^ (const Bitset& b) const;
+  Bitset operator ^(const Bitset& b) const;
 
   /**
    * NOT of the bitset.
@@ -231,17 +231,17 @@ public:
   /**
    * AND of two same-length bitsets.
    */
-  Bitset& operator &= (const Bitset& b);
+  Bitset& operator &=(const Bitset& b);
 
   /**
    * OR of two same-length bitsets.
    */
-  Bitset& operator |= (const Bitset& b);
+  Bitset& operator |=(const Bitset& b);
 
   /**
    * XOR of two same-length bitsets.
    */
-  Bitset& operator ^= (const Bitset& b);
+  Bitset& operator ^=(const Bitset& b);
 
   /**
    * Resize bitset.

@@ -1,11 +1,11 @@
-@import url('http://fonts.googleapis.com/css?family=Droid+Sans+Mono');
-
 body {
-  font-family: 'Droid Sans Mono', monospace;
+  font-family: 'Droid Sans', 'DejaVu Sans', 'Tahoma', sans-serif;
   font-size: 10.5pt;
   text-shadow: black 1px 1px 1px;
   color: #b0e0c8;
   background-color: #0a100c;
+  max-width: 900px;
+  margin: 30px auto 30px auto;
 }
 
 a {
@@ -25,8 +25,8 @@ small {
   font-size: 8pt;
 }
 
-code {
-  font-family: 'Droid Sans Mono', monospace;
+code, pre, kbd {
+  font-family: 'Noto Mono', 'Droid Sans Mono', 'DejaVu Sans Mono', 'Lucida Console', monospace;
   color: #ffffff;
 }
 

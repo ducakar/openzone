@@ -105,7 +105,7 @@ public:
   /**
    * Move operator.
    */
-  SharedLib& operator = (SharedLib&& l);
+  SharedLib& operator =(SharedLib&& l);
 
   /**
    * True iff successfully opened.

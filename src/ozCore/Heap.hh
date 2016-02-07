@@ -111,19 +111,19 @@ public:
    *
    * Existing storage is reused if it suffices.
    */
-  Heap& operator = (const Heap& h) = default;
+  Heap& operator =(const Heap& h) = default;
 
   /**
    * Move operator, moves element storage.
    */
-  Heap& operator = (Heap&& h) = default;
+  Heap& operator =(Heap&& h) = default;
 
   /**
    * Assign from an initialiser list.
    *
    * Existing storage is reused if it suffices.
    */
-  Heap& operator = (InitialiserList<Elem> l)
+  Heap& operator =(InitialiserList<Elem> l)
   {
     clear();
     ensureCapacity(int(l.size()));
@@ -136,17 +136,17 @@ public:
   /**
    * True iff respective elements are equal.
    */
-  bool operator == (const Heap& h) const
+  bool operator ==(const Heap& h) const
   {
-    return List<Elem>::operator == (h);
+    return List<Elem>::operator ==(h);
   }
 
   /**
    * False iff respective elements are equal.
    */
-  bool operator != (const Heap& h) const
+  bool operator !=(const Heap& h) const
   {
-    return List<Elem>::operator != (h);
+    return List<Elem>::operator !=(h);
   }
 
   /**

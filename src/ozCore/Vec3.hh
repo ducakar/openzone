@@ -79,7 +79,7 @@ public:
   /**
    * Norm.
    */
-  float operator ! () const
+  float operator !() const
   {
 #ifdef OZ_SIMD
     return Math::sqrt(vDot(f4, f4)[0]);
@@ -116,7 +116,7 @@ public:
   /**
    * Unit vector.
    */
-  Vec3 operator ~ () const
+  Vec3 operator ~() const
   {
     OZ_ASSERT(x*x + y*y + z*z > 0.0f);
 
@@ -149,7 +149,7 @@ public:
    * Original vector.
    */
   OZ_ALWAYS_INLINE
-  Vec3 operator + () const
+  Vec3 operator +() const
   {
     return *this;
   }
@@ -158,7 +158,7 @@ public:
    * Opposite vector.
    */
   OZ_ALWAYS_INLINE
-  Vec3 operator - () const
+  Vec3 operator -() const
   {
 #ifdef OZ_SIMD
     return Vec3(-f4);
@@ -171,7 +171,7 @@ public:
    * Sum.
    */
   OZ_ALWAYS_INLINE
-  Vec3 operator + (const Vec3& v) const
+  Vec3 operator +(const Vec3& v) const
   {
 #ifdef OZ_SIMD
     return Vec3(f4 + v.f4);
@@ -184,7 +184,7 @@ public:
    * Difference.
    */
   OZ_ALWAYS_INLINE
-  Vec3 operator - (const Vec3& v) const
+  Vec3 operator -(const Vec3& v) const
   {
 #ifdef OZ_SIMD
     return Vec3(f4 - v.f4);
@@ -197,7 +197,7 @@ public:
    * Vector multiplied by a scalar.
    */
   OZ_ALWAYS_INLINE
-  Vec3 operator * (float s) const
+  Vec3 operator *(float s) const
   {
 #ifdef OZ_SIMD
     return Vec3(f4 * vFill(s));
@@ -210,7 +210,7 @@ public:
    * Vector multiplied by a scalar.
    */
   OZ_ALWAYS_INLINE
-  friend Vec3 operator * (float s, const Vec3& v)
+  friend Vec3 operator *(float s, const Vec3& v)
   {
 #ifdef OZ_SIMD
     return Vec3(vFill(s) * v.f4);
@@ -223,7 +223,7 @@ public:
    * Vector divided by a scalar.
    */
   OZ_ALWAYS_INLINE
-  Vec3 operator / (float s) const
+  Vec3 operator /(float s) const
   {
     OZ_ASSERT(s != 0.0f);
 
@@ -239,7 +239,7 @@ public:
    * Addition.
    */
   OZ_ALWAYS_INLINE
-  Vec3& operator += (const Vec3& v)
+  Vec3& operator +=(const Vec3& v)
   {
 #ifdef OZ_SIMD
     f4 += v.f4;
@@ -255,7 +255,7 @@ public:
    * Subtraction.
    */
   OZ_ALWAYS_INLINE
-  Vec3& operator -= (const Vec3& v)
+  Vec3& operator -=(const Vec3& v)
   {
 #ifdef OZ_SIMD
     f4 -= v.f4;
@@ -271,7 +271,7 @@ public:
    * Multiplication by a scalar.
    */
   OZ_ALWAYS_INLINE
-  Vec3& operator *= (float s)
+  Vec3& operator *=(float s)
   {
 #ifdef OZ_SIMD
     f4 *= vFill(s);
@@ -287,7 +287,7 @@ public:
    * Division by a scalar.
    */
   OZ_ALWAYS_INLINE
-  Vec3& operator /= (float s)
+  Vec3& operator /=(float s)
   {
     OZ_ASSERT(s != 0.0f);
 
@@ -306,7 +306,7 @@ public:
    * Scalar product.
    */
   OZ_ALWAYS_INLINE
-  float operator * (const Vec3& v) const
+  float operator *(const Vec3& v) const
   {
 #ifdef OZ_SIMD
     return vDot(f4, v.f4)[0];
@@ -318,7 +318,7 @@ public:
   /**
    * Vector product.
    */
-  Vec3 operator ^ (const Vec3& v) const
+  Vec3 operator ^(const Vec3& v) const
   {
 #ifdef OZ_SIMD
     float4 a  = vShuffle(f4, 1, 2, 0, 3);

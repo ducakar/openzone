@@ -65,7 +65,7 @@ public:
   /**
    * Copying or moving is not possible.
    */
-  CallOnce& operator = (const CallOnce&) = delete;
+  CallOnce& operator =(const CallOnce&) = delete;
 
   /**
    * Call function if this is the first call on this object.

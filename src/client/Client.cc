@@ -426,7 +426,6 @@ int Client::init(int argc, char** argv)
 #endif
 
   configDir.mkdir();
-  (configDir / "saves").mkdir();
   dataDir.mkdir();
 
   if (Log::init(configDir / "client.log", true)) {
@@ -450,17 +449,24 @@ int Client::init(int argc, char** argv)
 
   dataDir.mountAt("/");
 
-  // Clean up after previous versions. Be evil. Delete screenshots.
-  File screenshotDir = configDir + "/screenshots";
+  // Clean up after previous versions. Be evil. Delete everything.
+  File screenshotDir = configDir / "screenshots";
+  File savesDir      = configDir / "saves";
 
   for (const File& file : screenshotDir.list()) {
     file.remove();
   }
   screenshotDir.remove();
+
+  for (const File& file : savesDir.list()) {
+    file.remove();
+  }
+  savesDir.remove();
+
   (configDir / "client.rc").remove();
 
   // Load configuration.
-  File configFile = configDir + "/client.json";
+  File configFile = configDir / "client.json";
   if (config.load(configFile) && String::equals(config["_version"].get(""), OZ_VERSION)) {
     Log::printEnd("Configuration read from '%s'", configFile.c());
     initFlags |= INIT_CONFIG;

@@ -91,7 +91,7 @@ PoolAlloc::PoolAlloc(PoolAlloc&& p) :
   p.size       = 0;
 }
 
-PoolAlloc& PoolAlloc::operator = (PoolAlloc&& p)
+PoolAlloc& PoolAlloc::operator =(PoolAlloc&& p)
 {
   if (&p != this) {
     free();

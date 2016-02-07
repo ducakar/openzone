@@ -69,7 +69,7 @@ public:
   /**
    * Copying or moving is not possible.
    */
-  Semaphore& operator = (const Semaphore&) = delete;
+  Semaphore& operator =(const Semaphore&) = delete;
 
   /**
    * Get current counter value.

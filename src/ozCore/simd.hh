@@ -246,7 +246,7 @@ public:
    * Equality.
    */
   OZ_ALWAYS_INLINE
-  bool operator == (const VectorBase3& v) const
+  bool operator ==(const VectorBase3& v) const
   {
 #if defined(OZ_SIMD) && defined(__SSE__)
     return (_mm_movemask_ps(f4 == v.f4) & 0x7) == 0x7;
@@ -263,16 +263,16 @@ public:
    * Inequality.
    */
   OZ_ALWAYS_INLINE
-  bool operator != (const VectorBase3& v) const
+  bool operator !=(const VectorBase3& v) const
   {
-    return !operator == (v);
+    return !operator ==(v);
   }
 
   /**
    * Constant float pointer to the members.
    */
   OZ_ALWAYS_INLINE
-  operator const float* () const
+  operator const float*() const
   {
     return &x;
   }
@@ -281,7 +281,7 @@ public:
    * Float pointer to the members.
    */
   OZ_ALWAYS_INLINE
-  operator float* ()
+  operator float*()
   {
     return &x;
   }
@@ -290,7 +290,7 @@ public:
    * Constant reference to the `i`-th member.
    */
   OZ_ALWAYS_INLINE
-  const float& operator [] (int i) const
+  const float& operator [](int i) const
   {
     return (&x)[i];
   }
@@ -299,7 +299,7 @@ public:
    * Reference to the `i`-th member.
    */
   OZ_ALWAYS_INLINE
-  float& operator [] (int i)
+  float& operator [](int i)
   {
     return (&x)[i];
   }
@@ -345,7 +345,7 @@ public:
    * Equality.
    */
   OZ_ALWAYS_INLINE
-  bool operator == (const VectorBase4& v) const
+  bool operator ==(const VectorBase4& v) const
   {
 #if defined(OZ_SIMD) && defined(__SSE__)
     return _mm_movemask_ps(f4 == v.f4) == 0xf;
@@ -365,9 +365,9 @@ public:
    * Inequality.
    */
   OZ_ALWAYS_INLINE
-  bool operator != (const VectorBase4& v) const
+  bool operator !=(const VectorBase4& v) const
   {
-    return !operator == (v);
+    return !operator ==(v);
   }
 
 };

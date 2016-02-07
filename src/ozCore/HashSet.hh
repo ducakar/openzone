@@ -100,7 +100,7 @@ protected:
      * Pointer to the current element.
      */
     OZ_ALWAYS_INLINE
-    operator ElemType* () const
+    operator ElemType*() const
     {
       return &elem->elem;
     }
@@ -109,7 +109,7 @@ protected:
      * Reference to the current element.
      */
     OZ_ALWAYS_INLINE
-    ElemType& operator * () const
+    ElemType& operator *() const
     {
       return elem->elem;
     }
@@ -118,7 +118,7 @@ protected:
      * Access to the current element's member.
      */
     OZ_ALWAYS_INLINE
-    ElemType* operator -> () const
+    ElemType* operator ->() const
     {
       return &elem->elem;
     }
@@ -126,7 +126,7 @@ protected:
     /**
      * Advance to the next element.
      */
-    HashIterator& operator ++ ()
+    HashIterator& operator ++()
     {
       OZ_ASSERT(elem != nullptr);
 
@@ -329,7 +329,7 @@ public:
   /**
    * Copy operator, copies elements but does not preserve bucket array length.
    */
-  HashSet& operator = (const HashSet& ht)
+  HashSet& operator =(const HashSet& ht)
   {
     if (&ht != this) {
       clear();
@@ -345,7 +345,7 @@ public:
   /**
    * Move operator, moves storage.
    */
-  HashSet& operator = (HashSet&& ht)
+  HashSet& operator =(HashSet&& ht)
   {
     if (&ht != this) {
       clear();
@@ -364,7 +364,7 @@ public:
   /**
    * Assign from an initialiser list.
    */
-  HashSet& operator = (InitialiserList<Elem> l)
+  HashSet& operator =(InitialiserList<Elem> l)
   {
     clear();
     ensureCapacity(int(l.size()) * 4 / 3);
@@ -378,7 +378,7 @@ public:
   /**
    * True iff contained elements are equal.
    */
-  bool operator == (const HashSet& ht) const
+  bool operator ==(const HashSet& ht) const
   {
     if (pool.length() != ht.pool.length()) {
       return false;
@@ -397,9 +397,9 @@ public:
   /**
    * False iff contained elements are equal.
    */
-  bool operator != (const HashSet& ht) const
+  bool operator !=(const HashSet& ht) const
   {
-    return !operator == (ht);
+    return !operator ==(ht);
   }
 
   /**

@@ -203,7 +203,8 @@ void MD2::build(const File& path)
   Log::println("Prebuilding MD2 model '%s' {", path.c());
   Log::indent();
 
-  Json config(configFile);
+  Json config;
+  config.load(configFile);
 
   Stream is = modelFile.read(Endian::LITTLE);
 

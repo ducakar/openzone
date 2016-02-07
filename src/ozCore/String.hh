@@ -44,7 +44,7 @@ class String
 private:
 
   /// Size of static buffer for short strin optimisation.
-  static const int BUFFER_SIZE = 32 - sizeof(int);
+  static const int BUFFER_SIZE = 32 - sizeof(char*);
 
 public:
 
@@ -331,17 +331,17 @@ public:
    *
    * Existing storage is reused if its size matches.
    */
-  String& operator = (const String& s);
+  String& operator =(const String& s);
 
   /**
    * Move operator.
    */
-  String& operator = (String&& s);
+  String& operator =(String&& s);
 
   /**
    * Replace current string with a given C string (nullptr is permitted, equals "").
    */
-  String& operator = (const char* s)
+  String& operator =(const char* s)
   {
     if (s != begin()) {
       assign(s, length(s));
@@ -366,7 +366,7 @@ public:
   /**
    * Equality.
    */
-  bool operator == (const String& s) const
+  bool operator ==(const String& s) const
   {
     return compare(begin(), s.begin()) == 0;
   }
@@ -374,7 +374,7 @@ public:
   /**
    * Equality.
    */
-  bool operator == (const char* s) const
+  bool operator ==(const char* s) const
   {
     return compare(begin(), s) == 0;
   }
@@ -382,7 +382,7 @@ public:
   /**
    * Equality.
    */
-  friend bool operator == (const char* a, const String& b)
+  friend bool operator ==(const char* a, const String& b)
   {
     return compare(a, b.begin()) == 0;
   }
@@ -390,7 +390,7 @@ public:
   /**
    * Inequality.
    */
-  bool operator != (const String& s) const
+  bool operator !=(const String& s) const
   {
     return compare(begin(), s.begin()) != 0;
   }
@@ -398,7 +398,7 @@ public:
   /**
    * Inequality.
    */
-  bool operator != (const char* s) const
+  bool operator !=(const char* s) const
   {
     return compare(begin(), s) != 0;
   }
@@ -406,7 +406,7 @@ public:
   /**
    * Inequality.
    */
-  friend bool operator != (const char* a, const String& b)
+  friend bool operator !=(const char* a, const String& b)
   {
     return compare(a, b.begin()) != 0;
   }
@@ -487,7 +487,7 @@ public:
    * Cast to a C string.
    */
   OZ_ALWAYS_INLINE
-  operator const char* () const
+  operator const char*() const
   {
     return begin();
   }
@@ -523,7 +523,7 @@ public:
    * Constant reference to the `i`-th byte.
    */
   OZ_ALWAYS_INLINE
-  const char& operator [] (int i) const
+  const char& operator [](int i) const
   {
     OZ_ASSERT(0 <= i && i <= count);
 
@@ -534,7 +534,7 @@ public:
    * Reference to the `i`-th byte.
    */
   OZ_ALWAYS_INLINE
-  char& operator [] (int i)
+  char& operator [](int i)
   {
     OZ_ASSERT(0 <= i && i <= count);
 
@@ -635,27 +635,27 @@ public:
   /**
    * Create concatenated string.
    */
-  String operator + (const String& s) const;
+  String operator +(const String& s) const;
 
   /**
    * Create concatenated string.
    */
-  String operator + (const char* s) const;
+  String operator +(const char* s) const;
 
   /**
    * Create concatenated string.
    */
-  friend String operator + (const char* s, const String& t);
+  friend String operator +(const char* s, const String& t);
 
   /**
    * Replace with concatenated string.
    */
-  String& operator += (const String& s);
+  String& operator +=(const String& s);
 
   /**
    * Replace with concatenated string.
    */
-  String& operator += (const char* s);
+  String& operator +=(const char* s);
 
   /**
    * Substring from `start` character (inclusively).
@@ -709,7 +709,7 @@ struct StrongHash
   /**
    * FNV hash function, slower but has better distribution than Bernstein's.
    */
-  int operator () (const char* s) const
+  int operator ()(const char* s) const
   {
     uint value = 2166136261;
 

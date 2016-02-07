@@ -18,11 +18,16 @@ if(NOT OZ_GL_ES AND OZ_TOOLS)
   target_link_libraries(noise ozCore ozEngine ozFactory)
 endif()
 
+if (OZ_OPUS)
+  add_executable(opus opus.cc)
+  target_link_libraries(opus ozEngine ozCore -logg -lopus)
+endif()
+
 add_executable(quicksort quicksort.cc)
 target_link_libraries(quicksort ozCore)
 
 add_executable(scratch scratch.cc)
-target_link_libraries(scratch ozEngine ozCore ogg opus)
+target_link_libraries(scratch ozEngine ozCore)
 
 add_executable(simd simd.cc)
 target_link_libraries(simd ozCore)

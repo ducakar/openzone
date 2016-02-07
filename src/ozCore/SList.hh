@@ -104,7 +104,7 @@ public:
    *
    * Existing storage is reused if it suffices.
    */
-  SList& operator = (InitialiserList<Elem> l)
+  SList& operator =(InitialiserList<Elem> l)
   {
     clear();
     addAll(l.begin(), int(l.size()));
@@ -115,7 +115,7 @@ public:
   /**
    * True iff respective elements are equal.
    */
-  bool operator == (const SList& l) const
+  bool operator ==(const SList& l) const
   {
     return count == l.count && Arrays::equals<Elem>(data, count, l.data);
   }
@@ -123,9 +123,9 @@ public:
   /**
    * False iff respective elements are equal.
    */
-  bool operator != (const SList& l) const
+  bool operator !=(const SList& l) const
   {
-    return !operator == (l);
+    return !operator ==(l);
   }
 
   /**
@@ -213,7 +213,7 @@ public:
    * Constant reference to the `i`-th element.
    */
   OZ_ALWAYS_INLINE
-  const Elem& operator [] (int i) const
+  const Elem& operator [](int i) const
   {
     OZ_ASSERT(uint(i) < uint(count));
 
@@ -224,7 +224,7 @@ public:
    * Reference to the `i`-th element.
    */
   OZ_ALWAYS_INLINE
-  Elem& operator [] (int i)
+  Elem& operator [](int i)
   {
     OZ_ASSERT(uint(i) < uint(count));
 

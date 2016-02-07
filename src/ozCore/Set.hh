@@ -132,21 +132,21 @@ public:
    *
    * Existing storage is reused if it suffices.
    */
-  Set& operator = (const Set& s) = default;
+  Set& operator =(const Set& s) = default;
 
   /**
    * Move operator, moves element storage.
    */
-  Set& operator = (Set&& s) = default;
+  Set& operator =(Set&& s) = default;
 
   /**
    * Assign from an initialiser list.
    *
    * Existing storage is reused if it suffices.
    */
-  Set& operator = (InitialiserList<Elem> l)
+  Set& operator =(InitialiserList<Elem> l)
   {
-    List<Elem>::operator = (l);
+    List<Elem>::operator =(l);
     List<Elem>::template sort<LessFunc>();
 
     return *this;
@@ -155,17 +155,17 @@ public:
   /**
    * True iff respective elements are equal.
    */
-  bool operator == (const Set& s) const
+  bool operator ==(const Set& s) const
   {
-    return List<Elem>::operator == (s);
+    return List<Elem>::operator ==(s);
   }
 
   /**
    * False iff respective elements are equal.
    */
-  bool operator != (const Set& s) const
+  bool operator !=(const Set& s) const
   {
-    return List<Elem>::operator != (s);
+    return List<Elem>::operator !=(s);
   }
 
   /**

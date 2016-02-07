@@ -57,7 +57,7 @@ public:
   /**
    * Generate `StackTrace` class containing data about the current stack and thread.
    *
-   * @param nSkippedFrames number of stack frames to skip (must be >= 0).
+   * @param nSkippedFrames number of stack frames to skip (must be `0 <= nSkippedFrames <= 3`).
    */
   static StackTrace current(int nSkippedFrames);
 

@@ -152,7 +152,7 @@ public:
    * On platforms other that NaCl the code is executed immediately on caller's thread.
    */
   template <typename Function>
-  void operator << (Function function) const
+  void operator <<(Function function) const
   {
 #ifdef __native_client__
 
@@ -196,7 +196,7 @@ public:
    * On platforms other that NaCl the code is executed immediately on caller's thread.
    */
   template <typename Function>
-  void operator += (Function function) const
+  void operator +=(Function function) const
   {
 #ifdef __native_client__
 

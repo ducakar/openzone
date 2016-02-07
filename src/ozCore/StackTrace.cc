@@ -37,7 +37,7 @@ const int StackTrace::MAX_FRAMES;
 
 StackTrace StackTrace::current(int nSkippedFrames)
 {
-  OZ_ASSERT(nSkippedFrames >= 0);
+  OZ_ASSERT(0 <= nSkippedFrames && nSkippedFrames <= 3);
 
   StackTrace st = {{}, 0, {}};
   memccpy(st.thread, Thread::name(), '\0', Thread::NAME_LENGTH);
