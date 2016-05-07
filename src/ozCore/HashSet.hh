@@ -261,7 +261,7 @@ protected:
         if (overwrite) {
           entry->elem = static_cast<Elem_&&>(elem);
         }
-        return;
+        return entry->elem;
       }
       entry = entry->next;
     }

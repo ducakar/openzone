@@ -304,7 +304,7 @@ void Struct::onUpdate()
 Bounds Struct::toStructCS(const Bounds& bb) const
 {
   switch (heading) {
-    case NORTH: {
+    default: {
       return Bounds(Point(+bb.mins.x - p.x, +bb.mins.y - p.y, +bb.mins.z - p.z),
                     Point(+bb.maxs.x - p.x, +bb.maxs.y - p.y, +bb.maxs.z - p.z));
     }
@@ -326,7 +326,7 @@ Bounds Struct::toStructCS(const Bounds& bb) const
 Bounds Struct::toAbsoluteCS(const Bounds& bb) const
 {
   switch (heading) {
-    case NORTH: {
+    default: {
       return Bounds(p + Vec3(+bb.mins.x, +bb.mins.y, +bb.mins.z),
                     p + Vec3(+bb.maxs.x, +bb.maxs.y, +bb.maxs.z));
     }

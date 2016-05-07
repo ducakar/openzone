@@ -52,7 +52,7 @@ inline Vec3 rotate(const Vec3& dim, Heading heading)
 inline Bounds rotate(const Bounds& bb, Heading heading)
 {
   switch (heading) {
-    case NORTH: {
+    default: {
       return bb;
     }
     case WEST: {

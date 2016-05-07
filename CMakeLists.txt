@@ -168,8 +168,7 @@ mark_as_advanced(MINGW32_LIBRARY)
 # Local libmad, faad and eSpeak headers.
 include_directories(SYSTEM etc/include)
 
-set(flags "-std=c++14 -ffast-math -fsized-deallocation -fstrict-enums -fvisibility-inlines-hidden")
-set(flags "${flags} -fno-exceptions -fno-rtti")
+set(flags "-std=c++14 -ffast-math -fsized-deallocation -fvisibility-inlines-hidden")
 
 if(BUILD_SHARED_LIBS)
   set(flags "${flags} -fPIC")
