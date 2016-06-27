@@ -64,11 +64,13 @@ private:
   /**
    * Read consecutive floats. Helper function for read<Vec3>(), readVec4() etc.
    */
+  OZ_INTERNAL
   void readFloats(float* values, int count);
 
   /**
    * Write consecutive floats. Helper function for write<Vec3>(), write<Vec4>() etc.
    */
+  OZ_INTERNAL
   void writeFloats(const float* values, int count);
 
 public:

@@ -33,7 +33,6 @@ static const int LOCAL_BUFFER_SIZE = 4096;
 
 const String String::EMPTY = String();
 
-OZ_INTERNAL
 char* String::resize(int newCount, bool keepContents)
 {
   OZ_ASSERT(count >= 0 && newCount >= 0);

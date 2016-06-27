@@ -640,7 +640,6 @@ static char* cloneString(const char* s)
 
 const Json::Format Json::DEFAULT_FORMAT = {2, 32, "%.9g", "\n"};
 
-OZ_INTERNAL
 Json::Json(const float* vector, int count, const char* comment_) :
   data(new ArrayData{List<Json>(count)}), comment(cloneString(comment_)), valueType(ARRAY)
 {
@@ -651,26 +650,6 @@ Json::Json(const float* vector, int count, const char* comment_) :
   }
 }
 
-OZ_INTERNAL
-bool Json::getVector(float* vector, int count) const
-{
-  if (valueType != ARRAY) {
-    return false;
-  }
-
-  const List<Json>& list = static_cast<const ArrayData*>(data)->list;
-
-  if (list.length() != count) {
-    return false;
-  }
-
-  for (int i = 0; i < count; ++i) {
-    vector[i] = float(list[i].get(0.0));
-  }
-  return true;
-}
-
-OZ_INTERNAL
 void Json::copyValue(const Json& j)
 {
   switch (j.valueType) {
@@ -697,12 +676,29 @@ void Json::copyValue(const Json& j)
   wasAccessed = j.wasAccessed;
 }
 
-OZ_INTERNAL
 Json& Json::copyComment(const char* comment_)
 {
   delete[] comment;
   comment = cloneString(comment_);
   return *this;
+}
+
+bool Json::getVector(float* vector, int count) const
+{
+  if (valueType != ARRAY) {
+    return false;
+  }
+
+  const List<Json>& list = static_cast<const ArrayData*>(data)->list;
+
+  if (list.length() != count) {
+    return false;
+  }
+
+  for (int i = 0; i < count; ++i) {
+    vector[i] = float(list[i].get(0.0));
+  }
+  return true;
 }
 
 Json::Json(Type type) :

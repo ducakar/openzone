@@ -22,47 +22,32 @@
 
 using namespace oz;
 
-
-class MainStage : public Application::Stage
+struct S
 {
-public:
-
-  void load() override;
-  void unload() override;
-  void update() override;
-  void present(bool isEnoughTime) override;
-
+  char s[8];
 };
-
-void MainStage::load()
-{}
-
-void MainStage::unload()
-{}
-
-void MainStage::update()
-{}
-
-void MainStage::present(bool)
-{
-//  if (isEnoughTime) {
-//    glClearColor(0.2f, 0.2f, 0.4f, 1.0f);
-//    glClear(GL_COLOR_BUFFER_BIT);
-
-//    Window::swapBuffers();
-//  }
-}
-
-static MainStage mainStage;
 
 int main()
 {
   System::init();
 
-  Application::defaults.name         = "scratch";
-  Application::defaults.window.title = "Scratch";
-  Application::defaults.timing.fps   = 200;
+  List<S> l(10000000);
 
-  Application::run(&mainStage);
+  for (S& s : l) {
+    for (int i = 0; i < 8; ++i) {
+      s.s[i] = char(97 + Math::rand(26));
+    }
+    s.s[7] = '\0';
+  }
+
+  List<int> h(l.length());
+
+  uint t0;
+
+  t0 = Time::clock();
+  for (int i = 0; i < h.length(); ++i) {
+    h[i] = Hash<const char*>()(l[i].s);
+  }
+  Log() << (Time::clock() - t0);
   return 0;
 }

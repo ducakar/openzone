@@ -77,11 +77,13 @@ struct AL::Decoder::StreamBase
 {
   Stream is;
 
+  OZ_INTERNAL
   virtual ~StreamBase();
+
+  OZ_INTERNAL
   virtual bool decode(AL::Decoder* decoder) = 0;
 };
 
-OZ_INTERNAL
 AL::Decoder::StreamBase::~StreamBase()
 {}
 
@@ -124,10 +126,10 @@ struct AL::Decoder::WaveStream : AL::Decoder::StreamBase
     decoder->samples  = new float[decoder->capacity];
   }
 
+  OZ_INTERNAL
   bool decode(AL::Decoder* decoder) override;
 };
 
-OZ_INTERNAL
 bool AL::Decoder::WaveStream::decode(AL::Decoder* decoder)
 {
   if (decoder->count != 0) {
@@ -190,6 +192,7 @@ bool AL::Decoder::WaveStream::decode(AL::Decoder* decoder)
 
 struct AL::Decoder::OpusStream : AL::Decoder::StreamBase
 {
+  OZ_INTERNAL
   static const int FRAME_SIZE = 120 * 48;
 
   OggOpusFile* opFile = nullptr;
@@ -221,15 +224,15 @@ struct AL::Decoder::OpusStream : AL::Decoder::StreamBase
     decoder->samples  = new float[decoder->capacity];
   }
 
+  OZ_INTERNAL
   ~OpusStream() override;
 
+  OZ_INTERNAL
   bool decode(AL::Decoder* decoder) override;
 };
 
-OZ_INTERNAL
 const int AL::Decoder::OpusStream::FRAME_SIZE;
 
-OZ_INTERNAL
 AL::Decoder::OpusStream::~OpusStream()
 {
   if (opFile != nullptr) {
@@ -237,7 +240,6 @@ AL::Decoder::OpusStream::~OpusStream()
   }
 }
 
-OZ_INTERNAL
 bool AL::Decoder::OpusStream::decode(AL::Decoder* decoder)
 {
   decoder->count = 0;
@@ -301,18 +303,18 @@ struct AL::Decoder::VorbisStream : AL::Decoder::StreamBase
     decoder->samples  = new float[decoder->capacity];
   }
 
+  OZ_INTERNAL
   ~VorbisStream() override;
 
+  OZ_INTERNAL
   bool decode(AL::Decoder* decoder) override;
 };
 
-OZ_INTERNAL
 AL::Decoder::VorbisStream::~VorbisStream()
 {
   ov_clear(&ovFile);
 }
 
-OZ_INTERNAL
 bool AL::Decoder::VorbisStream::decode(AL::Decoder* decoder)
 {
   int stereo = decoder->format == AL_FORMAT_STEREO_FLOAT32;

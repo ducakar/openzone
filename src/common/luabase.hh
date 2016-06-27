@@ -379,14 +379,14 @@
  * Shorthand for lua_pushnumber
  */
 #define l_pushfloat(f) \
-  lua_pushnumber(l, f)
+  lua_pushnumber(l, lua_Number(f))
 
 /**
  * @def l_pushdouble
  * Shorthand for lua_pushnumber
  */
 #define l_pushdouble(d) \
-  lua_pushnumber(l, d)
+  lua_pushnumber(l, lua_Number(d))
 
 /**
  * @def l_pushstring

@@ -60,6 +60,7 @@ struct Thread::Descriptor
   void*       data;
   SpinLock    lock;
 
+  OZ_INTERNAL
 #ifdef _WIN32
   static DWORD WINAPI threadMain(void* descriptor);
 #else
@@ -67,7 +68,6 @@ struct Thread::Descriptor
 #endif
 };
 
-OZ_INTERNAL
 #ifdef _WIN32
 DWORD WINAPI Thread::Descriptor::threadMain(void* descriptor_)
 #else

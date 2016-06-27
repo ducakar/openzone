@@ -30,7 +30,6 @@
 namespace oz
 {
 
-OZ_INTERNAL
 void Stream::readFloats(float* values, int count)
 {
   const char* data = readSkip(count * sizeof(float));
@@ -51,7 +50,6 @@ void Stream::readFloats(float* values, int count)
   }
 }
 
-OZ_INTERNAL
 void Stream::writeFloats(const float* values, int count)
 {
   char* data = writeSkip(count * sizeof(float));

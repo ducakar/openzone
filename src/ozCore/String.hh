@@ -75,6 +75,7 @@ private:
   /**
    * Resize storage if necessary and set `count` to `newCount`.
    */
+  OZ_INTERNAL
   char* resize(int newCount, bool keepContents);
 
   /**
@@ -700,25 +701,5 @@ struct Less<String> : Less<const char*>
 template <>
 struct Hash<String> : Hash<const char*>
 {};
-
-/**
- * Stronger alternative for the string hash function.
- */
-struct StrongHash
-{
-  /**
-   * FNV hash function, slower but has better distribution than Bernstein's.
-   */
-  int operator ()(const char* s) const
-  {
-    uint value = 2166136261;
-
-    while (*s != '\0') {
-      value = (value * 16777619) ^ int(*s);
-      ++s;
-    }
-    return value;
-  }
-};
 
 }

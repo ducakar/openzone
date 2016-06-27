@@ -121,21 +121,25 @@ private:
   /**
    * Internal constructor for linear algebra types.
    */
+  OZ_INTERNAL
   explicit Json(const float* vector, int count, const char* comment);
 
   /**
    * Helper function for setting copying a value to avoid code duplication.
    */
+  OZ_INTERNAL
   void copyValue(const Json& j);
 
   /**
    * Helper function for setting a comment to avoid code duplication.
    */
+  OZ_INTERNAL
   Json& copyComment(const char* comment);
 
   /**
    * Helper function for `get()` for reading vectors, quaternions, matrices etc.
    */
+  OZ_INTERNAL
   bool getVector(float* vector, int count) const;
 
 public:

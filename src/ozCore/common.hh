@@ -432,18 +432,17 @@ template <>
 struct Hash<const char*>
 {
   /// %Hash value for an empty string.
-  static const int EMPTY = 5381;
+  static const int EMPTY = 2166136261;
 
   /**
-   * (Modified) Bernstein's hash.
+   * FNV hash function.
    */
-  OZ_ALWAYS_INLINE
   int operator ()(const char* s) const
   {
     uint value = EMPTY;
 
     while (*s != '\0') {
-      value = (value * 33) ^ int(*s);
+      value = (value * 16777619) ^ int(*s);
       ++s;
     }
     return value;

@@ -398,7 +398,6 @@ static void waitBell()
   bellLock.unlock();
 }
 
-OZ_NORETURN
 static void abort(bool doHalt)
 {
   resetSignals();

@@ -185,9 +185,10 @@ endif()
 
 # Additional flags.
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
-  set(flags "${flags} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-date-time")
-  set(flags "${flags} -Wno-exit-time-destructors -Wno-float-equal -Wno-global-constructors")
-  set(flags "${flags} -Wno-padded -Wno-sign-conversion -Wno-shadow -Wno-switch-enum")
+  set(flags "${flags} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic")
+  set(flags "${flags} -Wno-exit-time-destructors -Wno-global-constructors")
+  set(flags "${flags} -Wno-sign-conversion -Wno-float-equal -Wno-double-promotion")
+  set(flags "${flags} -Wno-date-time -Wno-padded -Wno-shadow -Wno-switch-enum")
 else()
   set(flags "${flags} -Wall -Wextra -Wcast-align -Winit-self -Wlogical-op -Wundef")
   set(flags "${flags} -Wmissing-declarations -Wnon-virtual-dtor -Woverloaded-virtual -Wformat=2")
