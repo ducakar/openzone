@@ -189,13 +189,13 @@ bool Log::printMemorySummary()
 
   println("current chunks    %7d", Alloc::count);
   println("current amount    %7.2f MiB (%lu B)",
-          float(Alloc::amount) / (1024.0f * 1024.0f), ulong(Alloc::amount));
+          Alloc::amount / (1024.0 * 1024.0), ulong(Alloc::amount));
   println("maximum chunks    %7d", Alloc::maxCount);
   println("maximum amount    %7.2f MiB (%lu B)",
-          float(Alloc::maxAmount) / (1024.0f * 1024.0f), ulong(Alloc::maxAmount));
+          Alloc::maxAmount / (1024.0 * 1024.0), ulong(Alloc::maxAmount));
   println("cumulative chunks %7d", Alloc::sumCount);
   println("cumulative amount %7.2f MiB (%lu B)",
-          float(Alloc::sumAmount) / (1024.0f * 1024.0f), ulong(Alloc::sumAmount));
+          Alloc::sumAmount / (1024.0 * 1024.0), ulong(Alloc::sumAmount));
 
   unindent();
   println("}");

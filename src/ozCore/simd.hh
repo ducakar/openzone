@@ -61,6 +61,9 @@ typedef uint32x4_t uint4;
 typedef uint __attribute__((vector_size(16))) uint4;
 #endif
 
+static_assert(sizeof(float4) >= sizeof(std::max_align_t),
+              "Allocation alignment is not sufficent for SIMD types.");
+
 /**
  * Create a float vector with all components set to a given value.
  */

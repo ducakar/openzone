@@ -228,7 +228,7 @@ public:
   /**
    * Trace.
    */
-  float tr() const
+  float trace() const
   {
     return x.x + y.y + z.z + w.w;
   }

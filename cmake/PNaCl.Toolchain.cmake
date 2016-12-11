@@ -23,10 +23,6 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 
-include(CMakeForceCompiler)
-cmake_force_c_compiler(${CMAKE_C_COMPILER} Clang)
-cmake_force_cxx_compiler(${CMAKE_CXX_COMPILER} Clang)
-
 macro(pnacl_finalise _target)
   add_custom_command(TARGET ${_target} POST_BUILD
     COMMENT "Finalising ${_target}"

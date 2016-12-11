@@ -64,21 +64,14 @@ void BSP::load()
 
   size_t size = 0;
 
-  size += nPlanes       * sizeof(planes[0]);
-  size  = Alloc::alignUp(size);
-  size += nNodes        * sizeof(nodes[0]);
-  size  = Alloc::alignUp(size);
-  size += nLeaves       * sizeof(leaves[0]);
-  size  = Alloc::alignUp(size);
-  size += nLeafBrushes  * sizeof(leafBrushes[0]);
-  size  = Alloc::alignUp(size);
-  size += nBrushes      * sizeof(brushes[0]);
-  size  = Alloc::alignUp(size);
-  size += nBrushSides   * sizeof(brushSides[0]);
-  size  = Alloc::alignUp(size);
-  size += nEntities     * sizeof(entities[0]);
-  size  = Alloc::alignUp(size);
-  size += nBoundObjects * sizeof(boundObjects[0]);
+  size += Alloc::alignUp(nPlanes       * sizeof(planes[0]));
+  size += Alloc::alignUp(nNodes        * sizeof(nodes[0]));
+  size += Alloc::alignUp(nLeaves       * sizeof(leaves[0]));
+  size += Alloc::alignUp(nLeafBrushes  * sizeof(leafBrushes[0]));
+  size += Alloc::alignUp(nBrushes      * sizeof(brushes[0]));
+  size += Alloc::alignUp(nBrushSides   * sizeof(brushSides[0]));
+  size += Alloc::alignUp(nEntities     * sizeof(entities[0]));
+  size += Alloc::alignUp(nBoundObjects * sizeof(boundObjects[0]));
 
   char* data = new char[size];
 

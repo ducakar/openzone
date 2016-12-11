@@ -18,36 +18,27 @@
  */
 
 #include <ozCore/ozCore.hh>
-#include <ozEngine/ozEngine.hh>
 
 using namespace oz;
 
-struct S
+template <typename Elem, int SIZE>
+class Deque
 {
-  char s[8];
+private:
+
+private:
+
+  Elem data[SIZE] = {};
+  int  lastSlot   = 0;
+
+public:
+
+  Deque() = default;
+
 };
 
 int main()
 {
   System::init();
-
-  List<S> l(10000000);
-
-  for (S& s : l) {
-    for (int i = 0; i < 8; ++i) {
-      s.s[i] = char(97 + Math::rand(26));
-    }
-    s.s[7] = '\0';
-  }
-
-  List<int> h(l.length());
-
-  uint t0;
-
-  t0 = Time::clock();
-  for (int i = 0; i < h.length(); ++i) {
-    h[i] = Hash<const char*>()(l[i].s);
-  }
-  Log() << (Time::clock() - t0);
   return 0;
 }

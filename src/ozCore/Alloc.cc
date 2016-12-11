@@ -69,7 +69,10 @@ static void* allocate(AllocMode mode, size_t size)
 
 #ifdef OZ_ALLOCATOR
 
-  Alloc::ChunkInfo* ci = new(ptr) Alloc::ChunkInfo{{}, size, StackTrace::current(2)};
+  Alloc::ChunkInfo* ci = new(ptr) Alloc::ChunkInfo();
+
+  ci->size       = size;
+  ci->stackTrace = StackTrace::current(2);
 
   allocInfoLock.lock();
 
@@ -107,7 +110,7 @@ static void deallocate(AllocMode mode, void* ptr)
   Alloc::ChunkInfo* prev = chunkInfos[mode].before(ci);
 
   if (prev != nullptr || chunkInfos[mode].first() == ci) {
-    chunkInfos[mode].erase(ci, prev);
+    chunkInfos[mode].eraseAfter(ci, prev);
   }
   // Check if allocated as a different kind (object/array)
   else if (chunkInfos[!mode].has(ci)) {

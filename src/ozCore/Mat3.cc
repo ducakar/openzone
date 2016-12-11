@@ -38,14 +38,14 @@ Mat3 Mat3::inverse() const
   const Mat3& m = *this;
 
   // Cayley–Hamilton's decomposition.
-  Mat3  m2  = m * m;
-  float mtr = m.tr();
-  float k   = (mtr*mtr - m2.tr()) / 2.0f;
-  Mat3  kI  = Mat3(   k, 0.0f, 0.0f,
-                   0.0f,    k, 0.0f,
-                   0.0f, 0.0f,    k);
+  Mat3  m2     = m * m;
+  float mTrace = m.trace();
+  float k      = (mTrace*mTrace - m2.trace()) / 2.0f;
+  Mat3  kI     = Mat3(   k, 0.0f, 0.0f,
+                      0.0f,    k, 0.0f,
+                      0.0f, 0.0f,    k);
 
-  return (kI - m * mtr + m2) / m.det();
+  return (kI - m * mTrace + m2) / m.det();
 }
 
 Quat Mat3::toQuat() const

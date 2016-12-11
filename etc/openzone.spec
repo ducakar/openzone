@@ -12,6 +12,7 @@ Source0:        https://github.com/downloads/ducakar/openzone/%{name}-src-%{vers
 Source1:        https://github.com/downloads/ducakar/openzone/%{name}-data-%{version}.tar.xz
 
 BuildRequires:  cmake
+BuildRequires:  ninja
 BuildRequires:  alsa-lib-devel
 BuildRequires:  zlib-devel
 BuildRequires:  physfs-devel
@@ -73,6 +74,7 @@ Game data for OpenZone. Includes tutorial, test world and Cviček mission.
 mkdir -p build && cd build
 
 cmake \
+  -G Ninja \
   -D CMAKE_INSTALL_PREFIX=/usr \
   -D CMAKE_BUILD_TYPE=Release \
   -D CMAKE_CXX_FLAGS="-msse3 -mfpmath=sse" \
@@ -83,12 +85,12 @@ cmake \
   -D OZ_TOOLS=1 \
   ..
 
-make %{?_smp_mflags}
+ninja
 
 %install
 rm -rf "$RPM_BUILD_ROOT"
 
-( cd build && cmake -D CMAKE_INSTALL_PREFIX="$RPM_BUILD_ROOT" -P cmake_install.cmake )
+( cd build && cmake -D CMAKE_INSTALL_PREFIX="$RPM_BUILD_ROOT/usr" -P cmake_install.cmake )
 
 if [[ %{_libdir} != /usr/lib ]]; then
   sed -ri 's|libdir=.*|libdir=%{_libdir}|' "$RPM_BUILD_ROOT"/usr/lib/pkgconfig/*

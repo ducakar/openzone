@@ -30,9 +30,9 @@
 
 #include <ozCore/config.hh>
 
+#include <climits>
 #include <cstdarg>
 #include <cstddef>
-#include <climits>
 #include <initializer_list>
 #include <new>
 
@@ -432,7 +432,7 @@ template <>
 struct Hash<const char*>
 {
   /// %Hash value for an empty string.
-  static const int EMPTY = 2166136261;
+  static const int EMPTY = int(2166136261);
 
   /**
    * FNV hash function.

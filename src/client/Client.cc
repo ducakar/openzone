@@ -31,7 +31,7 @@
 #include <client/EditStage.hh>
 #include <client/ui/UI.hh>
 
-#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL.h>
 #include <unistd.h>
 #ifdef __native_client__
 # include <ppapi_simple/ps.h>
@@ -607,9 +607,7 @@ int Client::init(int argc, char** argv)
   initFlags |= INIT_LIBRARY;
   liber.init(config["dir.music"].get(""));
 
-  if (TTF_Init() < 0) {
-    OZ_ERROR("Failed to initialise SDL_ttf");
-  }
+  Font::init();
   initFlags |= INIT_SDL_TTF;
 
   initFlags |= INIT_CONTEXT;
@@ -684,7 +682,7 @@ void Client::shutdown()
     context.destroy();
   }
   if (initFlags & INIT_SDL_TTF) {
-    TTF_Quit();
+    Font::destroy();
   }
   if (initFlags & INIT_LIBRARY) {
     liber.destroy();

@@ -246,11 +246,11 @@ void Style::destroy()
     glDeleteTextures(GLsizei(sizeof(images) / sizeof(images.crosshair)), &images.crosshair);
   };
 
-  monoFont.destroy();
-  sansFont.destroy();
-  smallFont.destroy();
-  largeFont.destroy();
-  titleFont.destroy();
+  monoFont = Font();
+  sansFont = Font();
+  smallFont = Font();
+  largeFont = Font();
+  titleFont = Font();
 }
 
 Style style;

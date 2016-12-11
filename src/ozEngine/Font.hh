@@ -44,6 +44,13 @@ private:
   int    fontHeight = 0;       ///< %Font height.
   Stream fileBuffer;           ///< Cached font file, must be loaded all the time.
 
+private:
+
+  /**
+   * Unload and release resources.
+   */
+  void close();
+
 public:
 
   /**
@@ -95,9 +102,14 @@ public:
   void upload(const char* s, int* width = nullptr, int* height = nullptr) const;
 
   /**
-   * Unload and release resources.
+   * Initialise SDL_TTF library.
    */
-  void destroy();
+  static void init();
+
+  /**
+   * Deinitialise SDL_TTF library.
+   */
+  static void destroy();
 
 };
 
