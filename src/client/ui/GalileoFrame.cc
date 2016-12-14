@@ -61,7 +61,7 @@ void GalileoFrame::onUpdate()
   clickX = Math::NaN;
   clickY = Math::NaN;
 
-  if (orbis.terra.id < 0 ||
+  if (orbis.terra.id == -1 ||
       (camera.state == Camera::UNIT &&
        (bot == nullptr ||
         (bot->state & Bot::DEAD_BIT) || !bot->hasAttribute(ObjectClass::GALILEO_BIT))))
@@ -109,7 +109,7 @@ void GalileoFrame::onDraw()
   float fWidth  = float(width);
   float fHeight = float(height);
 
-  if (questList.activeQuest >= 0) {
+  if (questList.activeQuest != -1) {
     const Quest& quest = questList.quests[questList.activeQuest];
 
     glBindTexture(GL_TEXTURE_2D, style.images.marker);

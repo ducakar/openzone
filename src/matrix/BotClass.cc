@@ -50,7 +50,7 @@ void BotClass::init(const Json& config, const char* name_)
   flags &= ~Object::BROWSABLE_BIT;
   life  *= 2.0f;
 
-  if (audioType >= 0) {
+  if (audioType != -1) {
     const Json& soundsConfig = config["audioSounds"];
 
     const char* sEventStep          = soundsConfig["step"         ].get("");

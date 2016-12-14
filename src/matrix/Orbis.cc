@@ -213,7 +213,7 @@ void Orbis::unposition(Frag* frag)
 Struct* Orbis::add(const BSP* bsp, const Point& p, Heading heading)
 {
   int index = allocStrIndex();
-  if (index < 0) {
+  if (index == -1) {
     return nullptr;
   }
 
@@ -226,7 +226,7 @@ Struct* Orbis::add(const BSP* bsp, const Point& p, Heading heading)
 Object* Orbis::add(const ObjectClass* clazz, const Point& p, Heading heading)
 {
   int index = allocObjIndex();
-  if (index < 0) {
+  if (index == -1) {
     return nullptr;
   }
 
@@ -243,7 +243,7 @@ Object* Orbis::add(const ObjectClass* clazz, const Point& p, Heading heading)
 Frag* Orbis::add(const FragPool* pool, const Point& p, const Vec3& velocity)
 {
   int index = allocFragIndex();
-  if (index < 0) {
+  if (index == -1) {
     return nullptr;
   }
 
@@ -255,7 +255,7 @@ Frag* Orbis::add(const FragPool* pool, const Point& p, const Vec3& velocity)
 
 void Orbis::remove(Struct* str)
 {
-  OZ_ASSERT(str->index >= 0);
+  OZ_ASSERT(str->index != -1);
 
   pendingStructs[freeing].set(str->index);
   structs[1 + str->index] = nullptr;
@@ -264,7 +264,7 @@ void Orbis::remove(Struct* str)
 
 void Orbis::remove(Object* obj)
 {
-  OZ_ASSERT(obj->index >= 0 && obj->cell == nullptr);
+  OZ_ASSERT(obj->index != -1 && obj->cell == nullptr);
 
   if (obj->flags & Object::LUA_BIT) {
     luaMatrix.unregisterObject(obj->index);
@@ -277,7 +277,7 @@ void Orbis::remove(Object* obj)
 
 void Orbis::remove(Frag* frag)
 {
-  OZ_ASSERT(frag->index >= 0 && frag->cell == nullptr);
+  OZ_ASSERT(frag->index != -1 && frag->cell == nullptr);
 
   pendingFrags[freeing].set(frag->index);
   frags[1 + frag->index] = nullptr;
@@ -381,7 +381,7 @@ void Orbis::read(Stream* is)
 
     // No need to register objects since Lua state is being deserialised.
 
-    if (!(obj->flags & Object::DYNAMIC_BIT) || dyn->parent < 0) {
+    if (!(obj->flags & Object::DYNAMIC_BIT) || dyn->parent == -1) {
       position(obj);
     }
     objects[1 + obj->index] = obj;
@@ -418,7 +418,7 @@ void Orbis::read(const Json& json)
     const BSP* bsp = liber.bsp(name);
 
     int index = allocStrIndex();
-    if (index >= 0) {
+    if (index != -1) {
       Struct* str = new Struct(bsp, index, strJson);
       position(str);
       structs[1 + index] = str;
@@ -430,7 +430,7 @@ void Orbis::read(const Json& json)
     const ObjectClass* clazz = liber.objClass(name);
 
     int index = allocObjIndex();
-    if (index >= 0) {
+    if (index != -1) {
       Object*  obj = clazz->create(index, objJson);
       Dynamic* dyn = static_cast<Dynamic*>(obj);
 
@@ -438,7 +438,7 @@ void Orbis::read(const Json& json)
         luaMatrix.registerObject(obj->index);
       }
 
-      if (!(obj->flags & Object::DYNAMIC_BIT) || dyn->parent < 0) {
+      if (!(obj->flags & Object::DYNAMIC_BIT) || dyn->parent == -1) {
         position(obj);
       }
       objects[1 + obj->index] = obj;
@@ -455,7 +455,7 @@ void Orbis::read(const Json& json)
         }
 
         int itemIndex = allocObjIndex();
-        if (itemIndex >= 0) {
+        if (itemIndex != -1) {
           Dynamic* item = static_cast<Dynamic*>(itemClazz->create(itemIndex, itemJson));
 
           item->parent = obj->index;
@@ -475,7 +475,7 @@ void Orbis::read(const Json& json)
 int Orbis::readObject(const Json& json)
 {
   int index = allocObjIndex();
-  if (index < 0) {
+  if (index == -1) {
     return index;
   }
 
@@ -488,7 +488,7 @@ int Orbis::readObject(const Json& json)
     luaMatrix.registerObject(obj->index);
   }
 
-  if (!(obj->flags & Object::DYNAMIC_BIT) || dyn->parent < 0) {
+  if (!(obj->flags & Object::DYNAMIC_BIT) || dyn->parent == -1) {
     position(obj);
   }
   objects[1 + obj->index] = obj;

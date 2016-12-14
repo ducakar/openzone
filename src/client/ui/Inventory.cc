@@ -59,7 +59,7 @@ void Inventory::ownerItemCallback(ModelField* sender, bool isClicked)
       if (inventory->other != nullptr) {
         bot->invGive(item, inventory->other);
       }
-      else if (bot->cargo < 0) {
+      else if (bot->cargo == -1) {
         bot->invDrop(item);
       }
     }
@@ -67,7 +67,7 @@ void Inventory::ownerItemCallback(ModelField* sender, bool isClicked)
       bot->invUse(item, container);
     }
     else if (input.middleReleased) {
-      if (bot->cargo < 0 && inventory->other == nullptr) {
+      if (bot->cargo == -1 && inventory->other == nullptr) {
         ui::mouse.isVisible = false;
 
         bot->invGrab(item);
@@ -117,7 +117,7 @@ void Inventory::updateReferences()
   owner = camera.botObj;
   other = nullptr;
 
-  if (camera.botObj != nullptr && camera.botObj->parent >= 0) {
+  if (camera.botObj != nullptr && camera.botObj->parent != -1) {
     other = orbis.obj(camera.botObj->parent);
   }
   else if (camera.objectObj != nullptr && (camera.objectObj->flags & Object::BROWSABLE_BIT)) {

@@ -262,8 +262,8 @@ public:
   {
     const Elem* end = array + count;
 
-    while (array < end) {
-      if (*array++ == value) {
+    for (; array < end; ++array) {
+      if (*array == value) {
         return true;
       }
     }

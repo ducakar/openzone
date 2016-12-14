@@ -124,7 +124,7 @@ bool Audio::playSpeak(const char* text, float volume, const Object* parent) cons
   const Dynamic* dynParent = static_cast<const Dynamic*>(parent);
   uint           srcId;
 
-  if (context.speakSource.owner < 0) {
+  if (context.speakSource.owner == -1) {
     if (text == nullptr) {
       return false;
     }
@@ -166,7 +166,7 @@ void Audio::playEngineSound(int sound, float volume, float pitch, const Object* 
 
   const Vehicle* veh = static_cast<const Vehicle*>(obj);
 
-  if (!camera.isExternal && veh->pilot >= 0 && veh->pilot == camera.bot) {
+  if (!camera.isExternal && veh->pilot != -1 && veh->pilot == camera.bot) {
     volume *= COCKPIT_GAIN_FACTOR;
     pitch  *= COCKPIT_PITCH_FACTOR;
   }

@@ -110,7 +110,7 @@ void Matrix::update()
       if (obj->flags & Object::DYNAMIC_BIT) {
         Dynamic* dyn = static_cast<Dynamic*>(obj);
 
-        OZ_ASSERT((dyn->parent >= 0) == (dyn->cell == nullptr));
+        OZ_ASSERT((dyn->parent != -1) == (dyn->cell == nullptr));
 
         if (dyn->cell == nullptr) {
           if (orbis.obj(dyn->parent) == nullptr) {

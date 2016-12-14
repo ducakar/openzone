@@ -1454,7 +1454,7 @@ static int ozObjBindItems(lua_State* l)
   ms.objects.clear();
 
   for (int item : ms.obj->items) {
-    OZ_ASSERT(item >= 0);
+    OZ_ASSERT(item != -1);
 
     ms.objects.add(orbis.obj(item));
   }
@@ -1493,7 +1493,7 @@ static int ozObjAddItem(lua_State* l)
     ITEM_INDEX(l_toint(1));
 
     if (item->cell == nullptr) {
-      OZ_ASSERT(item->parent >= 0);
+      OZ_ASSERT(item->parent != -1);
 
       Object* container = orbis.obj(item->parent);
       if (container != nullptr) {
@@ -1904,7 +1904,7 @@ static int ozWeaponAddRounds(lua_State* l)
 
   const WeaponClass* weaponClazz = static_cast<const WeaponClass*>(weapon->clazz);
 
-  if (weapon->nRounds >= 0) {
+  if (weapon->nRounds != -1) {
     weapon->nRounds = min(weapon->nRounds + l_toint(1), weaponClazz->nRounds);
   }
   return 1;
@@ -2139,7 +2139,7 @@ static int ozBotSetWeaponItem(lua_State* l)
   OBJ_BOT();
 
   int item = l_toint(1);
-  if (item < 0) {
+  if (item == -1) {
     bot->weapon = -1;
   }
   else {
@@ -2373,7 +2373,7 @@ static int ozVehicleEmbarkBot(lua_State* l)
   OBJ();
   OBJ_VEHICLE();
 
-  if (veh->pilot >= 0) {
+  if (veh->pilot != -1) {
     ERROR("Vehicle already has a pilot");
   }
 

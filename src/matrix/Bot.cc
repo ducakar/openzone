@@ -114,7 +114,7 @@ bool Bot::trigger(const Entity* entity)
 {
   OZ_ASSERT(entity != nullptr);
 
-  if (entity->key >= 0 && entity->clazz->target >= 0 && canReach(entity)) {
+  if (entity->key >= 0 && entity->clazz->target != -1 && canReach(entity)) {
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_TRIGGER;
     instrument = entity->index();
@@ -191,7 +191,7 @@ bool Bot::grab(const Dynamic* dynamic)
 
 bool Bot::rotateCargo()
 {
-  if (cargo >= 0) {
+  if (cargo != -1) {
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_ROTATE;
     instrument = -1;
@@ -204,7 +204,7 @@ bool Bot::rotateCargo()
 
 bool Bot::throwCargo()
 {
-  if (cargo >= 0) {
+  if (cargo != -1) {
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_THROW;
     instrument = -1;
@@ -310,7 +310,7 @@ void Bot::grabCargo(Dynamic* dyn)
 
 void Bot::releaseCargo()
 {
-  if (cargo >= 0) {
+  if (cargo != -1) {
     const DynamicClass* clazz = static_cast<const DynamicClass*>(this->clazz);
 
     flags &= ~DISABLED_BIT;
@@ -368,7 +368,7 @@ void Bot::kill()
 
 void Bot::enter(int vehicle_)
 {
-  OZ_ASSERT(cell != nullptr && vehicle_ >= 0);
+  OZ_ASSERT(cell != nullptr && vehicle_ != -1);
 
   const BotClass* clazz = static_cast<const BotClass*>(this->clazz);
 
@@ -392,7 +392,7 @@ void Bot::enter(int vehicle_)
 
 void Bot::exit()
 {
-  OZ_ASSERT(cell == nullptr && parent >= 0);
+  OZ_ASSERT(cell == nullptr && parent != -1);
   OZ_ASSERT(cargo == -1);
 
   parent     = -1;
@@ -465,21 +465,21 @@ void Bot::onUpdate()
   stamina   = min(stamina + clazz->staminaGain, clazz->stamina);
   meleeTime = max(meleeTime - Timer::TICK_TIME, 0.0f);
 
-  if (parent < 0) {
+  if (parent == -1) {
     /*
      * STATE
      */
     state &= ~(GROUNDED_BIT | LADDER_BIT | LEDGE_BIT | SWIMMING_BIT | SUBMERGED_BIT |
                ATTACKING_BIT);
 
-    if (cargo >= 0 || velocity.sqN() > LADDER_SLIP_MOMENTUM) {
+    if (cargo != -1 || velocity.sqN() > LADDER_SLIP_MOMENTUM) {
       flags &= ~ON_LADDER_BIT;
     }
 
-    state |= lower >= 0 || (flags & ON_FLOOR_BIT) ? GROUNDED_BIT  : 0;
-    state |= (flags & ON_LADDER_BIT)              ? LADDER_BIT    : 0;
-    state |= depth > dim.z                        ? SWIMMING_BIT  : 0;
-    state |= depth > dim.z + camZ                 ? SUBMERGED_BIT : 0;
+    state |= lower != -1 || (flags & ON_FLOOR_BIT) ? GROUNDED_BIT  : 0;
+    state |= (flags & ON_LADDER_BIT)               ? LADDER_BIT    : 0;
+    state |= depth > dim.z                         ? SWIMMING_BIT  : 0;
+    state |= depth > dim.z + camZ                  ? SUBMERGED_BIT : 0;
 
     if (state & SUBMERGED_BIT) {
       stamina -= clazz->staminaWaterDrain;
@@ -510,7 +510,7 @@ void Bot::onUpdate()
         state |= JUMP_SCHED_BIT;
       }
       if ((state & JUMP_SCHED_BIT) && (state & (GROUNDED_BIT | SWIMMING_BIT)) &&
-          cargo < 0 && stamina >= clazz->staminaJumpDrain)
+          cargo == -1 && stamina >= clazz->staminaJumpDrain)
       {
         flags     &= ~(DISABLED_BIT | ON_FLOOR_BIT);
         lower      = -1;
@@ -760,7 +760,7 @@ stepSucceeded:
 
       Vec3 desiredMomentum = move;
 
-      if ((state & (CROUCHING_BIT | WALKING_BIT)) || cargo >= 0) {
+      if ((state & (CROUCHING_BIT | WALKING_BIT)) || cargo != -1) {
         desiredMomentum *= clazz->walkMomentum;
         step            += clazz->stepWalkInc;
       }
@@ -782,7 +782,7 @@ stepSucceeded:
       else if (state & SWIMMING_BIT) {
         // not on static ground
         if (!(flags & ON_FLOOR_BIT) &&
-            !(lower >= 0 && (orbis.obj(lower)->flags & Object::DISABLED_BIT)))
+            !(lower != -1 && (orbis.obj(lower)->flags & Object::DISABLED_BIT)))
         {
           desiredMomentum *= clazz->waterControl;
         }
@@ -808,7 +808,8 @@ stepSucceeded:
      * ATTACK & GESTURES
      */
 
-    if (cargo < 0 && (!(actions & ACTION_JUMP) || (state & (Bot::GROUNDED_BIT | Bot::LADDER_BIT))))
+    if (cargo == -1 &&
+        (!(actions & ACTION_JUMP) || (state & (Bot::GROUNDED_BIT | Bot::LADDER_BIT))))
     {
       if (actions & ACTION_ATTACK) {
         if (weaponObj != nullptr) {
@@ -876,13 +877,13 @@ stepSucceeded:
      * CARGO MOVEMENT
      */
 
-    if (cargo >= 0) {
+    if (cargo != -1) {
       const Bot* cargoBot = static_cast<const Bot*>(cargoObj);
 
       if (cargoObj == nullptr || cargoObj->cell == nullptr || (cargoObj->flags & BELOW_BIT) ||
-          weapon >= 0 || (state & (LADDER_BIT | LEDGE_BIT)) || (actions & ACTION_JUMP) ||
+          weapon != -1 || (state & (LADDER_BIT | LEDGE_BIT)) || (actions & ACTION_JUMP) ||
           ((cargoObj->flags & BOT_BIT) &&
-           ((cargoBot->actions & ACTION_JUMP) || (cargoBot->cargo >= 0))))
+           ((cargoBot->actions & ACTION_JUMP) || (cargoBot->cargo != -1))))
       {
         releaseCargo();
         cargoObj = nullptr;
@@ -960,7 +961,7 @@ stepSucceeded:
         synapse.transferItem(this, item, target);
       }
     }
-    else if (parent < 0) { // not applicable in vehicles
+    else if (parent == -1) { // not applicable in vehicles
       if (actions & ~oldActions & (ACTION_TRIGGER | ACTION_LOCK)) {
         Entity* ent = orbis.ent(instrument);
 
@@ -1017,7 +1018,7 @@ stepSucceeded:
         }
       }
       else if (actions & ~oldActions & ACTION_GRAB) {
-        if (instrument < 0 || weapon >= 0 || (state & (LADDER_BIT | LEDGE_BIT))) {
+        if (instrument == -1 || weapon != -1 || (state & (LADDER_BIT | LEDGE_BIT))) {
           releaseCargo();
         }
         else {
@@ -1025,7 +1026,7 @@ stepSucceeded:
           const Bot* dynBot = static_cast<const Bot*>(dyn);
 
           if (dyn != nullptr && abs(dyn->mass * physics.gravity) <= clazz->grabWeight &&
-              !((dyn->flags & BOT_BIT) && dynBot->cargo >= 0) && canReach(dyn))
+              !((dyn->flags & BOT_BIT) && dynBot->cargo != -1) && canReach(dyn))
           {
             OZ_ASSERT(dyn->flags & DYNAMIC_BIT);
 
@@ -1043,7 +1044,7 @@ stepSucceeded:
       else if (actions & ~oldActions & (ACTION_INV_GRAB | ACTION_INV_DROP)) {
         Dynamic* item = orbis.obj<Dynamic>(instrument);
 
-        if (item != nullptr && cargo < 0 && items.contains(instrument)) {
+        if (item != nullptr && cargo == -1 && items.contains(instrument)) {
           OZ_ASSERT((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
 
           // {hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine}
@@ -1063,7 +1064,7 @@ stepSucceeded:
 
           if (synapse.dropItem(this, item, p + Vec3(0.0f, 0.0f, camZ) + handle, velocity)) {
             if ((actions & ~oldActions & ACTION_INV_GRAB) &&
-                !(state & (LADDER_BIT | LEDGE_BIT)) && weapon < 0)
+                !(state & (LADDER_BIT | LEDGE_BIT)) && weapon == -1)
             {
               grabCargo(item);
               grabHandle = dist;

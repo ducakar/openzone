@@ -77,7 +77,7 @@ void LuaNirvana::read(Stream* is)
 
   int index = is->readInt();
 
-  while (index >= 0) {
+  while (index != -1) {
     readValue(l, is);
 
     l_rawseti(1, index);

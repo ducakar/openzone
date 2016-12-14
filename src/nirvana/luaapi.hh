@@ -361,7 +361,7 @@ static int ozSelfSetWeaponItem(lua_State* l)
   ARG(1);
 
   int item = l_toint(1);
-  if (item < 0) {
+  if (item == -1) {
     ns.self->weapon = -1;
   }
   else {
@@ -446,7 +446,7 @@ static int ozSelfBindItems(lua_State* l)
   ms.objects.clear();
 
   for (int item : ns.self->items) {
-    OZ_ASSERT(item >= 0);
+    OZ_ASSERT(item != -1);
 
     ms.objects.add(orbis.obj(item));
   }

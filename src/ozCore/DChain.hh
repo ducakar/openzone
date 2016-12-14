@@ -172,42 +172,42 @@ public:
   /**
    * Bind an element after some given element in the chain.
    */
-  void insertAfter(Elem* e, Elem* p)
+  void insertAfter(Elem* elem, Elem* prev)
   {
-    OZ_ASSERT(e != nullptr && p != nullptr);
+    OZ_ASSERT(elem != nullptr && prev != nullptr);
 
-    Elem* next = p->next[INDEX];
+    Elem* next = prev->next[INDEX];
 
-    e->prev[INDEX] = p;
-    e->next[INDEX] = p->next[INDEX];
-    p->next[INDEX] = e;
+    elem->prev[INDEX] = prev;
+    elem->next[INDEX] = prev->next[INDEX];
+    prev->next[INDEX] = elem;
 
     if (next == nullptr) {
-      lastElem = e;
+      lastElem = elem;
     }
     else {
-      next->prev[INDEX] = e;
+      next->prev[INDEX] = elem;
     }
   }
 
   /**
    * Bind an element before some given element in the chain.
    */
-  void insertBefore(Elem* e, Elem* p)
+  void insertBefore(Elem* elem, Elem* next)
   {
-    OZ_ASSERT(e != nullptr && p != nullptr);
+    OZ_ASSERT(elem != nullptr && next != nullptr);
 
-    Elem* prev = p->prev[INDEX];
+    Elem* prev = next->prev[INDEX];
 
-    e->next[INDEX] = p;
-    e->prev[INDEX] = prev;
-    p->prev[INDEX] = e;
+    elem->next[INDEX] = next;
+    elem->prev[INDEX] = prev;
+    next->prev[INDEX] = elem;
 
     if (prev == nullptr) {
-      firstElem = e;
+      firstElem = elem;
     }
     else {
-      p->prev[INDEX] = e;
+      next->prev[INDEX] = elem;
     }
   }
 
@@ -277,7 +277,7 @@ public:
   {
     OZ_ASSERT(firstElem != nullptr);
 
-    Elem* elem = firstElem;
+    Elem* e = firstElem;
 
     firstElem = firstElem->next[INDEX];
 
@@ -287,7 +287,7 @@ public:
     else {
       firstElem->prev[INDEX] = nullptr;
     }
-    return elem;
+    return e;
   }
 
   /**
@@ -297,7 +297,7 @@ public:
   {
     OZ_ASSERT(lastElem != nullptr);
 
-    Elem* elem = lastElem;
+    Elem* e = lastElem;
 
     lastElem = lastElem->prev[INDEX];
 
@@ -307,7 +307,7 @@ public:
     else {
       lastElem->next[INDEX] = nullptr;
     }
-    return elem;
+    return e;
   }
 
   /**

@@ -139,7 +139,7 @@ void Loader::updateSound()
 
   // Stop speaker if owner has been removed.
   int speaker = context.speakSource.owner;
-  if (speaker < 0) {
+  if (speaker == -1) {
     if (context.speakSource.thread.isValid()) {
       context.releaseSpeakSource();
     }

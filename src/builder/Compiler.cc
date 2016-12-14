@@ -180,7 +180,7 @@ static void calculateBounds(const Node* node, const Mat4& parentTransf)
 {
   Mat4 transf = parentTransf ^ node->transf;
 
-  if (node->includeInBounds && node->mesh >= 0) {
+  if (node->includeInBounds && node->mesh != -1) {
     const Mesh& mesh = meshes[node->mesh];
 
     for (int index : mesh.indices) {

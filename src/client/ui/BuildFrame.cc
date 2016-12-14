@@ -169,7 +169,7 @@ void BuildFrame::selectObjects(Button* sender)
 
 void BuildFrame::startPlacement(ModelField* sender, bool isClicked)
 {
-  if (sender->id < 0) {
+  if (sender->id == -1) {
     return;
   }
 

@@ -54,7 +54,7 @@ bool CheckBox::onMouseEvent()
     isClicked  = true;
     wasClicked = true;
 
-    if (style.sounds.click >= 0) {
+    if (style.sounds.click != -1) {
       context.playSample(style.sounds.click);
     }
   }

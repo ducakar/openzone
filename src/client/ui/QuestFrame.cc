@@ -30,7 +30,7 @@ namespace ui
 
 void QuestFrame::updateTask()
 {
-  if (questList.activeQuest < 0) {
+  if (questList.activeQuest == -1) {
     title.setText("%s", OZ_GETTEXT("No quest"));
     description.setText("");
 
@@ -109,7 +109,7 @@ void QuestFrame::prev(Button* sender)
 void QuestFrame::onUpdate()
 {
   if (lastQuest != questList.activeQuest ||
-      (lastQuest >= 0 && lastState != questList.quests[lastQuest].state))
+      (lastQuest != -1 && lastState != questList.quests[lastQuest].state))
   {
     updateTask();
   }

@@ -68,20 +68,15 @@ void Profile::init()
       name = OZ_GETTEXT("Player");
     }
     else {
-      mbstate_t mbState;
-      memset(&mbState, 0, sizeof(mbState));
-
-      const char* userNamePtr = userName;
       wchar_t wcUserName[128];
-      mbsrtowcs(wcUserName, &userNamePtr, 128, &mbState);
+      char    mbUserName[128];
 
+      mbstowcs(wcUserName, userName, 128);
       wcUserName[0] = wchar_t(towupper(wint_t(wcUserName[0])));
+      wcUserName[127] = L'\0';
 
-      memset(&mbState, 0, sizeof(mbState));
-
-      const wchar_t* wcUserNamePtr = wcUserName;
-      char mbUserName[128];
-      wcsrtombs(mbUserName, &wcUserNamePtr, 128, &mbState);
+      wcstombs(mbUserName, wcUserName, 128);
+      mbUserName[127] = '\0';
 
       name = mbUserName;
     }
@@ -117,7 +112,7 @@ void Profile::init()
 
       weaponItem = profileConfig["weaponItem"].get(-1);
 
-      if (weaponItem >= 0) {
+      if (weaponItem != -1) {
         if (uint(weaponItem) >= uint(items.length())) {
           OZ_ERROR("Invalid weaponItem #%d in profile", weaponItem);
         }

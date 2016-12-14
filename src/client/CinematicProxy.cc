@@ -41,7 +41,7 @@ void CinematicProxy::executeSequence(const File& file, const Lingua* missionLing
   }
 
   int nSteps = sequence.length();
-  if (nSteps <= 0) {
+  if (nSteps == 0) {
     return;
   }
 

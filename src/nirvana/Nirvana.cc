@@ -60,6 +60,7 @@ void Nirvana::sync()
 void Nirvana::update()
 {
   int count = 0;
+
   for (auto& i : minds) {
     Mind& mind = i.value;
 

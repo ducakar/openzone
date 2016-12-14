@@ -42,7 +42,7 @@ void DynamicClass::init(const Json& config, const char* name_)
     OZ_ERROR("%s: Items cannot have their own inventory. nItems should be 0.", name_);
   }
 
-  if (audioType >= 0) {
+  if (audioType != -1) {
     const Json& soundsConfig = config["audioSounds"];
 
     const char* sEventLand     = soundsConfig["land"    ].get("");

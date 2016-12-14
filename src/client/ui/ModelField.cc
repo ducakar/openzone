@@ -57,7 +57,7 @@ bool ModelField::onMouseEvent()
     isClicked  = true;
     wasClicked = true;
 
-    if (callback != nullptr && style.sounds.click >= 0) {
+    if (callback != nullptr && style.sounds.click != -1) {
       context.playSample(style.sounds.click);
     }
   }
@@ -86,7 +86,7 @@ void ModelField::onDraw()
     shape.fill(x + 1, y + 1, width - 2, height - 2);
   }
 
-  if (bsp != nullptr || model >= 0) {
+  if (bsp != nullptr || model != -1) {
     BSPImago* bspModel = nullptr;
     Model*    objModel = nullptr;
     float     dim;

@@ -57,7 +57,7 @@ void BotAudio::play(const Object* playAt)
   for (const Object::Event& event : obj->events) {
     OZ_ASSERT(event.id < ObjectClass::MAX_SOUNDS);
 
-    if (event.id >= 0 && sounds[event.id] >= 0 &&
+    if (event.id >= 0 && sounds[event.id] != -1 &&
         (!(bot->state & Bot::DEAD_BIT) || event.id == Bot::EVENT_DEATH))
     {
       if (event.intensity < 0.0f) {
@@ -93,7 +93,7 @@ void BotAudio::play(const Object* playAt)
       if (bot->state & Bot::SWIMMING_BIT) {
         int sample = Bot::EVENT_SWIM_SURFACE + ((bot->state & Bot::SUBMERGED_BIT) != 0);
 
-        if (sounds[sample] >= 0) {
+        if (sounds[sample] != -1) {
           playSound(sounds[sample], 1.0f, bot);
         }
       }
@@ -101,7 +101,7 @@ void BotAudio::play(const Object* playAt)
         OZ_ASSERT(bot->depth >= 0.0f);
 
         int sample = bot->depth != 0.0f ? Bot::EVENT_WATER_STEP : Bot::EVENT_STEP;
-        if (sounds[sample] >= 0) {
+        if (sounds[sample] != -1) {
           playSound(sounds[sample], 1.0f, bot);
         }
       }

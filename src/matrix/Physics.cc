@@ -89,7 +89,7 @@ bool Physics::handleObjFriction()
     float deltaVelX = dyn->momentum.x;
     float deltaVelY = dyn->momentum.y;
 
-    if (dyn->lower >= 0) {
+    if (dyn->lower != -1) {
       if (dyn->flags & Object::ON_FLOOR_BIT) {
         const Entity* ent = orbis.ent(dyn->lower);
 
@@ -120,7 +120,7 @@ bool Physics::handleObjFriction()
     }
 
     // On floor or on a still object.
-    if ((dyn->flags & Object::ON_FLOOR_BIT) || dyn->lower >= 0) {
+    if ((dyn->flags & Object::ON_FLOOR_BIT) || dyn->lower != -1) {
       float deltaVel2 = deltaVelX*deltaVelX + deltaVelY*deltaVelY;
       float friction  = FLOOR_FRICTION_COEF;
       float stickVel  = STICK_VELOCITY;
@@ -248,7 +248,7 @@ void Physics::handleObjHit()
 
       sDyn->flags    |= Object::BELOW_BIT;
 
-      if (!(sDyn->flags & Object::ON_FLOOR_BIT) && sDyn->lower < 0) {
+      if (!(sDyn->flags & Object::ON_FLOOR_BIT) && sDyn->lower == -1) {
         sDyn->flags     &= ~Object::DISABLED_BIT;
         sDyn->momentum.z = momentum.z;
       }
@@ -512,7 +512,7 @@ void Physics::updateObj(Dynamic* dyn_)
   dyn         = dyn_;
   dyn->flags &= ~Object::TICK_CLEAR_MASK;
 
-  if (dyn->lower >= 0) {
+  if (dyn->lower != -1) {
     if (dyn->flags & Object::ON_FLOOR_BIT) {
       const Entity* ent = orbis.ent(dyn->lower);
 

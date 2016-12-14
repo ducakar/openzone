@@ -37,7 +37,7 @@ void VehicleClass::init(const Json& config, const char* name_)
   flags |= Object::VEHICLE_BIT | Object::CYLINDER_BIT | Object::USE_FUNC_BIT |
            Object::UPDATE_FUNC_BIT | Object::STATUS_FUNC_BIT;
 
-  if (audioType >= 0) {
+  if (audioType != -1) {
     const Json& soundsConfig = config["audioSounds"];
 
     const char* sEventEngine    = soundsConfig["engine"   ].get("");

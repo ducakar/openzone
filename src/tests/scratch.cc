@@ -22,18 +22,49 @@
 using namespace oz;
 
 template <typename Elem, int SIZE>
-class Deque
+class Sparse
 {
 private:
 
-private:
-
-  Elem data[SIZE] = {};
-  int  lastSlot   = 0;
+  Elem* data[SIZE] = {};
+  int   lastSlot   = 0;
 
 public:
 
-  Deque() = default;
+  Elem*& operator [](int i) const
+  {
+    if (i == -1) {
+      return nullptr;
+    }
+
+    OZ_ASSERT(uint(i) <= uint(SIZE));
+
+    return static_cast<Elem*>(data[i]);
+  }
+
+  int allocate()
+  {
+    int firstSlot = lastSlot + 1;
+    int index     = firstSlot;
+
+    do {
+      if (data[index] == nullptr) {
+        lastSlot = index;
+        return index;
+      }
+      index = index % SIZE;
+    }
+    while (index != firstSlot);
+
+    return -1;
+  }
+
+  void release(int i)
+  {
+    OZ_ASSERT(uint(i) <= uint(SIZE));
+
+    data[i] = nullptr;
+  }
 
 };
 

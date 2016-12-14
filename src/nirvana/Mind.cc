@@ -35,12 +35,8 @@ bool Mind::hasCollided(const Bot* botObj)
   return false;
 }
 
-Mind::Mind() :
-  flags(0), side(0), bot(0)
-{}
-
 Mind::Mind(int bot_) :
-  flags(0), side(0), bot(bot_)
+  bot(bot_)
 {
   luaNirvana.registerMind(bot);
 }
@@ -54,7 +50,7 @@ Mind::Mind(int bot_, Stream* is) :
 
 Mind::~Mind()
 {
-  if (bot >= 0) {
+  if (bot != -1) {
     luaNirvana.unregisterMind(bot);
   }
 }
@@ -69,18 +65,15 @@ Mind::Mind(Mind&& m) :
 
 Mind& Mind::operator = (Mind&& m)
 {
-  if (&m == this) {
-    return *this;
+  if (&m != this) {
+    flags = m.flags;
+    side  = m.side;
+    bot   = m.bot;
+
+    m.flags = 0;
+    m.side  = 0;
+    m.bot   = -1;
   }
-
-  flags = m.flags;
-  side  = m.side;
-  bot   = m.bot;
-
-  m.flags = 0;
-  m.side  = 0;
-  m.bot   = -1;
-
   return *this;
 }
 

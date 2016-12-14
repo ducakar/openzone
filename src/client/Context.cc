@@ -37,7 +37,7 @@
 #define OZ_REGISTER_IMAGOCLASS(name) \
   { \
     int id = liber.imagoIndex(#name); \
-    if (id >= 0) { \
+    if (id != -1) { \
       imagoClasses[id] = name##Imago::create; \
     } \
   }
@@ -45,7 +45,7 @@
 #define OZ_REGISTER_AUDIOCLASS(name) \
   { \
     int id = liber.audioIndex(#name); \
-    if (id >= 0) { \
+    if (id != -1) { \
       audioClasses[id] = name##Audio::create; \
     } \
   }
@@ -310,7 +310,7 @@ void Context::unloadTexture(const Texture* texture)
 Texture Context::requestTexture(int id)
 {
   // No texture.
-  if (id < 0) {
+  if (id == -1) {
     return Texture();
   }
 
@@ -337,7 +337,7 @@ Texture Context::requestTexture(int id)
 void Context::releaseTexture(int id)
 {
   // No texture.
-  if (id < 0) {
+  if (id == -1) {
     return;
   }
 
@@ -355,7 +355,7 @@ void Context::releaseTexture(int id)
 
 uint Context::requestSound(int id)
 {
-  if (id < 0) {
+  if (id == -1) {
     return 0;
   }
 
@@ -385,7 +385,7 @@ uint Context::requestSound(int id)
 
 void Context::releaseSound(int id)
 {
-  if (id < 0) {
+  if (id == -1) {
     return;
   }
 
@@ -403,7 +403,7 @@ void Context::releaseSound(int id)
 
 void Context::playSample(int id)
 {
-  if (id < 0) {
+  if (id == -1) {
     return;
   }
 

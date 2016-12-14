@@ -194,7 +194,7 @@ void Vehicle::mechHandler()
     }
 stepSucceeded:
 
-    Vec3 desiredMomentum = lower < 0 && !(flags & ON_FLOOR_BIT) ? Vec3::ZERO : move;
+    Vec3 desiredMomentum = lower == -1 && !(flags & ON_FLOOR_BIT) ? Vec3::ZERO : move;
 
     if (state & WALKING_BIT) {
       desiredMomentum *= clazz->mech.walkMomentum;
@@ -336,7 +336,7 @@ void Vehicle::onDestroy()
 
 bool Vehicle::onUse(Bot* user)
 {
-  if (pilot < 0) {
+  if (pilot == -1) {
     pilot = user->index;
 
     user->h = h;
@@ -355,7 +355,7 @@ void Vehicle::onUpdate()
   // clean invalid pilot reference and throw him out if dead
   Bot* bot = orbis.obj<Bot>(pilot);
 
-  if (bot == nullptr || bot->parent < 0) {
+  if (bot == nullptr || bot->parent == -1) {
     pilot = -1;
     bot   = nullptr;
   }
@@ -420,7 +420,7 @@ void Vehicle::onUpdate()
 
   rot = clazz->type == VehicleClass::MECH ? Mat4::rotationZ(h) : Mat4::rotationZXZ(h, v, w);
 
-  if (pilot >= 0 && fuel != 0.0f) {
+  if (pilot != -1 && fuel != 0.0f) {
     fuel = max(0.0f, fuel - clazz->engine.idleConsumption);
 
     (this->*HANDLERS[clazz->type])();

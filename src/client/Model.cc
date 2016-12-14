@@ -84,7 +84,7 @@ void Model::addSceneLights()
     const Node* node = &nodes[light.node];
     Mat4 transf = node->transf;
 
-    while (node->parent >= 0) {
+    while (node->parent != -1) {
       node   = &nodes[node->parent];
       transf = node->transf ^ transf;
     }
@@ -159,7 +159,7 @@ void Model::drawNode(const Node* node, int mask)
   tf.push();
   tf.model = tf.model ^ node->transf;
 
-  if (node->mesh >= 0) {
+  if (node->mesh != -1) {
     const Mesh& mesh = meshes[node->mesh];
 
     if (mesh.flags & mask) {
@@ -398,7 +398,7 @@ const File* Model::preload()
   preloadData = new PreloadData();
   preloadData->modelFile = path;
 
-  Stream is       = preloadData->modelFile.read(Endian::LITTLE);
+  Stream is = preloadData->modelFile.read(Endian::LITTLE);
 
   if (is.available() == 0) {
     OZ_ERROR("Failed to read '%s'", path.c());

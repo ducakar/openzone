@@ -33,7 +33,7 @@ void Terra::load(int id_)
 {
   id = id_;
 
-  if (id < 0) {
+  if (id == -1) {
     for (int x = 0; x < VERTS; ++x) {
       for (int y = 0; y < VERTS; ++y) {
         quads[x][y].vertex.z     = 0.0f;
@@ -107,7 +107,7 @@ void Terra::read(Stream* is)
 
 Json Terra::write() const
 {
-  const char* name = id < 0 ? "" : liber.terrae[id].name.c();
+  const char* name = id == -1 ? "" : liber.terrae[id].name.c();
 
   Json json(Json::OBJECT);
   json.add("name", name);
@@ -116,7 +116,7 @@ Json Terra::write() const
 
 void Terra::write(Stream* os) const
 {
-  const char* name = id < 0 ? "" : liber.terrae[id].name.c();
+  const char* name = id == -1 ? "" : liber.terrae[id].name.c();
 
   os->writeString(name);
 }

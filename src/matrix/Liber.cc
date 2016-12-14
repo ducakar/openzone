@@ -603,7 +603,7 @@ void Liber::initClasses()
     if (objClazz->flags & Object::BOT_BIT) {
       const BotClass* botClazz = static_cast<const BotClass*>(objClazz);
 
-      if (botClazz->weaponItem >= 0) {
+      if (botClazz->weaponItem != -1) {
         if (uint(botClazz->weaponItem) >= uint(botClazz->defaultItems.length())) {
           OZ_ERROR("Invalid weaponItem index for '%s'", botClazz->name.c());
         }

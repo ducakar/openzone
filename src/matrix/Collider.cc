@@ -626,14 +626,7 @@ void Collider::trimAABBTerra()
 
 void Collider::trimAABBOrbis()
 {
-  hit.obj       = nullptr;
-  hit.str       = nullptr;
-  hit.entity    = nullptr;
-  hit.mediumStr = nullptr;
-  hit.ratio     = 1.0f;
-  hit.material  = 0;
-  hit.medium    = 0;
-  hit.depth     = 0.0f;
+  hit = Hit();
 
   Point originalStartPos = aabb.p;
   Point originalEndPos   = aabb.p + move;
@@ -696,14 +689,7 @@ void Collider::trimAABBOrbis()
 
 void Collider::trimEntityObjects()
 {
-  hit.obj       = nullptr;
-  hit.str       = nullptr;
-  hit.entity    = nullptr;
-  hit.mediumStr = nullptr;
-  hit.ratio     = 1.0f;
-  hit.material  = 0;
-  hit.medium    = 0;
-  hit.depth     = 0.0f;
+  hit = Hit();
 
   for (int x = span.minX; x <= span.maxX; ++x) {
     for (int y = span.minY; y <= span.maxY; ++y) {

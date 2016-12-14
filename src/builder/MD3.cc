@@ -243,7 +243,7 @@ void MD3::buildMesh(const char* name, int frame)
     for (int j = 0; j < surfaceTriangles.length(); ++j) {
       for (int k = 0; k < 3; ++k) {
         int l = surfaceTriangles[j].vertices[k];
-        int m = frame < 0 ? l : frame * surface.nVertices + l;
+        int m = frame == -1 ? l : frame * surface.nVertices + l;
 
         compiler.texCoord(surfaceTexCoords[l]);
         compiler.normal(meshTransf * normals[m]);
@@ -276,7 +276,7 @@ void MD3::load()
   frame      = config["frame"].get(-1);
   lowerFrame = config["lowerFrame"].get(-1);
   upperFrame = config["upperFrame"].get(-1);
-  shaderName = config["shader"].get(frame < 0 ? "md3" : "mesh");
+  shaderName = config["shader"].get(frame == -1 ? "md3" : "mesh");
 
   Vec3 weaponTranslation = config["weaponTranslate"].get(Vec3::ZERO);
   Vec3 weaponRotation    = config["weaponRotate"].get(Vec3::ZERO);
@@ -300,7 +300,7 @@ void MD3::save()
   compiler.shader(shaderName);
 
   if (!String::isEmpty(model)) {
-    if (frame < 0) {
+    if (frame == -1) {
       OZ_ERROR("Custom models can only be static. Must specify frame");
     }
 
@@ -353,7 +353,7 @@ void MD3::save()
   compiler.writeModel(&os);
   compiler.buildModelTextures(destDir);
 
-  if (frame < 0) {
+  if (frame == -1) {
     File destFile = destDir / "data.ozcMD3";
 
     Log::print("Writing to '%s' ...", destFile.c());

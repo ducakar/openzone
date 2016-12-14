@@ -51,7 +51,7 @@ void HudArea::drawBotCrosshair()
   shape.fill(crossIconX, crossIconY, ICON_SIZE, ICON_SIZE);
   glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 
-  if (me->parent < 0 && (camera.object >= 0 || camera.entity >= 0)) {
+  if (me->parent == -1 && (camera.object != -1 || camera.entity != -1)) {
     const Object*      obj      = camera.objectObj;
     const ObjectClass* objClazz = obj == nullptr ? nullptr : obj->clazz;
     const Dynamic*     dyn      = static_cast<const Dynamic*>(obj);
@@ -71,7 +71,7 @@ void HudArea::drawBotCrosshair()
 
       shape.colour(1.0f, 1.0f, 1.0f, 1.0f);
 
-      if (entClazz->target >= 0 && ent->key >= 0) {
+      if (entClazz->target != -1 && ent->key >= 0) {
         glBindTexture(GL_TEXTURE_2D, style.images.use);
         shape.fill(rightIconX, rightIconY, ICON_SIZE, ICON_SIZE);
       }
@@ -126,7 +126,7 @@ void HudArea::drawBotCrosshair()
       if (obj->flags & Object::VEHICLE_BIT) {
         const Vehicle* vehicle = static_cast<const Vehicle*>(obj);
 
-        if (vehicle->pilot < 0) {
+        if (vehicle->pilot == -1) {
           glBindTexture(GL_TEXTURE_2D, style.images.mount);
           shape.fill(rightIconX, rightIconY, ICON_SIZE, ICON_SIZE);
         }
@@ -143,13 +143,13 @@ void HudArea::drawBotCrosshair()
         shape.fill(leftIconX, leftIconY, ICON_SIZE, ICON_SIZE);
       }
 
-      if (me->cargo < 0 && me->weapon < 0 &&
+      if (me->cargo == -1 && me->weapon == -1 &&
           (obj->flags & Object::DYNAMIC_BIT) &&
           abs(dyn->mass * physics.gravity) <= myClazz->grabWeight &&
           // not climbing or on a ladder
           !(me->state & (Bot::LADDER_BIT | Bot::LEDGE_BIT)) &&
           // if it is not a bot that is holding something
-          (!(dyn->flags & Object::BOT_BIT) || bot->cargo < 0))
+          (!(dyn->flags & Object::BOT_BIT) || bot->cargo == -1))
       {
         float dimX = dyn->dim.x + dyn->dim.x;
         float dimY = dyn->dim.y + dyn->dim.y;
@@ -160,7 +160,7 @@ void HudArea::drawBotCrosshair()
           shape.fill(bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE);
         }
       }
-      if (camera.botObj->cargo >= 0) {
+      if (camera.botObj->cargo != -1) {
         glBindTexture(GL_TEXTURE_2D, style.images.grab);
         shape.fill(bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE);
       }
@@ -193,7 +193,7 @@ void HudArea::drawBotStatus()
 
     weaponName.setText("%s", weaponObj->clazz->title.c());
 
-    if (weaponObj->nRounds < 0) {
+    if (weaponObj->nRounds == -1) {
       weaponRounds.setText("∞");
     }
     else {
@@ -247,7 +247,7 @@ void HudArea::drawVehicleStatus()
 
     nameLabel.setText("%s", vehClazz->weaponTitles[i].c());
 
-    if (vehicle->nRounds[i] < 0) {
+    if (vehicle->nRounds[i] == -1) {
       roundsLabel.setText("∞");
     }
     else {

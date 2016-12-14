@@ -57,7 +57,7 @@ Json Caelum::write() const
 {
   Json json(Json::OBJECT);
 
-  if (id >= 0) {
+  if (id != -1) {
     json.add("name", liber.caela[id].name);
     json.add("heading", Math::deg(heading));
     json.add("period", period);

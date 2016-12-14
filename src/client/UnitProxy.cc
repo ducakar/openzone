@@ -174,12 +174,12 @@ void UnitProxy::prepare()
     }
 
     if (input.leftPressed) {
-      if (bot->cargo >= 0) {
+      if (bot->cargo != -1) {
         bot->rotateCargo();
       }
     }
     if (input.rightPressed) {
-      if (bot->parent >= 0) {
+      if (bot->parent != -1) {
         context.playSample(ui::style.sounds.nextWeapon);
 
         bot->actions |= Bot::ACTION_VEH_NEXT_WEAPON;
@@ -192,13 +192,13 @@ void UnitProxy::prepare()
       }
     }
     else if (input.middlePressed) {
-      if (bot->cargo >= 0) {
+      if (bot->cargo != -1) {
         bot->grab();
       }
-      else if (camera.entity >= 0) {
+      else if (camera.entity != -1) {
         bot->lock(camera.entityObj);
       }
-      else if (camera.object >= 0) {
+      else if (camera.object != -1) {
         Dynamic* dyn = static_cast<Dynamic*>(camera.objectObj);
 
         if (dyn->flags & Object::DYNAMIC_BIT) {
@@ -221,7 +221,7 @@ void UnitProxy::prepare()
       }
     }
     else if (input.wheelUp) {
-      if (bot->cargo >= 0) {
+      if (bot->cargo != -1) {
         bot->throwCargo();
       }
     }
@@ -290,7 +290,7 @@ void UnitProxy::prepare()
     weaponIndex = 3;
   }
 
-  if (weaponIndex >= 0) {
+  if (weaponIndex != -1) {
     for (int i = 0, index = 0; i < bot->items.length(); ++i) {
       const Weapon* weapon = orbis.obj<const Weapon>(bot->items[i]);
 
@@ -557,10 +557,10 @@ void UnitProxy::update()
     }
   }
 
-  if (bot->parent >= 0) {
+  if (bot->parent != -1) {
     camera.setTaggedObj(nullptr);
   }
-  else if (bot->cargo >= 0) {
+  else if (bot->cargo != -1) {
     camera.setTaggedObj(orbis.obj(bot->cargo));
   }
   else {

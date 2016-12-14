@@ -32,7 +32,7 @@ namespace ui
 
 const Device* const* InfoFrame::updateReferences()
 {
-  if (camera.state != Camera::UNIT || camera.botObj == nullptr || camera.object < 0) {
+  if (camera.state != Camera::UNIT || camera.botObj == nullptr || camera.object == -1) {
     lastId = -1;
     return nullptr;
   }

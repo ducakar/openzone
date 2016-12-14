@@ -89,7 +89,7 @@ MD2::AnimType MD2::AnimState::extractAnim()
     {
       return ANIM_JUMP;
     }
-    else if (bot->cargo < 0) {
+    else if (bot->cargo == -1) {
       if (weapon != nullptr && (prevAttack || weapon->shotTime != 0.0f)) {
         prevAttack = weapon->shotTime != 0.0f;
 
@@ -199,7 +199,7 @@ void MD2::AnimState::advance()
       int   nFrames = lastFrame - firstFrame + 1;
       float stepInc = clazz->stepRunInc;
 
-      if ((bot->state & (Bot::CROUCHING_BIT | Bot::WALKING_BIT)) || bot->cargo >= 0) {
+      if ((bot->state & (Bot::CROUCHING_BIT | Bot::WALKING_BIT)) || bot->cargo != -1) {
         stepInc = clazz->stepWalkInc;
       }
 

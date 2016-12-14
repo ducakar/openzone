@@ -45,7 +45,7 @@ Imago* MD2Imago::create(const Object* obj)
     MD2Imago*      imago = new MD2Imago(veh);
 
     imago->flags = Imago::MD2MODEL_BIT;
-    imago->model   = context.requestModel(obj->clazz->imagoModel);
+    imago->model = context.requestModel(obj->clazz->imagoModel);
     imago->h     = veh->h;
 
     return imago;
@@ -55,7 +55,7 @@ Imago* MD2Imago::create(const Object* obj)
     MD2Imago*      imago = new MD2Imago(bot);
 
     imago->flags = Imago::MD2MODEL_BIT;
-    imago->model   = context.requestModel(obj->clazz->imagoModel);
+    imago->model = context.requestModel(obj->clazz->imagoModel);
     imago->h     = bot->h;
 
     return imago;

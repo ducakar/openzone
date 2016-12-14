@@ -51,7 +51,7 @@ void BasicAudio::play(const Object* playAt)
   for (const Object::Event& event : obj->events) {
     OZ_ASSERT(event.id < ObjectClass::MAX_SOUNDS);
 
-    if (event.id >= 0 && sounds[event.id] >= 0) {
+    if (event.id >= 0 && sounds[event.id] != -1) {
       if (event.intensity < 0.0f) {
         playContSound(sounds[event.id], -event.intensity, playAt);
       }
@@ -65,11 +65,11 @@ void BasicAudio::play(const Object* playAt)
   // friction
   const Dynamic* dyn = static_cast<const Dynamic*>(obj);
 
-  if ((obj->flags & Object::DYNAMIC_BIT) && dyn->parent < 0 &&
-      sounds[Object::EVENT_FRICTING] >= 0)
+  if ((obj->flags & Object::DYNAMIC_BIT) && dyn->parent == -1 &&
+      sounds[Object::EVENT_FRICTING] != -1)
   {
     if ((dyn->flags & (Object::FRICTING_BIT | Object::ON_SLICK_BIT)) == Object::FRICTING_BIT &&
-        ((dyn->flags & Object::ON_FLOOR_BIT) || dyn->lower >= 0))
+        ((dyn->flags & Object::ON_FLOOR_BIT) || dyn->lower != -1))
     {
       recent[Object::EVENT_FRICTING] = RECENT_TICKS;
     }

@@ -37,7 +37,7 @@ void WeaponClass::init(const Json& config, const char* name_)
   flags |= Object::WEAPON_BIT | Object::ITEM_BIT | Object::USE_FUNC_BIT | Object::UPDATE_FUNC_BIT |
            Object::STATUS_FUNC_BIT;
 
-  if (audioType >= 0) {
+  if (audioType != -1) {
     const Json& soundsConfig = config["audioSounds"];
 
     const char* sEventShotEmpty = soundsConfig["shotEmpty"].get("");
@@ -48,7 +48,7 @@ void WeaponClass::init(const Json& config, const char* name_)
   }
 
   int dollar = name.index('$');
-  if (dollar < 0) {
+  if (dollar == -1) {
     OZ_ERROR("%s: Weapon name should be of the form botPrefix$weaponName", name_);
   }
 

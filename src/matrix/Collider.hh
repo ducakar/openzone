@@ -30,6 +30,8 @@ namespace oz
 
 struct Material
 {
+  static const int NONE        = 0;      ///< No material.
+
   static const int VOID_BIT    = 0x0080; ///< World bounds, invisible walls preventing you to leave.
   static const int TERRAIN_BIT = 0x0001; ///< Terrain.
   static const int STRUCT_BIT  = 0x0002; ///< Structure.
@@ -42,6 +44,8 @@ struct Material
 
 struct Medium
 {
+  static const int NONE        = 0;      ///< No medium.
+
   static const int LADDER_BIT  = 0x0100; ///< Overlapping with BSP ladder brush.
   static const int AIR_BIT     = 0x0200; ///< Overlapping with BSP air brush.
   static const int WATER_BIT   = 0x0400; ///< Overlapping with BSP water brush or overlapping with
@@ -58,19 +62,19 @@ struct Medium
 
 struct Hit
 {
-  Vec3    normal;
+  Vec3    normal    = Vec3::ZERO;
 
-  Object* obj;
-  Struct* str;
-  Entity* entity;
+  Object* obj       = nullptr;
+  Struct* str       = nullptr;
+  Entity* entity    = nullptr;
 
-  Struct* mediumStr;
+  Struct* mediumStr = nullptr;
 
-  float   ratio;
+  float   ratio     = 1.0f;
 
-  int     material;
-  int     medium;
-  float   depth;
+  int     material  = Material::NONE;
+  int     medium    = Medium::NONE;
+  float   depth     = 0.0f;
 };
 
 class Collider

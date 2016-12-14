@@ -173,7 +173,7 @@ void ObjectClass::init(const Json& config, const char* name_)
 
   deviceType = liber.deviceIndex(config["deviceType"].get(""));
 
-  if (deviceType >= 0 && (flags & Object::USE_FUNC_BIT)) {
+  if (deviceType != -1 && (flags & Object::USE_FUNC_BIT)) {
     OZ_ERROR("%s: Device cannot have onUse handler", name_);
   }
 
@@ -184,10 +184,10 @@ void ObjectClass::init(const Json& config, const char* name_)
   imagoType  = liber.imagoIndex(config["imagoType"].get(""));
   imagoModel = liber.modelIndex(config["imagoModel"].get(""));
 
-  if (imagoType >= 0) {
+  if (imagoType != -1) {
     flags |= Object::IMAGO_BIT;
 
-    if (imagoModel < 0) {
+    if (imagoModel == -1) {
       OZ_ERROR("%s: invalid imagoModel", name_);
     }
   }
@@ -199,7 +199,7 @@ void ObjectClass::init(const Json& config, const char* name_)
   audioType = liber.audioIndex(config["audioType"].get(""));
   Arrays::fill(audioSounds, MAX_SOUNDS, -1);
 
-  if (audioType >= 0) {
+  if (audioType != -1) {
     flags |= Object::AUDIO_BIT;
 
     const Json& soundsConfig = config["audioSounds"];

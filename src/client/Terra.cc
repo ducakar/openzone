@@ -42,7 +42,7 @@ Terra::Terra() :
 
 void Terra::draw()
 {
-  if (id < 0) {
+  if (id == -1) {
     return;
   }
 
@@ -101,7 +101,7 @@ void Terra::draw()
 
 void Terra::drawLiquid()
 {
-  if (id < 0) {
+  if (id == -1) {
     return;
   }
 
@@ -267,24 +267,26 @@ void Terra::unload()
 {
   OZ_NACL_IS_MAIN(true);
 
-  if (id >= 0) {
-    context.releaseTexture(detailTexId);
-    context.releaseTexture(liquidTexId);
-
-    glDeleteTextures(1, &mapTex);
-
-    glDeleteBuffers(1, &ibo);
-    glDeleteBuffers(TILES * TILES, &vbos[0][0]);
-
-    ibo = 0;
-    for (int i = 0; i < TILES; ++i) {
-      for (int j = 0; j < TILES; ++j) {
-        vbos[i][j] = 0;
-      }
-    }
-
-    id = -1;
+  if (id == -1) {
+    return;
   }
+
+  context.releaseTexture(detailTexId);
+  context.releaseTexture(liquidTexId);
+
+  glDeleteTextures(1, &mapTex);
+
+  glDeleteBuffers(1, &ibo);
+  glDeleteBuffers(TILES * TILES, &vbos[0][0]);
+
+  ibo = 0;
+  for (int i = 0; i < TILES; ++i) {
+    for (int j = 0; j < TILES; ++j) {
+      vbos[i][j] = 0;
+    }
+  }
+
+  id = -1;
 }
 
 Terra terra;

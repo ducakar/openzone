@@ -68,7 +68,7 @@ Pool<Struct>  Struct::pool;
 
 bool Entity::trigger()
 {
-  if (clazz->target < 0 || key < 0) {
+  if (clazz->target == -1 || key < 0) {
     return false;
   }
 
@@ -428,10 +428,6 @@ Struct::Struct(const BSP* bsp_, int index_, const Json& json)
   Bounds bb   = toAbsoluteCS(*bsp);
   mins        = bb.mins;
   maxs        = bb.maxs;
-
-  if (index < 0) {
-    OZ_ERROR("Invalid struct index");
-  }
 
   if (bsp->nEntities != 0) {
     entities.resize(bsp->nEntities, true);

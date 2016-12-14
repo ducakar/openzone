@@ -49,7 +49,7 @@ Caelum::Caelum() :
 
 void Caelum::update()
 {
-  if (id < 0) {
+  if (id == -1) {
     return;
   }
 
@@ -78,7 +78,7 @@ void Caelum::update()
 
 void Caelum::draw()
 {
-  if (id < 0) {
+  if (id == -1) {
     return;
   }
 
@@ -187,23 +187,25 @@ void Caelum::load()
 
 void Caelum::unload()
 {
-  if (id >= 0) {
-    glDeleteTextures(6, skyboxTexIds);
-
-    glDeleteTextures(1, &sunTexId);
-    glDeleteTextures(1, &moonTexId);
-
-    sunTexId = 0;
-    moonTexId = 0;
-
-    lightDir      = Vec3(0.0f, 0.0f, 1.0f);
-
-    diffuseColour = Vec4::ONE;
-    ambientColour = Vec4::ONE;
-    caelumColour  = Vec4::ONE;
-
-    id = -1;
+  if (id == -1) {
+    return;
   }
+
+  glDeleteTextures(6, skyboxTexIds);
+
+  glDeleteTextures(1, &sunTexId);
+  glDeleteTextures(1, &moonTexId);
+
+  sunTexId = 0;
+  moonTexId = 0;
+
+  lightDir      = Vec3(0.0f, 0.0f, 1.0f);
+
+  diffuseColour = Vec4::ONE;
+  ambientColour = Vec4::ONE;
+  caelumColour  = Vec4::ONE;
+
+  id = -1;
 }
 
 Caelum caelum;

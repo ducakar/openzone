@@ -38,7 +38,7 @@ void DebugFrame::onDraw()
                     camera.rot.x, camera.rot.y, camera.rot.z, camera.rot.w);
   camPosRot.draw(this);
 
-  if (camera.bot >= 0) {
+  if (camera.bot != -1) {
     const Bot* bot = static_cast<const Bot*>(camera.botObj);
 
     botPosRot.setText("bot.pos(%+.2f %+.2f %+.2f) bot.rot(%+.2f %+.2f)",
@@ -66,7 +66,7 @@ void DebugFrame::onDraw()
     botFlagsState.draw(this);
   }
 
-  if (camera.object >= 0 && (camera.objectObj->flags & Object::DYNAMIC_BIT)) {
+  if (camera.object != -1 && (camera.objectObj->flags & Object::DYNAMIC_BIT)) {
     const Dynamic* dyn = static_cast<const Dynamic*>(camera.objectObj);
 
     tagPos.setText("tagDyn.pos(%+.2f %+.2f %+.2f)", dyn->p.x, dyn->p.y, dyn->p.z);

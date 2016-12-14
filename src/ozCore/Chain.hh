@@ -266,10 +266,10 @@ public:
   int length() const
   {
     int   i = 0;
-    Elem* p = firstElem;
+    Elem* e = firstElem;
 
-    while (p != nullptr) {
-      p = p->next[INDEX];
+    while (e != nullptr) {
+      e = e->next[INDEX];
       ++i;
     }
     return i;
@@ -339,12 +339,12 @@ public:
   {
     OZ_ASSERT(elem != nullptr);
 
-    Elem* p = firstElem;
+    Elem* e = firstElem;
 
-    while (p != nullptr && !(*p == *elem)) {
-      p = p->next[INDEX];
+    while (e != nullptr && !(*e == *elem)) {
+      e = e->next[INDEX];
     }
-    return p != nullptr;
+    return e != nullptr;
   }
 
   /**
@@ -404,10 +404,10 @@ public:
   {
     OZ_ASSERT(firstElem != nullptr);
 
-    Elem* elem = firstElem;
+    Elem* e = firstElem;
 
     firstElem = firstElem->next[INDEX];
-    return elem;
+    return e;
   }
 
   /**
@@ -423,13 +423,13 @@ public:
    */
   void free()
   {
-    Elem* p = firstElem;
+    Elem* e = firstElem;
 
-    while (p != nullptr) {
-      Elem* next = p->next[INDEX];
+    while (e != nullptr) {
+      Elem* next = e->next[INDEX];
 
-      delete p;
-      p = next;
+      delete e;
+      e = next;
     }
 
     firstElem = nullptr;

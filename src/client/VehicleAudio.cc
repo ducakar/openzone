@@ -49,10 +49,9 @@ void VehicleAudio::play(const Object* playAt)
   }
 
   // engine sound
-  if (vehicle->pilot >= 0 && sounds[Vehicle::EVENT_ENGINE] >= 0) {
+  if (vehicle->pilot != -1 && sounds[Vehicle::EVENT_ENGINE] != -1) {
     float pitch = clazz->engine.pitchBias +
-                  min<float>(vehicle->momentum.sqN() * clazz->engine.pitchRatio,
-                             clazz->engine.pitchLimit);
+                  min(vehicle->momentum.sqN() * clazz->engine.pitchRatio, clazz->engine.pitchLimit);
 
     playEngineSound(sounds[Vehicle::EVENT_ENGINE], 1.0f, pitch, playAt);
   }
@@ -61,7 +60,7 @@ void VehicleAudio::play(const Object* playAt)
   for (const Object::Event& event : obj->events) {
     OZ_ASSERT(event.id < ObjectClass::MAX_SOUNDS);
 
-    if (event.id >= 0 && sounds[event.id] >= 0 && recent[event.id] == 0) {
+    if (event.id >= 0 && sounds[event.id] != -1 && recent[event.id] == 0) {
       OZ_ASSERT(0.0f <= event.intensity);
 
       recent[event.id] = RECENT_TICKS;
@@ -79,7 +78,7 @@ void VehicleAudio::play(const Object* playAt)
   }
 
   // pilot
-  if (vehicle->pilot >= 0 && camera.bot == vehicle->pilot) {
+  if (vehicle->pilot != -1 && camera.bot == vehicle->pilot) {
     const Bot* bot = orbis.obj<const Bot>(vehicle->pilot);
 
     if (bot != nullptr && (bot->flags & Object::AUDIO_BIT)) {

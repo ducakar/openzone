@@ -46,15 +46,15 @@ public:
   Mind* prev[1];
   Mind* next[1];
 
-  int   flags;
-  int   side;
-  int   bot;
+  int   flags = 0;
+  int   side  = 0;
+  int   bot   = -1;
 
   static bool hasCollided(const Bot* botObj);
 
 public:
 
-  Mind();
+  Mind() = default;
   explicit Mind(int bot);
   explicit Mind(int bot, Stream* is);
   ~Mind();

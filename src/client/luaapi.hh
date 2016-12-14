@@ -325,7 +325,7 @@ static int ozProfileSetWeaponItem(lua_State* l)
   ARG(1);
 
   int item = l_toint(1);
-  if (item < 0 || profile.clazz == nullptr) {
+  if (item == -1 || profile.clazz == nullptr) {
     profile.weaponItem = -1;
   }
   else {
@@ -355,7 +355,7 @@ static int ozUIBell(lua_State* l)
 {
   ARG(0);
 
-  if (ui::style.sounds.bell >= 0) {
+  if (ui::style.sounds.bell != -1) {
     context.playSample(ui::style.sounds.bell);
   }
   return 0;
