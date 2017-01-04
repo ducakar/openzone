@@ -52,7 +52,7 @@ public:
   ~BSPImago();
 
   BSPImago(const BSPImago&) = delete;
-  BSPImago& operator = (const BSPImago&) = delete;
+  BSPImago& operator=(const BSPImago&) = delete;
 
   Vec3 dim() const
   {

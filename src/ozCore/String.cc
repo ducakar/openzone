@@ -33,43 +33,43 @@ static const int LOCAL_BUFFER_SIZE = 4096;
 
 const String String::EMPTY = String();
 
-char* String::resize(int newCount, bool keepContents)
+char* String::resize(int newSize, bool keepContents)
 {
-  OZ_ASSERT(count >= 0 && newCount >= 0);
-  OZ_ASSERT(!keepContents || newCount > count);
+  OZ_ASSERT(size_ >= 0 && newSize >= 0);
+  OZ_ASSERT(!keepContents || newSize > size_);
 
-  if (newCount < BUFFER_SIZE) {
-    if (count >= BUFFER_SIZE) {
-      delete[] buffer ;
+  if (newSize < BUFFER_SIZE) {
+    if (size_ >= BUFFER_SIZE) {
+      delete[] data_ ;
     }
 
-    count = newCount;
-    return baseBuffer;
+    size_ = newSize;
+    return baseData_;
   }
 
-  if (newCount != count) {
+  if (newSize != size_) {
     char* oldBuffer = begin();
-    char* newBuffer = new char[newCount + 1];
+    char* newBuffer = new char[newSize + 1];
 
     if (keepContents) {
-      memcpy(newBuffer, oldBuffer, min<int>(count, newCount) + 1);
+      memcpy(newBuffer, oldBuffer, min<int>(size_, newSize) + 1);
     }
-    if (count >= BUFFER_SIZE) {
-      delete[] buffer;
+    if (size_ >= BUFFER_SIZE) {
+      delete[] data_;
     }
 
-    buffer = newBuffer;
-    count  = newCount;
+    data_ = newBuffer;
+    size_  = newSize;
   }
 
-  return buffer;
+  return data_;
 }
 
-void String::assign(const char* s, int nChars)
+void String::assign(const char* other, int length)
 {
-  char* begin = resize(nChars, false);
+  char* begin = resize(length, false);
 
-  memcpy(begin, s, count + 1);
+  memcpy(begin, other, length + 1);
 }
 
 int String::index(const char* s, char ch, int start)
@@ -249,12 +249,12 @@ double String::parseDouble(const char* s, const char** end)
   return strtod(s, const_cast<char**>(end));
 }
 
-String::String(const char* s, int nChars)
+String::String(const char* s, int length)
 {
-  char* begin = resize(nChars, false);
+  char* begin = resize(length, false);
 
-  memcpy(begin, s, nChars);
-  begin[count] = '\0';
+  memcpy(begin, s, length);
+  begin[size_] = '\0';
 }
 
 String::String(const char* s, const char* t) :
@@ -278,54 +278,54 @@ String::String(bool b) :
 
 String::String(int i, const char* format)
 {
-  count = snprintf(baseBuffer, BUFFER_SIZE, format, i);
+  size_ = snprintf(baseData_, BUFFER_SIZE, format, i);
 }
 
 String::String(double d, const char* format)
 {
-  count = snprintf(baseBuffer, BUFFER_SIZE, format, d);
+  size_ = snprintf(baseData_, BUFFER_SIZE, format, d);
 }
 
 #pragma GCC diagnostic pop
 
 String::~String()
 {
-  if (count >= BUFFER_SIZE) {
-    delete[] buffer;
+  if (size_ >= BUFFER_SIZE) {
+    delete[] data_;
   }
 }
 
-String::String(const String& s) :
-  String(s.begin(), s.count)
+String::String(const String& other) :
+  String(other.begin(), other.size_)
 {}
 
-String::String(String&& s)
+String::String(String&& other)
 {
-  memcpy(this, &s, sizeof(String));
+  memcpy(this, &other, sizeof(String));
 
-  s.count         = 0;
-  s.baseBuffer[0] = '\0';
+  other.size_         = 0;
+  other.baseData_[0] = '\0';
 }
 
-String& String::operator =(const String& s)
+String& String::operator=(const String& other)
 {
-  if (&s != this) {
-    assign(s, s.count);
+  if (&other != this) {
+    assign(other, other.size_);
   }
   return *this;
 }
 
-String& String::operator =(String&& s)
+String& String::operator=(String&& other)
 {
-  if (&s != this) {
-    if (count >= BUFFER_SIZE) {
-      delete[] buffer;
+  if (&other != this) {
+    if (size_ >= BUFFER_SIZE) {
+      delete[] data_;
     }
 
-    memcpy(this, &s, sizeof(String));
+    memcpy(this, &other, sizeof(String));
 
-    s.count         = 0;
-    s.baseBuffer[0] = '\0';
+    other.size_         = 0;
+    other.baseData_[0] = '\0';
   }
   return *this;
 }
@@ -378,7 +378,7 @@ int String::lastIndex(char ch, int end) const
 
 int String::lastIndex(char ch) const
 {
-  return lastIndex(begin(), ch, count);
+  return lastIndex(begin(), ch, size_);
 }
 
 const char* String::find(char ch, int start) const
@@ -393,7 +393,7 @@ const char* String::findLast(char ch, int end) const
 
 const char* String::findLast(char ch) const
 {
-  return findLast(begin(), ch, count);
+  return findLast(begin(), ch, size_);
 }
 
 bool String::beginsWith(const char* sub) const
@@ -405,11 +405,11 @@ bool String::endsWith(const char* sub) const
 {
   int subLen = length(sub);
 
-  if (subLen > count) {
+  if (subLen > size_) {
     return false;
   }
 
-  const char* end    = begin() + count  - 1;
+  const char* end    = begin() + size_  - 1;
   const char* subEnd = sub    + subLen - 1;
 
   while (subEnd >= sub && *subEnd == *end) {
@@ -434,37 +434,37 @@ double String::parseDouble(const char** end) const
   return parseDouble(begin(), end);
 }
 
-String String::operator +(const String& s) const
+String String::operator+(const String& s) const
 {
-  return String(begin(), count, s.begin(), s.count);
+  return String(begin(), size_, s.begin(), s.size_);
 }
 
-String String::operator +(const char* s) const
+String String::operator+(const char* s) const
 {
-  return String(begin(), count, s, length(s));
+  return String(begin(), size_, s, length(s));
 }
 
-String operator +(const char* s, const String& t)
+String operator+(const char* s, const String& t)
 {
-  return String(s, String::length(s), t.begin(), t.count);
+  return String(s, String::length(s), t.begin(), t.size_);
 }
 
-String& String::operator +=(const String& s)
+String& String::operator+=(const String& s)
 {
-  int oCount = count;
+  int oCount = size_;
 
-  resize(count + s.count, true);
-  memcpy(begin() + oCount, s.begin(), s.count + 1);
+  resize(size_ + s.size_, true);
+  memcpy(begin() + oCount, s.begin(), s.size_ + 1);
 
   return *this;
 }
 
-String& String::operator +=(const char* s)
+String& String::operator+=(const char* s)
 {
-  int oCount  = count;
+  int oCount  = size_;
   int sLength = length(s);
 
-  resize(count + sLength, true);
+  resize(size_ + sLength, true);
   memcpy(begin() + oCount, s, sLength + 1);
 
   return *this;
@@ -472,14 +472,14 @@ String& String::operator +=(const char* s)
 
 String String::substring(int start) const
 {
-  OZ_ASSERT(0 <= start && start <= count);
+  OZ_ASSERT(0 <= start && start <= size_);
 
-  return String(begin() + start, count - start);
+  return String(begin() + start, size_ - start);
 }
 
 String String::substring(int start, int end) const
 {
-  OZ_ASSERT(0 <= start && start <= count && start <= end && end <= count);
+  OZ_ASSERT(0 <= start && start <= size_ && start <= end && end <= size_);
 
   return String(begin() + start, end - start);
 }
@@ -487,7 +487,7 @@ String String::substring(int start, int end) const
 String String::trim() const
 {
   const char* start = begin();
-  const char* end   = start + count;
+  const char* end   = start + size_;
 
   while (start < end && isBlank(*start)) {
     ++start;
@@ -504,12 +504,12 @@ String String::replace(char whatChar, char withChar) const
   String r;
 
   const char* oStart = begin();
-  char*       rStart = r.resize(count, false);
+  char*       rStart = r.resize(size_, false);
 
-  for (int i = 0; i < count; ++i) {
+  for (int i = 0; i < size_; ++i) {
     rStart[i] = oStart[i] == whatChar ? withChar : oStart[i];
   }
-  rStart[count] = '\0';
+  rStart[size_] = '\0';
 
   return r;
 }

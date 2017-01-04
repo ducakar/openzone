@@ -50,9 +50,9 @@ private:
   {
   protected:
 
-    using detail::IteratorBase<Elem>::elem;
+    using detail::IteratorBase<Elem>::elem_;
 
-    Elem* past = nullptr; ///< Pointer that points just past the last element.
+    Elem* past_ = nullptr; ///< Pointer that points just past the last element.
 
   public:
 
@@ -65,11 +65,11 @@ private:
      * Array iterator.
      *
      * @param first first array element.
-     * @param past_ successor of the last element.
+     * @param past successor of the last element.
      */
     OZ_ALWAYS_INLINE
-    explicit ArrayIterator(Elem* first, Elem* past_) :
-      detail::IteratorBase<Elem>(first), past(past_)
+    explicit ArrayIterator(Elem* first, Elem* past) :
+      detail::IteratorBase<Elem>(first), past_(past)
     {}
 
     /**
@@ -78,18 +78,18 @@ private:
     OZ_ALWAYS_INLINE
     bool isValid() const
     {
-      return elem != past;
+      return elem_ != past_;
     }
 
     /**
      * Advance to the next element.
      */
     OZ_ALWAYS_INLINE
-    ArrayIterator& operator ++()
+    ArrayIterator& operator++()
     {
-      OZ_ASSERT(elem != past);
+      OZ_ASSERT(elem_ != past_);
 
-      ++elem;
+      ++elem_;
       return *this;
     }
 
@@ -99,7 +99,7 @@ private:
     OZ_ALWAYS_INLINE
     Elem* begin() const
     {
-      return elem;
+      return elem_;
     }
 
     /**
@@ -108,7 +108,7 @@ private:
     OZ_ALWAYS_INLINE
     Elem* end() const
     {
-      return past;
+      return past_;
     }
 
   };
@@ -133,7 +133,7 @@ private:
    * Helper function for `sort()`.
    *
    * @note
-   * `Elem` type must have `operator <(const Elem&)` defined.
+   * `Elem` type must have `operator<(const Elem&)` defined.
    *
    * Quicksort algorithm is used which takes last element in a partition as a pivot so sorting a
    * sorted or nearly sorted array will take O(n^2) time instead of O(n log n) as in average case.
@@ -199,9 +199,9 @@ public:
    * True iff respective elements are equal.
    */
   template <typename Elem>
-  static bool equals(const Elem* arrayA, int count, const Elem* arrayB)
+  static bool equals(const Elem* arrayA, int size, const Elem* arrayB)
   {
-    const Elem* endA = arrayA + count;
+    const Elem* endA = arrayA + size;
 
     while (arrayA < endA) {
       if (!(*arrayA++ == *arrayB++)) {
@@ -214,21 +214,21 @@ public:
   /**
    * Length of a static array.
    */
-  template <typename Elem, int COUNT>
+  template <typename Elem, int SIZE>
   OZ_ALWAYS_INLINE
-  static constexpr int length(const Elem (&)[COUNT])
+  static constexpr int size(const Elem (&)[SIZE])
   {
-    return COUNT;
+    return SIZE;
   }
 
   /**
    * Index of the first occurrence of the value or -1 if not found.
    */
   template <typename Elem, typename Value>
-  static int index(const Elem* array, int count, const Value& value)
+  static int index(const Elem* array, int size, const Value& value)
   {
     const Elem* begin = array;
-    const Elem* end   = array + count;
+    const Elem* end   = array + size;
 
     for (; begin < end; ++begin) {
       if (*begin == value) {
@@ -242,9 +242,9 @@ public:
    * Index of the last occurrence of the value or -1 if not found.
    */
   template <typename Elem, typename Value>
-  static int lastIndex(const Elem* array, int count, const Value& value)
+  static int lastIndex(const Elem* array, int size, const Value& value)
   {
-    const Elem* end = array + count - 1;
+    const Elem* end = array + size - 1;
 
     for (; end >= array; --end) {
       if (*end == value) {
@@ -258,9 +258,9 @@ public:
    * True iff a given value is found in an array.
    */
   template <typename Elem, typename Value>
-  static bool contains(const Elem* array, int count, const Value& value)
+  static bool contains(const Elem* array, int size, const Value& value)
   {
-    const Elem* end = array + count;
+    const Elem* end = array + size;
 
     for (; array < end; ++array) {
       if (*array == value) {
@@ -274,9 +274,9 @@ public:
    * Copy array elements from the first to the last.
    */
   template <typename Elem>
-  static void copy(const Elem* srcArray, int count, Elem* destArray)
+  static void copy(const Elem* srcArray, int size, Elem* destArray)
   {
-    const Elem* srcEnd = srcArray + count;
+    const Elem* srcEnd = srcArray + size;
 
     while (srcArray < srcEnd) {
       *destArray++ = *srcArray++;
@@ -287,10 +287,10 @@ public:
    * Move array elements from the last to the first.
    */
   template <typename Elem>
-  static void copyBackward(const Elem* srcArray, int count, Elem* destArray)
+  static void copyBackward(const Elem* srcArray, int size, Elem* destArray)
   {
-    const Elem* srcEnd  = srcArray + count;
-    Elem*       destEnd = destArray + count;
+    const Elem* srcEnd  = srcArray + size;
+    Elem*       destEnd = destArray + size;
 
     while (srcEnd > srcArray) {
       *--destEnd = *--srcEnd;
@@ -301,9 +301,9 @@ public:
    * Move array elements from the first to the last.
    */
   template <typename Elem>
-  static void move(Elem* srcArray, int count, Elem* destArray)
+  static void move(Elem* srcArray, int size, Elem* destArray)
   {
-    const Elem* srcEnd = srcArray + count;
+    const Elem* srcEnd = srcArray + size;
 
     while (srcArray < srcEnd) {
       *destArray++ = static_cast<Elem&&>(*srcArray++);
@@ -314,10 +314,10 @@ public:
    * Move array elements from the last to the first.
    */
   template <typename Elem>
-  static void moveBackward(Elem* srcArray, int count, Elem* destArray)
+  static void moveBackward(Elem* srcArray, int size, Elem* destArray)
   {
-    Elem* srcEnd  = srcArray + count;
-    Elem* destEnd = destArray + count;
+    Elem* srcEnd  = srcArray + size;
+    Elem* destEnd = destArray + size;
 
     while (srcEnd > srcArray) {
       *--destEnd = static_cast<Elem&&>(*--srcEnd);
@@ -328,9 +328,9 @@ public:
    * Assign array elements to a given value.
    */
   template <typename Elem, typename Value>
-  static void fill(Elem* array, int count, const Value& value)
+  static void fill(Elem* array, int size, const Value& value)
   {
-    const Elem* end = array + count;
+    const Elem* end = array + size;
 
     while (array < end) {
       *array++ = value;
@@ -341,9 +341,9 @@ public:
    * Assign each array element to the default value.
    */
   template <typename Elem>
-  static void clear(Elem* array, int count)
+  static void clear(Elem* array, int size)
   {
-    const Elem* end = array + count;
+    const Elem* end = array + size;
 
     while (array < end) {
       *array++ = Elem();
@@ -356,9 +356,9 @@ public:
    * Array elements must be pointers.
    */
   template <typename Elem>
-  static void free(Elem* array, int count)
+  static void free(Elem* array, int size)
   {
-    const Elem* end = array + count;
+    const Elem* end = array + size;
 
     while (array < end) {
       delete *array;
@@ -370,10 +370,10 @@ public:
    * Reverse the order of array elements.
    */
   template <typename Elem>
-  static void reverse(Elem* array, int count)
+  static void reverse(Elem* array, int size)
   {
     Elem* bottom = array;
-    Elem* top    = array + count - 1;
+    Elem* top    = array + size - 1;
 
     while (bottom < top) {
       swap<Elem>(*bottom++, *top--);
@@ -384,9 +384,9 @@ public:
    * Sort array using `detail::quicksort()`.
    */
   template <typename Elem, class LessFunc = Less<Elem>>
-  static void sort(Elem* array, int count)
+  static void sort(Elem* array, int size)
   {
-    int last = count - 1;
+    int last = size - 1;
 
     if (last > 0) {
       quicksort<Elem, LessFunc>(array, &array[last]);
@@ -397,20 +397,20 @@ public:
    * Find index in a sorted array such that `array[index - 1] < key && key <= array[index]`.
    *
    * @note
-   * `Elem` type must have `bool operator <(const Elem&, const Key&) const` defined.
+   * `Elem` type must have `bool operator<(const Elem&, const Key&) const` defined.
    *
    * If all elements are lesser return `count` and if all elements are greater return 0.
    *
    * @param array array of elements.
-   * @param count number of elements.
+   * @param size number of elements.
    * @param key the key we are looking for.
    * @return Index of the first element >= `key`, `count` otherwise.
    */
   template <typename Elem, typename Key, class LessFunc = Less<Elem>>
-  static int bisection(const Elem* array, int count, const Key& key)
+  static int bisection(const Elem* array, int size, const Key& key)
   {
     int a = -1;
-    int b = count;
+    int b = size;
 
     // The algorithm ensures that (a == -1 or array[a] <= key) and (b == count or key < array[b]),
     // so the key may only lie on position a or nowhere.
@@ -437,13 +437,13 @@ public:
    * @return Newly allocated array.
    */
   template <typename Elem>
-  static Elem* reallocate(Elem* array, int count, int newCount)
+  static Elem* reallocate(Elem* array, int size, int newCount)
   {
     Elem* newArray = nullptr;
 
     if (newCount != 0) {
       newArray = new Elem[newCount] {};
-      move<Elem>(array, min<int>(count, newCount), newArray);
+      move<Elem>(array, min<int>(size, newCount), newArray);
     }
     delete[] array;
 
@@ -457,9 +457,9 @@ public:
  */
 template <typename Elem>
 OZ_ALWAYS_INLINE
-inline Arrays::CIterator<Elem> citerator(const Elem* array, int count)
+inline Arrays::CIterator<Elem> citerator(const Elem* array, int size)
 {
-  return Arrays::CIterator<Elem>(array, array + count);
+  return Arrays::CIterator<Elem>(array, array + size);
 }
 
 /**
@@ -467,29 +467,29 @@ inline Arrays::CIterator<Elem> citerator(const Elem* array, int count)
  */
 template <typename Elem>
 OZ_ALWAYS_INLINE
-inline Arrays::Iterator<Elem> iterator(Elem* array, int count)
+inline Arrays::Iterator<Elem> iterator(Elem* array, int size)
 {
-  return Arrays::Iterator<Elem>(array, array + count);
+  return Arrays::Iterator<Elem>(array, array + size);
 }
 
 /**
  * Create static array iterator with element constant access.
  */
-template <typename Elem, int COUNT>
+template <typename Elem, int SIZE>
 OZ_ALWAYS_INLINE
-inline Arrays::CIterator<Elem> citerator(const Elem (& array)[COUNT])
+inline Arrays::CIterator<Elem> citerator(const Elem (& array)[SIZE])
 {
-  return Arrays::CIterator<Elem>(array, array + COUNT);
+  return Arrays::CIterator<Elem>(array, array + SIZE);
 }
 
 /**
  * Create static array iterator with non-constant element access.
  */
-template <typename Elem, int COUNT>
+template <typename Elem, int SIZE>
 OZ_ALWAYS_INLINE
-inline Arrays::Iterator<Elem> iterator(Elem (& array)[COUNT])
+inline Arrays::Iterator<Elem> iterator(Elem (& array)[SIZE])
 {
-  return Arrays::Iterator<Elem>(array, array + COUNT);
+  return Arrays::Iterator<Elem>(array, array + SIZE);
 }
 
 /**
@@ -497,9 +497,9 @@ inline Arrays::Iterator<Elem> iterator(Elem (& array)[COUNT])
  */
 template <typename Elem>
 OZ_ALWAYS_INLINE
-inline Arrays::CIterator<Elem> citerator(InitialiserList<Elem> l)
+inline Arrays::CIterator<Elem> citerator(InitialiserList<Elem> li)
 {
-  return Arrays::CIterator<Elem>(l.begin(), l.begin() + l.size());
+  return Arrays::CIterator<Elem>(li.begin(), li.begin() + li.size());
 }
 
 }

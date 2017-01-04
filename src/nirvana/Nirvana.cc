@@ -109,8 +109,8 @@ void Nirvana::write(Stream* os) const
 {
   luaNirvana.write(os);
 
-  os->writeInt(devices.length());
-  os->writeInt(minds.length());
+  os->writeInt(devices.size());
+  os->writeInt(minds.size());
 
   for (const auto& device : devices) {
     os->writeInt(device.key);

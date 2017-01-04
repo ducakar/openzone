@@ -148,7 +148,7 @@ public:
    * Translated `Bounds`.
    */
   OZ_ALWAYS_INLINE
-  Bounds operator + (const Vec3& v) const
+  Bounds operator+(const Vec3& v) const
   {
     return Bounds(mins + v, maxs + v);
   }
@@ -157,7 +157,7 @@ public:
    * Translated `Bounds`.
    */
   OZ_ALWAYS_INLINE
-  Bounds operator - (const Vec3& v) const
+  Bounds operator-(const Vec3& v) const
   {
     return Bounds(mins - v, maxs - v);
   }
@@ -166,7 +166,7 @@ public:
    * `Bounds` that covers union of two `Bounds`.
    */
   OZ_ALWAYS_INLINE
-  Bounds operator | (const Bounds& b) const
+  Bounds operator|(const Bounds& b) const
   {
     return Bounds(min(mins, b.mins), max(maxs, b.maxs));
   }
@@ -175,7 +175,7 @@ public:
    * Translate `Bounds`.
    */
   OZ_ALWAYS_INLINE
-  Bounds& operator += (const Vec3& v)
+  Bounds& operator+=(const Vec3& v)
   {
     mins += v;
     maxs += v;
@@ -186,7 +186,7 @@ public:
    * Translate `Bounds`.
    */
   OZ_ALWAYS_INLINE
-  Bounds& operator -= (const Vec3& v)
+  Bounds& operator-=(const Vec3& v)
   {
     mins -= v;
     maxs -= v;
@@ -197,7 +197,7 @@ public:
    * Extend `Bounds` to cover union of both `Bounds`.
    */
   OZ_ALWAYS_INLINE
-  Bounds& operator |= (const Bounds& b)
+  Bounds& operator|=(const Bounds& b)
   {
     mins = min(mins, b.mins);
     maxs = max(maxs, b.maxs);

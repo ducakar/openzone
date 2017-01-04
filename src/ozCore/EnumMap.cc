@@ -32,12 +32,12 @@ namespace detail
 
 int EnumMapImpl::defaultValue() const
 {
-  return entries[0].key;
+  return entries_[0].key;
 }
 
-int EnumMapImpl::operator [](const char* name) const
+int EnumMapImpl::operator[](const char* name) const
 {
-  for (const Pair& pair : entries) {
+  for (const Pair& pair : entries_) {
     if (String::equals(pair.value, name)) {
       return pair.key;
     }
@@ -47,22 +47,22 @@ int EnumMapImpl::operator [](const char* name) const
 }
 
 EnumMapImpl::EnumMapImpl(InitialiserList<Pair> l) :
-  entries(l)
+  entries_(l)
 {}
 
 const char* EnumMapImpl::defaultName() const
 {
-  return entries[0].value;
+  return entries_[0].value;
 }
 
 bool EnumMapImpl::has(int value) const
 {
-  return entries.contains<int>(value);
+  return entries_.contains<int>(value);
 }
 
 bool EnumMapImpl::has(const char* name) const
 {
-  for (const Pair& pair : entries) {
+  for (const Pair& pair : entries_) {
     if (String::equals(pair.value, name)) {
       return true;
     }
@@ -70,9 +70,9 @@ bool EnumMapImpl::has(const char* name) const
   return false;
 }
 
-const char* EnumMapImpl::operator [](int value) const
+const char* EnumMapImpl::operator[](int value) const
 {
-  const char* const* name = entries.find(value);
+  const char* const* name = entries_.find(value);
 
   if (name == nullptr) {
     OZ_ERROR("oz::EnumMap: Invalid value %d", value);

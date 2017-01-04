@@ -80,7 +80,7 @@ void Context::buildTexture(const File& basePath, const File& destBasePath, bool 
 
   File diffuse, masks, specular, emission, normals;
 
-  for (int i = 0; i < Arrays::length(IMAGE_EXTENSIONS); ++i) {
+  for (int i = 0; i < Arrays::size(IMAGE_EXTENSIONS); ++i) {
     if (diffuse.isEmpty() || !diffuse.exists()) {
       diffuse = diffuseBasePath + IMAGE_EXTENSIONS[i];
     }

@@ -97,7 +97,7 @@ struct AL::Decoder::WaveStream : AL::Decoder::StreamBase
     is = file.read(Endian::LITTLE);
 
     if (is.available() < 44) {
-      OZ_ERROR("oz::AL::Decoder: Failed to open WAVE file '%s'", file.c());
+      OZ_ERROR("oz::AL::Decoder: Failed to open WAVE file `%s'", file.c());
     }
 
     is.seek(22);
@@ -116,14 +116,14 @@ struct AL::Decoder::WaveStream : AL::Decoder::StreamBase
     int size = is.readInt();
 
     if ((nChannels != 1 && nChannels != 2) || (sampleSize != 1 && sampleSize != 2)) {
-      OZ_ERROR("oz::AL::Decoder: Only mono and stereo, 8-bit and 16-bit WAVE PCM supported '%s'",
+      OZ_ERROR("oz::AL::Decoder: Only mono and stereo, 8-bit and 16-bit WAVE PCM supported `%s'",
                file.c());
     }
 
-    decoder->format   = nChannels == 2 ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_MONO_FLOAT32;
-    decoder->rate     = rate;
-    decoder->capacity = size / sampleSize;
-    decoder->samples  = new float[decoder->capacity];
+    decoder->format_   = nChannels == 2 ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_MONO_FLOAT32;
+    decoder->rate_     = rate;
+    decoder->capacity_ = size / sampleSize;
+    decoder->samples_  = new float[decoder->capacity_];
   }
 
   OZ_INTERNAL
@@ -132,12 +132,12 @@ struct AL::Decoder::WaveStream : AL::Decoder::StreamBase
 
 bool AL::Decoder::WaveStream::decode(AL::Decoder* decoder)
 {
-  if (decoder->count != 0) {
+  if (decoder->size_ != 0) {
     return false;
   }
 
-  float* begin      = decoder->samples;
-  float* end        = decoder->samples + decoder->capacity;
+  float* begin      = decoder->samples_;
+  float* end        = decoder->samples_ + decoder->capacity_;
   float* alignedEnd = begin + Alloc::alignDown<ptrdiff_t>(end - begin, 4);
 
   if (sampleSize == 1) {
@@ -184,7 +184,7 @@ bool AL::Decoder::WaveStream::decode(AL::Decoder* decoder)
     }
   }
 
-  decoder->count = decoder->capacity;
+  decoder->size_ = decoder->capacity_;
   return true;
 }
 
@@ -202,20 +202,20 @@ struct AL::Decoder::OpusStream : AL::Decoder::StreamBase
   {
     is = file.read();
     if (is.available() == 0) {
-      OZ_ERROR("oz::AL::Decoder: Failed to open Opus file '%s'", file.c());
+      OZ_ERROR("oz::AL::Decoder: Failed to open Opus file `%s'", file.c());
     }
 
     int error;
     opFile = op_open_memory(reinterpret_cast<const ubyte*>(is.begin()), is.available(), &error);
     if (error != 0) {
-      OZ_ERROR("oz::AL::Decoder: Invalid Opus file '%s'", file.c());
+      OZ_ERROR("oz::AL::Decoder: Invalid Opus file `%s'", file.c());
     }
 
     int nChannels = op_channel_count(opFile, -1);
     int nSamples  = int(op_pcm_total(opFile, -1));
 
     if (nChannels != 1 && nChannels != 2) {
-      OZ_ERROR("oz::AL::Decoder: Only mono and stereo Opus supported '%s'", file.c());
+      OZ_ERROR("oz::AL::Decoder: Only mono and stereo Opus supported `%s'", file.c());
     }
 
     decoder->format   = nChannels == 2 ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_MONO_FLOAT32;
@@ -278,12 +278,12 @@ struct AL::Decoder::VorbisStream : AL::Decoder::StreamBase
   {
     is = file.read();
     if (is.available() == 0) {
-      OZ_ERROR("oz::AL::Decoder: Failed to open Vorbis file '%s'", file.c());
+      OZ_ERROR("oz::AL::Decoder: Failed to open Vorbis file `%s'", file.c());
     }
 
     int error = ov_open_callbacks(&is, &ovFile, nullptr, 0, VORBIS_CALLBACKS);
     if (error != 0) {
-      OZ_ERROR("oz::AL::Decoder: Invalid Vorbis file '%s'", file.c());
+      OZ_ERROR("oz::AL::Decoder: Invalid Vorbis file `%s'", file.c());
     }
 
     vorbis_info* ovInfo = ov_info(&ovFile, -1);
@@ -294,13 +294,13 @@ struct AL::Decoder::VorbisStream : AL::Decoder::StreamBase
     int nSamples  = int(ov_pcm_total(&ovFile, -1));
 
     if (nChannels != 1 && nChannels != 2) {
-      OZ_ERROR("oz::AL::Decoder: Only mono and stereo Vorbis supported '%s'", file.c());
+      OZ_ERROR("oz::AL::Decoder: Only mono and stereo Vorbis supported `%s'", file.c());
     }
 
-    decoder->format   = nChannels == 2 ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_MONO_FLOAT32;
-    decoder->rate     = rate;
-    decoder->capacity = isStreaming ? frameSize * nChannels : nSamples * nChannels;
-    decoder->samples  = new float[decoder->capacity];
+    decoder->format_   = nChannels == 2 ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_MONO_FLOAT32;
+    decoder->rate_     = rate;
+    decoder->capacity_ = isStreaming ? frameSize * nChannels : nSamples * nChannels;
+    decoder->samples_  = new float[decoder->capacity_];
   }
 
   OZ_INTERNAL
@@ -317,23 +317,20 @@ AL::Decoder::VorbisStream::~VorbisStream()
 
 bool AL::Decoder::VorbisStream::decode(AL::Decoder* decoder)
 {
-  int stereo = decoder->format == AL_FORMAT_STEREO_FLOAT32;
+  int stereo = decoder->format_ == AL_FORMAT_STEREO_FLOAT32;
 
-  decoder->count = 0;
+  decoder->size_ = 0;
 
   do {
     float** samples;
-    long    result;
     int     section;
-
-    result = ov_read_float(&ovFile, &samples, (decoder->capacity - decoder->count) >> stereo,
-                           &section);
-
+    long    result = ov_read_float(&ovFile, &samples,
+                                   (decoder->capacity_ - decoder->size_) >> stereo, &section);
     if (result <= 0) {
-      return decoder->count != 0;
+      return decoder->size_ != 0;
     }
 
-    float* output = &decoder->samples[decoder->count];
+    float* output = &decoder->samples_[decoder->size_];
 
     if (stereo != 0) {
       for (long i = 0; i < result; ++i) {
@@ -346,22 +343,22 @@ bool AL::Decoder::VorbisStream::decode(AL::Decoder* decoder)
       memcpy(output, samples[0], result * sizeof(float));
     }
 
-    decoder->count += result;
+    decoder->size_ += result;
   }
-  while (decoder->count != decoder->capacity);
+  while (decoder->size_ != decoder->capacity_);
 
   return true;
 }
 
 AL::Decoder::Decoder() :
-  samples(nullptr), count(0), capacity(0), format(0), rate(0), stream(nullptr)
+  samples_(nullptr), size_(0), capacity_(0), format_(0), rate_(0), stream_(nullptr)
 {}
 
 AL::Decoder::Decoder(const File& file, bool isStreaming) :
-  samples(nullptr), count(0), capacity(0), format(0), rate(0), stream(nullptr)
+  samples_(nullptr), size_(0), capacity_(0), format_(0), rate_(0), stream_(nullptr)
 {
   if (file.hasExtension("wav")) {
-    stream = new WaveStream(this, file);
+    stream_ = new WaveStream(this, file);
   }
 #ifdef OZ_OPUS
   else if (file.hasExtension("opus")) {
@@ -369,66 +366,66 @@ AL::Decoder::Decoder(const File& file, bool isStreaming) :
   }
 #endif
   else if (file.hasExtension("oga") || file.hasExtension("ogg")) {
-    stream = new VorbisStream(this, file, isStreaming);
+    stream_ = new VorbisStream(this, file, isStreaming);
   }
   else {
-    OZ_ERROR("oz::AL::Decoder: Unknown file type '%s'", file.c());
+    OZ_ERROR("oz::AL::Decoder: Unknown file extension `%s'", file.c());
   }
 }
 
 AL::Decoder::~Decoder()
 {
-  delete[] samples;
-  delete stream;
+  delete[] samples_;
+  delete stream_;
 }
 
-AL::Decoder::Decoder(Decoder&& d) :
-  samples(d.samples), count(d.count), capacity(d.capacity), format(d.format), rate(d.rate),
-  stream(d.stream)
+AL::Decoder::Decoder(Decoder&& other) :
+  samples_(other.samples_), size_(other.size_), capacity_(other.capacity_), format_(other.format_),
+  rate_(other.rate_), stream_(other.stream_)
 {
-  d.samples  = nullptr;
-  d.count    = 0;
-  d.capacity = 0;
-  d.format   = 0;
-  d.rate     = 0;
-  d.stream   = nullptr;
+  other.samples_  = nullptr;
+  other.size_     = 0;
+  other.capacity_ = 0;
+  other.format_   = 0;
+  other.rate_     = 0;
+  other.stream_   = nullptr;
 }
 
-AL::Decoder& AL::Decoder::operator = (AL::Decoder&& d)
+AL::Decoder& AL::Decoder::operator=(AL::Decoder&& other)
 {
-  if (&d != this) {
-    delete[] samples;
-    delete stream;
+  if (&other != this) {
+    delete[] samples_;
+    delete stream_;
 
-    samples  = d.samples;
-    count    = d.count;
-    capacity = d.capacity;
-    format   = d.format;
-    rate     = d.rate;
-    stream   = d.stream;
+    samples_  = other.samples_;
+    size_     = other.size_;
+    capacity_ = other.capacity_;
+    format_   = other.format_;
+    rate_     = other.rate_;
+    stream_   = other.stream_;
 
-    d.samples  = nullptr;
-    d.count    = 0;
-    d.capacity = 0;
-    d.format   = 0;
-    d.rate     = 0;
-    d.stream   = nullptr;
+    other.samples_  = nullptr;
+    other.size_     = 0;
+    other.capacity_ = 0;
+    other.format_   = 0;
+    other.rate_     = 0;
+    other.stream_   = nullptr;
   }
   return *this;
 }
 
 bool AL::Decoder::decode()
 {
-  if (stream != nullptr && !stream->decode(this)) {
-    delete stream;
-    stream = nullptr;
+  if (stream_ != nullptr && !stream_->decode(this)) {
+    delete stream_;
+    stream_ = nullptr;
   }
-  return stream != nullptr;
+  return stream_ != nullptr;
 }
 
 void AL::Decoder::load(ALuint buffer) const
 {
-  alBufferData(buffer, format, samples, count * sizeof(float), rate);
+  alBufferData(buffer, format_, samples_, size_ * sizeof(float), rate_);
 }
 
 void AL::checkError(const char* function, const char* file, int line)
@@ -466,7 +463,7 @@ void AL::checkError(const char* function, const char* file, int line)
     }
   }
 
-  System::error(function, file, line, 1, "AL error '%s'", message);
+  System::error(function, file, line, 1, "AL error `%s'", message);
 }
 
 bool AL::bufferDataFromFile(ALuint bufferId, const File& file)

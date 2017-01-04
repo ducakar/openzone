@@ -57,8 +57,8 @@ public:
 
 protected:
 
-  using List<Elem>::data;
-  using List<Elem>::count;
+  using List<Elem>::data_;
+  using List<Elem>::size_;
   using List<Elem>::ensureCapacity;
 
   /**
@@ -69,21 +69,21 @@ protected:
   template <typename Elem_>
   Elem& insert(Elem_&& elem, bool overwrite)
   {
-    int i = Arrays::bisection<Elem, Elem_, LessFunc>(data, count, elem);
+    int i = Arrays::bisection<Elem, Elem_, LessFunc>(data_, size_, elem);
 
-    if (i != count && data[i] == elem) {
+    if (i != size_ && data_[i] == elem) {
       if (overwrite) {
-        data[i] = static_cast<Elem_&&>(elem);
+        data_[i] = static_cast<Elem_&&>(elem);
       }
     }
     else {
-      ensureCapacity(count + 1);
+      ensureCapacity(size_ + 1);
 
-      Arrays::moveBackward<Elem>(data + i, count - i, data + i + 1);
-      data[i] = static_cast<Elem_&&>(elem);
-      ++count;
+      Arrays::moveBackward<Elem>(data_ + i, size_ - i, data_ + i + 1);
+      data_[i] = static_cast<Elem_&&>(elem);
+      ++size_;
     }
-    return data[i];
+    return data_[i];
   }
 
 public:
@@ -92,10 +92,10 @@ public:
   using List<Elem>::iterator;
   using List<Elem>::begin;
   using List<Elem>::end;
-  using List<Elem>::length;
+  using List<Elem>::size;
   using List<Elem>::isEmpty;
   using List<Elem>::capacity;
-  using List<Elem>::operator [];
+  using List<Elem>::operator[];
   using List<Elem>::first;
   using List<Elem>::last;
   using List<Elem>::erase;
@@ -111,8 +111,8 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  Set(InitialiserList<Elem> l) :
-    List<Elem>(l)
+  Set(InitialiserList<Elem> il) :
+    List<Elem>(il)
   {
     List<Elem>::template sort<LessFunc>();
   }
@@ -120,33 +120,33 @@ public:
   /**
    * Copy constructor, copies elements.
    */
-  Set(const Set& s) = default;
+  Set(const Set& other) = default;
 
   /**
    * Move constructor, moves element storage.
    */
-  Set(Set&& s) = default;
+  Set(Set&& other) = default;
 
   /**
    * Copy operator, copies elements.
    *
    * Existing storage is reused if it suffices.
    */
-  Set& operator =(const Set& s) = default;
+  Set& operator=(const Set& other) = default;
 
   /**
    * Move operator, moves element storage.
    */
-  Set& operator =(Set&& s) = default;
+  Set& operator=(Set&& other) = default;
 
   /**
    * Assign from an initialiser list.
    *
    * Existing storage is reused if it suffices.
    */
-  Set& operator =(InitialiserList<Elem> l)
+  Set& operator=(InitialiserList<Elem> il)
   {
-    List<Elem>::operator =(l);
+    List<Elem>::operator=(il);
     List<Elem>::template sort<LessFunc>();
 
     return *this;
@@ -155,17 +155,17 @@ public:
   /**
    * True iff respective elements are equal.
    */
-  bool operator ==(const Set& s) const
+  bool operator==(const Set& other) const
   {
-    return List<Elem>::operator ==(s);
+    return List<Elem>::operator==(other);
   }
 
   /**
    * False iff respective elements are equal.
    */
-  bool operator !=(const Set& s) const
+  bool operator!=(const Set& other) const
   {
-    return List<Elem>::operator !=(s);
+    return List<Elem>::operator!=(other);
   }
 
   /**
@@ -183,8 +183,8 @@ public:
   template <typename Key>
   int index(const Key& key) const
   {
-    int i = Arrays::bisection<Elem, Key, LessFunc>(data, count, key);
-    return i == count || !(data[i] == key) ? -1 : i;
+    int i = Arrays::bisection<Elem, Key, LessFunc>(data_, size_, key);
+    return i == size_ || !(data_[i] == key) ? -1 : i;
   }
 
   /**
@@ -217,9 +217,9 @@ public:
   template <typename Key>
   int exclude(const Key& key)
   {
-    int i = Arrays::bisection<Elem, Key, LessFunc>(data, count, key);
+    int i = Arrays::bisection<Elem, Key, LessFunc>(data_, size_, key);
 
-    if (i != count && data[i] == key) {
+    if (i != size_ && data_[i] == key) {
       erase(i);
       return i;
     }

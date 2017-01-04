@@ -46,51 +46,51 @@ struct Mutex::Descriptor
 
 Mutex::Mutex()
 {
-  descriptor = new(malloc(sizeof(Descriptor))) Descriptor;
-  if (descriptor == nullptr) {
+  descriptor_ = new(malloc(sizeof(Descriptor))) Descriptor;
+  if (descriptor_ == nullptr) {
     OZ_ERROR("oz::Mutex: Descriptor initialisation failed");
   }
 
 #ifdef _WIN32
-  descriptor->mutex = CreateMutex(nullptr, false, nullptr);
+  descriptor_->mutex = CreateMutex(nullptr, false, nullptr);
 #endif
 }
 
 Mutex::~Mutex()
 {
 #ifdef _WIN32
-  CloseHandle(descriptor->mutex);
+  CloseHandle(descriptor_->mutex);
 #else
-  pthread_mutex_destroy(&descriptor->mutex);
+  pthread_mutex_destroy(&descriptor_->mutex);
 #endif
 
-  free(descriptor);
+  free(descriptor_);
 }
 
 void Mutex::lock() const
 {
 #ifdef _WIN32
-  WaitForSingleObject(descriptor->mutex, INFINITE);
+  WaitForSingleObject(descriptor_->mutex, INFINITE);
 #else
-  pthread_mutex_lock(&descriptor->mutex);
+  pthread_mutex_lock(&descriptor_->mutex);
 #endif
 }
 
 bool Mutex::tryLock() const
 {
 #ifdef _WIN32
-  return WaitForSingleObject(descriptor->mutex, 0) == WAIT_OBJECT_0;
+  return WaitForSingleObject(descriptor_->mutex, 0) == WAIT_OBJECT_0;
 #else
-  return pthread_mutex_trylock(&descriptor->mutex) == 0;
+  return pthread_mutex_trylock(&descriptor_->mutex) == 0;
 #endif
 }
 
 void Mutex::unlock() const
 {
 #ifdef _WIN32
-  ReleaseMutex(descriptor->mutex);
+  ReleaseMutex(descriptor_->mutex);
 #else
-  pthread_mutex_unlock(&descriptor->mutex);
+  pthread_mutex_unlock(&descriptor_->mutex);
 #endif
 }
 

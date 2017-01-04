@@ -50,7 +50,7 @@ protected:
 
 private:
 
-  Map<int, const char*> entries; ///< Value-name pairs.
+  Map<int, const char*> entries_; ///< Value-name pairs.
 
 protected:
 
@@ -62,7 +62,7 @@ protected:
   /**
    * Return enumerator value for a given name or invoke `System::error()` on an invalid name.
    */
-  int operator [](const char* name) const;
+  int operator[](const char* name) const;
 
 public:
 
@@ -75,9 +75,9 @@ public:
    * Number of enumerator values.
    */
   OZ_ALWAYS_INLINE
-  int length() const
+  int size() const
   {
-    return entries.length();
+    return entries_.size();
   }
 
   /**
@@ -98,7 +98,7 @@ public:
   /**
    * Return name for a enumerator value or invoke `System::error()` on an invalid value.
    */
-  const char* operator [](int value) const;
+  const char* operator[](int value) const;
 
 };
 
@@ -128,7 +128,7 @@ class EnumMap : public detail::EnumMapImpl
 {
 public:
 
-  using EnumMapImpl::operator [];
+  using EnumMapImpl::operator[];
 
   /**
    * Create enumerator mapping from an initialiser list.
@@ -148,9 +148,9 @@ public:
   /**
    * Return enumerator value for a given name or invoke `System::error()` on an invalid name.
    */
-  Enum operator [](const char* name) const
+  Enum operator[](const char* name) const
   {
-    return Enum(EnumMapImpl::operator [](name));
+    return Enum(EnumMapImpl::operator[](name));
   }
 
 };

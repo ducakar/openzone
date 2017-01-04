@@ -90,11 +90,11 @@ private:
 
   static const Image* lastImage;  ///< Keep track of the current image to avoid unnecessary updates.
 
-  Mode        mode      = SYSTEM; ///< Render mode.
-  int         frame     = 0;      ///< Current animation frame.
-  int         lastFrame = -1;     ///< Last frame for OS cursor to avoid unnecessary updates.
-  int         frameTime = 0;      ///< Time in milliseconds of the current animation frame.
-  List<Image> images;             ///< Cursor images.
+  Mode        mode_      = SYSTEM; ///< Render mode.
+  int         frame_     = 0;      ///< Current animation frame.
+  int         lastFrame_ = -1;     ///< Last frame for OS cursor to avoid unnecessary updates.
+  int         frameTime_ = 0;      ///< Time in milliseconds of the current animation frame.
+  List<Image> images_;             ///< Cursor images.
 
 public:
 
@@ -106,7 +106,7 @@ public:
   /**
    * Create from file.
    */
-  explicit Cursor(const File& file, Mode mode, int size = -1);
+  explicit Cursor(const File& file, Mode mode_, int size = -1);
 
   /**
    * Destructor, destroys textures if loaded.
@@ -116,19 +116,19 @@ public:
   /**
    * Move constructor.
    */
-  Cursor(Cursor&& c);
+  Cursor(Cursor&& other);
 
   /**
    * Move operator.
    */
-  Cursor& operator = (Cursor&& c);
+  Cursor& operator=(Cursor&& other);
 
   /**
    * True iff loaded.
    */
   bool isValid() const
   {
-    return !images.isEmpty();
+    return !images_.isEmpty();
   }
 
   /**
@@ -136,7 +136,7 @@ public:
    */
   int hotspotLeft() const
   {
-    return images[frame].hotspotLeft;
+    return images_[frame_].hotspotLeft;
   }
 
   /**
@@ -144,7 +144,7 @@ public:
    */
   int hotspotTop() const
   {
-    return images[frame].hotspotTop;
+    return images_[frame_].hotspotTop;
   }
 
   /**
@@ -152,7 +152,7 @@ public:
    */
   int width() const
   {
-    return images[frame].width;
+    return images_[frame_].width;
   }
 
   /**
@@ -160,7 +160,7 @@ public:
    */
   int height() const
   {
-    return images[frame].height;
+    return images_[frame_].height;
   }
 
   /**
@@ -168,7 +168,7 @@ public:
    */
   uint textureId() const
   {
-    return mode == SYSTEM ? 0 : images[frame].textureId;
+    return mode_ == SYSTEM ? 0 : images_[frame_].textureId;
   }
 
   /**

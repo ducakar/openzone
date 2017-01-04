@@ -62,19 +62,19 @@ struct Thread::Descriptor
 
   OZ_INTERNAL
 #ifdef _WIN32
-  static DWORD WINAPI threadMain(void* descriptor);
+  static DWORD WINAPI mainWrapper(void* handle);
 #else
-  static void* threadMain(void* descriptor);
+  static void* mainWrapper(void* handle);
 #endif
 };
 
 #ifdef _WIN32
-DWORD WINAPI Thread::Descriptor::threadMain(void* descriptor_)
+DWORD WINAPI Thread::Descriptor::mainWrapper(void* handle)
 #else
-void* Thread::Descriptor::threadMain(void* descriptor_)
+void* Thread::Descriptor::mainWrapper(void* handle)
 #endif
 {
-  Descriptor* descriptor            = static_cast<Descriptor*>(descriptor_);
+  Descriptor* descriptor            = static_cast<Descriptor*>(handle);
   Main*       main                  = descriptor->main;
   void*       data                  = descriptor->data;
   char        name[NAME_LENGTH + 1];
@@ -100,7 +100,7 @@ void* Thread::Descriptor::threadMain(void* descriptor_)
 #elif defined(__native_client__)
 
   Semaphore localSemaphore;
-  MainCall::localSemaphore = &localSemaphore;
+  MainCall::localSemaphore_ = &localSemaphore;
 
 #endif
 
@@ -135,93 +135,93 @@ bool Thread::isMain()
 
 Thread::Thread(const char* name, Main* main, void* data)
 {
-  descriptor = new(malloc(sizeof(Descriptor))) Descriptor;
-  if (descriptor == nullptr) {
+  descriptor_ = new(malloc(sizeof(Descriptor))) Descriptor;
+  if (descriptor_ == nullptr) {
     OZ_ERROR("oz::Thread: Descriptor allocation failed");
   }
 
-  descriptor->name = name;
-  descriptor->main = main;
-  descriptor->data = data;
-  descriptor->lock.lock();
+  descriptor_->name = name;
+  descriptor_->main = main;
+  descriptor_->data = data;
+  descriptor_->lock.lock();
 
 #ifdef _WIN32
-  descriptor->thread = CreateThread(nullptr, 0, Descriptor::threadMain, descriptor, 0, nullptr);
-  if (descriptor->thread == nullptr) {
+  descriptor->thread = CreateThread(nullptr, 0, Descriptor::threadMain, descriptor_, 0, nullptr);
+  if (descriptor_->thread == nullptr) {
     OZ_ERROR("oz::Thread: Thread creation failed");
   }
 #else
-  if (pthread_create(&descriptor->thread, nullptr, Descriptor::threadMain, descriptor) != 0) {
+  if (pthread_create(&descriptor_->thread, nullptr, Descriptor::mainWrapper, descriptor_) != 0) {
     OZ_ERROR("oz::Thread: Thread creation failed");
   }
 #endif
 
   // Wait while the thread accesses name pointer and descriptor during its initialisation.
-  descriptor->lock.lock();
+  descriptor_->lock.lock();
 }
 
 Thread::~Thread()
 {
-  if (descriptor != nullptr) {
+  if (descriptor_ != nullptr) {
     join();
   }
 }
 
-Thread::Thread(Thread&& t) :
-  descriptor(t.descriptor)
+Thread::Thread(Thread&& other) :
+  descriptor_(other.descriptor_)
 {
-  t.descriptor = nullptr;
+  other.descriptor_ = nullptr;
 }
 
-Thread& Thread::operator =(Thread&& t)
+Thread& Thread::operator=(Thread&& other)
 {
-  if (&t != this) {
-    if (descriptor != nullptr) {
+  if (&other != this) {
+    if (descriptor_ != nullptr) {
       join();
     }
 
-    descriptor = t.descriptor;
+    descriptor_ = other.descriptor_;
 
-    t.descriptor = nullptr;
+    other.descriptor_ = nullptr;
   }
   return *this;
 }
 
 void Thread::detach()
 {
-  if (descriptor == nullptr) {
+  if (descriptor_ == nullptr) {
     OZ_ERROR("oz::Thread: Detaching invalid thread");
   }
 
 #ifdef _WIN32
-  CloseHandle(descriptor->thread);
+  CloseHandle(descriptor_->thread);
 #else
-  pthread_detach(descriptor->thread);
+  pthread_detach(descriptor_->thread);
 #endif
 
-  free(descriptor);
-  descriptor = nullptr;
+  free(descriptor_);
+  descriptor_ = nullptr;
 }
 
 void Thread::join()
 {
-  if (descriptor == nullptr) {
+  if (descriptor_ == nullptr) {
     OZ_ERROR("oz::Thread: Joining invalid thread");
   }
 
 #ifdef _WIN32
-  if (WaitForSingleObject(descriptor->thread, INFINITE) != WAIT_OBJECT_0) {
+  if (WaitForSingleObject(descriptor_->thread, INFINITE) != WAIT_OBJECT_0) {
     OZ_ERROR("oz::Thread: Join failed");
   }
-  CloseHandle(descriptor->thread);
+  CloseHandle(descriptor_->thread);
 #else
-  if (pthread_join(descriptor->thread, nullptr) != 0) {
+  if (pthread_join(descriptor_->thread, nullptr) != 0) {
     OZ_ERROR("oz::Thread: Join failed");
   }
 #endif
 
-  free(descriptor);
-  descriptor = nullptr;
+  free(descriptor_);
+  descriptor_ = nullptr;
 }
 
 }

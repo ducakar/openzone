@@ -209,7 +209,7 @@ void Input::loadKeyMap(const Json& keyConfig)
   for (int i = KEY_NONE + 1; i < KEY_MAX; ++i) {
     const Json& keyBindings = keyConfig[KEY_NAMES[i]];
 
-    int nBindings = keyBindings.length();
+    int nBindings = keyBindings.size();
     if (nBindings > 2) {
       OZ_ERROR("Key '%s' has %d bindings but at most 2 supported", KEY_NAMES[i], nBindings);
     }
@@ -392,7 +392,7 @@ void Input::update()
 
   int mod = sdlKeys[modifier0] | sdlKeys[modifier1] ? MOD_ON_BIT : MOD_OFF_BIT;
 
-  for (int i = 0; i < Arrays::length(keys); ++i) {
+  for (int i = 0; i < Arrays::size(keys); ++i) {
     if (keyMap[i][0] & mod) {
       keys[i] |= sdlKeys[keyMap[i][0] & ~MOD_MASK];
     }

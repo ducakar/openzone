@@ -49,7 +49,7 @@ bool Synapse::transferItem(Object* source, Dynamic* item, Object* target)
 {
   OZ_ASSERT(source->items.contains(item->index));
 
-  if (target->items.length() == target->clazz->nItems) {
+  if (target->items.size() == target->clazz->nItems) {
     return false;
   }
 
@@ -70,7 +70,7 @@ bool Synapse::takeItem(Object* container, Dynamic* item)
 {
   OZ_ASSERT(item->cell != nullptr);
 
-  if (container->items.length() == container->clazz->nItems) {
+  if (container->items.size() == container->clazz->nItems) {
     return false;
   }
 
@@ -181,7 +181,7 @@ Object* Synapse::add(const ObjectClass* clazz, const Point& p, Heading heading, 
   if (!empty) {
     const List<const ObjectClass*>& defaultItems = obj->clazz->defaultItems;
 
-    for (int i = 0; i < defaultItems.length(); ++i) {
+    for (int i = 0; i < defaultItems.size(); ++i) {
       Heading itemHeading = Heading(Math::rand(4));
       Dynamic* item = static_cast<Dynamic*>(orbis.add(defaultItems[i], Point::ORIGIN, itemHeading));
 
@@ -199,7 +199,7 @@ Object* Synapse::add(const ObjectClass* clazz, const Point& p, Heading heading, 
       const BotClass* botClazz = static_cast<const BotClass*>(obj->clazz);
       Bot* bot = static_cast<Bot*>(obj);
 
-      if (uint(botClazz->weaponItem) < uint(obj->items.length())) {
+      if (uint(botClazz->weaponItem) < uint(obj->items.size())) {
         bot->weapon = bot->items[botClazz->weaponItem];
       }
     }
@@ -266,7 +266,7 @@ void Synapse::remove(Struct* str)
 {
   OZ_ASSERT(str->index != -1);
 
-  for (int i = 0; i < str->boundObjects.length(); ++i) {
+  for (int i = 0; i < str->boundObjects.size(); ++i) {
     Object* boundObj = orbis.obj(str->boundObjects[i]);
 
     if (boundObj != nullptr) {
@@ -294,7 +294,7 @@ void Synapse::remove(Object* obj)
 {
   OZ_ASSERT(obj->index != -1);
 
-  for (int i = 0; i < obj->items.length(); ++i) {
+  for (int i = 0; i < obj->items.size(); ++i) {
     Object* item = orbis.obj(obj->items[i]);
 
     if (item != nullptr) {

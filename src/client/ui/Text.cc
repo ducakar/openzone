@@ -81,7 +81,7 @@ Text::Text(Text&& l) :
   l.texId     = 0;
 }
 
-Text& Text::operator = (Text&& l)
+Text& Text::operator=(Text&& l)
 {
   if (&l != this) {
     clear();

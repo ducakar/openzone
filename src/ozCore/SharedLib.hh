@@ -78,7 +78,7 @@ public:
 
 private:
 
-  void* handle = nullptr; ///< Internal library handle.
+  void* handle_ = nullptr; ///< Internal library handle.
 
 public:
 
@@ -105,7 +105,7 @@ public:
   /**
    * Move operator.
    */
-  SharedLib& operator =(SharedLib&& l);
+  SharedLib& operator=(SharedLib&& l);
 
   /**
    * True iff successfully opened.
@@ -113,7 +113,7 @@ public:
   OZ_ALWAYS_INLINE
   bool isOpened() const
   {
-    return handle != nullptr;
+    return handle_ != nullptr;
   }
 
   /**

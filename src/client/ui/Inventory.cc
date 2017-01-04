@@ -42,7 +42,7 @@ void Inventory::ownerItemCallback(ModelField* sender, bool isClicked)
 
   OZ_ASSERT(bot != nullptr);
 
-  if (uint(id) < uint(container->items.length())) {
+  if (uint(id) < uint(container->items.size())) {
     item = orbis.obj<const Dynamic>(container->items[id]);
   }
   if (item == nullptr) {
@@ -90,7 +90,7 @@ void Inventory::otherItemCallback(ModelField* sender, bool isClicked)
     return;
   }
 
-  if (uint(id) < uint(container->items.length())) {
+  if (uint(id) < uint(container->items.size())) {
     item = orbis.obj<const Dynamic>(container->items[id]);
   }
   if (item == nullptr) {
@@ -256,7 +256,7 @@ void Inventory::onDraw()
   for (int i = 0; i < COLS; ++i) {
     int id = scrollOwner * COLS + i;
 
-    if (id < owner->items.length()) {
+    if (id < owner->items.size()) {
       const Object* item = orbis.obj(owner->items[id]);
 
       ownerModels[i]->show(true);
@@ -271,7 +271,7 @@ void Inventory::onDraw()
   for (int i = 0; i < COLS; ++i) {
     int id = scrollOther * COLS + i;
 
-    if (other != nullptr && id < other->items.length()) {
+    if (other != nullptr && id < other->items.size()) {
       const Object* item = orbis.obj(other->items[id]);
 
       otherModels[i]->show(true);

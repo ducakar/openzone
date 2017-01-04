@@ -59,7 +59,7 @@ public:
 
   // no copying
   Frag(const Frag&) = delete;
-  Frag& operator = (const Frag&) = delete;
+  Frag& operator=(const Frag&) = delete;
 
   void damage(float damage)
   {

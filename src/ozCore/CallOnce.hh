@@ -47,8 +47,8 @@ public:
 
 private:
 
-  volatile bool hasEntered  = false; ///< Flipped to true when function starts executing.
-  volatile bool hasFinished = false; ///< Flipped to true when function finishes.
+  volatile bool hasEntered_  = false; ///< Flipped to true when function starts executing.
+  volatile bool hasFinished_ = false; ///< Flipped to true when function finishes.
 
 public:
 
@@ -65,7 +65,7 @@ public:
   /**
    * Copying or moving is not possible.
    */
-  CallOnce& operator =(const CallOnce&) = delete;
+  CallOnce& operator=(const CallOnce&) = delete;
 
   /**
    * Call function if this is the first call on this object.

@@ -99,7 +99,7 @@ public:
   /**
    * Equality.
    */
-  bool operator ==(const Mat3& m) const
+  bool operator==(const Mat3& m) const
   {
     return x == m.x && y == m.y && z == m.z;
   }
@@ -107,9 +107,9 @@ public:
   /**
    * Inequality.
    */
-  bool operator !=(const Mat3& m) const
+  bool operator!=(const Mat3& m) const
   {
-    return !operator ==(m);
+    return !operator==(m);
   }
 
   /**
@@ -134,7 +134,7 @@ public:
    * Constant reference to the `i`-th column.
    */
   OZ_ALWAYS_INLINE
-  const Vec3& operator [](int i) const
+  const Vec3& operator[](int i) const
   {
     return (&x)[i];
   }
@@ -143,7 +143,7 @@ public:
    * Reference to the `i`-th column.
    */
   OZ_ALWAYS_INLINE
-  Vec3& operator [](int i)
+  Vec3& operator[](int i)
   {
     return (&x)[i];
   }
@@ -160,7 +160,7 @@ public:
   /**
    * Transposed matrix.
    */
-  Mat3 operator ~() const
+  Mat3 operator~() const
   {
     return Mat3(x.x, y.x, z.x,
                 x.y, y.y, z.y,
@@ -208,7 +208,7 @@ public:
    * Original matrix.
    */
   OZ_ALWAYS_INLINE
-  Mat3 operator +() const
+  Mat3 operator+() const
   {
     return *this;
   }
@@ -217,7 +217,7 @@ public:
    * Matrix with negated elements.
    */
   OZ_ALWAYS_INLINE
-  Mat3 operator -() const
+  Mat3 operator-() const
   {
     return Mat3(-x, -y, -z);
   }
@@ -225,7 +225,7 @@ public:
   /**
    * Sum.
    */
-  Mat3 operator +(const Mat3& a) const
+  Mat3 operator+(const Mat3& a) const
   {
     return Mat3(x + a.x, y + a.y, z + a.z);
   }
@@ -233,7 +233,7 @@ public:
   /**
    * Difference.
    */
-  Mat3 operator -(const Mat3& a) const
+  Mat3 operator-(const Mat3& a) const
   {
     return Mat3(x - a.x, y - a.y, z - a.z);
   }
@@ -241,7 +241,7 @@ public:
   /**
    * Product.
    */
-  Mat3 operator *(float s) const
+  Mat3 operator*(float s) const
   {
     return Mat3(x * s, y * s, z * s);
   }
@@ -249,7 +249,7 @@ public:
   /**
    * Product.
    */
-  friend Mat3 operator *(float s, const Mat3& m)
+  friend Mat3 operator*(float s, const Mat3& m)
   {
     return Mat3(s * m.x, s * m.y, s * m.z);
   }
@@ -257,7 +257,7 @@ public:
   /**
    * Product, compositum of linear transformations.
    */
-  Mat3 operator *(const Mat3& m) const
+  Mat3 operator*(const Mat3& m) const
   {
     return Mat3(x * m.x.x + y * m.x.y + z * m.x.z,
                 x * m.y.x + y * m.y.y + z * m.y.z,
@@ -268,7 +268,7 @@ public:
    * Transformed 3D vector.
    */
   OZ_ALWAYS_INLINE
-  Vec3 operator *(const Vec3& v) const
+  Vec3 operator*(const Vec3& v) const
   {
     return x * v.x + y * v.y + z * v.z;
   }
@@ -277,7 +277,7 @@ public:
    * Rotated plane.
    */
   OZ_ALWAYS_INLINE
-  Plane operator *(const Plane& p) const
+  Plane operator*(const Plane& p) const
   {
     return Plane(*this * p.n, p.d);
   }
@@ -285,7 +285,7 @@ public:
   /**
    * Quotient.
    */
-  Mat3 operator /(float s) const
+  Mat3 operator/(float s) const
   {
     OZ_ASSERT(s != 0.0f);
 
@@ -296,7 +296,7 @@ public:
   /**
    * Addition.
    */
-  Mat3& operator +=(const Mat3& a)
+  Mat3& operator+=(const Mat3& a)
   {
     x += a.x;
     y += a.y;
@@ -307,7 +307,7 @@ public:
   /**
    * Subtraction.
    */
-  Mat3& operator -=(const Mat3& a)
+  Mat3& operator-=(const Mat3& a)
   {
     x -= a.x;
     y -= a.y;
@@ -318,7 +318,7 @@ public:
   /**
    * Multiplication.
    */
-  Mat3& operator *=(float s)
+  Mat3& operator*=(float s)
   {
     x *= s;
     y *= s;
@@ -329,7 +329,7 @@ public:
   /**
    * Division.
    */
-  Mat3& operator /=(float s)
+  Mat3& operator/=(float s)
   {
     OZ_ASSERT(s != 0.0f);
 

@@ -100,7 +100,7 @@ void UI::draw()
   shader.setAmbientLight(Vec4(0.5f, 0.5f, 0.5f, 1.0f));
   shader.setCaelumLight(Vec3(-0.4851f, 0.4851f, 0.7276f), Vec4(0.5f, 0.5f, 0.5f, 1.0f));
 
-  for (int i = 0; i < liber.shaders.length(); ++i) {
+  for (int i = 0; i < liber.shaders.size(); ++i) {
     shader.program(i);
 
     tf.applyCamera();

@@ -64,12 +64,12 @@ public:
     struct OpusStream;
     struct VorbisStream;
 
-    float*      samples;  ///< Samples buffer.
-    int         count;    ///< Number of samples written in buffer (total sum per all channels).
-    int         capacity; ///< Buffer capacity (total sum per all channels).
-    ALenum      format;   ///< OpenAL format (AL_FORMAT_MONO_FLOAT32 or AL_FORMAT_STEREO_FLOAT32).
-    int         rate;     ///< Sampling rate.
-    StreamBase* stream;   ///< Internal structures used for stream decoding.
+    float*      samples_;  ///< Samples buffer.
+    int         size_;     ///< Number of samples written in buffer (total sum per all channels).
+    int         capacity_; ///< Buffer capacity (total sum per all channels).
+    ALenum      format_;   ///< OpenAL format (AL_FORMAT_MONO_FLOAT32 or AL_FORMAT_STEREO_FLOAT32).
+    int         rate_;     ///< Sampling rate.
+    StreamBase* stream_;   ///< Internal structures used for stream decoding.
 
   public:
 
@@ -94,12 +94,12 @@ public:
     /**
      * Move constructor.
      */
-    Decoder(Decoder&& d);
+    Decoder(Decoder&& other);
 
     /**
      * Move operator.
      */
-    Decoder& operator = (Decoder&& d);
+    Decoder& operator=(Decoder&& other);
 
     /**
      * True iff a stream is opened.
@@ -107,7 +107,7 @@ public:
     OZ_ALWAYS_INLINE
     bool isValid() const
     {
-      return stream != nullptr;
+      return stream_ != nullptr;
     }
 
     /**

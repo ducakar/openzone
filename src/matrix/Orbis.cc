@@ -117,7 +117,7 @@ bool Orbis::position(Struct* str)
 
   for (int x = span.minX; x <= span.maxX; ++x) {
     for (int y = span.minY; y <= span.maxY; ++y) {
-      if (cells[x][y].structs.length() == cells[x][y].structs.capacity()) {
+      if (cells[x][y].structs.size() == cells[x][y].structs.capacity()) {
         OZ_ASSERT(false);
         return false;
       }
@@ -450,7 +450,7 @@ void Orbis::read(const Json& json)
         if (!(itemClazz->flags & Object::ITEM_BIT)) {
           OZ_ERROR("Inventory object '%s' is not an item", itemClazz->name.c());
         }
-        if (obj->items.length() >= obj->clazz->nItems) {
+        if (obj->items.size() >= obj->clazz->nItems) {
           OZ_ERROR("Too many inventory items for '%s'", itemClazz->name.c());
         }
 
@@ -503,10 +503,10 @@ void Orbis::write(Stream* os) const
   caelum.write(os);
   terra.write(os);
 
-  int nStructs = Struct::pool.length();
-  int nObjects = Object::pool.length() + Dynamic::pool.length() + Weapon::pool.length() +
-                 Bot::pool.length() + Vehicle::pool.length();
-  int nFrags   = Frag::mpool.length();
+  int nStructs = Struct::pool.size();
+  int nObjects = Object::pool.size() + Dynamic::pool.size() + Weapon::pool.size() +
+                 Bot::pool.size() + Vehicle::pool.size();
+  int nFrags   = Frag::mpool.size();
 
   os->writeInt(nStructs);
   os->writeInt(nObjects);

@@ -440,7 +440,7 @@ static int ozBindNextStr(lua_State* l)
 
   ms.str = nullptr;
 
-  while (ms.str == nullptr && ms.strIndex < ms.structs.length()) {
+  while (ms.str == nullptr && ms.strIndex < ms.structs.size()) {
     ms.str = ms.structs[ms.strIndex];
     ++ms.strIndex;
   }
@@ -604,7 +604,7 @@ static int ozStrNumBoundObjs(lua_State* l)
   ARG(0);
   STR();
 
-  l_pushint(ms.str->boundObjects.length());
+  l_pushint(ms.str->boundObjects.size());
   return 1;
 }
 
@@ -614,7 +614,7 @@ static int ozStrBindBoundObj(lua_State* l)
   STR();
 
   int index = l_toint(1);
-  if (uint(index) >= uint(ms.str->boundObjects.length())) {
+  if (uint(index) >= uint(ms.str->boundObjects.size())) {
     ERROR("Invalid structure bound object index (out of range)");
   }
 
@@ -628,7 +628,7 @@ static int ozStrNumEnts(lua_State* l)
   ARG(0);
   STR();
 
-  l_pushint(ms.str->entities.length());
+  l_pushint(ms.str->entities.size());
   return 1;
 }
 
@@ -1185,7 +1185,7 @@ static int ozBindNextObj(lua_State* l)
 
   ms.obj = nullptr;
 
-  while (ms.obj == nullptr && ms.objIndex < ms.objects.length()) {
+  while (ms.obj == nullptr && ms.objIndex < ms.objects.size()) {
     ms.obj = ms.objects[ms.objIndex];
     ++ms.objIndex;
   }
@@ -1468,7 +1468,7 @@ static int ozObjBindItem(lua_State* l)
 
   int index = l_toint(1);
 
-  if (uint(index) >= uint(ms.obj->items.length())) {
+  if (uint(index) >= uint(ms.obj->items.size())) {
     ERROR("Invalid inventory item index");
   }
 
@@ -1482,7 +1482,7 @@ static int ozObjAddItem(lua_State* l)
   ARG(1);
   OBJ();
 
-  if (ms.obj->items.length() == ms.obj->clazz->nItems) {
+  if (ms.obj->items.size() == ms.obj->clazz->nItems) {
     l_pushbool(false);
     return 1;
   }
@@ -1536,7 +1536,7 @@ static int ozObjRemoveItem(lua_State* l)
   OBJ();
 
   int item = l_toint(1);
-  if (uint(item) >= uint(ms.obj->items.length())) {
+  if (uint(item) >= uint(ms.obj->items.size())) {
     ERROR("Invalid item number (out of range)");
   }
 
@@ -2143,7 +2143,7 @@ static int ozBotSetWeaponItem(lua_State* l)
     bot->weapon = -1;
   }
   else {
-    if (uint(item) >= uint(bot->items.length())) {
+    if (uint(item) >= uint(bot->items.size())) {
       ERROR("Invalid item number (out of range)");
     }
 

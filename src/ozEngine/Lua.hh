@@ -125,17 +125,17 @@ public:
     /**
      * Move constructor.
      */
-    Result(Result&& r);
+    Result(Result&& other);
 
     /**
      * Move operator.
      */
-    Result& operator = (Result&& r);
+    Result& operator=(Result&& other);
 
     /**
      * Return the first value on the stack as a bool.
      */
-    operator bool () const
+    operator bool() const
     {
       return toBool(1);
     }
@@ -143,7 +143,7 @@ public:
     /**
      * Return the first value on the stack as an integer.
      */
-    operator int () const
+    operator int() const
     {
       return toInt(1);
     }
@@ -151,7 +151,7 @@ public:
     /**
      * Return the first value on the stack as a float.
      */
-    operator float () const
+    operator float() const
     {
       return toFloat(1);
     }
@@ -159,7 +159,7 @@ public:
     /**
      * Return the first value on the stack as a string.
      */
-    operator String () const
+    operator String() const
     {
       return toString(1);
     }
@@ -167,7 +167,7 @@ public:
     /**
      * Return the first value on the stack as C function.
      */
-    operator Function* () const
+    operator Function*() const
     {
       return toFunction(1);
     }
@@ -176,7 +176,7 @@ public:
      * Return the first value on the stack as a (light) user data pointer.
      */
     template <typename Type>
-    operator Type* () const
+    operator Type*() const
     {
       return static_cast<Type*>(toPointer(1));
     }
@@ -358,53 +358,53 @@ public:
     /**
      * Copy constructor copies field accessor.
      */
-    Field(const Field& s) = default;
+    Field(const Field& other) = default;
 
     /**
      * Copy operator assigns value of the target field.
      */
-    Field& operator = (const Field& s);
+    Field& operator=(const Field& other);
 
     /**
      * Assign first value of a function's result.
      */
-    Field& operator = (const Result& s);
+    Field& operator=(const Result& other);
 
     /**
      * Assing an empty value of a given type to the field.
      */
-    Field& operator = (Type type);
+    Field& operator=(Type type);
 
     /**
      * Assign boolean value to the field.
      */
-    Field& operator = (bool value);
+    Field& operator=(bool value);
 
     /**
      * Assign an integer value to the field.
      */
-    Field& operator = (int value);
+    Field& operator=(int value);
 
     /**
      * Assign a number value to the field.
      */
-    Field& operator = (float value);
+    Field& operator=(float value);
 
     /**
      * Assign a string value to the field.
      */
-    Field& operator = (const char* value);
+    Field& operator=(const char* value);
 
     /**
      * Assing a C function to the field.
      */
-    Field& operator = (Function* func);
+    Field& operator=(Function* func);
 
     /**
      * Assign light user data pointer to the field.
      */
     template <class Data>
-    Field& operator = (Data* data)
+    Field& operator=(Data* data)
     {
       assign(data);
       return *this;
@@ -414,7 +414,7 @@ public:
      * Assign user data to the field.
      */
     template <class Data>
-    Field& operator = (const Data& data)
+    Field& operator=(const Data& data)
     {
       assign(&data, sizeof(Data));
       return *this;
@@ -423,18 +423,18 @@ public:
     /**
      * Access a field of the current field (should be a table).
      */
-    Field operator [] (const char* name) const;
+    Field operator[](const char* name) const;
 
     /**
      * Access a field of the current field (should be a table).
      */
-    Field operator [] (int index) const;
+    Field operator[](int index) const;
 
     /**
      * Call the current field (must be a function).
      */
     template <typename... Params>
-    Result operator () (Params... params) const
+    Result operator()(Params... params) const
     {
       push();
       pushValue(static_cast<Params&&>(params)...);
@@ -444,7 +444,7 @@ public:
     /**
      * Get value of the current field as a boolean.
      */
-    operator bool () const
+    operator bool() const
     {
       return toBool();
     }
@@ -452,7 +452,7 @@ public:
     /**
      * Get value of the current field as an integer.
      */
-    operator int () const
+    operator int() const
     {
       return toInt();
     }
@@ -460,7 +460,7 @@ public:
     /**
      * Get value of the current field as a float.
      */
-    operator float () const
+    operator float() const
     {
       return toFloat();
     }
@@ -468,7 +468,7 @@ public:
     /**
      * Get value of the current field as a string.
      */
-    operator String () const
+    operator String() const
     {
       return toString();
     }
@@ -476,7 +476,7 @@ public:
     /**
      * Get value of the current field as a C function.
      */
-    operator Function* () const
+    operator Function*() const
     {
       return toFunction();
     }
@@ -485,7 +485,7 @@ public:
      * Get value of the current field as a pointer to (light) user data.
      */
     template <typename Type>
-    operator Type* () const
+    operator Type*() const
     {
       return static_cast<Type*>(toPointer());
     }
@@ -562,22 +562,22 @@ public:
   /**
    * Move constructor.
    */
-  Lua(Lua&& s);
+  Lua(Lua&& other);
 
   /**
    * Move operator.
    */
-  Lua& operator = (Lua&& s);
+  Lua& operator=(Lua&& other);
 
   /**
    * Execute a chunk of code.
    */
-  Result operator () (const char* code) const;
+  Result operator()(const char* code) const;
 
   /**
    * Access a global variable.
    */
-  Field operator [] (const char* name) const;
+  Field operator[](const char* name) const;
 
   /**
    * Read serialised Lua value and push it on the stack (recursively for tables).

@@ -566,46 +566,46 @@ void Context::drawFrag(const Frag* frag)
 
 void Context::updateLoad()
 {
-  maxImagines           = max(maxImagines,           imagines.length());
-  maxAudios             = max(maxAudios,             audios.length());
-  maxSources            = max(maxSources,            Source::pool.length());
-  maxContSources        = max(maxContSources,        contSources.length());
-  maxPartGens           = max(maxPartGens,           partGens.length());
+  maxImagines           = max(maxImagines,           imagines.size());
+  maxAudios             = max(maxAudios,             audios.size());
+  maxSources            = max(maxSources,            Source::pool.size());
+  maxContSources        = max(maxContSources,        contSources.size());
+  maxPartGens           = max(maxPartGens,           partGens.size());
 
-  maxSMMImagines        = max(maxSMMImagines,        SMMImago::pool.length());
-  maxSMMVehicleImagines = max(maxSMMVehicleImagines, SMMVehicleImago::pool.length());
-  maxExplosionImagines  = max(maxExplosionImagines,  ExplosionImago::pool.length());
-  maxMD2Imagines        = max(maxMD2Imagines,        MD2Imago::pool.length());
-  maxMD2WeaponImagines  = max(maxMD2WeaponImagines,  MD2WeaponImago::pool.length());
+  maxSMMImagines        = max(maxSMMImagines,        SMMImago::pool.size());
+  maxSMMVehicleImagines = max(maxSMMVehicleImagines, SMMVehicleImago::pool.size());
+  maxExplosionImagines  = max(maxExplosionImagines,  ExplosionImago::pool.size());
+  maxMD2Imagines        = max(maxMD2Imagines,        MD2Imago::pool.size());
+  maxMD2WeaponImagines  = max(maxMD2WeaponImagines,  MD2WeaponImago::pool.size());
 
-  maxBasicAudios        = max(maxBasicAudios,        BasicAudio::pool.length());
-  maxBotAudios          = max(maxBotAudios,          BotAudio::pool.length());
-  maxVehicleAudios      = max(maxVehicleAudios,      VehicleAudio::pool.length());
+  maxBasicAudios        = max(maxBasicAudios,        BasicAudio::pool.size());
+  maxBotAudios          = max(maxBotAudios,          BotAudio::pool.size());
+  maxVehicleAudios      = max(maxVehicleAudios,      VehicleAudio::pool.size());
 }
 
 void Context::loadResources()
 {
   if (!dynamicLoading) {
-    for (int i = 0; i < liber.textures.length(); ++i) {
+    for (int i = 0; i < liber.textures.size(); ++i) {
       requestTexture(i);
     }
-    for (int i = 0; i < liber.sounds.length(); ++i) {
+    for (int i = 0; i < liber.sounds.size(); ++i) {
       requestSound(i);
     }
   }
 
-  for (int i = 0; i < liber.models.length(); ++i) {
+  for (int i = 0; i < liber.models.size(); ++i) {
     models[i].handle = new Model(liber.models[i].path);
     models[i].handle->preload();
     models[i].handle->load();
     models[i].nUsers = 0;
   }
 
-  for (int i = 0; i < liber.fragPools.length(); ++i) {
+  for (int i = 0; i < liber.fragPools.size(); ++i) {
     fragPools[i] = new FragPool(liber.fragPools[i]);
   }
 
-  for (int i = 0; i < liber.bsps.length(); ++i) {
+  for (int i = 0; i < liber.bsps.size(); ++i) {
     bspImagines[i].handle = new BSPImago(liber.bsps[i]);
     bspImagines[i].handle->preload();
     bspImagines[i].handle->load();
@@ -621,7 +621,7 @@ void Context::loadResources()
 
 void Context::unloadResources()
 {
-  for (int i = 0; i < liber.bsps.length(); ++i) {
+  for (int i = 0; i < liber.bsps.size(); ++i) {
     delete bspImagines[i].handle;
 
     bspImagines[i].handle = nullptr;
@@ -633,9 +633,9 @@ void Context::unloadResources()
     bspAudios[i].nUsers = -1;
   }
 
-  Arrays::free(fragPools, liber.fragPools.length());
+  Arrays::free(fragPools, liber.fragPools.size());
 
-  for (int i = 0; i < liber.models.length(); ++i) {
+  for (int i = 0; i < liber.models.size(); ++i) {
     delete models[i].handle;
 
     models[i].handle = nullptr;
@@ -644,10 +644,10 @@ void Context::unloadResources()
   Model::deallocate();
 
   if (!dynamicLoading) {
-    for (int i = 0; i < liber.textures.length(); ++i) {
+    for (int i = 0; i < liber.textures.size(); ++i) {
       releaseTexture(i);
     }
-    for (int i = 0; i < liber.sounds.length(); ++i) {
+    for (int i = 0; i < liber.sounds.size(); ++i) {
       releaseSound(i);
     }
   }
@@ -789,13 +789,13 @@ void Context::init()
   dynamicLoading = config.include("context.dynamicLoading", false).get(false);
 
   if (!liber.imagines.isEmpty()) {
-    imagoClasses = new Imago::CreateFunc*[liber.imagines.length()] {};
+    imagoClasses = new Imago::CreateFunc*[liber.imagines.size()] {};
   }
   if (!liber.audios.isEmpty()) {
-    audioClasses = new Audio::CreateFunc*[liber.audios.length()] {};
+    audioClasses = new Audio::CreateFunc*[liber.audios.size()] {};
   }
   if (!liber.fragPools.isEmpty() != 0) {
-    fragPools = new FragPool*[liber.fragPools.length()] {};
+    fragPools = new FragPool*[liber.fragPools.size()] {};
   }
 
   OZ_REGISTER_IMAGOCLASS(SMM);
@@ -808,11 +808,11 @@ void Context::init()
   OZ_REGISTER_AUDIOCLASS(Bot);
   OZ_REGISTER_AUDIOCLASS(Vehicle);
 
-  int nTextures    = liber.textures.length();
-  int nSounds      = liber.sounds.length();
-  int nPartClasses = liber.parts.length();
-  int nModels      = liber.models.length();
-  int nBSPs        = liber.bsps.length();
+  int nTextures    = liber.textures.size();
+  int nSounds      = liber.sounds.size();
+  int nPartClasses = liber.parts.size();
+  int nModels      = liber.models.size();
+  int nBSPs        = liber.bsps.size();
 
   textures    = nTextures    == 0 ? nullptr : new TextureResource[nTextures] {};
   sounds      = nSounds      == 0 ? nullptr : new SoundResource[nSounds] {};

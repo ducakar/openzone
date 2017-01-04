@@ -65,23 +65,23 @@ public:
 
 private:
 
-  int     count                   = 0;       ///< Length in bytes (without the final null char).
+  int     size_                  = 0;       ///< Length in bytes (without the final null char).
   union
   {
-    char* buffer                  = nullptr; ///< Pointer to the current buffer.
-    char  baseBuffer[BUFFER_SIZE];           ///< Static buffer.
+    char* data_                  = nullptr; ///< Pointer to the current buffer.
+    char  baseData_[BUFFER_SIZE];           ///< Static buffer.
   };
 
   /**
    * Resize storage if necessary and set `count` to `newCount`.
    */
   OZ_INTERNAL
-  char* resize(int newCount, bool keepContents);
+  char* resize(int newSize, bool keepContents);
 
   /**
    * Helpher function for assignment operators.
    */
-  void assign(const char* s, int nChars);
+  void assign(const char* other, int length);
 
 public:
 
@@ -283,9 +283,9 @@ public:
    * The given string doesn't need to be null-terminated.
    *
    * @param s C string.
-   * @param nChars length in bytes without the terminating null character.
+   * @param length length in bytes without the terminating null character.
    */
-  explicit String(const char* s, int nChars);
+  explicit String(const char* s, int length);
 
   /**
    * Create string by concatenating two C strings.
@@ -320,32 +320,32 @@ public:
   /**
    * Copy constructor.
    */
-  String(const String& s);
+  String(const String& other);
 
   /**
    * Move constructor.
    */
-  String(String&& s);
+  String(String&& other);
 
   /**
    * Copy operator.
    *
    * Existing storage is reused if its size matches.
    */
-  String& operator =(const String& s);
+  String& operator=(const String& other);
 
   /**
    * Move operator.
    */
-  String& operator =(String&& s);
+  String& operator=(String&& other);
 
   /**
    * Replace current string with a given C string (nullptr is permitted, equals "").
    */
-  String& operator =(const char* s)
+  String& operator=(const char* other)
   {
-    if (s != begin()) {
-      assign(s, length(s));
+    if (other != begin()) {
+      assign(other, length(other));
     }
     return *this;
   }
@@ -367,23 +367,23 @@ public:
   /**
    * Equality.
    */
-  bool operator ==(const String& s) const
+  bool operator==(const String& other) const
   {
-    return compare(begin(), s.begin()) == 0;
+    return compare(begin(), other.begin()) == 0;
   }
 
   /**
    * Equality.
    */
-  bool operator ==(const char* s) const
+  bool operator==(const char* other) const
   {
-    return compare(begin(), s) == 0;
+    return compare(begin(), other) == 0;
   }
 
   /**
    * Equality.
    */
-  friend bool operator ==(const char* a, const String& b)
+  friend bool operator==(const char* a, const String& b)
   {
     return compare(a, b.begin()) == 0;
   }
@@ -391,23 +391,23 @@ public:
   /**
    * Inequality.
    */
-  bool operator !=(const String& s) const
+  bool operator!=(const String& other) const
   {
-    return compare(begin(), s.begin()) != 0;
+    return compare(begin(), other.begin()) != 0;
   }
 
   /**
    * Inequality.
    */
-  bool operator !=(const char* s) const
+  bool operator!=(const char* other) const
   {
-    return compare(begin(), s) != 0;
+    return compare(begin(), other) != 0;
   }
 
   /**
    * Inequality.
    */
-  friend bool operator !=(const char* a, const String& b)
+  friend bool operator!=(const char* a, const String& b)
   {
     return compare(a, b.begin()) != 0;
   }
@@ -419,7 +419,7 @@ public:
   CIterator citerator() const
   {
     const char* buffer = begin();
-    return CIterator(buffer, buffer + count);
+    return CIterator(buffer, buffer + size_);
   }
 
   /**
@@ -429,7 +429,7 @@ public:
   Iterator iterator()
   {
     char* buffer = begin();
-    return Iterator(buffer, buffer + count);
+    return Iterator(buffer, buffer + size_);
   }
 
   /**
@@ -438,7 +438,7 @@ public:
   OZ_ALWAYS_INLINE
   const char* begin() const
   {
-    return count < BUFFER_SIZE ? baseBuffer : buffer;
+    return size_ < BUFFER_SIZE ? baseData_ : data_;
   }
 
   /**
@@ -447,7 +447,7 @@ public:
   OZ_ALWAYS_INLINE
   char* begin()
   {
-    return count < BUFFER_SIZE ? baseBuffer : buffer;
+    return size_ < BUFFER_SIZE ? baseData_ : data_;
   }
 
   /**
@@ -456,7 +456,7 @@ public:
   OZ_ALWAYS_INLINE
   const char* end() const
   {
-    return begin() + count;
+    return begin() + size_;
   }
 
   /**
@@ -465,23 +465,23 @@ public:
   OZ_ALWAYS_INLINE
   char* end()
   {
-    return begin() + count;
+    return begin() + size_;
   }
 
   /**
    * Compare strings per-byte.
    */
-  int compare(const String& s) const
+  int compare(const String& other) const
   {
-    return compare(begin(), s.begin());
+    return compare(begin(), other.begin());
   }
 
   /**
    * Compare strings per-byte.
    */
-  int compare(const char* s) const
+  int compare(const char* other) const
   {
-    return compare(begin(), s);
+    return compare(begin(), other);
   }
 
   /**
@@ -508,7 +508,7 @@ public:
   OZ_ALWAYS_INLINE
   int length() const
   {
-    return count;
+    return size_;
   }
 
   /**
@@ -517,16 +517,16 @@ public:
   OZ_ALWAYS_INLINE
   bool isEmpty() const
   {
-    return count == 0;
+    return size_ == 0;
   }
 
   /**
    * Constant reference to the `i`-th byte.
    */
   OZ_ALWAYS_INLINE
-  const char& operator [](int i) const
+  const char& operator[](int i) const
   {
-    OZ_ASSERT(0 <= i && i <= count);
+    OZ_ASSERT(0 <= i && i <= size_);
 
     return begin()[i];
   }
@@ -535,9 +535,9 @@ public:
    * Reference to the `i`-th byte.
    */
   OZ_ALWAYS_INLINE
-  char& operator [](int i)
+  char& operator[](int i)
   {
-    OZ_ASSERT(0 <= i && i <= count);
+    OZ_ASSERT(0 <= i && i <= size_);
 
     return begin()[i];
   }
@@ -566,7 +566,7 @@ public:
   OZ_ALWAYS_INLINE
   const char& last() const
   {
-    return begin()[count - (count != 0)];
+    return begin()[size_ - (size_ != 0)];
   }
 
   /**
@@ -575,7 +575,7 @@ public:
   OZ_ALWAYS_INLINE
   char& last()
   {
-    return begin()[count - (count != 0)];
+    return begin()[size_ - (size_ != 0)];
   }
 
   /**
@@ -636,27 +636,27 @@ public:
   /**
    * Create concatenated string.
    */
-  String operator +(const String& s) const;
+  String operator+(const String& s) const;
 
   /**
    * Create concatenated string.
    */
-  String operator +(const char* s) const;
+  String operator+(const char* s) const;
 
   /**
    * Create concatenated string.
    */
-  friend String operator +(const char* s, const String& t);
+  friend String operator+(const char* s, const String& t);
 
   /**
    * Replace with concatenated string.
    */
-  String& operator +=(const String& s);
+  String& operator+=(const String& s);
 
   /**
    * Replace with concatenated string.
    */
-  String& operator +=(const char* s);
+  String& operator+=(const char* s);
 
   /**
    * Substring from `start` character (inclusively).

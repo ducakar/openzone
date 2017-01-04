@@ -175,7 +175,7 @@ static void readBSP(const File& file)
   }
 
   const Json& entities = config["entities"];
-  int nEntities = entities.length();
+  int nEntities = entities.size();
 
   if (!entities.isNull() && entities.type() != Json::ARRAY) {
     OZ_ERROR("'entities' entry in '%s' is not an array", file.c());
@@ -215,7 +215,7 @@ static void readClass(const File& file)
 
   const Json& weaponsConfig = config["weapons"];
 
-  for (int i = 0; i < weaponsConfig.length(); ++i) {
+  for (int i = 0; i < weaponsConfig.size(); ++i) {
     const char* weaponTitle = weaponsConfig[i]["title"].get("");
 
     if (!String::isEmpty(weaponTitle)) {
@@ -295,7 +295,7 @@ static void readSequence(const File& file)
 {
   Json sequence(file);
 
-  int nSteps = sequence.length();
+  int nSteps = sequence.size();
   for (int i = 0; i < nSteps; ++i) {
     const char* title = sequence[i]["title"].get("");
 
@@ -413,10 +413,10 @@ int main(int argc, char** argv)
   List<File> luaClientFiles  = luaClientDir.list();
 
   List<File> luaFiles;
-  luaFiles.addAll(luaCommonFiles.begin(), luaCommonFiles.length());
-  luaFiles.addAll(luaMatrixFiles.begin(), luaMatrixFiles.length());
-  luaFiles.addAll(luaNirvanaFiles.begin(), luaNirvanaFiles.length());
-  luaFiles.addAll(luaClientFiles.begin(), luaClientFiles.length());
+  luaFiles.addAll(luaCommonFiles.begin(), luaCommonFiles.size());
+  luaFiles.addAll(luaMatrixFiles.begin(), luaMatrixFiles.size());
+  luaFiles.addAll(luaNirvanaFiles.begin(), luaNirvanaFiles.size());
+  luaFiles.addAll(luaClientFiles.begin(), luaClientFiles.size());
 
   for (const File& file : luaFiles) {
     if (!file.hasExtension("lua")) {

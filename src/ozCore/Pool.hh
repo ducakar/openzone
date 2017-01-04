@@ -39,16 +39,16 @@
  * have overloaded `new`/`delete` defined the same way otherwise the ones from the base class will
  * be used, which will not end good.
  *
- * Array versions of `new`/`delete` operator are disabled for the enclosing class.
+ * Array versions of `new`/`delete` operators are disabled for the enclosing class.
  */
 #define OZ_STATIC_POOL_ALLOC(pool)                                                                 \
-  void* operator new     (size_t)                                 { return pool.allocate(); }     \
-  void* operator new[]   (size_t)                                 = delete;                       \
-  void  operator delete  (void* ptr)                     noexcept { pool.deallocate(ptr); }       \
-  void  operator delete[](void*)                         noexcept = delete;                       \
-  void* operator new     (size_t, const std::nothrow_t&) noexcept { return pool.allocate(); }     \
-  void* operator new[]   (size_t, const std::nothrow_t&) noexcept = delete;                       \
-  void  operator delete  (void* ptr, std::nothrow_t&)    noexcept { pool.deallocate(ptr); }       \
+  void* operator new     (size_t)                                 { return pool.allocate(); }      \
+  void* operator new[]   (size_t)                                 = delete;                        \
+  void  operator delete  (void* ptr)                     noexcept { pool.deallocate(ptr); }        \
+  void  operator delete[](void*)                         noexcept = delete;                        \
+  void* operator new     (size_t, const std::nothrow_t&) noexcept { return pool.allocate(); }      \
+  void* operator new[]   (size_t, const std::nothrow_t&) noexcept = delete;                        \
+  void  operator delete  (void* ptr, std::nothrow_t&)    noexcept { pool.deallocate(ptr); }        \
   void  operator delete[](void*, std::nothrow_t&)        noexcept = delete;
 
 /**
@@ -61,15 +61,15 @@
  * All standard `new`/`delete` operators are disabled for the enclosing class.
  */
 #define OZ_PLACEMENT_POOL_ALLOC(Type)                                                              \
-  void* operator new     (size_t)                                  = delete;                      \
-  void* operator new[]   (size_t)                                  = delete;                      \
-  void  operator delete  (void*)                          noexcept = delete;                      \
-  void  operator delete[](void*)                          noexcept = delete;                      \
-  void* operator new     (size_t, const std::nothrow_t&)  noexcept = delete;                      \
-  void* operator new[]   (size_t, const std::nothrow_t&)  noexcept = delete;                      \
-  void  operator delete  (void*, const std::nothrow_t&)   noexcept = delete;                      \
-  void  operator delete[](void*, const std::nothrow_t&)   noexcept = delete;                      \
-  void* operator new     (size_t, oz::PoolAlloc& pool)             { return pool.allocate(); }    \
+  void* operator new     (size_t)                                  = delete;                       \
+  void* operator new[]   (size_t)                                  = delete;                       \
+  void  operator delete  (void*)                          noexcept = delete;                       \
+  void  operator delete[](void*)                          noexcept = delete;                       \
+  void* operator new     (size_t, const std::nothrow_t&)  noexcept = delete;                       \
+  void* operator new[]   (size_t, const std::nothrow_t&)  noexcept = delete;                       \
+  void  operator delete  (void*, const std::nothrow_t&)   noexcept = delete;                       \
+  void  operator delete[](void*, const std::nothrow_t&)   noexcept = delete;                       \
+  void* operator new     (size_t, oz::PoolAlloc& pool)             { return pool.allocate(); }     \
   void  operator delete  (void* ptr, oz::PoolAlloc& pool) noexcept { pool.deallocate(ptr); }
 
 namespace oz
@@ -92,12 +92,12 @@ private:
   union  Slot;
   struct Block;
 
-  Block* firstBlock = nullptr; ///< Linked list of the allocated blocks.
-  Slot*  freeSlot   = nullptr; ///< Linked list of free slots or `nullptr` if none.
-  int    objectSize = 0;       ///< Size of an object.
-  int    nSlots     = 0;       ///< Number of object slots per memory block.
-  int    count      = 0;       ///< Number of occupied slots in the pool.
-  int    size       = 0;       ///< Capacity.
+  Block* firstBlock_ = nullptr; ///< Linked list of the allocated blocks.
+  Slot*  freeSlot_   = nullptr; ///< Linked list of free slots or `nullptr` if none.
+  int    slotSize_   = 0;       ///< Size of an object.
+  int    blockSlots_ = 0;       ///< Number of object slots per memory block.
+  int    size_       = 0;       ///< Number of occupied slots in the pool.
+  int    capacity_   = 0;       ///< Capacity.
 
 public:
 
@@ -114,20 +114,20 @@ public:
   /**
    * Move constructor, moves storage.
    */
-  PoolAlloc(PoolAlloc&& p);
+  PoolAlloc(PoolAlloc&& other);
 
   /**
    * Move operator, moves storage.
    */
-  PoolAlloc& operator =(PoolAlloc&& p);
+  PoolAlloc& operator=(PoolAlloc&& other);
 
   /**
    * Number of used slots in the pool.
    */
   OZ_ALWAYS_INLINE
-  int length() const
+  int size() const
   {
-    return count;
+    return size_;
   }
 
   /**
@@ -136,7 +136,7 @@ public:
   OZ_ALWAYS_INLINE
   bool isEmpty() const
   {
-    return count == 0;
+    return size_ == 0;
   }
 
   /**
@@ -145,7 +145,7 @@ public:
   OZ_ALWAYS_INLINE
   int capacity() const
   {
-    return size;
+    return capacity_;
   }
 
   /**
@@ -154,7 +154,7 @@ public:
   OZ_ALWAYS_INLINE
   int slotSize() const
   {
-    return objectSize;
+    return slotSize_;
   }
 
   /**
@@ -163,7 +163,7 @@ public:
   OZ_ALWAYS_INLINE
   int blockSlots() const
   {
-    return nSlots;
+    return blockSlots_;
   }
 
   /**
@@ -207,8 +207,8 @@ public:
   /**
    * Create an empty pool with a given block size.
    */
-  explicit Pool(int nBlockSlots) :
-    PoolAlloc(sizeof(Elem), nBlockSlots)
+  explicit Pool(int blockSlots) :
+    PoolAlloc(sizeof(Elem), blockSlots)
   {}
 
 };

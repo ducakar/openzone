@@ -59,7 +59,7 @@ private:
 
 private:
 
-  SList<size_t, SIZE> data; ///< Bit storage.
+  SList<size_t, SIZE> data_; ///< Bit storage.
 
 public:
 
@@ -67,7 +67,7 @@ public:
    * Initialise all bits to zero.
    */
   SBitset() :
-    data(SIZE)
+    data_(SIZE)
   {}
 
   /**
@@ -77,27 +77,27 @@ public:
    * if the string is shorter than the bitset.
    */
   explicit SBitset(const char* s) :
-    data(SIZE)
+    data_(SIZE)
   {
     for (int i = 0; s[i] != '\0'; ++i) {
-      data[i / UNIT_BITS] |= size_t(s[i] != '0') << (i % UNIT_BITS);
+      data_[i / UNIT_BITS] |= size_t(s[i] != '0') << (i % UNIT_BITS);
     }
   }
 
   /**
    * True iff all bits are equal.
    */
-  bool operator ==(const SBitset& b) const
+  bool operator==(const SBitset& other) const
   {
-    return data == b.data;
+    return data_ == other.data_;
   }
 
   /**
    * True any bit differ.
    */
-  bool operator !=(const SBitset& b) const
+  bool operator!=(const SBitset& other) const
   {
-    return data != b.data;
+    return data_ != other.data_;
   }
 
   /**
@@ -106,7 +106,7 @@ public:
   OZ_ALWAYS_INLINE
   const size_t* begin() const
   {
-    return data.begin();
+    return data_.begin();
   }
 
   /**
@@ -115,7 +115,7 @@ public:
   OZ_ALWAYS_INLINE
   size_t* begin()
   {
-    return data.begin();
+    return data_.begin();
   }
 
   /**
@@ -124,7 +124,7 @@ public:
   OZ_ALWAYS_INLINE
   const size_t* end() const
   {
-    return data.end();
+    return data_.end();
   }
 
   /**
@@ -133,14 +133,14 @@ public:
   OZ_ALWAYS_INLINE
   size_t* end()
   {
-    return data.end();
+    return data_.end();
   }
 
   /**
    * Size in bits.
    */
   OZ_ALWAYS_INLINE
-  int length() const
+  int size() const
   {
     return SIZE * UNIT_BITS;
   }
@@ -151,7 +151,7 @@ public:
   bool isAllSet() const
   {
     for (int i = 0; i < SIZE; ++i) {
-      if (~data[i] != 0) {
+      if (~data_[i] != 0) {
         return false;
       }
     }
@@ -164,7 +164,7 @@ public:
   bool isAnySet() const
   {
     for (int i = 0; i < SIZE; ++i) {
-      if (data[i] != 0) {
+      if (data_[i] != 0) {
         return true;
       }
     }
@@ -190,7 +190,7 @@ public:
   bool isSubset(const SBitset& b) const
   {
     for (int i = 0; i < SIZE; ++i) {
-      if ((data[i] & ~b.data[i]) != 0) {
+      if ((data_[i] & ~b.data_[i]) != 0) {
         return false;
       }
     }
@@ -203,7 +203,7 @@ public:
   OZ_ALWAYS_INLINE
   bool get(int i) const
   {
-    return (data[i / UNIT_BITS] & (size_t(1) << (i % UNIT_BITS))) != 0;
+    return (data_[i / UNIT_BITS] & (size_t(1) << (i % UNIT_BITS))) != 0;
   }
 
   /**
@@ -212,7 +212,7 @@ public:
   OZ_ALWAYS_INLINE
   void set(int i)
   {
-    data[i / UNIT_BITS] |= size_t(1) << (i % UNIT_BITS);
+    data_[i / UNIT_BITS] |= size_t(1) << (i % UNIT_BITS);
   }
 
   /**
@@ -221,7 +221,7 @@ public:
   OZ_ALWAYS_INLINE
   void clear(int i)
   {
-    data[i / UNIT_BITS] &= ~(size_t(1) << (i % UNIT_BITS));
+    data_[i / UNIT_BITS] &= ~(size_t(1) << (i % UNIT_BITS));
   }
 
   /**
@@ -230,7 +230,7 @@ public:
   OZ_ALWAYS_INLINE
   void flip(int i)
   {
-    data[i / UNIT_BITS] ^= size_t(1) << (i % UNIT_BITS);
+    data_[i / UNIT_BITS] ^= size_t(1) << (i % UNIT_BITS);
   }
 
   /**
@@ -238,13 +238,13 @@ public:
    */
   void clear()
   {
-    Arrays::fill<size_t, size_t>(data.begin(), SIZE, 0);
+    Arrays::fill<size_t, size_t>(data_.begin(), SIZE, 0);
   }
 
   /**
    * NOT of the bitset.
    */
-  SBitset operator ~() const
+  SBitset operator~() const
   {
     SBitset r = *this;
     return r.flip();
@@ -253,7 +253,7 @@ public:
   /**
    * Return AND of two bitsets.
    */
-  SBitset operator &(const SBitset& b) const
+  SBitset operator&(const SBitset& b) const
   {
     SBitset r = *this;
     return r &= b;
@@ -262,7 +262,7 @@ public:
   /**
    * Return OR of two bitsets.
    */
-  SBitset operator |(const SBitset& b) const
+  SBitset operator|(const SBitset& b) const
   {
     SBitset r = *this;
     return r |= b;
@@ -271,7 +271,7 @@ public:
   /**
    * Return XOR of two bitsets.
    */
-  SBitset operator ^(const SBitset& b) const
+  SBitset operator^(const SBitset& b) const
   {
     SBitset r = *this;
     return r ^= b;
@@ -283,7 +283,7 @@ public:
   SBitset& flip()
   {
     for (int i = 0; i < SIZE; ++i) {
-      data[i] = ~data[i];
+      data_[i] = ~data_[i];
     }
     return *this;
   }
@@ -291,10 +291,10 @@ public:
   /**
    * AND of two bitsets.
    */
-  SBitset& operator &=(const SBitset& b)
+  SBitset& operator&=(const SBitset& b)
   {
     for (int i = 0; i < SIZE; ++i) {
-      data[i] &= b.data[i];
+      data_[i] &= b.data_[i];
     }
     return *this;
   }
@@ -302,10 +302,10 @@ public:
   /**
    * OR of two bitsets.
    */
-  SBitset& operator |=(const SBitset& b)
+  SBitset& operator|=(const SBitset& b)
   {
     for (int i = 0; i < SIZE; ++i) {
-      data[i] |= b.data[i];
+      data_[i] |= b.data_[i];
     }
     return *this;
   }
@@ -313,10 +313,10 @@ public:
   /**
    * XOR of two bitsets.
    */
-  SBitset& operator ^=(const SBitset& b)
+  SBitset& operator^=(const SBitset& b)
   {
     for (int i = 0; i < SIZE; ++i) {
-      data[i] ^= b.data[i];
+      data_[i] ^= b.data_[i];
     }
     return *this;
   }

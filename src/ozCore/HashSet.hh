@@ -72,10 +72,10 @@ protected:
   {
   private:
 
-    using detail::IteratorBase<EntryType>::elem;
+    using detail::IteratorBase<EntryType>::elem_;
 
-    const HashSet* table = nullptr; ///< Hashtable that is being iterated.
-    int            index = 0;       ///< Index of the next bucket.
+    const HashSet* table_ = nullptr; ///< Hashtable that is being iterated.
+    int            index_ = 0;       ///< Index of the next bucket.
 
   public:
 
@@ -87,12 +87,13 @@ protected:
     /**
      * Create hashtable iterator, initially pointing to the first hashtable element.
      */
-    explicit HashIterator(const HashSet& ht) :
-      detail::IteratorBase<EntryType>(ht.size == 0 ? nullptr : ht.data[0]), table(&ht), index(1)
+    explicit HashIterator(const HashSet& other) :
+      detail::IteratorBase<EntryType>(other.capacity_ == 0 ? nullptr : other.data_[0]),
+      table_(&other), index_(0)
     {
-      while (elem == nullptr && index < table->size) {
-        elem = table->data[index];
-        ++index;
+      while (elem_ == nullptr && index_ < table_->capacity_) {
+        elem_ = table_->data_[index_];
+        ++index_;
       }
     }
 
@@ -102,46 +103,46 @@ protected:
     OZ_ALWAYS_INLINE
     operator ElemType*() const
     {
-      return &elem->elem;
+      return &elem_->elem;
     }
 
     /**
      * Reference to the current element.
      */
     OZ_ALWAYS_INLINE
-    ElemType& operator *() const
+    ElemType& operator*() const
     {
-      return elem->elem;
+      return elem_->elem;
     }
 
     /**
      * Access to the current element's member.
      */
     OZ_ALWAYS_INLINE
-    ElemType* operator ->() const
+    ElemType* operator->() const
     {
-      return &elem->elem;
+      return &elem_->elem;
     }
 
     /**
      * Advance to the next element.
      */
-    HashIterator& operator ++()
+    HashIterator& operator++()
     {
-      OZ_ASSERT(elem != nullptr);
+      OZ_ASSERT(elem_ != nullptr);
 
-      if (elem->next != nullptr) {
-        elem = elem->next;
+      if (elem_->next != nullptr) {
+        elem_ = elem_->next;
       }
-      else if (index == table->size) {
-        elem = nullptr;
+      else if (index_ == table_->capacity_) {
+        elem_ = nullptr;
       }
       else {
         do {
-          elem = table->data[index];
-          ++index;
+          elem_ = table_->data_[index_];
+          ++index_;
         }
-        while (elem == nullptr && index < table->size);
+        while (elem_ == nullptr && index_ < table_->capacity_);
       }
       return *this;
     }
@@ -180,29 +181,33 @@ public:
 
 protected:
 
-  Pool<Entry> pool = Pool<Entry>(GRANULARITY); ///< Memory pool for entries.
-  Entry**     data = nullptr;                  ///< Array of buckets -- linked lists of entries.
-  int         size = 0;                        ///< Number of buckets.
+  Pool<Entry> pool_     = Pool<Entry>(GRANULARITY); ///< Memory pool for entries.
+  Entry**     data_     = nullptr;                  ///< Array of buckets (linked lists of entries).
+  int         capacity_ = 0;                        ///< Number of buckets.
 
 protected:
 
   /**
    * Resize bucket array and rebuild hashtable.
    */
-  void resize(int newSize)
+  void resize(int newCapacity)
   {
+    if (newCapacity < 0) {
+      OZ_ERROR("oz::HashSet: Negative capacity (overflow?)");
+    }
+
     Entry** newData = nullptr;
 
-    if (newSize != 0) {
-      newData = new Entry*[newSize] {};
+    if (newCapacity != 0) {
+      newData = new Entry*[newCapacity] {};
 
       // Rebuild hashtable.
-      for (int i = 0; i < size; ++i) {
-        Entry* chain = data[i];
+      for (int i = 0; i < capacity_; ++i) {
+        Entry* chain = data_[i];
         Entry* next  = nullptr;
 
         while (chain != nullptr) {
-          uint index = uint(chain->hash) % uint(newSize);
+          uint index = uint(chain->hash) % uint(newCapacity);
 
           next = chain->next;
           chain->next = newData[index];
@@ -212,33 +217,28 @@ protected:
         }
       }
     }
-    delete[] data;
+    delete[] data_;
 
-    data = newData;
-    size = newSize;
+    data_     = newData;
+    capacity_ = newCapacity;
   }
 
   /**
    * Ensure a given size for the array of buckets.
    *
-   * Size is doubled if neccessary. If that doesn't suffice it is set to the least multiple of
-   * `GRANULARITY` greater or equal to the requested size.
+   * The capacity is increased if necessary with growth factor 1.5 or to (at least) 8 slots as the
+   * initial allocation.
    */
-  void ensureCapacity(int capacity)
+  void ensureCapacity(int requestedCapacity)
   {
-    if (capacity < 0) {
+    if (requestedCapacity < 0) {
       OZ_ERROR("oz::HashSet: Capacity overflow");
     }
-    else if (size < capacity) {
-      int newSize = size * 2;
-      if (newSize < capacity) {
-        newSize = (capacity + GRANULARITY - 1) & ~(GRANULARITY - 1);
-      }
-      if (newSize <= 0) {
-        OZ_ERROR("oz::HashSet: Capacity overflow");
-      }
+    else if (capacity_ < requestedCapacity) {
+      int newCapacity = capacity_ == 0 ? 8 : capacity_ + capacity_ / 2;
+      newCapacity = max<int>(capacity_, requestedCapacity);
 
-      resize(newSize);
+      resize(newCapacity);
     }
   }
 
@@ -250,11 +250,11 @@ protected:
   template <typename Elem_>
   Elem& insert(Elem_&& elem, bool overwrite)
   {
-    ensureCapacity(pool.length() + 1);
+    ensureCapacity(pool_.size() + 1);
 
     int    h     = HashFunc()(elem);
-    uint   index = uint(h) % uint(size);
-    Entry* entry = data[index];
+    uint   index = uint(h) % uint(capacity_);
+    Entry* entry = data_[index];
 
     while (entry != nullptr) {
       if (entry->elem == elem) {
@@ -266,8 +266,8 @@ protected:
       entry = entry->next;
     }
 
-    data[index] = new(pool) Entry{data[index], h, static_cast<Elem_&&>(elem)};
-    return *data[index];
+    data_[index] = new(pool_) Entry{data_[index], h, static_cast<Elem_&&>(elem)};
+    return *data_[index];
   }
 
 public:
@@ -288,10 +288,10 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  HashSet(InitialiserList<Elem> l) :
-    HashSet(int(l.size()) * 4 / 3)
+  HashSet(InitialiserList<Elem> il) :
+    HashSet(int(il.size()) * 4 / 3)
   {
-    for (const Elem& e : l) {
+    for (const Elem& e : il) {
       add(e);
     }
   }
@@ -302,14 +302,14 @@ public:
   ~HashSet()
   {
     clear();
-    delete[] data;
+    delete[] data_;
   }
 
   /**
    * Copy constructor, copies elements but does not preserve bucket array length.
    */
   HashSet(const HashSet& ht) :
-    HashSet(ht.pool.length() * 4 / 3)
+    HashSet(ht.pool_.size() * 4 / 3)
   {
     for (const Elem& e : ht) {
       add(e);
@@ -319,23 +319,23 @@ public:
   /**
    * Move constructor, moves storage.
    */
-  HashSet(HashSet&& ht) :
-    pool(static_cast<Pool<Entry>&&>(ht.pool)), data(ht.data), size(ht.size)
+  HashSet(HashSet&& other) :
+    pool_(static_cast<Pool<Entry>&&>(other.pool_)), data_(other.data_), capacity_(other.capacity_)
   {
-    ht.data = nullptr;
-    ht.size = 0;
+    other.data_     = nullptr;
+    other.capacity_ = 0;
   }
 
   /**
    * Copy operator, copies elements but does not preserve bucket array length.
    */
-  HashSet& operator =(const HashSet& ht)
+  HashSet& operator=(const HashSet& other)
   {
-    if (&ht != this) {
+    if (&other != this) {
       clear();
-      ensureCapacity(ht.pool.length() * 4 / 3);
+      ensureCapacity(other.pool_.size() * 4 / 3);
 
-      for (const Elem& e : ht) {
+      for (const Elem& e : other) {
         add(e);
       }
     }
@@ -345,18 +345,18 @@ public:
   /**
    * Move operator, moves storage.
    */
-  HashSet& operator =(HashSet&& ht)
+  HashSet& operator=(HashSet&& other)
   {
-    if (&ht != this) {
+    if (&other != this) {
       clear();
-      delete[] data;
+      delete[] data_;
 
-      pool = static_cast<Pool<Entry>&&>(ht.pool);
-      data = ht.data;
-      size = ht.size;
+      pool_     = static_cast<Pool<Entry>&&>(other.pool_);
+      data_     = other.data_;
+      capacity_ = other.capacity_;
 
-      ht.data = nullptr;
-      ht.size = 0;
+      other.data_     = nullptr;
+      other.capacity_ = 0;
     }
     return *this;
   }
@@ -364,12 +364,12 @@ public:
   /**
    * Assign from an initialiser list.
    */
-  HashSet& operator =(InitialiserList<Elem> l)
+  HashSet& operator=(InitialiserList<Elem> il)
   {
     clear();
-    ensureCapacity(int(l.size()) * 4 / 3);
+    ensureCapacity(int(il.size()) * 4 / 3);
 
-    for (const Elem& e : l) {
+    for (const Elem& e : il) {
       add(e);
     }
     return *this;
@@ -378,15 +378,15 @@ public:
   /**
    * True iff contained elements are equal.
    */
-  bool operator ==(const HashSet& ht) const
+  bool operator==(const HashSet& other) const
   {
-    if (pool.length() != ht.pool.length()) {
+    if (pool_.size() != other.pool_.size()) {
       return false;
     }
 
-    for (int i = 0; i < size; ++i) {
-      for (Entry* entry = data[i]; entry != nullptr; entry = entry->next) {
-        if (!ht.contains(entry->elem)) {
+    for (int i = 0; i < capacity_; ++i) {
+      for (Entry* entry = data_[i]; entry != nullptr; entry = entry->next) {
+        if (!other.contains(entry->elem)) {
           return false;
         }
       }
@@ -397,9 +397,9 @@ public:
   /**
    * False iff contained elements are equal.
    */
-  bool operator !=(const HashSet& ht) const
+  bool operator!=(const HashSet& other) const
   {
-    return !operator ==(ht);
+    return !operator==(other);
   }
 
   /**
@@ -460,9 +460,9 @@ public:
    * Number of elements.
    */
   OZ_ALWAYS_INLINE
-  int length() const
+  int size() const
   {
-    return pool.length();
+    return pool_.size();
   }
 
   /**
@@ -471,7 +471,7 @@ public:
   OZ_ALWAYS_INLINE
   bool isEmpty() const
   {
-    return pool.isEmpty();
+    return pool_.isEmpty();
   }
 
   /**
@@ -480,7 +480,7 @@ public:
   OZ_ALWAYS_INLINE
   int capacity() const
   {
-    return size;
+    return capacity_;
   }
 
   /**
@@ -489,7 +489,7 @@ public:
   OZ_ALWAYS_INLINE
   int poolCapacity() const
   {
-    return pool.capacity();
+    return pool_.capacity();
   }
 
   /**
@@ -498,13 +498,13 @@ public:
   template <typename Key>
   bool contains(const Key& key) const
   {
-    if (size == 0) {
+    if (capacity_ == 0) {
       return false;
     }
 
     int    h     = HashFunc()(key);
-    uint   index = uint(h) % uint(size);
-    Entry* entry = data[index];
+    uint   index = uint(h) % uint(capacity_);
+    Entry* entry = data_[index];
 
     while (entry != nullptr) {
       if (entry->elem == key) {
@@ -542,21 +542,21 @@ public:
   template <typename Key>
   bool exclude(const Key& key)
   {
-    if (size == 0) {
+    if (capacity_ == 0) {
       return false;
     }
 
     int     h     = HashFunc()(key);
-    uint    index = uint(h) % uint(size);
-    Entry*  entry = data[index];
-    Entry** prev  = &data[index];
+    uint    index = uint(h) % uint(capacity_);
+    Entry*  entry = data_[index];
+    Entry** prev  = &data_[index];
 
     while (entry != nullptr) {
       if (entry->elem == key) {
         *prev = entry->next;
 
         entry->~Entry();
-        pool.deallocate(entry);
+        pool_.deallocate(entry);
 
         return true;
       }
@@ -574,13 +574,13 @@ public:
    */
   void trim()
   {
-    int newSize = pool.length() * 4 / 3;
+    int newCapacity = pool_.size() * 4 / 3;
 
-    if (newSize < size) {
-      resize(newSize);
+    if (newCapacity < capacity_) {
+      resize(newCapacity);
 
-      if (newSize == 0) {
-        pool.free();
+      if (newCapacity == 0) {
+        pool_.free();
       }
     }
   }
@@ -590,19 +590,19 @@ public:
    */
   void clear()
   {
-    for (int i = 0; i < size; ++i) {
-      Entry* entry = data[i];
+    for (int i = 0; i < capacity_; ++i) {
+      Entry* entry = data_[i];
 
       while (entry != nullptr) {
         Entry* next = entry->next;
 
         entry->~Entry();
-        pool.deallocate(entry);
+        pool_.deallocate(entry);
 
         entry = next;
       }
 
-      data[i] = nullptr;
+      data_[i] = nullptr;
     }
   }
 

@@ -64,7 +64,7 @@ struct Triangle
   float depth;
   int   index;
 
-  bool operator < (const Triangle& t)
+  bool operator<(const Triangle& t)
   {
     return depth < t.depth;
   }

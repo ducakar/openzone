@@ -50,14 +50,11 @@ private:
 
 private:
 
-  char* streamPos   = nullptr; ///< Current position.
-  char* streamBegin = nullptr; ///< Beginning.
-  char* streamEnd   = nullptr; ///< End.
-  int   flags       = 0;       ///< Feature bitfield.
-
-public:
-
-  Endian::Order order = Endian::NATIVE; ///< Stream byte order.
+  char*         pos_   = nullptr;        ///< Current position.
+  char*         begin_ = nullptr;        ///< Beginning.
+  char*         end_   = nullptr;        ///< End.
+  int           flags_ = 0;              ///< Feature bitfield.
+  Endian::Order order_ = Endian::NATIVE; ///< Stream byte order.
 
 private:
 
@@ -101,12 +98,12 @@ public:
   /**
    * Move construction, moves internal buffer.
    */
-  Stream(Stream&& s);
+  Stream(Stream&& other);
 
   /**
    * Move operator, moves internal buffer.
    */
-  Stream& operator =(Stream&& s);
+  Stream& operator=(Stream&& other);
 
   /**
    * Constant pointer to the beginning of the stream.
@@ -114,7 +111,7 @@ public:
   OZ_ALWAYS_INLINE
   const char* begin() const
   {
-    return streamBegin;
+    return begin_;
   }
 
   /**
@@ -123,7 +120,7 @@ public:
   OZ_ALWAYS_INLINE
   char* begin()
   {
-    return streamBegin;
+    return begin_;
   }
 
   /**
@@ -132,7 +129,7 @@ public:
   OZ_ALWAYS_INLINE
   const char* end() const
   {
-    return streamEnd;
+    return end_;
   }
 
   /**
@@ -141,7 +138,7 @@ public:
   OZ_ALWAYS_INLINE
   char* end()
   {
-    return streamEnd;
+    return end_;
   }
 
   /**
@@ -150,7 +147,7 @@ public:
   OZ_ALWAYS_INLINE
   const char* pos() const
   {
-    return streamPos;
+    return pos_;
   }
 
   /**
@@ -159,7 +156,7 @@ public:
   OZ_ALWAYS_INLINE
   char* pos()
   {
-    return streamPos;
+    return pos_;
   }
 
   /**
@@ -168,9 +165,9 @@ public:
   OZ_ALWAYS_INLINE
   int capacity() const
   {
-    OZ_ASSERT(streamPos <= streamEnd);
+    OZ_ASSERT(pos_ <= end_);
 
-    return int(streamEnd - streamBegin);
+    return int(end_ - begin_);
   }
 
   /**
@@ -179,9 +176,9 @@ public:
   OZ_ALWAYS_INLINE
   int available() const
   {
-    OZ_ASSERT(streamPos <= streamEnd);
+    OZ_ASSERT(pos_ <= end_);
 
-    return int(streamEnd - streamPos);
+    return int(end_ - pos_);
   }
 
   /**
@@ -190,7 +187,7 @@ public:
   OZ_ALWAYS_INLINE
   bool isWritable() const
   {
-    return flags & WRITABLE;
+    return flags_ & WRITABLE;
   }
 
   /**
@@ -199,29 +196,47 @@ public:
   OZ_ALWAYS_INLINE
   bool isBuffered() const
   {
-    return flags & BUFFERED;
+    return flags_ & BUFFERED;
+  }
+
+  /**
+   * %Endian order.
+   */
+  OZ_ALWAYS_INLINE
+  Endian::Order order() const
+  {
+    return order_;
+  }
+
+  /**
+   * %Set endian order.
+   */
+  OZ_ALWAYS_INLINE
+  void setOrder(Endian::Order order)
+  {
+    order_ = order;
   }
 
   /**
    * Constant reference to the `i`-th byte from the beginning of the stream.
    */
   OZ_ALWAYS_INLINE
-  const char& operator [](int i) const
+  const char& operator[](int i) const
   {
-    OZ_ASSERT(uint(i) < uint(streamEnd - streamBegin));
+    OZ_ASSERT(uint(i) < uint(end_ - begin_));
 
-    return streamBegin[i];
+    return begin_[i];
   }
 
   /**
    * Reference to the `i`-th byte from the beginning of the stream.
    */
   OZ_ALWAYS_INLINE
-  char& operator [](int i)
+  char& operator[](int i)
   {
-    OZ_ASSERT(uint(i) < uint(streamEnd - streamBegin));
+    OZ_ASSERT(uint(i) < uint(end_ - begin_));
 
-    return streamBegin[i];
+    return begin_[i];
   }
 
   /**
@@ -230,9 +245,9 @@ public:
   OZ_ALWAYS_INLINE
   int tell() const
   {
-    OZ_ASSERT(streamPos <= streamEnd);
+    OZ_ASSERT(pos_ <= end_);
 
-    return int(streamPos - streamBegin);
+    return int(pos_ - begin_);
   }
 
   /**
@@ -246,7 +261,7 @@ public:
   OZ_ALWAYS_INLINE
   void rewind()
   {
-    streamPos = streamBegin;
+    pos_ = begin_;
   }
 
   /**

@@ -68,7 +68,7 @@ public:
    * Translated `AABB`.
    */
   OZ_ALWAYS_INLINE
-  AABB operator + (const Vec3& v) const
+  AABB operator+(const Vec3& v) const
   {
     return AABB(p + v, dim);
   }
@@ -77,7 +77,7 @@ public:
    * Translated `AABB`.
    */
   OZ_ALWAYS_INLINE
-  AABB operator - (const Vec3& v) const
+  AABB operator-(const Vec3& v) const
   {
     return AABB(p - v, dim);
   }
@@ -86,7 +86,7 @@ public:
    * Translate `AABB`.
    */
   OZ_ALWAYS_INLINE
-  AABB& operator += (const Vec3& v)
+  AABB& operator+=(const Vec3& v)
   {
     p += v;
     return *this;
@@ -96,7 +96,7 @@ public:
    * Translate `AABB`.
    */
   OZ_ALWAYS_INLINE
-  AABB& operator -= (const Vec3& v)
+  AABB& operator-=(const Vec3& v)
   {
     p -= v;
     return *this;

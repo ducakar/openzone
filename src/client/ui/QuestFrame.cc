@@ -86,7 +86,7 @@ void QuestFrame::next(Button* sender)
 {
   QuestFrame* questFrame = static_cast<QuestFrame*>(sender->parent);
 
-  int nQuests = questList.quests.length();
+  int nQuests = questList.quests.size();
 
   if (nQuests > 1) {
     questList.activeQuest = (questList.activeQuest + 1) % nQuests;
@@ -98,7 +98,7 @@ void QuestFrame::prev(Button* sender)
 {
   QuestFrame* questFrame = static_cast<QuestFrame*>(sender->parent);
 
-  int nQuests = questList.quests.length();
+  int nQuests = questList.quests.size();
 
   if (nQuests > 1) {
     questList.activeQuest = (questList.activeQuest + nQuests - 1) % nQuests;

@@ -365,7 +365,7 @@ static int ozSelfSetWeaponItem(lua_State* l)
     ns.self->weapon = -1;
   }
   else {
-    if (uint(item) >= uint(ns.self->items.length())) {
+    if (uint(item) >= uint(ns.self->items.size())) {
       ERROR("Invalid item number (out of range)");
     }
 
@@ -459,7 +459,7 @@ static int ozSelfBindItem(lua_State* l)
 
   int index = l_toint(1);
 
-  if (uint(index) >= uint(ns.self->items.length())) {
+  if (uint(index) >= uint(ns.self->items.size())) {
     ERROR("Invalid inventory item index");
   }
 
@@ -562,7 +562,7 @@ static int ozQuestAdd(lua_State* l)
                 Point(l_tofloat(3), l_tofloat(4), l_tofloat(5)),
                 Quest::State(l_toint(6)));
 
-  l_pushint(questList.quests.length() - 1);
+  l_pushint(questList.quests.size() - 1);
   return 1;
 }
 
@@ -571,7 +571,7 @@ static int ozQuestEnd(lua_State* l)
   ARG(2);
 
   int id = l_toint(1);
-  if (uint(id) >= uint(questList.quests.length())) {
+  if (uint(id) >= uint(questList.quests.size())) {
     ERROR("Invalid quest id");
   }
 

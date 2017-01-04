@@ -34,7 +34,7 @@ namespace ui
 void MusicPlayer::prevTrack(Button* sender)
 {
   MusicPlayer* musicPlayer = static_cast<MusicPlayer*>(sender->parent);
-  int nTracks = liber.musicTracks.length();
+  int nTracks = liber.musicTracks.size();
 
   if (nTracks != 0) {
     musicPlayer->currentTrack = (musicPlayer->currentTrack + nTracks - 1) % nTracks;
@@ -50,7 +50,7 @@ void MusicPlayer::prevTrack(Button* sender)
 void MusicPlayer::nextTrack(Button* sender)
 {
   MusicPlayer* musicPlayer = static_cast<MusicPlayer*>(sender->parent);
-  int nTracks = liber.musicTracks.length();
+  int nTracks = liber.musicTracks.size();
 
   if (nTracks != 0) {
     musicPlayer->currentTrack = (musicPlayer->currentTrack + 1) % nTracks;
@@ -66,7 +66,7 @@ void MusicPlayer::nextTrack(Button* sender)
 void MusicPlayer::playTrack(Button* sender)
 {
   MusicPlayer* musicPlayer = static_cast<MusicPlayer*>(sender->parent);
-  int nTracks = liber.musicTracks.length();
+  int nTracks = liber.musicTracks.size();
 
   if (nTracks != 0) {
     sound.playMusic(musicPlayer->currentTrack);
@@ -131,7 +131,7 @@ void MusicPlayer::onUpdate()
   if (isPlaying && soundTrack != currentTrack) {
     if (soundTrack == -1) {
       // Go to the next track.
-      int nTracks = liber.musicTracks.length();
+      int nTracks = liber.musicTracks.size();
 
       if (nTracks > 0) {
         currentTrack = (currentTrack + 1) % nTracks;
@@ -163,7 +163,7 @@ MusicPlayer::MusicPlayer() :
 {
   flags |= UPDATE_BIT;
 
-  if (liber.musicTracks.length() > 0) {
+  if (liber.musicTracks.size() > 0) {
     trackLabel.setText("1");
   }
   sound.setMusicVolume(0.5f);

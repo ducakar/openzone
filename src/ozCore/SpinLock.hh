@@ -42,7 +42,7 @@ class SpinLock
 {
 private:
 
-  volatile bool isLocked = false; ///< True iff locked.
+  volatile bool isLocked_ = false; ///< True iff locked.
 
 public:
 
@@ -59,16 +59,18 @@ public:
   /**
    * Copying or moving is not possible.
    */
-  SpinLock& operator =(const SpinLock&) = delete;
+  SpinLock& operator=(const SpinLock&) = delete;
 
   /**
    * Loop performing a lock operation until it succeeds.
    */
   void lock()
   {
-    while (__atomic_test_and_set(&isLocked, __ATOMIC_ACQUIRE)) {
-#if defined(__i386__) || defined(__x86_64__)
-      __asm__ volatile ("pause");
+    while (__atomic_test_and_set(&isLocked_, __ATOMIC_ACQUIRE)) {
+#if defined(__ARM_ACLE__)
+      __builtin_arm_yield();
+#elif defined(__i386__) || defined(__x86_64__)
+      __builtin_ia32_pause();
 #endif
     }
   }
@@ -80,7 +82,7 @@ public:
    */
   bool tryLock()
   {
-    return !__atomic_test_and_set(&isLocked, __ATOMIC_ACQUIRE);
+    return !__atomic_test_and_set(&isLocked_, __ATOMIC_ACQUIRE);
   }
 
   /**
@@ -88,7 +90,7 @@ public:
    */
   void unlock()
   {
-    __atomic_clear(&isLocked, __ATOMIC_RELEASE);
+    __atomic_clear(&isLocked_, __ATOMIC_RELEASE);
   }
 
 };

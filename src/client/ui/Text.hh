@@ -62,7 +62,7 @@ public:
 
   ~Text();
   Text(Text&& l);
-  Text& operator = (Text&& l);
+  Text& operator=(Text&& l);
 
   void setPosition(int x, int y);
   void setWidth(int width);

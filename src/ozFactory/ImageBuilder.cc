@@ -366,29 +366,29 @@ ImageData::~ImageData()
   delete[] pixels;
 }
 
-ImageData::ImageData(ImageData&& i) :
-  width(i.width), height(i.height), flags(i.flags), pixels(i.pixels)
+ImageData::ImageData(ImageData&& other) :
+  width(other.width), height(other.height), flags(other.flags), pixels(other.pixels)
 {
-  i.width  = 0;
-  i.height = 0;
-  i.flags  = 0;
-  i.pixels = nullptr;
+  other.width  = 0;
+  other.height = 0;
+  other.flags  = 0;
+  other.pixels = nullptr;
 }
 
-ImageData& ImageData::operator = (ImageData&& i)
+ImageData& ImageData::operator=(ImageData&& other)
 {
-  if (&i != this) {
+  if (&other != this) {
     delete[] pixels;
 
-    width  = i.width;
-    height = i.height;
-    flags  = i.flags;
-    pixels = i.pixels;
+    width  = other.width;
+    height = other.height;
+    flags  = other.flags;
+    pixels = other.pixels;
 
-    i.width  = 0;
-    i.height = 0;
-    i.flags  = 0;
-    i.pixels = nullptr;
+    other.width  = 0;
+    other.height = 0;
+    other.flags  = 0;
+    other.pixels = nullptr;
   }
   return *this;
 }

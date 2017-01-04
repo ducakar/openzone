@@ -138,12 +138,12 @@ private:
   {
     Model* model;
 
-    bool operator == (const Ref& r) const
+    bool operator==(const Ref& r) const
     {
       return model == r.model;
     }
 
-    bool operator < (const Ref& r) const
+    bool operator<(const Ref& r) const
     {
       return model->size > r.model->size || (model->size == r.model->size && model < r.model);
     }

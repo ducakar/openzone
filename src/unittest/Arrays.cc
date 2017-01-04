@@ -102,7 +102,7 @@ void test_arrays()
   Arrays::free(c, 5);
   delete[] c;
 
-  OZ_CHECK(Arrays::length(a) == 4);
+  OZ_CHECK(Arrays::size(a) == 4);
 
   Foo* d = new Foo[4]();
   Arrays::copy(b, 4, d);

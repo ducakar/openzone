@@ -32,14 +32,14 @@ const float Matrix::MAX_VELOCITY2 = 1000000.0f;
 
 void Matrix::update()
 {
-  maxStructs  = max(maxStructs,  Struct::pool.length());
-  maxEvents   = max(maxEvents,   Object::Event::pool.length());
-  maxObjects  = max(maxObjects,  Object::pool.length());
-  maxDynamics = max(maxDynamics, Dynamic::pool.length());
-  maxWeapons  = max(maxWeapons,  Weapon::pool.length());
-  maxBots     = max(maxBots,     Bot::pool.length());
-  maxVehicles = max(maxVehicles, Vehicle::pool.length());
-  maxFrags    = max(maxFrags,    Frag::mpool.length());
+  maxStructs  = max(maxStructs,  Struct::pool.size());
+  maxEvents   = max(maxEvents,   Object::Event::pool.size());
+  maxObjects  = max(maxObjects,  Object::pool.size());
+  maxDynamics = max(maxDynamics, Dynamic::pool.size());
+  maxWeapons  = max(maxWeapons,  Weapon::pool.size());
+  maxBots     = max(maxBots,     Bot::pool.size());
+  maxVehicles = max(maxVehicles, Vehicle::pool.size());
+  maxFrags    = max(maxFrags,    Frag::mpool.size());
 
   for (int i = 0; i < Orbis::MAX_OBJECTS; ++i) {
     Object* obj = orbis.obj(i);
@@ -92,7 +92,7 @@ void Matrix::update()
     else {
       // clear inventory of invalid references
       if (!obj->items.isEmpty()) {
-        for (int j = 0; j < obj->items.length();) {
+        for (int j = 0; j < obj->items.size();) {
           if (orbis.obj(obj->items[j]) == nullptr) {
             obj->items.erase(j);
           }

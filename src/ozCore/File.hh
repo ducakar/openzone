@@ -106,19 +106,19 @@ public:
   /**
    * Recreate instance for a given path.
    */
-  File& operator =(const String& path);
+  File& operator=(const String& path);
 
   /**
    * Recreate instance for a given path.
    */
-  File& operator =(String&& path);
+  File& operator=(String&& path);
 
   /**
    * Recreate instance for a given path.
    */
-  File& operator =(const char* path)
+  File& operator=(const char* path)
   {
-    return static_cast<File&>(String::operator =(path));
+    return static_cast<File&>(String::operator=(path));
   }
 
   /**
@@ -225,49 +225,49 @@ public:
   /**
    * Return file with a given string appended to its path.
    */
-  File operator +(const String& pathElem) const;
+  File operator+(const String& pathElem) const;
 
   /**
    * Return file with a given string appended to its path.
    */
-  File operator +(const char* pathElem) const;
+  File operator+(const char* pathElem) const;
 
   /**
    * Return file with path separator and a given token appended to its path.
    */
-  File operator /(const String& pathElem) const;
+  File operator/(const String& pathElem) const;
 
   /**
    * Return file with path separator and a given token appended to its path.
    */
-  File operator /(const char* pathElem) const;
+  File operator/(const char* pathElem) const;
 
   /**
    * Append a given string to the path.
    */
-  File& operator +=(const String& pathElem);
+  File& operator+=(const String& pathElem);
 
   /**
    * Append a given string to the path.
    */
-  File& operator +=(const char* pathElem);
+  File& operator+=(const char* pathElem);
 
   /**
    * Append path separator and a given token to the path.
    */
-  File& operator /=(const String& pathElem);
+  File& operator/=(const String& pathElem);
 
   /**
    * Append path separator and a given token to the path.
    */
-  File& operator /=(const char* pathElem);
+  File& operator/=(const char* pathElem);
 
   /**
    * Read at most `*size` bytes from file and update `*size` to the number of bytes read.
    *
    * @return true iff read operation succeeded (it is not necessary the whole file was read).
    */
-  bool read(char* buffer, int* size) const;
+  bool read(char* data_, int* length) const;
 
   /**
    * Create a buffered stream that contains file contents.
@@ -279,7 +279,7 @@ public:
   /**
    * Write buffer contents to the file.
    */
-  bool write(const char* data, int size) const;
+  bool write(const char* data_, int length) const;
 
   /**
    * Write contents of a stream, equivalent to `write(is.begin(), is.tell())`.

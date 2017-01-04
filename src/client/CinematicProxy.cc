@@ -40,7 +40,7 @@ void CinematicProxy::executeSequence(const File& file, const Lingua* missionLing
     OZ_ERROR("Failed to load sequence from '%s'", file.c());
   }
 
-  int nSteps = sequence.length();
+  int nSteps = sequence.size();
   if (nSteps == 0) {
     return;
   }
@@ -305,8 +305,8 @@ void CinematicProxy::write(Stream* os) const
   os->writeFloat(stepTime);
   os->writeInt(prevState);
 
-  os->writeInt(steps.length());
-  for (int i = 0; i < steps.length(); ++i) {
+  os->writeInt(steps.size());
+  for (int i = 0; i < steps.size(); ++i) {
     const Step& step = steps[i];
 
     os->write<Quat>(step.rot);

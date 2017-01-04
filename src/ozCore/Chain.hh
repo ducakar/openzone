@@ -94,7 +94,7 @@ protected:
   {
   private:
 
-    using detail::IteratorBase<ElemType>::elem;
+    using detail::IteratorBase<ElemType>::elem_;
 
   public:
 
@@ -107,19 +107,19 @@ protected:
      * Create chain iterator, initially pointing to a given element.
      */
     OZ_ALWAYS_INLINE
-    explicit ChainIterator(const Chain& c) :
-      detail::IteratorBase<ElemType>(c.firstElem)
+    explicit ChainIterator(const Chain& other) :
+      detail::IteratorBase<ElemType>(other.firstElem_)
     {}
 
     /**
      * Advance to the next element.
      */
     OZ_ALWAYS_INLINE
-    ChainIterator& operator ++()
+    ChainIterator& operator++()
     {
-      OZ_ASSERT(elem != nullptr);
+      OZ_ASSERT(elem_ != nullptr);
 
-      elem = elem->next[INDEX];
+      elem_ = elem_->next[INDEX];
       return *this;
     }
 
@@ -157,7 +157,7 @@ public:
 
 protected:
 
-  Elem* firstElem = nullptr; ///< Pointer to the first element in the chain.
+  Elem* firstElem_ = nullptr; ///< Pointer to the first element in the chain.
 
 public:
 
@@ -169,41 +169,23 @@ public:
   /**
    * Move constructor, rebinds elements to the new chain.
    */
-  Chain(Chain&& c) :
-    firstElem(c.firstElem)
+  Chain(Chain&& other) :
+    firstElem_(other.firstElem_)
   {
-    c.firstElem = nullptr;
+    other.firstElem_ = nullptr;
   }
 
   /**
    * Move operator, rebinds elements to the destination chain.
    */
-  Chain& operator =(Chain&& c)
+  Chain& operator=(Chain&& other)
   {
-    if (&c != this) {
-      firstElem = c.firstElem;
+    if (&other != this) {
+      firstElem_ = other.firstElem_;
 
-      c.firstElem = nullptr;
+      other.firstElem_ = nullptr;
     }
     return *this;
-  }
-
-  /**
-   * True iff same size and respective elements are equal.
-   *
-   * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
-   * copies always differ in `prev[INDEX]` and `next[INDEX]` members.
-   */
-  bool operator ==(const Chain& c) const
-  {
-    const Elem* e1 = firstElem;
-    const Elem* e2 = c.firstElem;
-
-    while (e1 != nullptr && e2 != nullptr && *e1 == *e2) {
-      e1 = e1->next[INDEX];
-      e2 = e2->next[INDEX];
-    }
-    return e1 == nullptr && e2 == nullptr;
   }
 
   /**
@@ -263,10 +245,10 @@ public:
   /**
    * Iterate through the chain and count elements.
    */
-  int length() const
+  int size() const
   {
     int   i = 0;
-    Elem* e = firstElem;
+    Elem* e = firstElem_;
 
     while (e != nullptr) {
       e = e->next[INDEX];
@@ -281,7 +263,7 @@ public:
   OZ_ALWAYS_INLINE
   bool isEmpty() const
   {
-    return firstElem == nullptr;
+    return firstElem_ == nullptr;
   }
 
   /**
@@ -290,7 +272,7 @@ public:
   OZ_ALWAYS_INLINE
   Elem* first() const
   {
-    return firstElem;
+    return firstElem_;
   }
 
   /**
@@ -300,7 +282,7 @@ public:
    */
   Elem* before(const Elem* elem) const
   {
-    Elem* current = firstElem;
+    Elem* current = firstElem_;
     Elem* before  = nullptr;
 
     while (current != elem) {
@@ -321,7 +303,7 @@ public:
   {
     OZ_ASSERT(elem != nullptr);
 
-    Elem* p = firstElem;
+    Elem* p = firstElem_;
 
     while (p != nullptr && p != elem) {
       p = p->next[INDEX];
@@ -332,14 +314,14 @@ public:
   /**
    * True iff an element equal to a given one is in the chain.
    *
-   * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
+   * `Elem` type should implement `operator==`, otherwise comparison doesn't make sense as two
    * copies always differ in `prev[INDEX]` and `next[INDEX]` members.
    */
   bool contains(const Elem* elem) const
   {
     OZ_ASSERT(elem != nullptr);
 
-    Elem* e = firstElem;
+    Elem* e = firstElem_;
 
     while (e != nullptr && !(*e == *elem)) {
       e = e->next[INDEX];
@@ -379,7 +361,7 @@ public:
     OZ_ASSERT(prev == nullptr || prev->next[INDEX] == elem);
 
     if (prev == nullptr) {
-      firstElem = elem->next[INDEX];
+      firstElem_ = elem->next[INDEX];
     }
     else {
       prev->next[INDEX] = elem->next[INDEX];
@@ -393,8 +375,8 @@ public:
   {
     OZ_ASSERT(elem != nullptr);
 
-    elem->next[INDEX] = firstElem;
-    firstElem = elem;
+    elem->next[INDEX] = firstElem_;
+    firstElem_ = elem;
   }
 
   /**
@@ -402,11 +384,11 @@ public:
    */
   Elem* popFirst()
   {
-    OZ_ASSERT(firstElem != nullptr);
+    OZ_ASSERT(firstElem_ != nullptr);
 
-    Elem* e = firstElem;
+    Elem* e = firstElem_;
 
-    firstElem = firstElem->next[INDEX];
+    firstElem_ = firstElem_->next[INDEX];
     return e;
   }
 
@@ -415,7 +397,7 @@ public:
    */
   void clear()
   {
-    firstElem = nullptr;
+    firstElem_ = nullptr;
   }
 
   /**
@@ -423,7 +405,7 @@ public:
    */
   void free()
   {
-    Elem* e = firstElem;
+    Elem* e = firstElem_;
 
     while (e != nullptr) {
       Elem* next = e->next[INDEX];
@@ -432,7 +414,7 @@ public:
       e = next;
     }
 
-    firstElem = nullptr;
+    firstElem_ = nullptr;
   }
 
 };

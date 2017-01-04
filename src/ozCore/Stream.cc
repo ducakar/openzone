@@ -34,7 +34,7 @@ void Stream::readFloats(float* values, int count)
 {
   const char* data = readSkip(count * sizeof(float));
 
-  if (order == Endian::NATIVE) {
+  if (order_ == Endian::NATIVE) {
     for (int i = 0; i < count; ++i, data += 4, ++values) {
       Endian::ToValue<float> value = {{data[0], data[1], data[2], data[3]}};
 
@@ -54,7 +54,7 @@ void Stream::writeFloats(const float* values, int count)
 {
   char* data = writeSkip(count * sizeof(float));
 
-  if (order == Endian::NATIVE) {
+  if (order_ == Endian::NATIVE) {
     for (int i = 0; i < count; ++i, data += 4, ++values) {
       Endian::ToBytes<float> value = {*values};
 
@@ -76,18 +76,18 @@ void Stream::writeFloats(const float* values, int count)
   }
 }
 
-Stream::Stream(const char* start, const char* end, Endian::Order order_) :
-  streamPos(const_cast<char*>(start)), streamBegin(const_cast<char*>(start)),
-  streamEnd(const_cast<char*>(end)), flags(0), order(order_)
+Stream::Stream(const char* start, const char* end, Endian::Order order) :
+  pos_(const_cast<char*>(start)), begin_(const_cast<char*>(start)), end_(const_cast<char*>(end)),
+  flags_(0), order_(order)
 {}
 
-Stream::Stream(char* start, char* end, Endian::Order order_) :
-  streamPos(start), streamBegin(start), streamEnd(end), flags(WRITABLE), order(order_)
+Stream::Stream(char* start, char* end, Endian::Order order) :
+  pos_(start), begin_(start), end_(end), flags_(WRITABLE), order_(order)
 {}
 
-Stream::Stream(int size, Endian::Order order_) :
-  streamPos(size == 0 ? nullptr : new char[size]), streamBegin(streamPos),
-  streamEnd(streamPos + size), flags(WRITABLE | BUFFERED), order(order_)
+Stream::Stream(int size, Endian::Order order) :
+  pos_(size == 0 ? nullptr : new char[size]), begin_(pos_), end_(pos_ + size),
+  flags_(WRITABLE | BUFFERED), order_(order)
 {}
 
 Stream::~Stream()
@@ -95,110 +95,110 @@ Stream::~Stream()
   free();
 }
 
-Stream::Stream(Stream&& s) :
-  streamPos(s.streamPos), streamBegin(s.streamBegin), streamEnd(s.streamEnd), flags(s.flags),
-  order(s.order)
+Stream::Stream(Stream&& other) :
+  pos_(other.pos_), begin_(other.begin_), end_(other.end_), flags_(other.flags_),
+  order_(other.order_)
 {
-  s.streamPos   = nullptr;
-  s.streamBegin = nullptr;
-  s.streamEnd   = nullptr;
-  s.flags       = 0;
-  s.order       = Endian::NATIVE;
+  other.pos_   = nullptr;
+  other.begin_ = nullptr;
+  other.end_   = nullptr;
+  other.flags_ = 0;
+  other.order_ = Endian::NATIVE;
 }
 
-Stream& Stream::operator =(Stream&& s)
+Stream& Stream::operator=(Stream&& other)
 {
-  if (&s != this) {
+  if (&other != this) {
     free();
 
-    streamPos   = s.streamPos;
-    streamBegin = s.streamBegin;
-    streamEnd   = s.streamEnd;
-    flags       = s.flags;
-    order       = s.order;
+    pos_   = other.pos_;
+    begin_ = other.begin_;
+    end_   = other.end_;
+    flags_ = other.flags_;
+    order_ = other.order_;
 
-    s.streamPos   = nullptr;
-    s.streamBegin = nullptr;
-    s.streamEnd   = nullptr;
-    s.flags       = 0;
-    s.order       = Endian::NATIVE;
+    other.pos_   = nullptr;
+    other.begin_ = nullptr;
+    other.end_   = nullptr;
+    other.flags_ = 0;
+    other.order_ = Endian::NATIVE;
   }
   return *this;
 }
 
 void Stream::seek(int offset)
 {
-  if (offset < 0 || int(streamEnd - streamBegin) < offset) {
+  if (offset < 0 || int(end_ - begin_) < offset) {
     OZ_ERROR("oz::InputStream: Overrun for %d B during stream seek",
-             offset < 0 ? offset : offset - int(streamEnd - streamBegin));
+             offset < 0 ? offset : offset - int(end_ - begin_));
   }
 
-  streamPos = streamBegin + offset;
+  pos_ = begin_ + offset;
 }
 
 void Stream::resize(int newSize)
 {
-  int length = min<int>(tell(), newSize);
+  int size = min<int>(tell(), newSize);
 
   char* newData = new char[newSize];
-  memcpy(newData, streamBegin, length);
-  delete[] streamBegin;
+  memcpy(newData, begin_, size);
+  delete[] begin_;
 
-  streamPos   = newData + length;
-  streamBegin = newData;
-  streamEnd   = newData + newSize;
+  pos_   = newData + size;
+  begin_ = newData;
+  end_   = newData + newSize;
 }
 
 const char* Stream::readSkip(int count)
 {
-  char* oldPos = streamPos;
-  streamPos += count;
+  char* oldPos = pos_;
+  pos_ += count;
 
-  if (streamEnd < streamBegin) {
+  if (end_ < begin_) {
     OZ_ERROR("oz::Stream: Position overflow");
   }
-  else if (streamPos > streamEnd) {
+  else if (pos_ > end_) {
     OZ_ERROR("oz::Stream: Overrun for %d B during a read of %d B",
-             int(streamPos - streamEnd), count);
+             int(pos_ - end_), count);
   }
   return oldPos;
 }
 
 char* Stream::writeSkip(int count)
 {
-  char* oldPos = streamPos;
-  streamPos += count;
+  char* oldPos = pos_;
+  pos_ += count;
 
-  if (!(flags & WRITABLE)) {
+  if (!(flags_ & WRITABLE)) {
     OZ_ERROR("oz::Stream: Writing to read-only stream");
   }
-  else if (streamEnd < streamBegin) {
+  else if (end_ < begin_) {
     OZ_ERROR("oz::Stream: Position overflow");
   }
-  else if (streamPos > streamEnd) {
-    if (flags & BUFFERED) {
-      size_t newLength = streamPos - streamBegin;
+  else if (pos_ > end_) {
+    if (flags_ & BUFFERED) {
+      size_t newLength = pos_ - begin_;
       size_t length    = newLength - count;
-      size_t size      = streamEnd - streamBegin;
+      size_t size      = end_ - begin_;
 
       size = size == 0 ? 4096 : size + size / 2;
       size = max<size_t>(size, newLength);
 
       char* newData = new char[size];
 
-      if (streamBegin != nullptr) {
-        memcpy(newData, streamBegin, length);
-        delete[] streamBegin;
+      if (begin_ != nullptr) {
+        memcpy(newData, begin_, length);
+        delete[] begin_;
       }
 
-      streamBegin = newData;
-      streamEnd   = newData + size;
-      streamPos   = newData + newLength;
-      oldPos      = newData + length;
+      begin_ = newData;
+      end_   = newData + size;
+      pos_   = newData + newLength;
+      oldPos = newData + length;
     }
     else {
       OZ_ERROR("oz::Stream: Overrun for %d B during a write of %d B",
-               int(streamPos - streamEnd), count);
+               int(pos_ - end_), count);
     }
   }
   return oldPos;
@@ -206,12 +206,12 @@ char* Stream::writeSkip(int count)
 
 void Stream::free()
 {
-  if (flags & BUFFERED) {
-    delete[] streamBegin;
+  if (flags_ & BUFFERED) {
+    delete[] begin_;
 
-    streamPos   = nullptr;
-    streamBegin = nullptr;
-    streamEnd   = nullptr;
+    pos_   = nullptr;
+    begin_ = nullptr;
+    end_   = nullptr;
   }
 }
 
@@ -280,12 +280,12 @@ short Stream::readShort()
   Endian::ToValue<short> value;
   read(value.data, sizeof(value.data));
 
-  return order == Endian::NATIVE ? value.value : Endian::bswap(value.value);
+  return order_ == Endian::NATIVE ? value.value : Endian::bswap(value.value);
 }
 
 void Stream::writeShort(short s)
 {
-  Endian::ToBytes<short> value = {order == Endian::NATIVE ? s : Endian::bswap(s)};
+  Endian::ToBytes<short> value = {order_ == Endian::NATIVE ? s : Endian::bswap(s)};
 
   write(value.data, sizeof(value.data));
 }
@@ -295,12 +295,12 @@ ushort Stream::readUShort()
   Endian::ToValue<ushort> value;
   read(value.data, sizeof(value.data));
 
-  return order == Endian::NATIVE ? value.value : Endian::bswap(value.value);
+  return order_ == Endian::NATIVE ? value.value : Endian::bswap(value.value);
 }
 
 void Stream::writeUShort(ushort s)
 {
-  Endian::ToBytes<ushort> value = {order == Endian::NATIVE ? s : Endian::bswap(s)};
+  Endian::ToBytes<ushort> value = {order_ == Endian::NATIVE ? s : Endian::bswap(s)};
 
   write(value.data, sizeof(value.data));
 }
@@ -310,12 +310,12 @@ int Stream::readInt()
   Endian::ToValue<int> value;
   read(value.data, sizeof(value.data));
 
-  return order == Endian::NATIVE ? value.value : Endian::bswap(value.value);
+  return order_ == Endian::NATIVE ? value.value : Endian::bswap(value.value);
 }
 
 void Stream::writeInt(int i)
 {
-  Endian::ToBytes<int> value = {order == Endian::NATIVE ? i : Endian::bswap(i)};
+  Endian::ToBytes<int> value = {order_ == Endian::NATIVE ? i : Endian::bswap(i)};
 
   write(value.data, sizeof(value.data));
 }
@@ -325,12 +325,12 @@ uint Stream::readUInt()
   Endian::ToValue<uint> value;
   read(value.data, sizeof(value.data));
 
-  return order == Endian::NATIVE ? value.value : Endian::bswap(value.value);
+  return order_ == Endian::NATIVE ? value.value : Endian::bswap(value.value);
 }
 
 void Stream::writeUInt(uint i)
 {
-  Endian::ToBytes<uint> value = {order == Endian::NATIVE ? i : Endian::bswap(i)};
+  Endian::ToBytes<uint> value = {order_ == Endian::NATIVE ? i : Endian::bswap(i)};
 
   write(value.data, sizeof(value.data));
 }
@@ -340,12 +340,12 @@ long64 Stream::readLong64()
   Endian::ToValue<long64> value;
   read(value.data, sizeof(value.data));
 
-  return order == Endian::NATIVE ? value.value : Endian::bswap(value.value);
+  return order_ == Endian::NATIVE ? value.value : Endian::bswap(value.value);
 }
 
 void Stream::writeLong64(long64 l)
 {
-  Endian::ToBytes<long64> value = {order == Endian::NATIVE ? l : Endian::bswap(l)};
+  Endian::ToBytes<long64> value = {order_ == Endian::NATIVE ? l : Endian::bswap(l)};
 
   write(value.data, sizeof(value.data));
 }
@@ -355,12 +355,12 @@ ulong64 Stream::readULong64()
   Endian::ToValue<ulong64> value;
   read(value.data, sizeof(value.data));
 
-  return order == Endian::NATIVE ? value.value : Endian::bswap(value.value);
+  return order_ == Endian::NATIVE ? value.value : Endian::bswap(value.value);
 }
 
 void Stream::writeULong64(ulong64 l)
 {
-  Endian::ToBytes<ulong64> value = {order == Endian::NATIVE ? l : Endian::bswap(l)};
+  Endian::ToBytes<ulong64> value = {order_ == Endian::NATIVE ? l : Endian::bswap(l)};
 
   write(value.data, sizeof(value.data));
 }
@@ -369,7 +369,7 @@ float Stream::readFloat()
 {
   const char* data = readSkip(sizeof(float));
 
-  if (order == Endian::NATIVE) {
+  if (order_ == Endian::NATIVE) {
     Endian::ToValue<float> value = {{data[0], data[1], data[2], data[3]}};
 
     return value.value;
@@ -387,7 +387,7 @@ void Stream::writeFloat(float f)
 
   Endian::ToBytes<float> value = {f};
 
-  if (order == Endian::NATIVE) {
+  if (order_ == Endian::NATIVE) {
     data[0] = value.data[0];
     data[1] = value.data[1];
     data[2] = value.data[2];
@@ -405,7 +405,7 @@ double Stream::readDouble()
 {
   const char* data = readSkip(sizeof(double));
 
-  if (order == Endian::NATIVE) {
+  if (order_ == Endian::NATIVE) {
     Endian::ToValue<double> value = {
       {data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]}
     };
@@ -427,7 +427,7 @@ void Stream::writeDouble(double d)
 
   Endian::ToBytes<double> value = {d};
 
-  if (order == Endian::NATIVE) {
+  if (order_ == Endian::NATIVE) {
     data[0] = value.data[0];
     data[1] = value.data[1];
     data[2] = value.data[2];
@@ -451,16 +451,16 @@ void Stream::writeDouble(double d)
 
 const char* Stream::readString()
 {
-  const char* begin = streamPos;
+  const char* begin = pos_;
 
-  while (streamPos < streamEnd && *streamPos != '\0') {
-    ++streamPos;
+  while (pos_ < end_ && *pos_ != '\0') {
+    ++pos_;
   }
-  if (streamPos == streamEnd) {
+  if (pos_ == end_) {
     OZ_ERROR("oz::Stream: Overrun while looking for the end of a string.");
   }
 
-  ++streamPos;
+  ++pos_;
   return begin;
 }
 
@@ -476,16 +476,16 @@ void Stream::writeString(const char* s)
 
 String Stream::readLine()
 {
-  const char* begin = streamPos;
+  const char* begin = pos_;
 
-  while (streamPos < streamEnd && *streamPos != '\n' && *streamPos != '\r') {
-    ++streamPos;
+  while (pos_ < end_ && *pos_ != '\n' && *pos_ != '\r') {
+    ++pos_;
   }
 
-  int length = int(streamPos - begin);
+  int length = int(pos_ - begin);
 
-  streamPos += (streamPos < streamEnd) +
-               (streamPos + 2 == streamEnd && streamPos[0] == '\r' && streamPos[1] == '\n');
+  pos_ += (pos_ < end_) +
+               (pos_ + 2 == end_ && pos_[0] == '\r' && pos_[1] == '\n');
 
   return String(begin, length);
 }
@@ -493,13 +493,13 @@ String Stream::readLine()
 void Stream::writeLine(const String& s)
 {
   write(s, s.length() + 1);
-  streamPos[-1] = '\n';
+  pos_[-1] = '\n';
 }
 
 void Stream::writeLine(const char* s)
 {
   write(s, String::length(s) + 1);
-  streamPos[-1] = '\n';
+  pos_[-1] = '\n';
 }
 
 Stream Stream::compress(int level) const
@@ -517,9 +517,9 @@ Stream Stream::compress(int level) const
   int    outSize    = 8 + int(deflateBound(&zstream, tell()));
   Stream out        = Stream(outSize, Endian::LITTLE);
 
-  zstream.next_in   = reinterpret_cast<ubyte*>(const_cast<char*>(streamBegin));
+  zstream.next_in   = reinterpret_cast<ubyte*>(const_cast<char*>(begin_));
   zstream.avail_in  = tell();
-  zstream.next_out  = reinterpret_cast<ubyte*>(out.streamBegin + 8);
+  zstream.next_out  = reinterpret_cast<ubyte*>(out.begin_ + 8);
   zstream.avail_out = outSize - 8;
 
   int ret = ::deflate(&zstream, Z_FINISH);
@@ -535,14 +535,14 @@ Stream Stream::compress(int level) const
     out.resize(outSize);
 
     // Write size and order of the original data (in little endian).
-    int* start = reinterpret_cast<int*>(out.streamBegin);
+    int* start = reinterpret_cast<int*>(out.begin_);
 
 #if OZ_BYTE_ORDER == 4321
     start[0] = Endian::bswap32(tell());
-    start[1] = Endian::bswap32(order);
+    start[1] = Endian::bswap32(order_);
 #else
     start[0] = tell();
-    start[1] = order;
+    start[1] = order_;
 #endif
 
     return out;
@@ -564,7 +564,7 @@ Stream Stream::decompress() const
     return Stream();
   }
 
-  const int* start = reinterpret_cast<int*>(streamBegin);
+  const int* start = reinterpret_cast<int*>(begin_);
 
 #if OZ_BYTE_ORDER == 4321
   int           outSize  = Endian::bswap32(start[0]);
@@ -576,9 +576,9 @@ Stream Stream::decompress() const
 
   Stream out(outSize, outOrder);
 
-  zstream.next_in   = reinterpret_cast<ubyte*>(const_cast<char*>(streamBegin + 8));
+  zstream.next_in   = reinterpret_cast<ubyte*>(const_cast<char*>(begin_ + 8));
   zstream.avail_in  = capacity() - 8;
-  zstream.next_out  = reinterpret_cast<ubyte*>(out.streamBegin);
+  zstream.next_out  = reinterpret_cast<ubyte*>(out.begin_);
   zstream.avail_out = outSize;
 
   int ret = ::inflate(&zstream, Z_FINISH);

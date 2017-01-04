@@ -107,7 +107,7 @@ void Terra::load()
       {TerraBuilder::PLAINS,   "plains"  },
     };
 
-    for (int i = 0; i < Arrays::length(MODULE_NAMES); ++i) {
+    for (int i = 0; i < Arrays::size(MODULE_NAMES); ++i) {
       const Json& moduleConfig = config[MODULE_NAMES[i]];
 
       float bottomHeight = moduleConfig["bottomHeight"].get(-100.0f);
@@ -145,7 +145,7 @@ void Terra::load()
 
     const Json& gradientConfig = config["gradient"];
 
-    for (int i = 0; i < gradientConfig.length(); ++i) {
+    for (int i = 0; i < gradientConfig.size(); ++i) {
       Vec4 gradientPoint = gradientConfig[i].get(Vec4::ZERO);
 
       TerraBuilder::addGradientPoint(gradientPoint);

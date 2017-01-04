@@ -61,9 +61,9 @@ public:
 
 protected:
 
-  Elem* data  = nullptr; ///< Array of elements.
-  int   count = 0;       ///< Number of elements.
-  int   size  = 0;       ///< Capacity, number of elements in storage.
+  Elem* data_     = nullptr; ///< Array of elements.
+  int   size_     = 0;       ///< Number of elements.
+  int   capacity_ = 0;       ///< Capacity, number of elements in storage.
 
 protected:
 
@@ -76,12 +76,12 @@ protected:
   void ensureCapacity(int requestedCapacity)
   {
     if (requestedCapacity < 0) {
-      OZ_ERROR("oz::List: Capacity overflow");
+      OZ_ERROR("oz::List: Negative capacity (overflow?)");
     }
-    else if (size < requestedCapacity) {
-      size = size == 0 ? 8 : size + size / 2;
-      size = max<int>(size, requestedCapacity);
-      data = Arrays::reallocate<Elem>(data, count, size);
+    else if (capacity_ < requestedCapacity) {
+      capacity_ = capacity_ == 0 ? 8 : capacity_ + capacity_ / 2;
+      capacity_ = max<int>(capacity_, requestedCapacity);
+      data_     = Arrays::reallocate<Elem>(data_, size_, capacity_);
     }
   }
 
@@ -95,24 +95,24 @@ public:
   /**
    * Create a list with a given initial length and capacity.
    */
-  explicit List(int count_) :
-    data(Arrays::reallocate<Elem>(nullptr, 0, count_)), count(count_), size(count_)
+  explicit List(int size) :
+    data_(Arrays::reallocate<Elem>(nullptr, 0, size)), size_(size), capacity_(size)
   {}
 
   /**
    * Initialise from a C++ array.
    */
-  explicit List(const Elem* array, int count_) :
-    List(count_)
+  explicit List(const Elem* array, int size) :
+    List(size)
   {
-    Arrays::copy<Elem>(array, count, data);
+    Arrays::copy<Elem>(array, size, data_);
   }
 
   /**
    * Initialise from an initialiser list.
    */
-  List(InitialiserList<Elem> l) :
-    List(l.begin(), int(l.size()))
+  List(InitialiserList<Elem> il) :
+    List(il.begin(), int(il.size()))
   {}
 
   /**
@@ -120,25 +120,25 @@ public:
    */
   ~List()
   {
-    delete[] data;
+    delete[] data_;
   }
 
   /**
    * Copy constructor, copies elements.
    */
-  List(const List& l) :
-    List(l.data, l.count)
+  List(const List& other) :
+    List(other.data_, other.size_)
   {}
 
   /**
    * Move constructor, moves element storage.
    */
-  List(List&& l) :
-    data(l.data), count(l.count), size(l.size)
+  List(List&& other) :
+    data_(other.data_), size_(other.size_), capacity_(other.capacity_)
   {
-    l.data  = nullptr;
-    l.count = 0;
-    l.size  = 0;
+    other.data_  = nullptr;
+    other.size_ = 0;
+    other.capacity_  = 0;
   }
 
   /**
@@ -146,11 +146,11 @@ public:
    *
    * Existing storage is reused if it suffices.
    */
-  List& operator =(const List& l)
+  List& operator=(const List& other)
   {
-    if (&l != this) {
+    if (&other != this) {
       clear();
-      addAll(l.data, l.count);
+      addAll(other.data_, other.size_);
     }
     return *this;
   }
@@ -158,18 +158,18 @@ public:
   /**
    * Move operator, moves element storage.
    */
-  List& operator =(List&& l)
+  List& operator=(List&& other)
   {
-    if (&l != this) {
-      delete[] data;
+    if (&other != this) {
+      delete[] data_;
 
-      data  = l.data;
-      count = l.count;
-      size  = l.size;
+      data_  = other.data_;
+      size_ = other.size_;
+      capacity_  = other.capacity_;
 
-      l.data  = nullptr;
-      l.count = 0;
-      l.size  = 0;
+      other.data_  = nullptr;
+      other.size_ = 0;
+      other.capacity_  = 0;
     }
     return *this;
   }
@@ -179,10 +179,10 @@ public:
    *
    * Existing storage is reused if it suffices.
    */
-  List& operator =(InitialiserList<Elem> l)
+  List& operator=(InitialiserList<Elem> il)
   {
     clear();
-    addAll(l.begin(), int(l.size()));
+    addAll(il.begin(), int(il.size()));
 
     return *this;
   }
@@ -190,17 +190,17 @@ public:
   /**
    * True iff respective elements are equal.
    */
-  bool operator ==(const List& l) const
+  bool operator==(const List& other) const
   {
-    return count == l.count && Arrays::equals<Elem>(data, count, l.data);
+    return size_ == other.size_ && Arrays::equals<Elem>(data_, size_, other.data_);
   }
 
   /**
    * False iff respective elements are equal.
    */
-  bool operator !=(const List& l) const
+  bool operator!=(const List& other) const
   {
-    return !operator ==(l);
+    return !operator==(other);
   }
 
   /**
@@ -209,7 +209,7 @@ public:
   OZ_ALWAYS_INLINE
   CIterator citerator() const
   {
-    return CIterator(data, data + count);
+    return CIterator(data_, data_ + size_);
   }
 
   /**
@@ -218,7 +218,7 @@ public:
   OZ_ALWAYS_INLINE
   Iterator iterator()
   {
-    return Iterator(data, data + count);
+    return Iterator(data_, data_ + size_);
   }
 
   /**
@@ -227,7 +227,7 @@ public:
   OZ_ALWAYS_INLINE
   const Elem* begin() const
   {
-    return data;
+    return data_;
   }
 
   /**
@@ -236,7 +236,7 @@ public:
   OZ_ALWAYS_INLINE
   Elem* begin()
   {
-    return data;
+    return data_;
   }
 
   /**
@@ -245,7 +245,7 @@ public:
   OZ_ALWAYS_INLINE
   const Elem* end() const
   {
-    return data + count;
+    return data_ + size_;
   }
 
   /**
@@ -254,16 +254,16 @@ public:
   OZ_ALWAYS_INLINE
   Elem* end()
   {
-    return data + count;
+    return data_ + size_;
   }
 
   /**
    * Number of elements.
    */
   OZ_ALWAYS_INLINE
-  int length() const
+  int size() const
   {
-    return count;
+    return size_;
   }
 
   /**
@@ -272,7 +272,7 @@ public:
   OZ_ALWAYS_INLINE
   bool isEmpty() const
   {
-    return count == 0;
+    return size_ == 0;
   }
 
   /**
@@ -281,29 +281,29 @@ public:
   OZ_ALWAYS_INLINE
   int capacity() const
   {
-    return size;
+    return capacity_;
   }
 
   /**
    * Constant reference to the `i`-th element.
    */
   OZ_ALWAYS_INLINE
-  const Elem& operator [](int i) const
+  const Elem& operator[](int i) const
   {
-    OZ_ASSERT(uint(i) < uint(count));
+    OZ_ASSERT(uint(i) < uint(size_));
 
-    return data[i];
+    return data_[i];
   }
 
   /**
    * Reference to the `i`-th element.
    */
   OZ_ALWAYS_INLINE
-  Elem& operator [](int i)
+  Elem& operator[](int i)
   {
-    OZ_ASSERT(uint(i) < uint(count));
+    OZ_ASSERT(uint(i) < uint(size_));
 
-    return data[i];
+    return data_[i];
   }
 
   /**
@@ -312,9 +312,9 @@ public:
   OZ_ALWAYS_INLINE
   const Elem& first() const
   {
-    OZ_ASSERT(count != 0);
+    OZ_ASSERT(size_ != 0);
 
-    return data[0];
+    return data_[0];
   }
 
   /**
@@ -323,9 +323,9 @@ public:
   OZ_ALWAYS_INLINE
   Elem& first()
   {
-    OZ_ASSERT(count != 0);
+    OZ_ASSERT(size_ != 0);
 
-    return data[0];
+    return data_[0];
   }
 
   /**
@@ -334,9 +334,9 @@ public:
   OZ_ALWAYS_INLINE
   const Elem& last() const
   {
-    OZ_ASSERT(count != 0);
+    OZ_ASSERT(size_ != 0);
 
-    return data[count - 1];
+    return data_[size_ - 1];
   }
 
   /**
@@ -345,9 +345,9 @@ public:
   OZ_ALWAYS_INLINE
   Elem& last()
   {
-    OZ_ASSERT(count != 0);
+    OZ_ASSERT(size_ != 0);
 
-    return data[count - 1];
+    return data_[size_ - 1];
   }
 
   /**
@@ -356,7 +356,7 @@ public:
   template <typename Key>
   bool contains(const Key& key) const
   {
-    return Arrays::contains<Elem, Key>(data, count, key);
+    return Arrays::contains<Elem, Key>(data_, size_, key);
   }
 
   /**
@@ -365,7 +365,7 @@ public:
   template <typename Key>
   int index(const Key& key) const
   {
-    return Arrays::index<Elem, Key>(data, count, key);
+    return Arrays::index<Elem, Key>(data_, size_, key);
   }
 
   /**
@@ -374,7 +374,7 @@ public:
   template <typename Key>
   int lastIndex(const Key& key) const
   {
-    return Arrays::lastIndex<Elem, Key>(data, count, key);
+    return Arrays::lastIndex<Elem, Key>(data_, size_, key);
   }
 
   /**
@@ -383,7 +383,7 @@ public:
   template <typename Elem_>
   Elem& add(Elem_&& elem)
   {
-    return insert<Elem_>(count, static_cast<Elem_&&>(elem));
+    return insert<Elem_>(size_, static_cast<Elem_&&>(elem));
   }
 
   /**
@@ -391,12 +391,12 @@ public:
    */
   void addAll(const Elem* array, int arrayCount)
   {
-    int newCount = count + arrayCount;
+    int newCount = size_ + arrayCount;
 
     ensureCapacity(newCount);
 
-    Arrays::copy<Elem>(array, arrayCount, data + count);
-    count = newCount;
+    Arrays::copy<Elem>(array, arrayCount, data_ + size_);
+    size_ = newCount;
   }
 
   /**
@@ -404,12 +404,12 @@ public:
    */
   void takeAll(Elem* array, int arrayCount)
   {
-    int newCount = count + arrayCount;
+    int newCount = size_ + arrayCount;
 
     ensureCapacity(newCount);
 
-    Arrays::move<Elem>(array, arrayCount, data + count);
-    count = newCount;
+    Arrays::move<Elem>(array, arrayCount, data_ + size_);
+    size_ = newCount;
   }
 
   /**
@@ -420,13 +420,13 @@ public:
   template <typename Elem_>
   Elem& include(Elem_&& elem)
   {
-    int i = Arrays::index<Elem, Elem>(data, count, elem);
+    int i = Arrays::index<Elem, Elem>(data_, size_, elem);
 
     if (i >= 0) {
-      return data[i];
+      return data_[i];
     }
     else {
-      return insert<Elem_>(count, static_cast<Elem_&&>(elem));
+      return insert<Elem_>(size_, static_cast<Elem_&&>(elem));
     }
   }
 
@@ -438,15 +438,15 @@ public:
   template <typename Elem_>
   Elem& insert(int i, Elem_&& elem)
   {
-    OZ_ASSERT(uint(i) <= uint(count));
+    OZ_ASSERT(uint(i) <= uint(size_));
 
-    ensureCapacity(count + 1);
+    ensureCapacity(size_ + 1);
 
-    Arrays::moveBackward<Elem>(data + i, count - i, data + i + 1);
-    data[i] = static_cast<Elem_&&>(elem);
-    ++count;
+    Arrays::moveBackward<Elem>(data_ + i, size_ - i, data_ + i + 1);
+    data_[i] = static_cast<Elem_&&>(elem);
+    ++size_;
 
-    return data[i];
+    return data_[i];
   }
 
   /**
@@ -456,17 +456,17 @@ public:
    */
   void erase(int i)
   {
-    OZ_ASSERT(uint(i) < uint(count));
+    OZ_ASSERT(uint(i) < uint(size_));
 
-    --count;
+    --size_;
 
-    if (i == count) {
+    if (i == size_) {
       // When removing the last element, no shift is performed, so it is not implicitly destroyed by
       // the move operation.
-      data[count] = Elem();
+      data_[size_] = Elem();
     }
     else {
-      Arrays::move<Elem>(data + i + 1, count - i, data + i);
+      Arrays::move<Elem>(data_ + i + 1, size_ - i, data_ + i);
     }
   }
 
@@ -477,17 +477,17 @@ public:
    */
   void eraseUnordered(int i)
   {
-    OZ_ASSERT(uint(i) < uint(count));
+    OZ_ASSERT(uint(i) < uint(size_));
 
-    --count;
+    --size_;
 
-    if (i == count) {
+    if (i == size_) {
       // When removing the last element, no shift is performed, so it is not implicitly destroyed by
       // the move operation.
-      data[count] = Elem();
+      data_[size_] = Elem();
     }
     else {
-      data[i] = static_cast<Elem&&>(data[count]);
+      data_[i] = static_cast<Elem&&>(data_[size_]);
     }
   }
 
@@ -499,7 +499,7 @@ public:
   template <typename Key>
   int exclude(const Key& key)
   {
-    int i = Arrays::index<Elem, Key>(data, count, key);
+    int i = Arrays::index<Elem, Key>(data_, size_, key);
 
     if (i >= 0) {
       erase(i);
@@ -517,7 +517,7 @@ public:
   template <typename Key>
   int excludeUnordered(const Key& key)
   {
-    int i = Arrays::index<Elem, Key>(data, count, key);
+    int i = Arrays::index<Elem, Key>(data_, size_, key);
 
     if (i >= 0) {
       eraseUnordered(i);
@@ -542,7 +542,7 @@ public:
   template <typename Elem_>
   Elem& pushLast(Elem_&& elem)
   {
-    return insert<Elem_>(count, static_cast<Elem_&&>(elem));
+    return insert<Elem_>(size_, static_cast<Elem_&&>(elem));
   }
 
   /**
@@ -554,14 +554,14 @@ public:
    */
   Elem popFirst()
   {
-    if (count == 0) {
+    if (size_ == 0) {
       return Elem();
     }
     else {
-      Elem elem = static_cast<Elem&&>(data[0]);
+      Elem elem = static_cast<Elem&&>(data_[0]);
 
-      --count;
-      Arrays::move<Elem>(data + 1, count, data);
+      --size_;
+      Arrays::move<Elem>(data_ + 1, size_, data_);
       return elem;
     }
   }
@@ -573,12 +573,12 @@ public:
    */
   Elem popLast()
   {
-    if (count == 0) {
+    if (size_ == 0) {
       return Elem();
     }
     else {
-      --count;
-      return static_cast<Elem&&>(data[count]);
+      --size_;
+      return static_cast<Elem&&>(data_[size_]);
     }
   }
 
@@ -587,7 +587,7 @@ public:
    */
   void reverse()
   {
-    Arrays::reverse<Elem>(data, count);
+    Arrays::reverse<Elem>(data_, size_);
   }
 
   /**
@@ -596,7 +596,7 @@ public:
   template <class LessFunc = Less<Elem>>
   void sort()
   {
-    Arrays::sort<Elem, LessFunc>(data, count);
+    Arrays::sort<Elem, LessFunc>(data_, size_);
   }
 
   /**
@@ -605,17 +605,17 @@ public:
   void resize(int newCount, bool exactCapacity = false)
   {
     if (exactCapacity) {
-      if (newCount != size) {
-        data = Arrays::reallocate<Elem>(data, count, newCount);
-        size = newCount;
+      if (newCount != capacity_) {
+        data_     = Arrays::reallocate<Elem>(data_, size_, newCount);
+        capacity_ = newCount;
       }
     }
     else {
       ensureCapacity(newCount);
-      Arrays::clear<Elem>(data + newCount, count - newCount);
+      Arrays::clear<Elem>(data_ + newCount, size_ - newCount);
     }
 
-    count = newCount;
+    size_ = newCount;
   }
 
   /**
@@ -624,9 +624,9 @@ public:
   void reserve(int capacity, bool exactCapacity = false)
   {
     if (exactCapacity) {
-      if (size < capacity) {
-        data = Arrays::reallocate<Elem>(data, count, capacity);
-        size = capacity;
+      if (capacity_ < capacity) {
+        data_     = Arrays::reallocate<Elem>(data_, size_, capacity);
+        capacity_ = capacity;
       }
     }
     else {
@@ -639,9 +639,9 @@ public:
    */
   void trim()
   {
-    if (count < size) {
-      data = Arrays::reallocate<Elem>(data, count, count);
-      size = count;
+    if (size_ < capacity_) {
+      data_     = Arrays::reallocate<Elem>(data_, size_, size_);
+      capacity_ = size_;
     }
   }
 
@@ -650,8 +650,8 @@ public:
    */
   void clear()
   {
-    Arrays::clear<Elem>(data, count);
-    count = 0;
+    Arrays::clear<Elem>(data_, size_);
+    size_ = 0;
   }
 
   /**
@@ -659,8 +659,8 @@ public:
    */
   void free()
   {
-    Arrays::free<Elem>(data, count);
-    count = 0;
+    Arrays::free<Elem>(data_, size_);
+    size_ = 0;
   }
 
 };

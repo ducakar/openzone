@@ -80,7 +80,7 @@ static uint getColour(double x, double y)
   const Vec4* top    = &gradientPoints.last();
   float       t      = 0.0f;
 
-  for (int i = 0; i < gradientPoints.length(); ++i) {
+  for (int i = 0; i < gradientPoints.size(); ++i) {
     if (gradientPoints[i].w > height) {
       bottom = &gradientPoints[max(i - 1, 0)];
       top    = &gradientPoints[i];

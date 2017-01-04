@@ -59,9 +59,9 @@ private:
 
   using typename HashSet<Pair, HashFunc>::Entry;
 
-  using HashSet<Pair, HashFunc>::pool;
-  using HashSet<Pair, HashFunc>::data;
-  using HashSet<Pair, HashFunc>::size;
+  using HashSet<Pair, HashFunc>::pool_;
+  using HashSet<Pair, HashFunc>::data_;
+  using HashSet<Pair, HashFunc>::capacity_;
   using HashSet<Pair, HashFunc>::ensureCapacity;
 
   /**
@@ -74,11 +74,11 @@ private:
   template <typename Key_, typename Value_>
   Pair& insert(Key_&& key, Value_&& value, bool overwrite)
   {
-    ensureCapacity(pool.length() + 1);
+    ensureCapacity(pool_.size() + 1);
 
     int    h     = HashFunc()(key);
-    uint   index = uint(h) % uint(size);
-    Entry* entry = data[index];
+    uint   index = uint(h) % uint(capacity_);
+    Entry* entry = data_[index];
 
     while (entry != nullptr) {
       if (entry->elem.key == key) {
@@ -90,10 +90,10 @@ private:
       entry = entry->next;
     }
 
-    data[index] = new(pool) Entry {
-      data[index], h, {static_cast<Key_&&>(key), static_cast<Value_&&>(value)}
+    data_[index] = new(pool_) Entry {
+      data_[index], h, {static_cast<Key_&&>(key), static_cast<Value_&&>(value)}
     };
-    return data[index]->elem;
+    return data_[index]->elem;
   }
 
 public:
@@ -102,7 +102,7 @@ public:
   using HashSet<Pair, HashFunc>::iterator;
   using HashSet<Pair, HashFunc>::begin;
   using HashSet<Pair, HashFunc>::end;
-  using HashSet<Pair, HashFunc>::length;
+  using HashSet<Pair, HashFunc>::size;
   using HashSet<Pair, HashFunc>::isEmpty;
   using HashSet<Pair, HashFunc>::capacity;
   using HashSet<Pair, HashFunc>::poolCapacity;
@@ -126,10 +126,10 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  HashMap(InitialiserList<Pair> l) :
-    HashMap(int(l.size()) * 4 / 3)
+  HashMap(InitialiserList<Pair> il) :
+    HashMap(int(il.size()) * 4 / 3)
   {
-    for (const Pair& p : l) {
+    for (const Pair& p : il) {
       add(p.key, p.value);
     }
   }
@@ -137,32 +137,32 @@ public:
   /**
    * Copy constructor, copies elements but does not preserve bucket array length.
    */
-  HashMap(const HashMap& ht) = default;
+  HashMap(const HashMap& other) = default;
 
   /**
    * Move constructor, moves storage.
    */
-  HashMap(HashMap&& ht) = default;
+  HashMap(HashMap&& other) = default;
 
   /**
    * Copy operator, copies elements but does not preserve bucket array length.
    */
-  HashMap& operator =(const HashMap& ht) = default;
+  HashMap& operator=(const HashMap& other) = default;
 
   /**
    * Move operator, moves storage.
    */
-  HashMap& operator =(HashMap&& ht) = default;
+  HashMap& operator=(HashMap&& other) = default;
 
   /**
    * Assign from an initialiser list.
    */
-  HashMap& operator =(InitialiserList<Pair> l)
+  HashMap& operator=(InitialiserList<Pair> il)
   {
     clear();
-    ensureCapacity(int(l.size()) * 4 / 3);
+    ensureCapacity(int(il.size()) * 4 / 3);
 
-    for (const Pair& p : l) {
+    for (const Pair& p : il) {
       add(p.key, p.value);
     }
     return *this;
@@ -171,15 +171,15 @@ public:
   /**
    * True iff contained elements are equal.
    */
-  bool operator ==(const HashMap& ht) const
+  bool operator==(const HashMap& other) const
   {
-    if (pool.length() != ht.pool.length()) {
+    if (pool_.size() != other.pool_.size()) {
       return false;
     }
 
-    for (int i = 0; i < size; ++i) {
-      for (Entry* entry = data[i]; entry != nullptr; entry = entry->next) {
-        const Value* value = ht.find(entry->elem.key);
+    for (int i = 0; i < capacity_; ++i) {
+      for (Entry* entry = data_[i]; entry != nullptr; entry = entry->next) {
+        const Value* value = other.find(entry->elem.key);
 
         if (value == nullptr || !(*value == entry->elem.value)) {
           return false;
@@ -192,9 +192,9 @@ public:
   /**
    * False iff contained elements are equal.
    */
-  bool operator !=(const HashMap& ht) const
+  bool operator!=(const HashMap& other) const
   {
-    return !operator ==(ht);
+    return !operator==(other);
   }
 
   /**
@@ -203,13 +203,13 @@ public:
   template <typename Key_>
   const Value* find(const Key_& key) const
   {
-    if (size == 0) {
+    if (capacity_ == 0) {
       return nullptr;
     }
 
     int    h     = HashFunc()(key);
-    uint   index = uint(h) % uint(size);
-    Entry* entry = data[index];
+    uint   index = uint(h) % uint(capacity_);
+    Entry* entry = data_[index];
 
     while (entry != nullptr) {
       if (entry->elem.key == key) {
@@ -256,20 +256,20 @@ public:
    */
   void free()
   {
-    for (int i = 0; i < size; ++i) {
-      Entry* entry = data[i];
+    for (int i = 0; i < capacity_; ++i) {
+      Entry* entry = data_[i];
 
       while (entry != nullptr) {
         Entry* next = entry->next;
 
         delete entry->elem.value;
         entry->~Entry();
-        pool.deallocate(entry);
+        pool_.deallocate(entry);
 
         entry = next;
       }
 
-      data[i] = nullptr;
+      data_[i] = nullptr;
     }
   }
 

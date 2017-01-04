@@ -69,7 +69,7 @@ void QuestList::read(Stream* is)
 
 void QuestList::write(Stream* os) const
 {
-  os->writeInt(quests.length());
+  os->writeInt(quests.size());
 
   for (const Quest& quest : quests) {
     os->writeString(quest.title);

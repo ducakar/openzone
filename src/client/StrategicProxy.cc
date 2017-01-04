@@ -77,7 +77,7 @@ void StrategicProxy::prepare()
   if (input.keys[Input::KEY_SWITCH_TO_UNIT] && !input.oldKeys[Input::KEY_SWITCH_TO_UNIT] &&
       camera.allowReincarnation)
   {
-    if (ui::ui.strategicArea->taggedObjs.length() == 1) {
+    if (ui::ui.strategicArea->taggedObjs.size() == 1) {
       const Object* tagged = orbis.obj(ui::ui.strategicArea->taggedObjs.first());
       const Bot*    me     = nullptr;
 

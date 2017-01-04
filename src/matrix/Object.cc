@@ -267,14 +267,14 @@ void Object::write(Stream* os) const
   os->writeInt(flags);
   os->writeFloat(life);
 
-  os->writeInt(events.length());
+  os->writeInt(events.size());
   for (const Event& event : events) {
     os->writeInt(event.id);
     os->writeFloat(event.intensity);
   }
 
   if (clazz->nItems != 0) {
-    os->writeInt(items.length());
+    os->writeInt(items.size());
     for (int item : items) {
       os->writeInt(item);
     }

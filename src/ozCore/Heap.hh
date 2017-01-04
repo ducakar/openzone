@@ -55,8 +55,8 @@ public:
 
 private:
 
-  using List<Elem>::data;
-  using List<Elem>::count;
+  using List<Elem>::data_;
+  using List<Elem>::size_;
   using List<Elem>::ensureCapacity;
 
 public:
@@ -65,10 +65,10 @@ public:
   using List<Elem>::iterator;
   using List<Elem>::begin;
   using List<Elem>::end;
-  using List<Elem>::length;
+  using List<Elem>::size;
   using List<Elem>::isEmpty;
   using List<Elem>::capacity;
-  using List<Elem>::operator [];
+  using List<Elem>::operator[];
   using List<Elem>::first;
   using List<Elem>::last;
   using List<Elem>::contains;
@@ -86,12 +86,12 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  Heap(InitialiserList<Elem> l) :
-    List<Elem>(int(l.size()))
+  Heap(InitialiserList<Elem> il) :
+    List<Elem>(int(il.size()))
   {
-    count = 0;
+    size_ = 0;
 
-    for (const Elem& e : l) {
+    for (const Elem& e : il) {
       add(e);
     }
   }
@@ -99,36 +99,36 @@ public:
   /**
    * Copy constructor, copies elements.
    */
-  Heap(const Heap& h) = default;
+  Heap(const Heap& other) = default;
 
   /**
    * Move constructor, moves element storage.
    */
-  Heap(Heap&& h) = default;
+  Heap(Heap&& other) = default;
 
   /**
    * Copy operator, copies elements.
    *
    * Existing storage is reused if it suffices.
    */
-  Heap& operator =(const Heap& h) = default;
+  Heap& operator=(const Heap& other) = default;
 
   /**
    * Move operator, moves element storage.
    */
-  Heap& operator =(Heap&& h) = default;
+  Heap& operator=(Heap&& other) = default;
 
   /**
    * Assign from an initialiser list.
    *
    * Existing storage is reused if it suffices.
    */
-  Heap& operator =(InitialiserList<Elem> l)
+  Heap& operator=(InitialiserList<Elem> il)
   {
     clear();
-    ensureCapacity(int(l.size()));
+    ensureCapacity(int(il.size()));
 
-    for (const Elem& e : l) {
+    for (const Elem& e : il) {
       add(e);
     }
   }
@@ -136,17 +136,17 @@ public:
   /**
    * True iff respective elements are equal.
    */
-  bool operator ==(const Heap& h) const
+  bool operator==(const Heap& other) const
   {
-    return List<Elem>::operator ==(h);
+    return List<Elem>::operator==(other);
   }
 
   /**
    * False iff respective elements are equal.
    */
-  bool operator !=(const Heap& h) const
+  bool operator!=(const Heap& other) const
   {
-    return List<Elem>::operator !=(h);
+    return List<Elem>::operator!=(other);
   }
 
   /**
@@ -157,16 +157,16 @@ public:
   {
     List<Elem>::add(static_cast<Elem_&&>(elem));
 
-    int index  = count - 1;
-    int parent = (count - 2) / 2;
+    int index  = size_ - 1;
+    int parent = (size_ - 2) / 2;
 
-    while (parent >= 0 && LessFunc()(data[index], data[parent])) {
-      swap(data[index], data[parent]);
+    while (parent >= 0 && LessFunc()(data_[index], data_[parent])) {
+      swap(data_[index], data_[parent]);
 
       index  = parent;
       parent = (parent - 1) / 2;
     }
-    return data[index];
+    return data_[index];
   }
 
   /**
@@ -174,10 +174,10 @@ public:
    */
   Elem pop()
   {
-    Elem root = static_cast<Elem&&>(data[0]);
+    Elem root = static_cast<Elem&&>(data_[0]);
 
-    --count;
-    data[0] = static_cast<Elem&&>(data[count]);
+    --size_;
+    data_[0] = static_cast<Elem&&>(data_[size_]);
 
     int parent = 0;
     do {
@@ -185,17 +185,17 @@ public:
       int left  = 2 * parent + 1;
       int right = left + 1;
 
-      if (left < count && LessFunc()(data[left], data[index])) {
+      if (left < size_ && LessFunc()(data_[left], data_[index])) {
         index = left;
       }
-      if (right < count && LessFunc()(data[right], data[index])) {
+      if (right < size_ && LessFunc()(data_[right], data_[index])) {
         index = right;
       }
       if (index == parent) {
         return root;
       }
 
-      swap(data[parent], data[index]);
+      swap(data_[parent], data_[index]);
       parent = index;
     }
     while (true);

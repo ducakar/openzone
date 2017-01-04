@@ -52,7 +52,7 @@ struct Vertex
   int      bone[2];
   float    weight[2];
 
-  bool operator == (const Vertex& v) const
+  bool operator==(const Vertex& v) const
   {
     return pos == v.pos && texCoord == v.texCoord && normal == v.normal && tangent == v.tangent &&
            binormal == v.binormal && boneName[0] == v.boneName[0] && boneName[1] == v.boneName[1] &&
@@ -93,7 +93,7 @@ struct Triangle
   float depth;
   int   index;
 
-  bool operator < (const Triangle& t) const
+  bool operator<(const Triangle& t) const
   {
     return depth < t.depth;
   }
@@ -137,7 +137,7 @@ struct Node
     transf(Mat4::ID), mesh(-1), name(name_), includeInBounds(true), parent(parent_)
   {}
 
-  Node& operator = (Node&&) = default;
+  Node& operator=(Node&&) = default;
 
   ~Node()
   {
@@ -210,10 +210,10 @@ static void storeNode(Node* node, int depth)
     }
   }
   else {
-    node->firstChild = nodes.length();
-    node->nChildren  = node->children.length();
+    node->firstChild = nodes.size();
+    node->nChildren  = node->children.size();
 
-    nodes.addAll(node->children.begin(), node->children.length());
+    nodes.addAll(node->children.begin(), node->children.size());
   }
 }
 
@@ -309,7 +309,7 @@ void Compiler::animPositions(const float* positions_)
   OZ_ASSERT(environment == MODEL);
   OZ_ASSERT(nFrames != 0);
 
-  for (int i = 0; i < positions.length(); ++i) {
+  for (int i = 0; i < positions.size(); ++i) {
     positions[i].x = *positions_++;
     positions[i].y = *positions_++;
     positions[i].z = *positions_++;
@@ -321,7 +321,7 @@ void Compiler::animNormals(const float* normals_)
   OZ_ASSERT(environment == MODEL);
   OZ_ASSERT(nFrames != 0);
 
-  for (int i = 0; i < normals.length(); ++i) {
+  for (int i = 0; i < normals.size(); ++i) {
     normals[i].x = *normals_++;
     normals[i].y = *normals_++;
     normals[i].z = *normals_++;
@@ -391,7 +391,7 @@ int Compiler::endMesh()
   meshes.add(mesh);
   mesh.indices.clear();
 
-  return meshes.length() - 1;
+  return meshes.size() - 1;
 }
 
 void Compiler::texture(const char* texture)
@@ -448,7 +448,7 @@ void Compiler::end()
     case TRIANGLES: {
       OZ_ASSERT(vertNum >= 3 && vertNum % 3 == 0);
 
-      mesh.indices.takeAll(polyIndices.begin(), polyIndices.length());
+      mesh.indices.takeAll(polyIndices.begin(), polyIndices.size());
       break;
     }
     case POLYGON: {
@@ -534,7 +534,7 @@ void Compiler::vertex(float x, float y, float z)
     polyIndices.add(ushort(index));
   }
   else {
-    index = vertices.length();
+    index = vertices.size();
 
     vertices.add(vert);
     polyIndices.add(ushort(index));
@@ -551,7 +551,7 @@ void Compiler::vertex(const float* v)
 void Compiler::animVertex(int i)
 {
   OZ_ASSERT(environment == POLY);
-  OZ_ASSERT(nFrames > 1 && uint(i) < uint(positions.length()));
+  OZ_ASSERT(nFrames > 1 && uint(i) < uint(positions.size()));
 
   OZ_ASSERT(normals[i].fastN() > 0.9f);
   normal(normals[i]);
@@ -572,7 +572,7 @@ int Compiler::endLight()
   environment = MODEL;
 
   lights.add(light);
-  return lights.length() - 1;
+  return lights.size() - 1;
 }
 
 void Compiler::position(float x, float y, float z)
@@ -677,8 +677,8 @@ void Compiler::scalingKey(const Vec3& scale, float time)
 void Compiler::writeModel(Stream* os, bool globalTextures)
 {
   OZ_ASSERT(environment == NONE);
-  OZ_ASSERT(meshes.length() > 0 && vertices.length() > 0);
-  OZ_ASSERT(positions.length() == normals.length());
+  OZ_ASSERT(meshes.size() > 0 && vertices.size() > 0);
+  OZ_ASSERT(positions.size() == normals.size());
 
   Log::print("Writing mesh ...");
 
@@ -687,21 +687,21 @@ void Compiler::writeModel(Stream* os, bool globalTextures)
 
   int nIndices = 0;
 
-  for (int i = 0; i < meshes.length(); ++i) {
+  for (int i = 0; i < meshes.size(); ++i) {
     textures.include(meshes[i].texture);
 
     meshes[i].firstIndex = nIndices;
-    meshes[i].nIndices   = meshes[i].indices.length();
+    meshes[i].nIndices   = meshes[i].indices.size();
 
-    indices.addAll(meshes[i].indices.begin(), meshes[i].indices.length());
+    indices.addAll(meshes[i].indices.begin(), meshes[i].indices.size());
 
     nIndices += meshes[i].nIndices;
   }
 
   int nNodes = -1;
 
-  for (int i = 0; nNodes != nodes.length(); ++i) {
-    nNodes = nodes.length();
+  for (int i = 0; nNodes != nodes.size(); ++i) {
+    nNodes = nodes.size();
 
     storeNode(&root, i);
   }
@@ -712,23 +712,23 @@ void Compiler::writeModel(Stream* os, bool globalTextures)
   os->write<Vec3>(bounds.dim());
 
   os->writeString(shaderName);
-  os->writeInt(globalTextures ? ~textures.length() : textures.length());
-  os->writeInt(vertices.length());
+  os->writeInt(globalTextures ? ~textures.size() : textures.size());
+  os->writeInt(vertices.size());
   os->writeInt(nIndices);
   os->writeInt(nFrames);
   os->writeInt(nFramePositions);
 
-  os->writeInt(meshes.length());
-  os->writeInt(lights.length());
-  os->writeInt(Node::pool.length());
-  os->writeInt(animations.length());
+  os->writeInt(meshes.size());
+  os->writeInt(lights.size());
+  os->writeInt(Node::pool.size());
+  os->writeInt(animations.size());
 
   for (const String& texture : textures) {
     os->writeString(texture);
   }
 
   // Generate tangents and binormals.
-  for (int i = 0; i < indices.length(); i += 3) {
+  for (int i = 0; i < indices.size(); i += 3) {
     Vertex* v[3] = {
       &vertices[indices[i + 0]],
       &vertices[indices[i + 1]],
@@ -798,8 +798,8 @@ void Compiler::writeModel(Stream* os, bool globalTextures)
   }
 
   if (nFrames != 0) {
-    OZ_ASSERT(positions.length() == nFrames * nFramePositions);
-    OZ_ASSERT(normals.length() == nFrames * nFramePositions);
+    OZ_ASSERT(positions.size() == nFrames * nFramePositions);
+    OZ_ASSERT(normals.size() == nFrames * nFramePositions);
 
     for (const Point& position : positions) {
       os->write<Point>(position);
@@ -848,12 +848,12 @@ void Compiler::writeModel(Stream* os, bool globalTextures)
   }
 
   for (const Animation& anim : animations) {
-    os->writeInt(anim.channels.length());
+    os->writeInt(anim.channels.size());
 
     for (const Animation::Channel& channel : anim.channels) {
-      os->writeInt(channel.positionKeys.length());
-      os->writeInt(channel.rotationKeys.length());
-      os->writeInt(channel.scalingKeys.length());
+      os->writeInt(channel.positionKeys.size());
+      os->writeInt(channel.rotationKeys.size());
+      os->writeInt(channel.scalingKeys.size());
 
       for (const Animation::PositionKey& posKey : channel.positionKeys) {
         os->write<Point>(posKey.position);
@@ -887,12 +887,12 @@ void Compiler::buildModelTextures(const File& destDir)
 
   List<String> textures;
 
-  for (int i = 0; i < meshes.length(); ++i) {
+  for (int i = 0; i < meshes.size(); ++i) {
     textures.include(meshes[i].texture);
   }
   textures.exclude(String::EMPTY);
 
-  for (int i = 0; i < textures.length(); ++i) {
+  for (int i = 0; i < textures.size(); ++i) {
     context.buildTexture(textures[i], destDir / File(textures[i]).name());
   }
 }

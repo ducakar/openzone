@@ -106,7 +106,7 @@ void TechGraph::read(Stream* is)
 
 void TechGraph::write(Stream* os) const
 {
-  os->writeInt(nodes.length());
+  os->writeInt(nodes.size());
 
   for (const Node& node : nodes) {
     os->writeString(node.name);
@@ -125,7 +125,7 @@ void TechGraph::load()
       continue;
     }
 
-    int nNodes = config.length();
+    int nNodes = config.size();
     for (int i = 0; i < nNodes; ++i) {
       const Json& tech = config[i];
 
@@ -180,11 +180,11 @@ void TechGraph::load()
       const Json& requires = tech["requires"];
       Node&       node     = nodes[i];
 
-      if (requires.length() > Node::MAX_DEPS) {
+      if (requires.size() > Node::MAX_DEPS) {
         OZ_ERROR("Only %d dependencies per technology supported.", Node::MAX_DEPS);
       }
 
-      int nRequires = requires.length();
+      int nRequires = requires.size();
       for (int j = 0; j < nRequires; ++j) {
         Node* depNode = findNode(requires[j].get("?"));
 

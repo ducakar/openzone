@@ -492,10 +492,10 @@ void System::error(const char* function, const char* file, int line, int nSkippe
   abort(initFlags & HALT_BIT);
 }
 
-void System::init(int flags, CrashHandler* crashHandler_)
+void System::init(int flags, CrashHandler* handler)
 {
   initFlags    = flags | INITIALISED_BIT;
-  crashHandler = crashHandler_;
+  crashHandler = handler;
 
   atexit(waitBell);
 

@@ -51,29 +51,29 @@ struct Foo
     Log() << "Foo(Foo&&) : " << number;
   }
 
-  Foo& operator = (const Foo& f)
+  Foo& operator=(const Foo& f)
   {
-    Log() << "Foo& operator = (const Foo&) : " << number << " := " << f.number;
+    Log() << "Foo& operator=(const Foo&) : " << number << " := " << f.number;
     number = f.number;
     return *this;
   }
 
-  Foo& operator = (Foo&& f)
+  Foo& operator=(Foo&& f)
   {
-    Log() << "Foo& operator = (Foo&&) : " << number << " := " << f.number;
+    Log() << "Foo& operator=(Foo&&) : " << number << " := " << f.number;
     number = f.number;
     return *this;
   }
 
-  bool operator == (const Foo& f) const
+  bool operator==(const Foo& f) const
   {
-    Log() << "bool operator == (const Foo&) : " << number << " == " << f.number;
+    Log() << "bool operator==(const Foo&) : " << number << " == " << f.number;
     return number == f.number;
   }
 
-  bool operator < (const Foo& f) const
+  bool operator<(const Foo& f) const
   {
-    Log() << "bool operator == (const Foo&) : " << number << " < " << f.number;
+    Log() << "bool operator==(const Foo&) : " << number << " < " << f.number;
     return number < f.number;
   }
 
@@ -84,7 +84,7 @@ struct Foo
 };
 
 template <typename Type>
-inline Type operator | (const Json& json, const Type& defaultValue)
+inline Type operator|(const Json& json, const Type& defaultValue)
 {
   return json.get(defaultValue);
 }

@@ -180,7 +180,7 @@ namespace detail
  *
  * It should only be used as a base class. The following functions have to be implemented:
  * - default constructor that creates an invalid iterator and
- * - `Iterator& operator ++()`.
+ * - `Iterator& operator++()`.
  */
 template <typename Elem>
 class IteratorBase
@@ -194,7 +194,7 @@ public:
 
 protected:
 
-  Elem* elem = nullptr; ///< The element the iterator is currently pointing at.
+  Elem* elem_ = nullptr; ///< The element the iterator is currently pointing at.
 
 protected:
 
@@ -208,7 +208,7 @@ protected:
    */
   OZ_ALWAYS_INLINE
   explicit IteratorBase(Elem* first) :
-    elem(first)
+    elem_(first)
   {}
 
 public:
@@ -217,18 +217,18 @@ public:
    * True iff iterators point to the same element.
    */
   OZ_ALWAYS_INLINE
-  bool operator ==(const IteratorBase& i) const
+  bool operator==(const IteratorBase& other) const
   {
-    return elem == i.elem;
+    return elem_ == other.elem_;
   }
 
   /**
    * False iff iterators point to the same element.
    */
   OZ_ALWAYS_INLINE
-  bool operator !=(const IteratorBase& i) const
+  bool operator!=(const IteratorBase& other) const
   {
-    return elem != i.elem;
+    return elem_ != other.elem_;
   }
 
   /**
@@ -237,7 +237,7 @@ public:
   OZ_ALWAYS_INLINE
   bool isValid() const
   {
-    return elem != nullptr;
+    return elem_ != nullptr;
   }
 
   /**
@@ -246,31 +246,31 @@ public:
   OZ_ALWAYS_INLINE
   operator Elem*() const
   {
-    return elem;
+    return elem_;
   }
 
   /**
    * Reference to the current element.
    */
   OZ_ALWAYS_INLINE
-  Elem& operator *() const
+  Elem& operator*() const
   {
-    return *elem;
+    return *elem_;
   }
 
   /**
    * Access to the current element's member.
    */
   OZ_ALWAYS_INLINE
-  Elem* operator ->() const
+  Elem* operator->() const
   {
-    return elem;
+    return elem_;
   }
 
   /**
    * Advance to the next element; should be implemented in derived classes.
    */
-  IteratorBase& operator ++() = delete;
+  IteratorBase& operator++() = delete;
 
   /**
    * STL-style begin iterator; should be implemented in derived classes.
@@ -360,17 +360,17 @@ inline constexpr const Value& clamp(const Value& c, const Value& a, const Value&
 }
 
 /**
- * Generic `Less` function object, defaults to `operator <`.
+ * Generic `Less` function object, defaults to `operator<`.
  */
 template <typename Type = void>
 struct Less
 {
   /**
-   * Compare using `operator <`.
+   * Compare using `operator<`.
    */
   template <typename TypeA, typename TypeB>
   OZ_ALWAYS_INLINE
-  constexpr bool operator ()(const TypeA& a, const TypeB& b) const
+  constexpr bool operator()(const TypeA& a, const TypeB& b) const
   {
     return a < b;
   }
@@ -387,7 +387,7 @@ struct Greater
    */
   template <typename TypeA, typename TypeB>
   OZ_ALWAYS_INLINE
-  constexpr bool operator ()(const TypeA& a, const TypeB& b) const
+  constexpr bool operator()(const TypeA& a, const TypeB& b) const
   {
     return Less<Type>()(b, a);
   }
@@ -403,7 +403,7 @@ struct Less<const char*>
    * Compare using `strcmp`.
    */
   OZ_ALWAYS_INLINE
-  bool operator ()(const char* a, const char* b) const
+  bool operator()(const char* a, const char* b) const
   {
     return __builtin_strcmp(a, b) < 0;
   }
@@ -419,7 +419,7 @@ struct Hash
    * Return value as integer.
    */
   OZ_ALWAYS_INLINE
-  constexpr int operator ()(const Number& value) const
+  constexpr int operator()(const Number& value) const
   {
     return int(value);
   }
@@ -437,7 +437,7 @@ struct Hash<const char*>
   /**
    * FNV hash function.
    */
-  int operator ()(const char* s) const
+  int operator()(const char* s) const
   {
     uint value = EMPTY;
 

@@ -29,7 +29,7 @@ namespace client
 
 void BSPAudio::playDemolish(const Struct* str, int sound) const
 {
-  OZ_ASSERT(uint(sound) < uint(liber.sounds.length()));
+  OZ_ASSERT(uint(sound) < uint(liber.sounds.size()));
 
   Context::Source* source = context.addSource(sound);
   if (source == nullptr) {
@@ -55,7 +55,7 @@ void BSPAudio::playDemolish(const Struct* str, int sound) const
 
 void BSPAudio::playSound(const Entity* entity, int sound) const
 {
-  OZ_ASSERT(uint(sound) < uint(liber.sounds.length()));
+  OZ_ASSERT(uint(sound) < uint(liber.sounds.size()));
 
   const Struct* str      = entity->str;
   Point         p        = str->toAbsoluteCS(entity->clazz->p() + entity->offset);
@@ -86,7 +86,7 @@ void BSPAudio::playSound(const Entity* entity, int sound) const
 
 void BSPAudio::playContSound(const Entity* entity, int sound) const
 {
-  OZ_ASSERT(uint(sound) < uint(liber.sounds.length()));
+  OZ_ASSERT(uint(sound) < uint(liber.sounds.size()));
 
   const Struct* str      = entity->str;
   int           key      = entity->index();

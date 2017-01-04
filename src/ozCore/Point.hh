@@ -76,7 +76,7 @@ public:
    * Point translated for `v`.
    */
   OZ_ALWAYS_INLINE
-  Point operator +(const Vec3& v) const
+  Point operator+(const Vec3& v) const
   {
 #ifdef OZ_SIMD
     return Point(f4 + v.f4);
@@ -89,7 +89,7 @@ public:
    * Point translated for `-v`.
    */
   OZ_ALWAYS_INLINE
-  Point operator -(const Vec3& v) const
+  Point operator-(const Vec3& v) const
   {
 #ifdef OZ_SIMD
     return Point(f4 - v.f4);
@@ -102,7 +102,7 @@ public:
    * Difference of two points.
    */
   OZ_ALWAYS_INLINE
-  Vec3 operator -(const Point& p) const
+  Vec3 operator-(const Point& p) const
   {
 #ifdef OZ_SIMD
     return Vec3(f4 - p.f4);
@@ -115,7 +115,7 @@ public:
    * Translate for `v`.
    */
   OZ_ALWAYS_INLINE
-  Point& operator +=(const Vec3& v)
+  Point& operator+=(const Vec3& v)
   {
 #ifdef OZ_SIMD
     f4 += v.f4;
@@ -131,7 +131,7 @@ public:
    * Translate for `-v`.
    */
   OZ_ALWAYS_INLINE
-  Point& operator -=(const Vec3& v)
+  Point& operator-=(const Vec3& v)
   {
 #ifdef OZ_SIMD
     f4 -= v.f4;
@@ -147,7 +147,7 @@ public:
    * Projection of the point to a given vector.
    */
   OZ_ALWAYS_INLINE
-  float operator *(const Vec3& v) const
+  float operator*(const Vec3& v) const
   {
 #ifdef OZ_SIMD
     return vDot(f4, v.f4)[0];

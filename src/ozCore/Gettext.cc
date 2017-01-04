@@ -55,50 +55,50 @@ Gettext::~Gettext()
   clear();
 }
 
-Gettext::Gettext(Gettext&& gt) :
-  table(gt.table), messages(gt.messages), strings(gt.strings), nBuckets(gt.nBuckets),
-  nMessages(gt.nMessages), stringsSize(gt.stringsSize)
+Gettext::Gettext(Gettext&& other) :
+  buckets_(other.buckets_), messages_(other.messages_), strings_(other.strings_),
+  nBuckets_(other.nBuckets_), nMessages_(other.nMessages_), stringsSize_(other.stringsSize_)
 {
-  gt.table       = nullptr;
-  gt.messages    = nullptr;
-  gt.strings     = nullptr;
-  gt.nBuckets    = 0;
-  gt.nMessages   = 0;
-  gt.stringsSize = 0;
+  other.buckets_     = nullptr;
+  other.messages_    = nullptr;
+  other.strings_     = nullptr;
+  other.nBuckets_    = 0;
+  other.nMessages_   = 0;
+  other.stringsSize_ = 0;
 }
 
-Gettext& Gettext::operator =(Gettext&& gt)
+Gettext& Gettext::operator=(Gettext&& other)
 {
-  if (&gt != this) {
+  if (&other != this) {
     clear();
 
-    table       = gt.table;
-    messages    = gt.messages;
-    strings     = gt.strings;
-    nBuckets    = gt.nBuckets;
-    nMessages   = gt.nMessages;
-    stringsSize = gt.stringsSize;
+    buckets_     = other.buckets_;
+    messages_    = other.messages_;
+    strings_     = other.strings_;
+    nBuckets_    = other.nBuckets_;
+    nMessages_   = other.nMessages_;
+    stringsSize_ = other.stringsSize_;
 
-    gt.table       = nullptr;
-    gt.messages    = nullptr;
-    gt.strings     = nullptr;
-    gt.nBuckets    = 0;
-    gt.nMessages   = 0;
-    gt.stringsSize = 0;
+    other.buckets_     = nullptr;
+    other.messages_    = nullptr;
+    other.strings_     = nullptr;
+    other.nBuckets_    = 0;
+    other.nMessages_   = 0;
+    other.stringsSize_ = 0;
   }
   return *this;
 }
 
 bool Gettext::contains(const char* message) const
 {
-  if (nMessages == 0 || String::isEmpty(message)) {
+  if (nMessages_ == 0 || String::isEmpty(message)) {
     return false;
   }
 
-  uint index = uint(Hash<const char*>()(message)) % uint(nBuckets);
+  uint index = uint(Hash<const char*>()(message)) % uint(nBuckets_);
 
-  for (const Message* m = table[index]; m != nullptr; m = m->next) {
-    if (String::equals(strings + m->original, message)) {
+  for (const Message* m = buckets_[index]; m != nullptr; m = m->next) {
+    if (String::equals(strings_ + m->original, message)) {
       return true;
     }
   }
@@ -107,15 +107,15 @@ bool Gettext::contains(const char* message) const
 
 const char* Gettext::get(const char* message) const
 {
-  if (nMessages == 0 || String::isEmpty(message)) {
+  if (nMessages_ == 0 || String::isEmpty(message)) {
     return message;
   }
 
-  uint index = uint(Hash<const char*>()(message)) % uint(nBuckets);
+  uint index = uint(Hash<const char*>()(message)) % uint(nBuckets_);
 
-  for (const Message* m = table[index]; m != nullptr; m = m->next) {
-    if (String::equals(strings + m->original, message)) {
-      return strings + m->translation;
+  for (const Message* m = buckets_[index]; m != nullptr; m = m->next) {
+    if (String::equals(strings_ + m->original, message)) {
+      return strings_ + m->translation;
     }
   }
   return message;
@@ -125,9 +125,9 @@ List<const char*> Gettext::catalogueDescriptions() const
 {
   List<const char*> descriptions;
 
-  for (int i = 0; i < nMessages; ++i) {
-    if (String::isEmpty(strings + messages[i].original)) {
-      descriptions.add(strings + messages[i].translation);
+  for (int i = 0; i < nMessages_; ++i) {
+    if (String::isEmpty(strings_ + messages_[i].original)) {
+      descriptions.add(strings_ + messages_[i].translation);
     }
   }
   return descriptions;
@@ -145,7 +145,7 @@ bool Gettext::import(const File& file)
   uint magic = is.readUInt();
   if (magic != GETTEXT_MAGIC) {
     if (Endian::bswap(magic) == GETTEXT_MAGIC) {
-      is.order = Endian::Order(!is.order);
+      is.setOrder(Endian::Order(!is.order()));
     }
     else {
       return false;
@@ -166,42 +166,42 @@ bool Gettext::import(const File& file)
   int newStringsSize     = is.capacity() - stringsOffset;
 
   // Expand messages and strings arrays.
-  messages = Arrays::reallocate<Message>(messages, nMessages, nMessages + nNewMessages);
-  strings  = Arrays::reallocate<char>(strings, stringsSize, stringsSize + newStringsSize);
+  messages_ = Arrays::reallocate<Message>(messages_, nMessages_, nMessages_ + nNewMessages);
+  strings_  = Arrays::reallocate<char>(strings_, stringsSize_, stringsSize_ + newStringsSize);
 
   // Add new message entries.
   for (int i = 0; i < nNewMessages; ++i) {
     is.seek(originalsOffset + i * 8 + 4);
-    messages[nMessages + i].original = stringsSize + (is.readInt() - stringsOffset);
+    messages_[nMessages_ + i].original = stringsSize_ + (is.readInt() - stringsOffset);
 
     is.seek(translationsOffset + i * 8 + 4);
-    messages[nMessages + i].translation = stringsSize + (is.readInt() - stringsOffset);
+    messages_[nMessages_ + i].translation = stringsSize_ + (is.readInt() - stringsOffset);
   }
 
   // Add new strings.
   is.seek(stringsOffset);
-  memcpy(strings + stringsSize, is.readSkip(newStringsSize), newStringsSize);
+  memcpy(strings_ + stringsSize_, is.readSkip(newStringsSize), newStringsSize);
 
-  nMessages   += nNewMessages;
-  stringsSize += newStringsSize;
+  nMessages_   += nNewMessages;
+  stringsSize_ += newStringsSize;
 
   // Rebuild hashtable.
-  nBuckets = nMessages * 4 / 3;
+  nBuckets_ = nMessages_ * 4 / 3;
 
-  delete[] table;
-  table = new Message*[nBuckets] {};
+  delete[] buckets_;
+  buckets_ = new Message*[nBuckets_] {};
 
-  for (int i = 0; i < nMessages; ++i) {
-    const char* original = strings + messages[i].original;
+  for (int i = 0; i < nMessages_; ++i) {
+    const char* original = strings_ + messages_[i].original;
 
     if (String::isEmpty(original)) {
       continue;
     }
 
-    uint index = uint(Hash<const char*>()(original)) % uint(nBuckets);
+    uint index = uint(Hash<const char*>()(original)) % uint(nBuckets_);
 
-    messages[i].next = table[index];
-    table[index] = &messages[i];
+    messages_[i].next = buckets_[index];
+    buckets_[index] = &messages_[i];
   }
 
   return true;
@@ -209,16 +209,16 @@ bool Gettext::import(const File& file)
 
 void Gettext::clear()
 {
-  delete[] table;
-  delete[] messages;
-  delete[] strings;
+  delete[] buckets_;
+  delete[] messages_;
+  delete[] strings_;
 
-  table       = nullptr;
-  messages    = nullptr;
-  strings     = nullptr;
-  nBuckets    = 0;
-  nMessages   = 0;
-  stringsSize = 0;
+  buckets_     = nullptr;
+  messages_    = nullptr;
+  strings_     = nullptr;
+  nBuckets_    = 0;
+  nMessages_   = 0;
+  stringsSize_ = 0;
 }
 
 }

@@ -45,12 +45,12 @@ private:
 
   struct Message;
 
-  Message** table       = nullptr; ///< Message hashtable.
-  Message*  messages    = nullptr; ///< Messages.
-  char*     strings     = nullptr; ///< Strings buffer.
-  int       nBuckets    = 0;       ///< Number of hashtable buckets.
-  int       nMessages   = 0;       ///< Size of hashtable.
-  int       stringsSize = 0;       ///< Size of `strings` array.
+  Message** buckets_     = nullptr; ///< Message hashtable.
+  Message*  messages_    = nullptr; ///< Messages.
+  char*     strings_     = nullptr; ///< Strings buffer.
+  int       nBuckets_    = 0;       ///< Number of hashtable buckets.
+  int       nMessages_   = 0;       ///< Size of hashtable.
+  int       stringsSize_ = 0;       ///< Size of `strings` buffer.
 
 public:
 
@@ -76,20 +76,20 @@ public:
   /**
    * Move constructor.
    */
-  Gettext(Gettext&& gt);
+  Gettext(Gettext&& other);
 
   /**
    * Move operator.
    */
-  Gettext& operator =(Gettext&& gt);
+  Gettext& operator=(Gettext&& other);
 
   /**
    * Number of messages it contains.
    */
   OZ_ALWAYS_INLINE
-  int length() const
+  int size() const
   {
-    return nMessages;
+    return nMessages_;
   }
 
   /**
@@ -98,7 +98,7 @@ public:
   OZ_ALWAYS_INLINE
   bool isEmpty() const
   {
-    return nMessages == 0;
+    return nMessages_ == 0;
   }
 
   /**

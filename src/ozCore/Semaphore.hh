@@ -47,7 +47,7 @@ private:
 
   struct Descriptor;
 
-  Descriptor* descriptor = nullptr; ///< Internal semaphore descriptor.
+  Descriptor* descriptor_ = nullptr; ///< Internal semaphore descriptor.
 
 public:
 
@@ -69,7 +69,7 @@ public:
   /**
    * Copying or moving is not possible.
    */
-  Semaphore& operator =(const Semaphore&) = delete;
+  Semaphore& operator=(const Semaphore&) = delete;
 
   /**
    * Get current counter value.

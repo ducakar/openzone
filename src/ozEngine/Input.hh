@@ -135,9 +135,9 @@ public:
 
 private:
 
-  static SBitset<MAX_ACTIONS> downActions;     ///< Action for which keys were down.
-  static SBitset<MAX_ACTIONS> pressedActions;  ///< Action for which keys were pressed.
-  static SBitset<MAX_ACTIONS> releasedActions; ///< Action for which keys were released.
+  static SBitset<MAX_ACTIONS> downActions_;     ///< Action for which keys were down.
+  static SBitset<MAX_ACTIONS> pressedActions_;  ///< Action for which keys were pressed.
+  static SBitset<MAX_ACTIONS> releasedActions_; ///< Action for which keys were released.
 
 public:
 
@@ -156,7 +156,7 @@ public:
    */
   static bool down(int action)
   {
-    return downActions.get(action);
+    return downActions_.get(action);
   }
 
   /**
@@ -164,7 +164,7 @@ public:
    */
   static bool pressed(int action)
   {
-    return pressedActions.get(action);
+    return pressedActions_.get(action);
   }
 
   /**
@@ -172,7 +172,7 @@ public:
    */
   static bool released(int action)
   {
-    return releasedActions.get(action);
+    return releasedActions_.get(action);
   }
 
   /**

@@ -74,7 +74,7 @@ Font::Font(Font&& f) :
   f.fontHeight = 0;
 }
 
-Font& Font::operator = (Font&& f)
+Font& Font::operator=(Font&& f)
 {
   if (&f != this) {
     close();

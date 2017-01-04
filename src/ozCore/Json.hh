@@ -108,13 +108,13 @@ private:
 
   union
   {
-    bool       boolean;               ///< Boolean value storage.
-    double     number      = 0.0;     ///< Number value storage.
-    void*      data;                  ///< Pointer to other, complex, value storage.
+    bool       boolean_;               ///< Boolean value storage.
+    double     number_      = 0.0;     ///< Number value storage.
+    void*      data_;                  ///< Pointer to other, complex, value storage.
   };
-  char*        comment     = nullptr; ///< Comment (dynamically allocated).
-  Type         valueType   = NIL;     ///< Value type, `Json::Type`.
-  mutable bool wasAccessed = false;   ///< For warnings about unused variables.
+  char*        comment_     = nullptr; ///< Comment (dynamically allocated).
+  Type         type_        = NIL;     ///< Value type, `Json::Type`.
+  mutable bool wasAccessed_ = false;   ///< For warnings about unused variables.
 
 private:
 
@@ -128,7 +128,7 @@ private:
    * Helper function for setting copying a value to avoid code duplication.
    */
   OZ_INTERNAL
-  void copyValue(const Json& j);
+  void copyValue(const Json& other);
 
   /**
    * Helper function for setting a comment to avoid code duplication.
@@ -236,7 +236,7 @@ public:
    * Json array = {Json {0, 1}, {1, 2}, {2, 0}};
    * @endcode
    */
-  Json(InitialiserList<Json> l, const char* comment = nullptr);
+  Json(InitialiserList<Json> il, const char* comment = nullptr);
 
   /**
    * Create an object from initialiser list of string-JSON pairs.
@@ -246,7 +246,7 @@ public:
    * Json object = {Json::Pair {"key1", 1}, {"key2", 2}, {"key3", 3}};
    * @endcode
    */
-  Json(InitialiserList<Pair> l, const char* comment = nullptr);
+  Json(InitialiserList<Pair> il, const char* comment = nullptr);
 
   /**
    * Destructor.
@@ -256,32 +256,32 @@ public:
   /**
    * Copy constructor.
    */
-  Json(const Json& j);
+  Json(const Json& other);
 
   /**
    * Move constructor.
    */
-  Json(Json&& j);
+  Json(Json&& other);
 
   /**
    * Copy operator.
    */
-  Json& operator =(const Json& j);
+  Json& operator=(const Json& other);
 
   /**
    * Move operator.
    */
-  Json& operator =(Json&& j);
+  Json& operator=(Json&& other);
 
   /**
    * Equality.
    */
-  bool operator ==(const Json& j) const;
+  bool operator==(const Json& other) const;
 
   /**
    * Inequality.
    */
-  bool operator !=(const Json& j) const;
+  bool operator!=(const Json& other) const;
 
   /**
    * JSON array iterator with constant access.
@@ -317,7 +317,7 @@ public:
   OZ_ALWAYS_INLINE
   Type type() const
   {
-    return valueType;
+    return type_;
   }
 
   /**
@@ -326,20 +326,20 @@ public:
   OZ_ALWAYS_INLINE
   bool isNull() const
   {
-    return valueType == NIL;
+    return type_ == NIL;
   }
 
   /**
    * Number of entries if an array or an object, -1 otherwise.
    */
-  int length() const;
+  int size() const;
 
   /**
    * True iff `length() <= 0`.
    */
   bool isEmpty() const
   {
-    return length() <= 0;
+    return size() <= 0;
   }
 
   /**
@@ -347,14 +347,14 @@ public:
    *
    * If the index is out of bounds or the value not an array, a null value is returned.
    */
-  const Json& operator [](int i) const;
+  const Json& operator[](int i) const;
 
   /**
    * Returns value for `key` in an object.
    *
    * If the key does not exist or the value not an object, a null value is returned.
    */
-  const Json& operator [](const char* key) const;
+  const Json& operator[](const char* key) const;
 
   /**
    * True iff value is an object and contains a given key.
@@ -448,7 +448,7 @@ public:
   int getArray(Type* array, int count, const Type& defaultValue) const
   {
     ArrayCIterator iter = arrayCIter();
-    count = min<int>(count, length());
+    count = min<int>(count, size());
 
     for (int i = 0; i < count; ++i, ++iter) {
       array[i] = iter->get(defaultValue);
@@ -468,12 +468,16 @@ public:
   /**
    * Get comment assigned to this value.
    */
-  const char* getComment() const;
+  OZ_ALWAYS_INLINE
+  const char* comment() const
+  {
+    return comment_;
+  }
 
   /**
    * Assign a new comment to this value. Null or empty string clears it.
    */
-  void setComment(const char* comment);
+  void setComment(const char* comment_);
 
   /**
    * Append a value to array (copy).

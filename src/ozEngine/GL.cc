@@ -168,7 +168,7 @@ void GL::checkError(const char* function, const char* file, int line)
     }
   }
 
-  System::error(function, file, line, 1, "GL error '%s'", message);
+  System::error(function, file, line, 1, "GL error `%s'", message);
 }
 
 int GL::textureDataFromStream(Stream* is, int bias)

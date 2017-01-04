@@ -91,7 +91,7 @@ void Pepper::init()
   PSEventRegisterMessageHandler("oz", messageHandler, nullptr);
 }
 
-thread_local Semaphore* MainCall::localSemaphore = &mainSemaphore;
+thread_local Semaphore* MainCall::localSemaphore_ = &mainSemaphore;
 
 }
 

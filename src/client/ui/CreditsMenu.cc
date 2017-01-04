@@ -68,19 +68,19 @@ void CreditsMenu::onUpdate()
   bias += direction * 2;
 
   if (bias < 0 || bias >= stride) {
-    int nEntries = labels.length() + lines.length();
+    int nEntries = labels.size() + lines.size();
 
     scroll = (scroll + direction + nEntries) % nEntries;
     bias   = direction < 0 ? bias + stride - 1 : 0;
 
-    for (int i = 0; i < labels.length(); ++i) {
+    for (int i = 0; i < labels.size(); ++i) {
       int line = (scroll + i) % nEntries;
 
-      if (line < labels.length()) {
+      if (line < labels.size()) {
         labels[i].setText("");
       }
       else {
-        labels[i].setText("%s", lines[line - labels.length()].c());
+        labels[i].setText("%s", lines[line - labels.size()].c());
       }
     }
   }
@@ -120,7 +120,7 @@ void CreditsMenu::onDraw()
   shape.colour(0.0f, 0.0f, 0.0f, 1.0f);
   shape.fill(width - 240, 0, 240, height - 40);
 
-  for (int i = 0; i < labels.length(); ++i) {
+  for (int i = 0; i < labels.size(); ++i) {
     int x = (width - 240) / 2;
     int y = height - 60 - (i + 1)*stride + bias;
 
@@ -171,7 +171,7 @@ CreditsMenu::CreditsMenu() :
     contents = lingua.get(contents);
 
     List<String> fileLines = contents.split('\n');
-    lines.takeAll(fileLines.begin(), fileLines.length());
+    lines.takeAll(fileLines.begin(), fileLines.size());
 
     if (!lines.isEmpty() && lines.last().isEmpty()) {
       lines.popLast();

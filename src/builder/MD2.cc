@@ -315,7 +315,7 @@ void MD2::build(const File& path)
   is.rewind();
   is.readSkip(header.offTexCoords);
 
-  for (int i = 0; i < texCoords.length(); ++i) {
+  for (int i = 0; i < texCoords.size(); ++i) {
     texCoords[i].u = float(is.readShort()) / float(header.skinWidth);
     texCoords[i].v = float(is.readShort()) / float(header.skinHeight);
   }
@@ -323,7 +323,7 @@ void MD2::build(const File& path)
   is.rewind();
   is.readSkip(header.offTriangles);
 
-  for (int i = 0; i < triangles.length(); ++i) {
+  for (int i = 0; i < triangles.size(); ++i) {
     triangles[i].vertices[0]  = is.readShort();
     triangles[i].vertices[1]  = is.readShort();
     triangles[i].vertices[2]  = is.readShort();

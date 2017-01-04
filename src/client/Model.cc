@@ -349,7 +349,7 @@ Model::~Model()
 
 int Model::findNode(const char* name) const
 {
-  for (int i = 0; i < nodes.length(); ++i) {
+  for (int i = 0; i < nodes.size(); ++i) {
     if (nodes[i].name == name) {
       return i;
     }

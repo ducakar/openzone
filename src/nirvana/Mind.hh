@@ -60,7 +60,7 @@ public:
   ~Mind();
 
   Mind(Mind&& m);
-  Mind& operator = (Mind&& m);
+  Mind& operator=(Mind&& m);
 
   void update(bool doRegularUpdate);
 

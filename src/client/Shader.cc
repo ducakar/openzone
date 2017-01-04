@@ -359,7 +359,7 @@ void Shader::init()
 
     OZ_GL_CHECK_ERROR();
 
-    if (liber.shaders.length() == 0) {
+    if (liber.shaders.size() == 0) {
       OZ_ERROR("Shaders missing");
     }
 
@@ -367,7 +367,7 @@ void Shader::init()
     mesh        = liber.shaderIndex("mesh");
     postprocess = liber.shaderIndex("postprocess");
 
-    programs.resize(liber.shaders.length(), true);
+    programs.resize(liber.shaders.size(), true);
 
     defines = "#version 100\n";
 
@@ -404,7 +404,7 @@ void Shader::init()
       }
     }
 
-    for (int i = 0; i < liber.shaders.length(); ++i) {
+    for (int i = 0; i < liber.shaders.size(); ++i) {
       loadProgram(i);
     }
   };
@@ -418,7 +418,7 @@ void Shader::destroy()
 
   MainCall() << [&]
   {
-    for (int i = 0; i < liber.shaders.length(); ++i) {
+    for (int i = 0; i < liber.shaders.size(); ++i) {
       if (programs[i].program != 0) {
         glDetachShader(programs[i].program, programs[i].vertShader);
         glDetachShader(programs[i].program, programs[i].fragShader);

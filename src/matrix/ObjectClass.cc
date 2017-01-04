@@ -141,7 +141,7 @@ void ObjectClass::init(const Json& config, const char* name_)
   // default inventory
   if (nItems != 0) {
     const Json& defaultItemsConfig = config["defaultItems"];
-    int nDefaultItems = defaultItemsConfig.length();
+    int nDefaultItems = defaultItemsConfig.size();
 
     for (int i = 0; i < nDefaultItems; ++i) {
       const char* itemName = defaultItemsConfig[i].get("");
@@ -153,7 +153,7 @@ void ObjectClass::init(const Json& config, const char* name_)
       defaultItems.add(liber.objClass(itemName));
     }
 
-    if (defaultItems.length() > nItems) {
+    if (defaultItems.size() > nItems) {
       OZ_ERROR("%s: Too many items in the default inventory", name_);
     }
   }

@@ -52,7 +52,7 @@ private:
 
 private:
 
-  List<size_t> data; ///< Bit storage.
+  List<size_t> data_; ///< Bit storage.
 
 public:
 
@@ -79,12 +79,12 @@ public:
   /**
    * True iff same size and respective bits are equal.
    */
-  bool operator ==(const Bitset& b) const;
+  bool operator==(const Bitset& other) const;
 
   /**
    * True iff different size or any respective bits differ.
    */
-  bool operator !=(const Bitset& b) const;
+  bool operator!=(const Bitset& other) const;
 
   /**
    * Constant pointer to the first unit.
@@ -92,7 +92,7 @@ public:
   OZ_ALWAYS_INLINE
   const size_t* begin() const
   {
-    return data.begin();
+    return data_.begin();
   }
 
   /**
@@ -101,7 +101,7 @@ public:
   OZ_ALWAYS_INLINE
   size_t* begin()
   {
-    return data.begin();
+    return data_.begin();
   }
 
   /**
@@ -110,7 +110,7 @@ public:
   OZ_ALWAYS_INLINE
   const size_t* end() const
   {
-    return data.end();
+    return data_.end();
   }
 
   /**
@@ -119,16 +119,16 @@ public:
   OZ_ALWAYS_INLINE
   size_t* end()
   {
-    return data.end();
+    return data_.end();
   }
 
   /**
    * Size in bits.
    */
   OZ_ALWAYS_INLINE
-  int length() const
+  int size() const
   {
-    return data.length() * UNIT_BITS;
+    return data_.size() * UNIT_BITS;
   }
 
   /**
@@ -137,7 +137,7 @@ public:
   OZ_ALWAYS_INLINE
   bool isEmpty() const
   {
-    return data.isEmpty();
+    return data_.isEmpty();
   }
 
   /**
@@ -168,7 +168,7 @@ public:
   OZ_ALWAYS_INLINE
   bool get(int i) const
   {
-    return (data[i / UNIT_BITS] & (size_t(1) << (i % UNIT_BITS))) != 0;
+    return (data_[i / UNIT_BITS] & (size_t(1) << (i % UNIT_BITS))) != 0;
   }
 
   /**
@@ -177,7 +177,7 @@ public:
   OZ_ALWAYS_INLINE
   void set(int i)
   {
-    data[i / UNIT_BITS] |= size_t(1) << (i % UNIT_BITS);
+    data_[i / UNIT_BITS] |= size_t(1) << (i % UNIT_BITS);
   }
 
   /**
@@ -186,7 +186,7 @@ public:
   OZ_ALWAYS_INLINE
   void clear(int i)
   {
-    data[i / UNIT_BITS] &= ~(size_t(1) << (i % UNIT_BITS));
+    data_[i / UNIT_BITS] &= ~(size_t(1) << (i % UNIT_BITS));
   }
 
   /**
@@ -195,7 +195,7 @@ public:
   OZ_ALWAYS_INLINE
   void flip(int i)
   {
-    data[i / UNIT_BITS] ^= size_t(1) << (i % UNIT_BITS);
+    data_[i / UNIT_BITS] ^= size_t(1) << (i % UNIT_BITS);
   }
 
   /**
@@ -206,22 +206,22 @@ public:
   /**
    * NOT of the bitset.
    */
-  Bitset operator ~() const;
+  Bitset operator~() const;
 
   /**
    * Return AND of two same-length bitsets.
    */
-  Bitset operator &(const Bitset& b) const;
+  Bitset operator&(const Bitset& b) const;
 
   /**
    * Return OR of two same-length bitsets.
    */
-  Bitset operator |(const Bitset& b) const;
+  Bitset operator|(const Bitset& b) const;
 
   /**
    * Return XOR of two same-length bitsets.
    */
-  Bitset operator ^(const Bitset& b) const;
+  Bitset operator^(const Bitset& b) const;
 
   /**
    * NOT of the bitset.
@@ -231,17 +231,17 @@ public:
   /**
    * AND of two same-length bitsets.
    */
-  Bitset& operator &=(const Bitset& b);
+  Bitset& operator&=(const Bitset& b);
 
   /**
    * OR of two same-length bitsets.
    */
-  Bitset& operator |=(const Bitset& b);
+  Bitset& operator|=(const Bitset& b);
 
   /**
    * XOR of two same-length bitsets.
    */
-  Bitset& operator ^=(const Bitset& b);
+  Bitset& operator^=(const Bitset& b);
 
   /**
    * Resize bitset.

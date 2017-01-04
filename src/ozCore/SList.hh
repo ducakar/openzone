@@ -45,10 +45,10 @@ namespace oz
  *
  * @sa `oz::List`
  */
-template <typename Elem, int SIZE>
+template <typename Elem, int CAPACITY>
 class SList
 {
-  static_assert(SIZE > 0, "oz::SList size must be at least 1");
+  static_assert(CAPACITY > 0, "oz::SList capacity must be at least 1");
 
 public:
 
@@ -64,8 +64,8 @@ public:
 
 private:
 
-  Elem data[SIZE] = {}; ///< Element storage.
-  int  count      = 0;  ///< Number of elements.
+  Elem data_[CAPACITY] = {}; ///< Element storage.
+  int  size_           = 0;  ///< Number of elements.
 
 public:
 
@@ -77,26 +77,26 @@ public:
   /**
    * Create a list with a given initial length.
    */
-  explicit SList(int count_) :
-    count(count_)
+  explicit SList(int size) :
+    size_(size)
   {
-    OZ_ASSERT(count <= SIZE);
+    OZ_ASSERT(size_ <= CAPACITY);
   }
 
   /**
    * Initialise from a C++ array.
    */
-  explicit SList(const Elem* array, int count_) :
-    SList(count_)
+  explicit SList(const Elem* array, int size) :
+    SList(size)
   {
-    Arrays::copy<Elem>(array, count, data);
+    Arrays::copy<Elem>(array, size, data_);
   }
 
   /**
    * Initialise from an initialiser list.
    */
-  SList(InitialiserList<Elem> l) :
-    SList(l.begin(), int(l.size()))
+  SList(InitialiserList<Elem> il) :
+    SList(il.begin(), int(il.size()))
   {}
 
   /**
@@ -104,10 +104,10 @@ public:
    *
    * Existing storage is reused if it suffices.
    */
-  SList& operator =(InitialiserList<Elem> l)
+  SList& operator=(InitialiserList<Elem> il)
   {
     clear();
-    addAll(l.begin(), int(l.size()));
+    addAll(il.begin(), int(il.size()));
 
     return *this;
   }
@@ -115,17 +115,17 @@ public:
   /**
    * True iff respective elements are equal.
    */
-  bool operator ==(const SList& l) const
+  bool operator==(const SList& other) const
   {
-    return count == l.count && Arrays::equals<Elem>(data, count, l.data);
+    return size_ == other.size_ && Arrays::equals<Elem>(data_, size_, other.data_);
   }
 
   /**
    * False iff respective elements are equal.
    */
-  bool operator !=(const SList& l) const
+  bool operator!=(const SList& other) const
   {
-    return !operator ==(l);
+    return !operator==(other);
   }
 
   /**
@@ -134,7 +134,7 @@ public:
   OZ_ALWAYS_INLINE
   CIterator citerator() const
   {
-    return CIterator(data, data + count);
+    return CIterator(data_, data_ + size_);
   }
 
   /**
@@ -143,7 +143,7 @@ public:
   OZ_ALWAYS_INLINE
   Iterator iterator()
   {
-    return Iterator(data, data + count);
+    return Iterator(data_, data_ + size_);
   }
 
   /**
@@ -152,7 +152,7 @@ public:
   OZ_ALWAYS_INLINE
   const Elem* begin() const
   {
-    return data;
+    return data_;
   }
 
   /**
@@ -161,7 +161,7 @@ public:
   OZ_ALWAYS_INLINE
   Elem* begin()
   {
-    return data;
+    return data_;
   }
 
   /**
@@ -170,7 +170,7 @@ public:
   OZ_ALWAYS_INLINE
   const Elem* end() const
   {
-    return data + count;
+    return data_ + size_;
   }
 
   /**
@@ -179,16 +179,16 @@ public:
   OZ_ALWAYS_INLINE
   Elem* end()
   {
-    return data + count;
+    return data_ + size_;
   }
 
   /**
    * Number of elements.
    */
   OZ_ALWAYS_INLINE
-  int length() const
+  int size() const
   {
-    return count;
+    return size_;
   }
 
   /**
@@ -197,7 +197,7 @@ public:
   OZ_ALWAYS_INLINE
   bool isEmpty() const
   {
-    return count == 0;
+    return size_ == 0;
   }
 
   /**
@@ -206,29 +206,29 @@ public:
   OZ_ALWAYS_INLINE
   int capacity() const
   {
-    return SIZE;
+    return CAPACITY;
   }
 
   /**
    * Constant reference to the `i`-th element.
    */
   OZ_ALWAYS_INLINE
-  const Elem& operator [](int i) const
+  const Elem& operator[](int i) const
   {
-    OZ_ASSERT(uint(i) < uint(count));
+    OZ_ASSERT(uint(i) < uint(size_));
 
-    return data[i];
+    return data_[i];
   }
 
   /**
    * Reference to the `i`-th element.
    */
   OZ_ALWAYS_INLINE
-  Elem& operator [](int i)
+  Elem& operator[](int i)
   {
-    OZ_ASSERT(uint(i) < uint(count));
+    OZ_ASSERT(uint(i) < uint(size_));
 
-    return data[i];
+    return data_[i];
   }
 
   /**
@@ -237,9 +237,9 @@ public:
   OZ_ALWAYS_INLINE
   const Elem& first() const
   {
-    OZ_ASSERT(count != 0);
+    OZ_ASSERT(size_ != 0);
 
-    return data[0];
+    return data_[0];
   }
 
   /**
@@ -248,9 +248,9 @@ public:
   OZ_ALWAYS_INLINE
   Elem& first()
   {
-    OZ_ASSERT(count != 0);
+    OZ_ASSERT(size_ != 0);
 
-    return data[0];
+    return data_[0];
   }
 
   /**
@@ -259,9 +259,9 @@ public:
   OZ_ALWAYS_INLINE
   const Elem& last() const
   {
-    OZ_ASSERT(count != 0);
+    OZ_ASSERT(size_ != 0);
 
-    return data[count - 1];
+    return data_[size_ - 1];
   }
 
   /**
@@ -270,9 +270,9 @@ public:
   OZ_ALWAYS_INLINE
   Elem& last()
   {
-    OZ_ASSERT(count != 0);
+    OZ_ASSERT(size_ != 0);
 
-    return data[count - 1];
+    return data_[size_ - 1];
   }
 
   /**
@@ -281,7 +281,7 @@ public:
   template <typename Key>
   bool contains(const Key& key) const
   {
-    return Arrays::contains<Elem, Key>(data, count, key);
+    return Arrays::contains<Elem, Key>(data_, size_, key);
   }
 
   /**
@@ -290,7 +290,7 @@ public:
   template <typename Key>
   int index(const Key& key) const
   {
-    return Arrays::index<Elem, Key>(data, count, key);
+    return Arrays::index<Elem, Key>(data_, size_, key);
   }
 
   /**
@@ -299,7 +299,7 @@ public:
   template <typename Key>
   int lastIndex(const Key& key) const
   {
-    return Arrays::lastIndex<Elem, Key>(data, count, key);
+    return Arrays::lastIndex<Elem, Key>(data_, size_, key);
   }
 
   /**
@@ -308,33 +308,33 @@ public:
   template <typename Elem_>
   Elem& add(Elem_&& elem)
   {
-    return insert<Elem_>(count, static_cast<Elem_&&>(elem));
+    return insert<Elem_>(size_, static_cast<Elem_&&>(elem));
   }
 
   /**
    * Add (copy) elements from a given array to the end.
    */
-  void addAll(const Elem* array, int arrayCount)
+  void addAll(const Elem* array, int arraySize)
   {
-    int newCount = count + arrayCount;
+    int newSize = size_ + arraySize;
 
-    OZ_ASSERT(uint(newCount) <= uint(SIZE));
+    OZ_ASSERT(uint(newSize) <= uint(CAPACITY));
 
-    Arrays::copy<Elem>(array, arrayCount, data + count);
-    count = newCount;
+    Arrays::copy<Elem>(array, arraySize, data_ + size_);
+    size_ = newSize;
   }
 
   /**
    * Add (move) elements from a given array to the end.
    */
-  void takeAll(Elem* array, int arrayCount)
+  void takeAll(Elem* array, int arraySize)
   {
-    int newCount = count + arrayCount;
+    int newSize = size_ + arraySize;
 
-    OZ_ASSERT(uint(newCount) <= uint(SIZE));
+    OZ_ASSERT(uint(newSize) <= uint(CAPACITY));
 
-    Arrays::move<Elem>(array, arrayCount, data + count);
-    count = newCount;
+    Arrays::move<Elem>(array, arraySize, data_ + size_);
+    size_ = newSize;
   }
 
   /**
@@ -345,13 +345,13 @@ public:
   template <typename Elem_>
   Elem& include(Elem_&& elem)
   {
-    int i = Arrays::index<Elem, Elem>(data, count, elem);
+    int i = Arrays::index<Elem, Elem>(data_, size_, elem);
 
     if (i >= 0) {
-      return data[i];
+      return data_[i];
     }
     else {
-      return insert<Elem_>(count, static_cast<Elem_&&>(elem));
+      return insert<Elem_>(size_, static_cast<Elem_&&>(elem));
     }
   }
 
@@ -363,14 +363,14 @@ public:
   template <typename Elem_>
   Elem& insert(int i, Elem_&& elem)
   {
-    OZ_ASSERT(uint(i) <= uint(count));
-    OZ_ASSERT(uint(count) < uint(SIZE));
+    OZ_ASSERT(uint(i) <= uint(size_));
+    OZ_ASSERT(uint(size_) < uint(CAPACITY));
 
-    Arrays::moveBackward<Elem>(data + i, count - i, data + i + 1);
-    data[i] = static_cast<Elem_&&>(elem);
-    ++count;
+    Arrays::moveBackward<Elem>(data_ + i, size_ - i, data_ + i + 1);
+    data_[i] = static_cast<Elem_&&>(elem);
+    ++size_;
 
-    return data[i];
+    return data_[i];
   }
 
   /**
@@ -380,17 +380,17 @@ public:
    */
   void erase(int i)
   {
-    OZ_ASSERT(uint(i) < uint(count));
+    OZ_ASSERT(uint(i) < uint(size_));
 
-    --count;
+    --size_;
 
-    if (i == count) {
+    if (i == size_) {
       // When removing the last element, no shift is performed, so it is not implicitly destroyed by
       // the move operation.
-      data[count] = Elem();
+      data_[size_] = Elem();
     }
     else {
-      Arrays::move<Elem>(data + i + 1, count - i, data + i);
+      Arrays::move<Elem>(data_ + i + 1, size_ - i, data_ + i);
     }
   }
 
@@ -401,17 +401,17 @@ public:
    */
   void eraseUnordered(int i)
   {
-    OZ_ASSERT(uint(i) < uint(count));
+    OZ_ASSERT(uint(i) < uint(size_));
 
-    --count;
+    --size_;
 
-    if (i == count) {
+    if (i == size_) {
       // When removing the last element, no shift is performed, so it is not implicitly destroyed by
       // the move operation.
-      data[count] = Elem();
+      data_[size_] = Elem();
     }
     else {
-      data[i] = static_cast<Elem&&>(data[count]);
+      data_[i] = static_cast<Elem&&>(data_[size_]);
     }
   }
 
@@ -423,7 +423,7 @@ public:
   template <typename Key>
   int exclude(const Key& key)
   {
-    int i = Arrays::index<Elem, Key>(data, count, key);
+    int i = Arrays::index<Elem, Key>(data_, size_, key);
 
     if (i >= 0) {
       erase(i);
@@ -441,7 +441,7 @@ public:
   template <typename Key>
   int excludeUnordered(const Key& key)
   {
-    int i = Arrays::index<Elem, Key>(data, count, key);
+    int i = Arrays::index<Elem, Key>(data_, size_, key);
 
     if (i >= 0) {
       eraseUnordered(i);
@@ -466,7 +466,7 @@ public:
   template <typename Elem_>
   Elem& pushLast(Elem_&& elem)
   {
-    return insert<Elem_>(count, static_cast<Elem_&&>(elem));
+    return insert<Elem_>(size_, static_cast<Elem_&&>(elem));
   }
 
   /**
@@ -478,14 +478,14 @@ public:
    */
   Elem popFirst()
   {
-    if (count == 0) {
+    if (size_ == 0) {
       return Elem();
     }
     else {
-      Elem elem = static_cast<Elem&&>(data[0]);
+      Elem elem = static_cast<Elem&&>(data_[0]);
 
-      --count;
-      Arrays::move<Elem>(data + 1, count, data);
+      --size_;
+      Arrays::move<Elem>(data_ + 1, size_, data_);
       return elem;
     }
   }
@@ -497,12 +497,12 @@ public:
    */
   Elem popLast()
   {
-    if (count == 0) {
+    if (size_ == 0) {
       return Elem();
     }
     else {
-      --count;
-      return static_cast<Elem&&>(data[count]);
+      --size_;
+      return static_cast<Elem&&>(data_[size_]);
     }
   }
 
@@ -511,7 +511,7 @@ public:
    */
   void reverse()
   {
-    Arrays::reverse<Elem>(data, count);
+    Arrays::reverse<Elem>(data_, size_);
   }
 
   /**
@@ -520,7 +520,7 @@ public:
   template <class LessFunc = Less<Elem>>
   void sort()
   {
-    Arrays::sort<Elem, LessFunc>(data, count);
+    Arrays::sort<Elem, LessFunc>(data_, size_);
   }
 
   /**
@@ -528,10 +528,10 @@ public:
    */
   void resize(int newCount)
   {
-    OZ_ASSERT(newCount <= SIZE);
+    OZ_ASSERT(newCount <= CAPACITY);
 
-    Arrays::clear<Elem>(data + newCount, count - newCount);
-    count = newCount;
+    Arrays::clear<Elem>(data_ + newCount, size_ - newCount);
+    size_ = newCount;
   }
 
   /**
@@ -539,8 +539,8 @@ public:
    */
   void clear()
   {
-    Arrays::clear<Elem>(data, count);
-    count = 0;
+    Arrays::clear<Elem>(data_, size_);
+    size_ = 0;
   }
 
   /**
@@ -548,8 +548,8 @@ public:
    */
   void free()
   {
-    Arrays::free<Elem>(data, count);
-    count = 0;
+    Arrays::free<Elem>(data_, size_);
+    size_ = 0;
   }
 
 };

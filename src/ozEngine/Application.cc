@@ -311,7 +311,7 @@ void Application::run(Stage* initialStage)
   if (defaults.saveConfig) {
     File configFile = configDir + "/config.json";
 
-    Log::print("Saving configuration to %s ... ", configFile.c());
+    Log::print("Saving configuration to `%s' ... ", configFile.c());
 
     configDir.mkdir();
     bool success = config.save(configFile);

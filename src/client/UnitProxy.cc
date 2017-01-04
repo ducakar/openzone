@@ -114,7 +114,7 @@ void UnitProxy::prepare()
   }
 
   if (input.keys[Input::KEY_CYCLE_UNITS] && !input.oldKeys[Input::KEY_CYCLE_UNITS]) {
-    int nSwitchableunits = camera.switchableUnits.length();
+    int nSwitchableunits = camera.switchableUnits.size();
 
     if (nSwitchableunits != 0) {
       int currUnit = -1;
@@ -291,7 +291,7 @@ void UnitProxy::prepare()
   }
 
   if (weaponIndex != -1) {
-    for (int i = 0, index = 0; i < bot->items.length(); ++i) {
+    for (int i = 0, index = 0; i < bot->items.size(); ++i) {
       const Weapon* weapon = orbis.obj<const Weapon>(bot->items[i]);
 
       if (weapon != nullptr && weapon->flags & Object::WEAPON_BIT) {

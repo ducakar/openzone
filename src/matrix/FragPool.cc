@@ -57,7 +57,7 @@ FragPool::FragPool(const Json& config, const char* name_, int id_) :
   }
 
   const Json& modelsConfig = config["models"];
-  int nModels = modelsConfig.length();
+  int nModels = modelsConfig.size();
 
   for (int i = 0; i < nModels; ++i) {
     const char* modelName = modelsConfig[i].get("");

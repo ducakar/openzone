@@ -63,7 +63,7 @@ Mind::Mind(Mind&& m) :
   m.bot   = -1;
 }
 
-Mind& Mind::operator = (Mind&& m)
+Mind& Mind::operator=(Mind&& m)
 {
   if (&m != this) {
     flags = m.flags;

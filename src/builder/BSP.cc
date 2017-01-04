@@ -110,7 +110,7 @@ void BSP::load()
   is.rewind();
   is.readSkip(lumps[QBSPLump::TEXTURES].offset);
 
-  for (int i = 0; i < textures.length(); ++i) {
+  for (int i = 0; i < textures.size(); ++i) {
     textures[i].name  = is.readSkip(64);
     textures[i].flags = is.readInt();
     textures[i].type  = is.readInt();
@@ -140,7 +140,7 @@ void BSP::load()
   is.rewind();
   is.readSkip(lumps[QBSPLump::PLANES].offset);
 
-  for (int i = 0; i < planes.length(); ++i) {
+  for (int i = 0; i < planes.size(); ++i) {
     planes[i].n.x = is.readFloat();
     planes[i].n.y = is.readFloat();
     planes[i].n.z = is.readFloat();
@@ -152,7 +152,7 @@ void BSP::load()
   is.rewind();
   is.readSkip(lumps[QBSPLump::NODES].offset);
 
-  for (int i = 0; i < nodes.length(); ++i) {
+  for (int i = 0; i < nodes.size(); ++i) {
     nodes[i].plane = is.readInt();
     nodes[i].front = is.readInt();
     nodes[i].back  = is.readInt();
@@ -167,12 +167,12 @@ void BSP::load()
   }
 
   leaves.resize(lumps[QBSPLump::LEAFS].length / sizeof(QBSPLeaf));
-  leafClusters.resize(leaves.length());
+  leafClusters.resize(leaves.size());
 
   is.rewind();
   is.readSkip(lumps[QBSPLump::LEAFS].offset);
 
-  for (int i = 0; i < leaves.length(); ++i) {
+  for (int i = 0; i < leaves.size(); ++i) {
     // int cluster
     leafClusters[i] = is.readInt();
     // int area
@@ -198,7 +198,7 @@ void BSP::load()
   is.rewind();
   is.readSkip(lumps[QBSPLump::LEAFBRUSHES].offset);
 
-  for (int i = 0; i < leafBrushes.length(); ++i) {
+  for (int i = 0; i < leafBrushes.size(); ++i) {
     leafBrushes[i] = is.readInt();
   }
 
@@ -219,7 +219,7 @@ void BSP::load()
   // skip model 0 (whole BSP)
   is.readSkip(sizeof(QBSPModel));
 
-  for (int i = 0; i < models.length(); ++i) {
+  for (int i = 0; i < models.size(); ++i) {
     const Json& entityConfig = modelsConfig[i];
     Model&      model        = models[i];
 
@@ -304,7 +304,7 @@ void BSP::load()
   is.rewind();
   is.readSkip(lumps[QBSPLump::MODELS].offset);
 
-  for (int i = 0; i < models.length() + 1; ++i) {
+  for (int i = 0; i < models.size() + 1; ++i) {
     // float bb[2][3]
     is.readFloat();
     is.readFloat();
@@ -327,7 +327,7 @@ void BSP::load()
   is.rewind();
   is.readSkip(lumps[QBSPLump::BRUSHSIDES].offset);
 
-  for (int i = 0; i < brushSides.length(); ++i) {
+  for (int i = 0; i < brushSides.size(); ++i) {
     brushSides[i] = is.readInt();
 
     // int texture
@@ -336,14 +336,14 @@ void BSP::load()
 
   brushes.resize(lumps[QBSPLump::BRUSHES].length / sizeof(QBSPBrush));
 
-  if (brushes.length() > oz::BSP::MAX_BRUSHES) {
-    OZ_ERROR("Too many brushes %d, maximum is %d", brushes.length(), oz::BSP::MAX_BRUSHES);
+  if (brushes.size() > oz::BSP::MAX_BRUSHES) {
+    OZ_ERROR("Too many brushes %d, maximum is %d", brushes.size(), oz::BSP::MAX_BRUSHES);
   }
 
   is.rewind();
   is.readSkip(lumps[QBSPLump::BRUSHES].offset);
 
-  for (int i = 0; i < brushes.length(); ++i) {
+  for (int i = 0; i < brushes.size(); ++i) {
     brushes[i].firstSide = is.readInt();
     brushes[i].nSides    = is.readInt();
     brushes[i].flags     = 0;
@@ -381,7 +381,7 @@ void BSP::load()
   is.rewind();
   is.readSkip(lumps[QBSPLump::VERTICES].offset);
 
-  for (int i = 0; i < vertices.length(); ++i) {
+  for (int i = 0; i < vertices.size(); ++i) {
     vertices[i].pos[0]      = is.readFloat() * scale;
     vertices[i].pos[1]      = is.readFloat() * scale;
     vertices[i].pos[2]      = is.readFloat() * scale;
@@ -409,7 +409,7 @@ void BSP::load()
   is.rewind();
   is.readSkip(lumps[QBSPLump::INDICES].offset);
 
-  for (int i = 0; i < indices.length(); ++i) {
+  for (int i = 0; i < indices.size(); ++i) {
     indices[i] = is.readInt();
   }
 
@@ -418,7 +418,7 @@ void BSP::load()
   is.rewind();
   is.readSkip(lumps[QBSPLump::FACES].offset);
 
-  for (int i = 0; i < faces.length(); ++i) {
+  for (int i = 0; i < faces.size(); ++i) {
     faces[i].texture     = is.readInt();
 
     // int effect
@@ -476,7 +476,7 @@ void BSP::load()
   }
 
   const Json& objectsConfig = config["boundObjects"];
-  int nBoundObjects = objectsConfig.length();
+  int nBoundObjects = objectsConfig.size();
 
   for (int i = 0; i < nBoundObjects; ++i) {
     const Json& objectConfig = objectsConfig[i];
@@ -522,7 +522,7 @@ void BSP::optimise()
   Log::indent();
 
   // remove brushes that lay out of boundaries
-  for (int i = 0; i < brushes.length();) {
+  for (int i = 0; i < brushes.size();) {
     OZ_ASSERT(brushes[i].nSides >= 0);
 
     if (brushes[i].nSides != 0) {
@@ -534,7 +534,7 @@ void BSP::optimise()
     Log::print("Outside brush removed ");
 
     // adjust brush references (for leaves)
-    for (int j = 0; j < leafBrushes.length();) {
+    for (int j = 0; j < leafBrushes.size();) {
       if (leafBrushes[j] < i) {
         ++j;
       }
@@ -546,7 +546,7 @@ void BSP::optimise()
         leafBrushes.erase(j);
         Log::printRaw(".");
 
-        for (int k = 0; k < leaves.length(); ++k) {
+        for (int k = 0; k < leaves.size(); ++k) {
           if (j < leaves[k].firstBrush) {
             --leaves[k].firstBrush;
           }
@@ -559,7 +559,7 @@ void BSP::optimise()
       }
     }
     // adjust brush references (for models)
-    for (int j = 0; j < models.length(); ++j) {
+    for (int j = 0; j < models.size(); ++j) {
       if (i < models[j].firstBrush) {
         --models[j].firstBrush;
       }
@@ -575,11 +575,11 @@ void BSP::optimise()
   // remove model brushes from the static tree (WTF Quake BSP puts them there?)
   Log::print("Removing model brush references ");
 
-  for (int i = 0; i < models.length(); ++i) {
+  for (int i = 0; i < models.size(); ++i) {
     for (int j = 0; j < models[i].nBrushes; ++j) {
       int brush = models[i].firstBrush + j;
 
-      for (int k = 0; k < leafBrushes.length();) {
+      for (int k = 0; k < leafBrushes.size();) {
         if (leafBrushes[k] != brush) {
           ++k;
           continue;
@@ -589,7 +589,7 @@ void BSP::optimise()
         Log::printRaw(".");
 
         // adjust leaf references
-        for (int l = 0; l < leaves.length(); ++l) {
+        for (int l = 0; l < leaves.size(); ++l) {
           if (k < leaves[l].firstBrush) {
             --leaves[l].firstBrush;
           }
@@ -608,10 +608,10 @@ void BSP::optimise()
   // remove unreferenced leaves
   Log::print("Removing unreferenced and empty leaves ");
 
-  for (int i = 0; i < leaves.length();) {
+  for (int i = 0; i < leaves.size();) {
     bool isReferenced = false;
 
-    for (int j = 0; j < nodes.length(); ++j) {
+    for (int j = 0; j < nodes.size(); ++j) {
       if (nodes[j].front == ~i || nodes[j].back == ~i) {
         isReferenced = true;
         break;
@@ -628,7 +628,7 @@ void BSP::optimise()
 
     // update references and tag unnecessary nodes, will be removed in the next pass (index 0 is
     // invalid as the root cannot be referenced)
-    for (int j = 0; j < nodes.length(); ++j) {
+    for (int j = 0; j < nodes.size(); ++j) {
       if (~nodes[j].front == i) {
         nodes[j].front = 0;
       }
@@ -654,7 +654,7 @@ void BSP::optimise()
   do {
     hasCollapsed = false;
 
-    for (int i = 0; i < nodes.length();) {
+    for (int i = 0; i < nodes.size();) {
       if (nodes[i].front != 0 && nodes[i].back != 0) {
         ++i;
         continue;
@@ -678,7 +678,7 @@ void BSP::optimise()
       else {
         // find parent
         int* parentsRef = nullptr;
-        for (int j = 0; j < nodes.length(); ++j) {
+        for (int j = 0; j < nodes.size(); ++j) {
           if (nodes[j].front == i) {
             OZ_ASSERT(parentsRef == nullptr);
 
@@ -705,13 +705,13 @@ void BSP::optimise()
 
       nodes.erase(i);
 
-      for (int j = 0; j < nodes.length(); ++j) {
+      for (int j = 0; j < nodes.size(); ++j) {
         OZ_ASSERT(nodes[j].front != i);
         OZ_ASSERT(nodes[j].back != i);
       }
 
       // shift nodes' references
-      for (int j = 0; j < nodes.length(); ++j) {
+      for (int j = 0; j < nodes.size(); ++j) {
         if (nodes[j].front > i) {
           --nodes[j].front;
         }
@@ -731,16 +731,16 @@ void BSP::optimise()
   // remove unused brush sides
   Log::print("Removing unused brush sides ");
 
-  List<bool> usedBrushSides(brushSides.length());
-  Arrays::clear(usedBrushSides.begin(), usedBrushSides.length());
+  List<bool> usedBrushSides(brushSides.size());
+  Arrays::clear(usedBrushSides.begin(), usedBrushSides.size());
 
-  for (int i = 0; i < brushes.length(); ++i) {
+  for (int i = 0; i < brushes.size(); ++i) {
     for (int j = 0; j < brushes[i].nSides; ++j) {
       usedBrushSides[brushes[i].firstSide + j] = true;
     }
   }
 
-  for (int i = 0; i < brushSides.length();) {
+  for (int i = 0; i < brushSides.size();) {
     if (usedBrushSides[i]) {
       ++i;
       continue;
@@ -750,7 +750,7 @@ void BSP::optimise()
     usedBrushSides.erase(i);
     Log::printRaw(".");
 
-    for (int j = 0; j < brushes.length(); ++j) {
+    for (int j = 0; j < brushes.size(); ++j) {
       if (i < brushes[j].firstSide) {
         --brushes[j].firstSide;
       }
@@ -769,16 +769,16 @@ void BSP::optimise()
   // remove unused planes
   Log::print("Removing unused planes ");
 
-  List<bool> usedPlanes(planes.length());
+  List<bool> usedPlanes(planes.size());
 
-  for (int i = 0; i < nodes.length(); ++i) {
+  for (int i = 0; i < nodes.size(); ++i) {
     usedPlanes[nodes[i].plane] = true;
   }
-  for (int i = 0; i < brushSides.length(); ++i) {
+  for (int i = 0; i < brushSides.size(); ++i) {
     usedPlanes[brushSides[i]] = true;
   }
 
-  for (int i = 0; i < planes.length();) {
+  for (int i = 0; i < planes.size();) {
     if (usedPlanes[i]) {
       ++i;
       continue;
@@ -789,14 +789,14 @@ void BSP::optimise()
     Log::printRaw(".");
 
     // adjust plane references
-    for (int j = 0; j < nodes.length(); ++j) {
+    for (int j = 0; j < nodes.size(); ++j) {
       OZ_ASSERT(nodes[j].plane != i);
 
       if (nodes[j].plane > i) {
         --nodes[j].plane;
       }
     }
-    for (int j = 0; j < brushSides.length(); ++j) {
+    for (int j = 0; j < brushSides.size(); ++j) {
       OZ_ASSERT(brushSides[j] != i);
 
       if (brushSides[j] > i) {
@@ -816,7 +816,7 @@ void BSP::optimise()
   mins = Point(+Math::INF, +Math::INF, +Math::INF);
   maxs = Point(-Math::INF, -Math::INF, -Math::INF);
 
-  for (int i = 0; i < brushSides.length(); ++i) {
+  for (int i = 0; i < brushSides.size(); ++i) {
     Plane& plane = planes[brushSides[i]];
 
     if (plane.n.x == -1.0f) {
@@ -850,7 +850,7 @@ void BSP::optimise()
   Log::indent();
 
   // remove faces that lay out of boundaries
-  for (int i = 0; i < faces.length();) {
+  for (int i = 0; i < faces.size();) {
     OZ_ASSERT(faces[i].nVertices > 0 && faces[i].nIndices >= 0);
 
     if (faces[i].nIndices != 0) {
@@ -862,7 +862,7 @@ void BSP::optimise()
     Log::println("Outside face removed");
 
     // adjust face references
-    for (int j = 0; j < models.length() + 1; ++j) {
+    for (int j = 0; j < models.size() + 1; ++j) {
       if (i < modelFaces[j].firstFace) {
         --modelFaces[j].firstFace;
       }
@@ -882,11 +882,11 @@ void BSP::check() const
 {
   Log::print("Integrity check ...");
 
-  Bitset usedNodes(nodes.length());
-  Bitset usedLeaves(leaves.length());
-  Bitset usedBrushes(brushes.length());
+  Bitset usedNodes(nodes.size());
+  Bitset usedLeaves(leaves.size());
+  Bitset usedBrushes(brushes.size());
 
-  for (int i = 0; i < nodes.length(); ++i) {
+  for (int i = 0; i < nodes.size(); ++i) {
     if (nodes[i].front < 0) {
       if (usedLeaves.get(~nodes[i].front)) {
         OZ_ERROR("BSP leaf %d referenced twice", ~nodes[i].front);
@@ -920,7 +920,7 @@ void BSP::check() const
     }
   }
 
-  for (int i = 0; i < models.length(); ++i) {
+  for (int i = 0; i < models.size(); ++i) {
     for (int j = 0; j < models[i].nBrushes; ++j) {
       int index = models[i].firstBrush + j;
 
@@ -933,14 +933,14 @@ void BSP::check() const
 
   usedBrushes.clear();
 
-  for (int i = 0; i < leaves.length(); ++i) {
+  for (int i = 0; i < leaves.size(); ++i) {
     for (int j = 0; j < leaves[i].nBrushes; ++j) {
       int index = leafBrushes[leaves[i].firstBrush + j];
 
       usedBrushes.set(index);
     }
   }
-  for (int i = 0; i < models.length(); ++i) {
+  for (int i = 0; i < models.size(); ++i) {
     for (int j = 0; j < models[i].nBrushes; ++j) {
       int index = models[i].firstBrush + j;
 
@@ -954,23 +954,23 @@ void BSP::check() const
   if (usedNodes.get(0)) {
     OZ_ERROR("BSP root node referenced");
   }
-  for (int i = 1; i < nodes.length(); ++i) {
+  for (int i = 1; i < nodes.size(); ++i) {
     if (!usedNodes.get(i)) {
       OZ_ERROR("BSP node %d not referenced", i);
     }
   }
-  for (int i = 0; i < leaves.length(); ++i) {
+  for (int i = 0; i < leaves.size(); ++i) {
     if (!usedLeaves.get(i)) {
       OZ_ERROR("BSP leaf %d not referenced", i);
     }
   }
-  for (int i = 0; i < brushes.length(); ++i) {
+  for (int i = 0; i < brushes.size(); ++i) {
     if (!usedBrushes.get(i)) {
       OZ_ERROR("BSP brush %d not referenced", i);
     }
   }
 
-  for (int i = 0; i < planes.length(); ++i) {
+  for (int i = 0; i < planes.size(); ++i) {
     if (!Math::isFinite(planes[i].d)) {
       OZ_ERROR("BSP has invalid plane %d", i);
     }
@@ -980,14 +980,14 @@ void BSP::check() const
 
   Log::println("Statistics {");
   Log::indent();
-  Log::println("%4d  models",      models.length());
-  Log::println("%4d  nodes",       nodes.length());
-  Log::println("%4d  leaves",      leaves.length());
-  Log::println("%4d  brushes",     brushes.length());
-  Log::println("%4d  brush sides", brushSides.length());
-  Log::println("%4d  planes",      planes.length());
-  Log::println("%4d  faces",       faces.length());
-  Log::println("%4d  textures",    textures.length());
+  Log::println("%4d  models",      models.size());
+  Log::println("%4d  nodes",       nodes.size());
+  Log::println("%4d  leaves",      leaves.size());
+  Log::println("%4d  brushes",     brushes.size());
+  Log::println("%4d  brush sides", brushSides.size());
+  Log::println("%4d  planes",      planes.size());
+  Log::println("%4d  faces",       faces.size());
+  Log::println("%4d  textures",    textures.size());
   Log::unindent();
   Log::println("}");
 }
@@ -1015,14 +1015,14 @@ void BSP::saveMatrix()
   os.writeString(demolishSound);
   os.writeFloat(groundOffset);
 
-  os.writeInt(planes.length());
-  os.writeInt(nodes.length());
-  os.writeInt(leaves.length());
-  os.writeInt(leafBrushes.length());
-  os.writeInt(brushes.length());
-  os.writeInt(brushSides.length());
-  os.writeInt(models.length());
-  os.writeInt(boundObjects.length());
+  os.writeInt(planes.size());
+  os.writeInt(nodes.size());
+  os.writeInt(leaves.size());
+  os.writeInt(leafBrushes.size());
+  os.writeInt(brushes.size());
+  os.writeInt(brushSides.size());
+  os.writeInt(models.size());
+  os.writeInt(boundObjects.size());
 
   for (const Plane& plane : planes) {
     os.write<Plane>(plane);
@@ -1113,7 +1113,7 @@ void BSP::saveClient()
   compiler.enable(Compiler::UNIQUE);
   compiler.enable(Compiler::CLOCKWISE);
 
-  for (int i = 0; i <= models.length(); ++i) {
+  for (int i = 0; i <= models.size(); ++i) {
     compiler.beginNode();
 
     if (modelFaces[i].nFaces != 0) {
@@ -1188,9 +1188,9 @@ void BSP::saveClient()
 
   compiler.writeModel(&os, true);
 
-  os.writeInt(leafClusters.length());
+  os.writeInt(leafClusters.size());
 
-  for (int i = 0; i < leafClusters.length(); ++i) {
+  for (int i = 0; i < leafClusters.size(); ++i) {
     os.writeInt(leafClusters[i]);
   }
 

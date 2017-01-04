@@ -167,7 +167,7 @@ void Loader::updateEnvironment()
 void Loader::cleanupRender()
 {
   if (tick % FRAG_CLEAR_INTERVAL == FRAG_CLEAR_LAG) {
-    for (int i = 0; i < liber.fragPools.length(); ++i) {
+    for (int i = 0; i < liber.fragPools.size(); ++i) {
       FragPool* pool = context.fragPools[i];
 
       if (pool == nullptr) {
@@ -185,7 +185,7 @@ void Loader::cleanupRender()
   }
 
   if (tick % BSP_CLEAR_INTERVAL == BSP_CLEAR_LAG) {
-    for (int i = 0; i < liber.bsps.length(); ++i) {
+    for (int i = 0; i < liber.bsps.size(); ++i) {
       Context::Resource<BSPImago*>& bsp = context.bspImagines[i];
 
       if (bsp.nUsers != 0) {
@@ -201,7 +201,7 @@ void Loader::cleanupRender()
   }
 
   if (tick % MODEL_CLEAR_INTERVAL == MODEL_CLEAR_LAG) {
-    for (int i = 0; i < liber.models.length(); ++i) {
+    for (int i = 0; i < liber.models.size(); ++i) {
       Context::Resource<Model*>& model = context.models[i];
 
       if (model.nUsers == 0) {
@@ -214,7 +214,7 @@ void Loader::cleanupRender()
   }
 
   if (tick % PARTICLE_CLEAR_INTERVAL == PARTICLE_CLEAR_LAG) {
-    for (int i = 0; i < liber.parts.length(); ++i) {
+    for (int i = 0; i < liber.parts.size(); ++i) {
     }
   }
 
@@ -227,7 +227,7 @@ void Loader::cleanupSound()
 
   // Remove unused BSP audio objects.
   if (tick % BSPAUDIO_CLEAR_INTERVAL == BSPAUDIO_CLEAR_LAG) {
-    for (int i = 0; i < liber.bsps.length(); ++i) {
+    for (int i = 0; i < liber.bsps.size(); ++i) {
       Context::Resource<BSPAudio*>& bspAudio = context.bspAudios[i];
 
       if (bspAudio.nUsers != 0) {
@@ -247,7 +247,7 @@ void Loader::cleanupSound()
 
 void Loader::preloadRender()
 {
-  for (int i = 0; i < liber.bsps.length(); ++i) {
+  for (int i = 0; i < liber.bsps.size(); ++i) {
     BSPImago* bsp = context.bspImagines[i].handle;
 
     if (bsp != nullptr && !bsp->isLoaded() && !bsp->isPreloaded()) {
@@ -255,7 +255,7 @@ void Loader::preloadRender()
     }
   }
 
-  for (int i = 0; i < liber.models.length(); ++i) {
+  for (int i = 0; i < liber.models.size(); ++i) {
     Model* model = context.models[i].handle;
 
     if (model != nullptr && !model->isLoaded() && !model->isPreloaded()) {
@@ -266,7 +266,7 @@ void Loader::preloadRender()
 
 void Loader::uploadRender(bool isOneShot)
 {
-  for (int i = 0; i < liber.bsps.length(); ++i) {
+  for (int i = 0; i < liber.bsps.size(); ++i) {
     BSPImago* bsp = context.bspImagines[i].handle;
 
     if (bsp != nullptr && bsp->isPreloaded()) {
@@ -278,7 +278,7 @@ void Loader::uploadRender(bool isOneShot)
     }
   }
 
-  for (int i = 0; i < liber.models.length(); ++i) {
+  for (int i = 0; i < liber.models.size(); ++i) {
     Model* model = context.models[i].handle;
 
     if (model != nullptr && model->isPreloaded()) {

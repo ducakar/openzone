@@ -74,7 +74,7 @@ void MissionMenu::onRealign()
   width       = camera.width;
   height      = camera.height;
 
-  nSelections = clamp(missions.length(), 0, (height - 150) / 40);
+  nSelections = clamp(missions.size(), 0, (height - 150) / 40);
   selection   = -1;
   scroll      = 0;
 
@@ -112,7 +112,7 @@ bool MissionMenu::onMouseEvent()
 {
   if (mouse.x >= width - 240 && input.mouseW != 0.0f) {
     if (input.mouseW < 0.0f) {
-      scroll = min(scroll + 1, missions.length() - nSelections);
+      scroll = min(scroll + 1, missions.size() - nSelections);
     }
     else {
       scroll = max(scroll - 1, 0);
@@ -151,7 +151,7 @@ void MissionMenu::onDraw()
     glBindTexture(GL_TEXTURE_2D, style.images.scrollUp);
     shape.fill(width - 128, height - 32, 16, 16);
   }
-  if (scroll < missions.length() - nSelections) {
+  if (scroll < missions.size() - nSelections) {
     glBindTexture(GL_TEXTURE_2D, style.images.scrollDown);
     shape.fill(width - 128, height - nSelections * 40 - 54, 16, 16);
   }

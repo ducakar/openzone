@@ -109,7 +109,7 @@ static int ozOrbisAddPlayer(lua_State* l)
     player->mind = "";
 
     if (!empty) {
-      int invMax = min(player->clazz->nItems, profile.items.length());
+      int invMax = min(player->clazz->nItems, profile.items.size());
 
       for (int i = 0; i < invMax; ++i) {
         Object*  obj  = synapse.add(profile.items[i], Point::ORIGIN, Heading(Math::rand(4)),
@@ -280,7 +280,7 @@ static int ozProfileGetItems(lua_State* l)
 
   l_newtable();
 
-  for (int i = 0; i < profile.items.length(); ++i) {
+  for (int i = 0; i < profile.items.size(); ++i) {
     const ObjectClass* clazz = profile.items[i];
 
     l_pushstring(clazz->name);
@@ -329,7 +329,7 @@ static int ozProfileSetWeaponItem(lua_State* l)
     profile.weaponItem = -1;
   }
   else {
-    if (uint(item) >= uint(profile.items.length())) {
+    if (uint(item) >= uint(profile.items.size())) {
       ERROR("Invalid item number (out of range)");
     }
 

@@ -44,7 +44,7 @@ private:
 
   struct Descriptor;
 
-  Descriptor* descriptor = nullptr; ///< Internal mutex descriptor.
+  Descriptor* descriptor_ = nullptr; ///< Internal mutex descriptor.
 
 public:
 
@@ -66,7 +66,7 @@ public:
   /**
    * Copying or moving is not possible.
    */
-  Mutex& operator =(const Mutex&) = delete;
+  Mutex& operator=(const Mutex&) = delete;
 
   /**
    * Wait until lock is obtained.

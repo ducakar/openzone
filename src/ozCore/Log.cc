@@ -293,67 +293,67 @@ void Log::destroy()
   }
 }
 
-const Log& Log::operator <<(bool b) const
+const Log& Log::operator<<(bool b) const
 {
   printRaw(b ? "true" : "false");
   return *this;
 }
 
-const Log& Log::operator <<(char c) const
+const Log& Log::operator<<(char c) const
 {
   printRaw("%c", c);
   return *this;
 }
 
-const Log& Log::operator <<(byte b) const
+const Log& Log::operator<<(byte b) const
 {
   printRaw("%d", b);
   return *this;
 }
 
-const Log& Log::operator <<(ubyte b) const
+const Log& Log::operator<<(ubyte b) const
 {
   printRaw("%u", b);
   return *this;
 }
 
-const Log& Log::operator <<(short s) const
+const Log& Log::operator<<(short s) const
 {
   printRaw("%hd", s);
   return *this;
 }
 
-const Log& Log::operator <<(ushort s) const
+const Log& Log::operator<<(ushort s) const
 {
   printRaw("%hu", s);
   return *this;
 }
 
-const Log& Log::operator <<(int i) const
+const Log& Log::operator<<(int i) const
 {
   printRaw("%d", i);
   return *this;
 }
 
-const Log& Log::operator <<(uint i) const
+const Log& Log::operator<<(uint i) const
 {
   printRaw("%u", i);
   return *this;
 }
 
-const Log& Log::operator <<(long l) const
+const Log& Log::operator<<(long l) const
 {
   printRaw("%ld", l);
   return *this;
 }
 
-const Log& Log::operator <<(ulong l) const
+const Log& Log::operator<<(ulong l) const
 {
   printRaw("%lu", l);
   return *this;
 }
 
-const Log& Log::operator <<(long64 l) const
+const Log& Log::operator<<(long64 l) const
 {
 #ifdef _WIN32
   printRaw("%ld", long(l));
@@ -363,7 +363,7 @@ const Log& Log::operator <<(long64 l) const
   return *this;
 }
 
-const Log& Log::operator <<(ulong64 l) const
+const Log& Log::operator<<(ulong64 l) const
 {
 #ifdef _WIN32
   printRaw("%lu", ulong(l));
@@ -373,67 +373,67 @@ const Log& Log::operator <<(ulong64 l) const
   return *this;
 }
 
-const Log& Log::operator <<(float f) const
+const Log& Log::operator<<(float f) const
 {
   printRaw("%g", f);
   return *this;
 }
 
-const Log& Log::operator <<(double d) const
+const Log& Log::operator<<(double d) const
 {
   printRaw("%g", d);
   return *this;
 }
 
-const Log& Log::operator <<(volatile const void* p) const
+const Log& Log::operator<<(volatile const void* p) const
 {
   printRaw("%p", p);
   return *this;
 }
 
-const Log& Log::operator <<(const char* s) const
+const Log& Log::operator<<(const char* s) const
 {
   printRaw("%s", s);
   return *this;
 }
 
-const Log& Log::operator <<(const String& s) const
+const Log& Log::operator<<(const String& s) const
 {
   printRaw("%s", s.c());
   return *this;
 }
 
-const Log& Log::operator <<(const Vec3& v) const
+const Log& Log::operator<<(const Vec3& v) const
 {
   printRaw("(%g %g %g)", v.x, v.y, v.z);
   return *this;
 }
 
-const Log& Log::operator <<(const Point& p) const
+const Log& Log::operator<<(const Point& p) const
 {
   printRaw("[%g %g %g]", p.x, p.y, p.z);
   return *this;
 }
 
-const Log& Log::operator <<(const Plane& p) const
+const Log& Log::operator<<(const Plane& p) const
 {
   printRaw("(%g %g %g; %g)", p.n.x, p.n.y, p.n.z, p.d);
   return *this;
 }
 
-const Log& Log::operator <<(const Vec4& v) const
+const Log& Log::operator<<(const Vec4& v) const
 {
   printRaw("(%g %g %g %g)", v.x, v.y, v.z, v.w);
   return *this;
 }
 
-const Log& Log::operator <<(const Quat& q) const
+const Log& Log::operator<<(const Quat& q) const
 {
   printRaw("[%g %g %g %g]", q.x, q.y, q.z, q.w);
   return *this;
 }
 
-const Log& Log::operator <<(const Mat3& m) const
+const Log& Log::operator<<(const Mat3& m) const
 {
   printRaw("[%g %g %g; %g %g %g; %g %g %g]",
            m.x.x, m.x.y, m.x.z,
@@ -442,7 +442,7 @@ const Log& Log::operator <<(const Mat3& m) const
   return *this;
 }
 
-const Log& Log::operator <<(const Mat4& m) const
+const Log& Log::operator<<(const Mat4& m) const
 {
   printRaw("[%g %g %g %g; %g %g %g %g; %g %g %g %g; %g %g %g %g]",
            m.x.x, m.x.y, m.x.z, m.x.w,
@@ -452,7 +452,7 @@ const Log& Log::operator <<(const Mat4& m) const
   return *this;
 }
 
-const Log& Log::operator <<(const Stream& is) const
+const Log& Log::operator<<(const Stream& is) const
 {
   OZ_PRINT_BOTH(
     fwrite(is.begin(), 1, is.capacity(), stream);
@@ -460,13 +460,13 @@ const Log& Log::operator <<(const Stream& is) const
   return *this;
 }
 
-const Log& Log::operator <<(const Time& time) const
+const Log& Log::operator<<(const Time& time) const
 {
   printRaw("%s", time.toString().c());
   return *this;
 }
 
-const Log& Log::operator <<(const Json& json) const
+const Log& Log::operator<<(const Json& json) const
 {
   printRaw("%s", json.toString().c());
   return *this;

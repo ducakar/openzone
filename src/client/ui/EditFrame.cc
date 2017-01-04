@@ -42,7 +42,7 @@ void EditFrame::itemCallback(ModelField* sender, bool isClicked)
   Object*       item      = nullptr;
   int           id        = editFrame->scrollOwner * COLS + sender->id;
 
-  if (uint(id) < uint(container->items.length())) {
+  if (uint(id) < uint(container->items.size())) {
     item = orbis.obj(container->items[id]);
   }
   if (item == nullptr) {
@@ -60,7 +60,7 @@ void EditFrame::itemCallback(ModelField* sender, bool isClicked)
 
 void EditFrame::updateReferences()
 {
-  if (ui.strategicArea->taggedObjs.length() == 1) {
+  if (ui.strategicArea->taggedObjs.size() == 1) {
     owner = orbis.obj(ui.strategicArea->taggedObjs[0]);
   }
   else {
@@ -160,7 +160,7 @@ void EditFrame::onDraw()
   for (int i = 0; i < COLS; ++i) {
     int id = scrollOwner * COLS + i;
 
-    if (id < owner->items.length()) {
+    if (id < owner->items.size()) {
       const Object* item = orbis.obj(owner->items[id]);
 
       ownerModels[i]->show(true);

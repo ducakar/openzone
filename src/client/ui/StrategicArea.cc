@@ -316,7 +316,7 @@ void StrategicArea::onUpdate()
 
   taggedStr = orbis.strIndex(taggedStr);
 
-  for (int i = 0; i < taggedObjs.length();) {
+  for (int i = 0; i < taggedObjs.size();) {
     Object* obj = orbis.obj(taggedObjs[i]);
 
     if (obj == nullptr || obj->cell == nullptr) {
@@ -325,7 +325,7 @@ void StrategicArea::onUpdate()
     else {
       ++i;
 
-      if (taggedObjs.length() == 1) {
+      if (taggedObjs.size() == 1) {
         camera.setTaggedObj(obj);
       }
     }
@@ -410,7 +410,7 @@ void StrategicArea::onDraw()
     drawHoverTitle(span, obj->title());
   }
 
-  for (int i = 0; i < dragObjs.length(); ++i) {
+  for (int i = 0; i < dragObjs.size(); ++i) {
     obj = orbis.obj(dragObjs[i]);
 
     if (obj != nullptr && obj->cell != nullptr && projectBounds(*obj, &span)) {
@@ -426,7 +426,7 @@ void StrategicArea::onDraw()
     drawTagRect(span, str, nullptr, str->index == hoverStr);
   }
 
-  for (int i = 0; i < taggedObjs.length(); ++i) {
+  for (int i = 0; i < taggedObjs.size(); ++i) {
     obj = orbis.obj(taggedObjs[i]);
 
     if (obj != nullptr && obj->cell != nullptr &&

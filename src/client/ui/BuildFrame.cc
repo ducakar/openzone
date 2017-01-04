@@ -208,7 +208,7 @@ void BuildFrame::startPlacement(ModelField* sender, bool isClicked)
       if (buildFrame->mode == ITEMS && container != nullptr && container->clazz->nItems != 0 &&
           editStage.editFrame != nullptr && editStage.editFrame->isVisible())
       {
-        if (container->items.length() != container->clazz->nItems) {
+        if (container->items.size() != container->clazz->nItems) {
           Heading  heading = Heading(Math::rand(4));
           Object*  newObj  = synapse.add(clazz, Point::ORIGIN, heading, false);
           Dynamic* newItem = static_cast<Dynamic*>(newObj);
@@ -301,7 +301,7 @@ void BuildFrame::onDraw()
     for (int i = 0; i < rows * 3; ++i) {
       int index = scroll * 3 + i;
 
-      if (index < techGraph.allowedBuildings.length()) {
+      if (index < techGraph.allowedBuildings.size()) {
         models[i]->setModel(techGraph.allowedBuildings[index]);
         models[i]->show(true);
         models[i]->id = index;
@@ -313,7 +313,7 @@ void BuildFrame::onDraw()
       }
     }
 
-    nScrollRows = max(0, (techGraph.allowedBuildings.length() + 2) / 3 - rows);
+    nScrollRows = max(0, (techGraph.allowedBuildings.size() + 2) / 3 - rows);
   }
   else {
     const List<const ObjectClass*> allowed = mode == UNITS ? techGraph.allowedUnits :
@@ -323,7 +323,7 @@ void BuildFrame::onDraw()
     for (int i = 0; i < rows * 3; ++i) {
       int index = scroll * 3 + i;
 
-      if (index < allowed.length()) {
+      if (index < allowed.size()) {
         models[i]->setModel(allowed[index]->imagoModel);
         models[i]->show(true);
         models[i]->id = index;
@@ -335,7 +335,7 @@ void BuildFrame::onDraw()
       }
     }
 
-    nScrollRows = max(0, (allowed.length() + 2) / 3 - rows);
+    nScrollRows = max(0, (allowed.size() + 2) / 3 - rows);
   }
 
   if (!isOverModel && wasOverModel) {

@@ -90,7 +90,7 @@ void BasicAudio::play(const Object* playAt)
   }
 
   // inventory items' events
-  for (int i = 0; i < obj->items.length(); ++i) {
+  for (int i = 0; i < obj->items.size(); ++i) {
     const Object* item = orbis.obj(obj->items[i]);
 
     if (item != nullptr && (item->flags & Object::AUDIO_BIT)) {

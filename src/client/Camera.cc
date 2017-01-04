@@ -79,7 +79,7 @@ void Camera::updateReferences()
   vehicleObj = botObj == nullptr ? nullptr : orbis.obj<Vehicle>(botObj->parent);
   vehicle    = vehicleObj == nullptr ? -1 : botObj->parent;
 
-  for (int i = 0; i < switchableUnits.length();) {
+  for (int i = 0; i < switchableUnits.size();) {
     const Bot* unit = orbis.obj<const Bot>(switchableUnits[i]);
 
     if (unit == nullptr) {
@@ -329,8 +329,8 @@ void Camera::write(Stream* os) const
   os->writeInt(bot);
   os->writeInt(vehicle);
 
-  os->writeInt(switchableUnits.length());
-  for (int i = 0; i < switchableUnits.length(); ++i) {
+  os->writeInt(switchableUnits.size());
+  for (int i = 0; i < switchableUnits.size(); ++i) {
     os->writeInt(switchableUnits[i]);
   }
 

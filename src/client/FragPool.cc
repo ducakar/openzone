@@ -33,23 +33,23 @@ const float FragPool::FRAG_RADIUS = 1.0f;
 FragPool::FragPool(const oz::FragPool* pool_) :
   pool(pool_), flags(pool_->flags)
 {
-  models.reserve(pool->models.length(), true);
+  models.reserve(pool->models.size(), true);
 
-  for (int i = 0; i < pool->models.length(); ++i) {
+  for (int i = 0; i < pool->models.size(); ++i) {
     models.add(context.requestModel(pool->models[i]));
   }
 }
 
 FragPool::~FragPool()
 {
-  for (int i = 0; i < pool->models.length(); ++i) {
+  for (int i = 0; i < pool->models.size(); ++i) {
     context.releaseModel(pool->models[i]);
   }
 }
 
 void FragPool::draw(const Frag* frag)
 {
-  int    index = frag->index % models.length();
+  int    index = frag->index % models.size();
   Model* model = models[index];
 
   if (model->isLoaded()) {

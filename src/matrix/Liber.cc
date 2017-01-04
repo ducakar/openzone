@@ -255,7 +255,7 @@ void Liber::initShaders()
 
     Log::println("%s", name.c());
 
-    shaderIndices.add(name, shaders.length());
+    shaderIndices.add(name, shaders.size());
     shaders.add(Resource{name, file});
   }
 
@@ -287,7 +287,7 @@ void Liber::initTextures()
 
       Log::println("%s", name.c());
 
-      textureIndices.add(name, textures.length());
+      textureIndices.add(name, textures.size());
       textures.add(Resource{name, "@tex/" + name});
     }
   }
@@ -326,7 +326,7 @@ void Liber::initSounds()
         OZ_ERROR("Duplicated sound '%s'", name.c());
       }
 
-      soundIndices.add(name, sounds.length());
+      soundIndices.add(name, sounds.size());
       sounds.add(Resource{name, file});
     }
   }
@@ -354,7 +354,7 @@ void Liber::initCaela()
 
     Log::println("%s", name.c());
 
-    caelumIndices.add(name, caela.length());
+    caelumIndices.add(name, caela.size());
     caela.add(Resource{name, subDir});
   }
 
@@ -381,7 +381,7 @@ void Liber::initTerrae()
 
     Log::println("%s", name.c());
 
-    terraIndices.add(name, terrae.length());
+    terraIndices.add(name, terrae.size());
     terrae.add(Resource{name, file});
   }
 
@@ -408,7 +408,7 @@ void Liber::initParticles()
 
     Log::println("%s", name.c());
 
-    partIndices.add(name, parts.length());
+    partIndices.add(name, parts.size());
     parts.add(Resource{name, file});
   }
 
@@ -444,7 +444,7 @@ void Liber::initModels()
       OZ_ERROR("Duplicated model '%s'", name.c());
     }
 
-    modelIndices.add(name, models.length());
+    modelIndices.add(name, models.size());
     models.add(Resource{name, file});
   }
 
@@ -476,7 +476,7 @@ void Liber::initFragPools()
       OZ_ERROR("Failed to read '%s'", file.c());
     }
 
-    FragPool& pool = fragPoolMap.add(name, FragPool(config, name, fragPools.length())).value;
+    FragPool& pool = fragPoolMap.add(name, FragPool(config, name, fragPools.size())).value;
     fragPools.add(&pool);
 
     Log::showVerbose = true;
@@ -588,7 +588,7 @@ void Liber::initClasses()
     ObjectClass* objClazz = classIter.value;
 
     // check that all items are valid
-    for (int i = 0; i < objClazz->defaultItems.length(); ++i) {
+    for (int i = 0; i < objClazz->defaultItems.size(); ++i) {
       const ObjectClass* itemClazz = objClazz->defaultItems[i];
 
       if ((itemClazz->flags & (Object::DYNAMIC_BIT | Object::ITEM_BIT)) !=
@@ -604,7 +604,7 @@ void Liber::initClasses()
       const BotClass* botClazz = static_cast<const BotClass*>(objClazz);
 
       if (botClazz->weaponItem != -1) {
-        if (uint(botClazz->weaponItem) >= uint(botClazz->defaultItems.length())) {
+        if (uint(botClazz->weaponItem) >= uint(botClazz->defaultItems.size())) {
           OZ_ERROR("Invalid weaponItem index for '%s'", botClazz->name.c());
         }
 
@@ -645,7 +645,7 @@ void Liber::initBSPs()
 
     Log::println("%s", name.c());
 
-    BSP& bsp = bspMap.add(name, BSP(name, bsps.length())).value;
+    BSP& bsp = bspMap.add(name, BSP(name, bsps.size())).value;
     bsps.add(&bsp);
 
     bsp.load();
@@ -684,7 +684,7 @@ void Liber::initMusic(const char* userMusicPath)
 
   initMusicRecurse("@music");
 
-  for (int i = 0; i < musicTracks.length(); ++i) {
+  for (int i = 0; i < musicTracks.size(); ++i) {
     musicTrackIndices.add(musicTracks[i].name, i);
   }
 
@@ -726,16 +726,16 @@ void Liber::init(const char* userMusicPath)
   Log::println("Summary {");
   Log::indent();
 
-  Log::println("%5d  shaders", shaders.length());
-  Log::println("%5d  textures", textures.length());
-  Log::println("%5d  sounds", sounds.length());
-  Log::println("%5d  music tracks", musicTracks.length());
-  Log::println("%5d  caela", caela.length());
-  Log::println("%5d  terrae", terrae.length());
-  Log::println("%5d  models", models.length());
-  Log::println("%5d  fragment pools", fragPools.length());
-  Log::println("%5d  object classes", objClasses.length());
-  Log::println("%5d  BSPs", bsps.length());
+  Log::println("%5d  shaders", shaders.size());
+  Log::println("%5d  textures", textures.size());
+  Log::println("%5d  sounds", sounds.size());
+  Log::println("%5d  music tracks", musicTracks.size());
+  Log::println("%5d  caela", caela.size());
+  Log::println("%5d  terrae", terrae.size());
+  Log::println("%5d  models", models.size());
+  Log::println("%5d  fragment pools", fragPools.size());
+  Log::println("%5d  object classes", objClasses.size());
+  Log::println("%5d  BSPs", bsps.size());
 
   Log::unindent();
   Log::println("}");

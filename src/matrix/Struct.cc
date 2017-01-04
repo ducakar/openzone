@@ -248,7 +248,7 @@ void Struct::onDemolish()
   collider.getOverlaps(toAABB(), nullptr, &overlappingObjs, 2.0f * EPSILON);
   collider.mask = Object::SOLID_BIT;
 
-  for (int i = 0; i < overlappingObjs.length(); ++i) {
+  for (int i = 0; i < overlappingObjs.size(); ++i) {
     Dynamic* dyn = static_cast<Dynamic*>(overlappingObjs[i]);
 
     if ((dyn->flags & Object::SOLID_BIT) &&
@@ -280,7 +280,7 @@ void Struct::onDemolish()
 
 void Struct::onUpdate()
 {
-  for (int i = 0; i < boundObjects.length();) {
+  for (int i = 0; i < boundObjects.size();) {
     if (orbis.obj(boundObjects[i]) == nullptr) {
       boundObjects.eraseUnordered(i);
     }
@@ -293,7 +293,7 @@ void Struct::onUpdate()
     onDemolish();
   }
   else {
-    for (int i = 0; i < entities.length(); ++i) {
+    for (int i = 0; i < entities.size(); ++i) {
       Entity& entity = entities[i];
 
       (entity.*Entity::HANDLERS[entity.clazz->type])();
@@ -347,7 +347,7 @@ Bounds Struct::toAbsoluteCS(const Bounds& bb) const
 
 void Struct::destroy()
 {
-  for (int i = 0; i < boundObjects.length(); ++i) {
+  for (int i = 0; i < boundObjects.size(); ++i) {
     Object* obj = orbis.obj(boundObjects[i]);
 
     if (obj != nullptr) {
@@ -390,7 +390,7 @@ Struct::Struct(const BSP* bsp_, int index_, const Point& p_, Heading heading_)
   if (bsp->nEntities != 0) {
     entities.resize(bsp->nEntities, true);
 
-    for (int i = 0; i < entities.length(); ++i) {
+    for (int i = 0; i < entities.size(); ++i) {
       Entity& entity = entities[i];
 
       entity.clazz    = &bsp->entities[i];
@@ -434,7 +434,7 @@ Struct::Struct(const BSP* bsp_, int index_, const Json& json)
 
     const Json& entitiesJson = json["entities"];
 
-    for (int i = 0; i < entities.length(); ++i) {
+    for (int i = 0; i < entities.size(); ++i) {
       const Json& entityJson = entitiesJson[i];
       Entity&     entity     = entities[i];
 
@@ -477,7 +477,7 @@ Struct::Struct(const BSP* bsp_, Stream* is)
   if (bsp->nEntities != 0) {
     entities.resize(bsp->nEntities, true);
 
-    for (int i = 0; i < entities.length(); ++i) {
+    for (int i = 0; i < entities.size(); ++i) {
       Entity& entity = entities[i];
 
       entity.clazz    = &bsp->entities[i];
@@ -517,7 +517,7 @@ Json Struct::write() const
 
   Json& entitiesJson = json.add("entities", Json::ARRAY);
 
-  for (int i = 0; i < entities.length(); ++i) {
+  for (int i = 0; i < entities.size(); ++i) {
     Json& entityJson = entitiesJson.add(Json::OBJECT);
 
     entityJson.add("key", entities[i].key);
@@ -551,7 +551,7 @@ void Struct::write(Stream* os) const
   os->writeFloat(life);
   os->writeFloat(demolishing);
 
-  for (int i = 0; i < entities.length(); ++i) {
+  for (int i = 0; i < entities.size(); ++i) {
     os->writeInt(entities[i].key);
     os->writeInt(entities[i].state);
     os->writeFloat(entities[i].moveDist);
@@ -560,8 +560,8 @@ void Struct::write(Stream* os) const
     os->write<Vec3>(entities[i].velocity);
   }
 
-  os->writeInt(boundObjects.length());
-  for (int i = 0; i < boundObjects.length(); ++i) {
+  os->writeInt(boundObjects.size());
+  for (int i = 0; i < boundObjects.size(); ++i) {
     os->writeInt(boundObjects[i]);
   }
 }

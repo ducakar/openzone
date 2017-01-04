@@ -77,7 +77,7 @@ struct Render::DrawEntry
   {}
 
   OZ_ALWAYS_INLINE
-  bool operator < (const DrawEntry& de) const
+  bool operator<(const DrawEntry& de) const
   {
     return distance < de.distance;
   }
@@ -139,7 +139,7 @@ void Render::scheduleCell(int cellX, int cellY)
 {
   const Cell& cell = orbis.cells[cellX][cellY];
 
-  for (int i = 0; i < cell.structs.length(); ++i) {
+  for (int i = 0; i < cell.structs.size(); ++i) {
     if (!drawnStructs.get(cell.structs[i])) {
       drawnStructs.set(cell.structs[i]);
 
@@ -253,12 +253,12 @@ void Render::prepareDraw()
   }
 
   structs.sort();
-  for (int i = 0; i < structs.length(); ++i) {
+  for (int i = 0; i < structs.size(); ++i) {
     context.drawBSP(structs[i].str);
   }
 
   objects.sort();
-  for (int i = 0; i < objects.length(); ++i) {
+  for (int i = 0; i < objects.size(); ++i) {
     context.drawImago(objects[i].obj, nullptr);
   }
 
@@ -286,7 +286,7 @@ void Render::drawGeometry()
   shader.setCaelumLight(caelum.lightDir, caelum.diffuseColour);
 
   // set shaders
-  for (int i = 0; i < liber.shaders.length(); ++i) {
+  for (int i = 0; i < liber.shaders.size(); ++i) {
     shader.program(i);
 
     tf.applyCamera();
@@ -370,14 +370,14 @@ void Render::drawGeometry()
   if (showBounds) {
     glLineWidth(1.0f);
 
-    for (int i = 0; i < objects.length(); ++i) {
+    for (int i = 0; i < objects.size(); ++i) {
       const Object* obj = objects[i].obj;
 
       shape.colour(obj->flags & Object::SOLID_BIT ? SOLID_AABB : NONSOLID_AABB);
       shape.wireBox(*obj);
     }
 
-    for (int i = 0; i < structs.length(); ++i) {
+    for (int i = 0; i < structs.size(); ++i) {
       const Struct* str = structs[i].str;
 
       shape.colour(ENTITY_AABB);

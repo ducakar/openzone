@@ -41,7 +41,7 @@ void BSPImago::schedule(const Struct* str, Model::QueueType queue)
     tf.model = Mat4::translation(str->p - Point::ORIGIN);
     tf.model.rotateZ(float(str->heading) * Math::TAU / 4.0f);
 
-    for (int i = 0; i < str->entities.length(); ++i) {
+    for (int i = 0; i < str->entities.size(); ++i) {
       const Entity& entity = str->entities[i];
 
       tf.push();
@@ -81,7 +81,7 @@ void BSPImago::preload()
 
   leafClusters.resize(nLeaves);
 
-  for (int i = 0; i < leafClusters.length(); ++i) {
+  for (int i = 0; i < leafClusters.size(); ++i) {
     leafClusters[i] = is.readInt();
   }
 

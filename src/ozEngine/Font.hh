@@ -76,7 +76,7 @@ public:
   /**
    * Move operator.
    */
-  Font& operator = (Font&& f);
+  Font& operator=(Font&& f);
 
   /**
    * Height.

@@ -46,18 +46,18 @@ struct MapPair
    * Equality operator.
    */
   OZ_ALWAYS_INLINE
-  constexpr bool operator ==(const MapPair& p) const
+  constexpr bool operator==(const MapPair& other) const
   {
-    return key == p.key;
+    return key == other.key;
   }
 
   /**
    * Less-than operator.
    */
   OZ_ALWAYS_INLINE
-  constexpr bool operator <(const MapPair& p) const
+  constexpr bool operator<(const MapPair& other) const
   {
-    return LessFunc()(key, p.key);
+    return LessFunc()(key, other.key);
   }
 
   /**
@@ -65,7 +65,7 @@ struct MapPair
    */
   template <typename Key_>
   OZ_ALWAYS_INLINE
-  constexpr bool operator ==(const Key_& k) const
+  constexpr bool operator==(const Key_& k) const
   {
     return key == k;
   }
@@ -75,7 +75,7 @@ struct MapPair
    */
   template <typename Key_>
   OZ_ALWAYS_INLINE
-  constexpr bool operator <(const Key_& k) const
+  constexpr bool operator<(const Key_& k) const
   {
     return LessFunc()(key, k);
   }
@@ -110,8 +110,8 @@ public:
 
 private:
 
-  using Set<Pair>::data;
-  using Set<Pair>::count;
+  using Set<Pair>::data_;
+  using Set<Pair>::size_;
   using Set<Pair>::ensureCapacity;
 
   /**
@@ -124,23 +124,23 @@ private:
   template <typename Key_, typename Value_>
   Pair& insert(Key_&& key, Value_&& value, bool overwrite)
   {
-    int i = Arrays::bisection<Pair, Key>(data, count, key);
+    int i = Arrays::bisection<Pair, Key>(data_, size_, key);
 
-    if (i != count && data[i].key == key) {
+    if (i != size_ && data_[i].key == key) {
       if (overwrite) {
-        data[i].key   = static_cast<Key_&&>(key);
-        data[i].value = static_cast<Value_&&>(value);
+        data_[i].key   = static_cast<Key_&&>(key);
+        data_[i].value = static_cast<Value_&&>(value);
       }
     }
     else {
-      ensureCapacity(count + 1);
+      ensureCapacity(size_ + 1);
 
-      Arrays::moveBackward<Pair>(data + i, count - i, data + i + 1);
-      data[i].key   = static_cast<Key_&&>(key);
-      data[i].value = static_cast<Value_&&>(value);
-      ++count;
+      Arrays::moveBackward<Pair>(data_ + i, size_ - i, data_ + i + 1);
+      data_[i].key   = static_cast<Key_&&>(key);
+      data_[i].value = static_cast<Value_&&>(value);
+      ++size_;
     }
-    return data[i];
+    return data_[i];
   }
 
 public:
@@ -149,10 +149,10 @@ public:
   using Set<Pair>::iterator;
   using Set<Pair>::begin;
   using Set<Pair>::end;
-  using Set<Pair>::length;
+  using Set<Pair>::size;
   using Set<Pair>::isEmpty;
   using Set<Pair>::capacity;
-  using Set<Pair>::operator [];
+  using Set<Pair>::operator[];
   using Set<Pair>::first;
   using Set<Pair>::last;
   using Set<Pair>::contains;
@@ -171,56 +171,56 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  Map(InitialiserList<Pair> l) :
-    Set<Pair>(l)
+  Map(InitialiserList<Pair> il) :
+    Set<Pair>(il)
   {}
 
   /**
    * Copy constructor, copies elements.
    */
-  Map(const Map& m) = default;
+  Map(const Map& other) = default;
 
   /**
    * Move constructor, moves element storage.
    */
-  Map(Map&& m) = default;
+  Map(Map&& other) = default;
 
   /**
    * Copy operator, copies elements.
    *
    * Existing storage is reused if it suffices.
    */
-  Map& operator =(const Map& m) = default;
+  Map& operator=(const Map& other) = default;
 
   /**
    * Move operator, moves element storage.
    */
-  Map& operator =(Map&& m) = default;
+  Map& operator=(Map&& other) = default;
 
   /**
    * Assign from an initialiser list.
    *
    * Existing storage is reused if it suffices.
    */
-  Map& operator =(InitialiserList<Pair> l)
+  Map& operator=(InitialiserList<Pair> il)
   {
-    return Set<Pair>::operator =(l);
+    return Set<Pair>::operator=(il);
   }
 
   /**
    * True iff respective elements are equal.
    */
-  bool operator ==(const Map& m) const
+  bool operator==(const Map& other) const
   {
-    return Set<Pair>::operator ==(m);
+    return Set<Pair>::operator==(other);
   }
 
   /**
    * False iff respective elements are equal.
    */
-  bool operator !=(const Map& m) const
+  bool operator!=(const Map& other) const
   {
-    return Set<Pair>::operator !=(m);
+    return Set<Pair>::operator!=(other);
   }
 
   /**
@@ -230,7 +230,7 @@ public:
   const Value* find(const Key_& key) const
   {
     int i = Set<Pair>::template index<Key_>(key);
-    return i < 0 ? nullptr : &data[i].value;
+    return i < 0 ? nullptr : &data_[i].value;
   }
 
   /**
@@ -269,11 +269,11 @@ public:
    */
   void free()
   {
-    for (int i = 0; i < count; ++i) {
-      data[i].key = Key();
-      delete data[i].value;
+    for (int i = 0; i < size_; ++i) {
+      data_[i].key = Key();
+      delete data_[i].value;
     }
-    count = 0;
+    size_ = 0;
   }
 
 };

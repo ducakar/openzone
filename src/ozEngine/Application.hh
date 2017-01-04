@@ -106,8 +106,6 @@ public:
 
   Application() = delete;
 
-  static float dt();
-
   static void setStage(Stage* stage);
 
   static void run(Stage* initialStage);

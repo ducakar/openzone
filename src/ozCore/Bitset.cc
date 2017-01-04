@@ -29,31 +29,31 @@ namespace oz
 {
 
 Bitset::Bitset(int nBits) :
-  data(Alloc::alignUp<int>(nBits, PORT_BITS) / UNIT_BITS)
+  data_(Alloc::alignUp<int>(nBits, PORT_BITS) / UNIT_BITS)
 {}
 
 Bitset::Bitset(const char* s) :
   Bitset(String::length(s))
 {
   for (int i = 0; s[i] != '\0'; ++i) {
-    data[i / UNIT_BITS] |= size_t(s[i] != '0') << (i % UNIT_BITS);
+    data_[i / UNIT_BITS] |= size_t(s[i] != '0') << (i % UNIT_BITS);
   }
 }
 
-bool Bitset::operator ==(const Bitset& b) const
+bool Bitset::operator==(const Bitset& other) const
 {
-  return data == b.data;
+  return data_ == other.data_;
 }
 
-bool Bitset::operator !=(const Bitset& b) const
+bool Bitset::operator!=(const Bitset& other) const
 {
-  return data != b.data;
+  return data_ != other.data_;
 }
 
 bool Bitset::isAllSet() const
 {
-  for (int i = 0; i < data.length(); ++i) {
-    if (~data[i] != 0) {
+  for (int i = 0; i < data_.size(); ++i) {
+    if (~data_[i] != 0) {
       return false;
     }
   }
@@ -62,8 +62,8 @@ bool Bitset::isAllSet() const
 
 bool Bitset::isAnySet() const
 {
-  for (int i = 0; i < data.length(); ++i) {
-    if (data[i] != 0) {
+  for (int i = 0; i < data_.size(); ++i) {
+    if (data_[i] != 0) {
       return true;
     }
   }
@@ -77,10 +77,10 @@ bool Bitset::isNoneSet() const
 
 bool Bitset::isSubset(const Bitset& b) const
 {
-  OZ_ASSERT(data.length() == b.data.length());
+  OZ_ASSERT(data_.size() == b.data_.size());
 
-  for (int i = 0; i < data.length(); ++i) {
-    if ((data[i] & ~b.data[i]) != 0) {
+  for (int i = 0; i < data_.size(); ++i) {
+    if ((data_[i] & ~b.data_[i]) != 0) {
       return false;
     }
   }
@@ -89,34 +89,34 @@ bool Bitset::isSubset(const Bitset& b) const
 
 void Bitset::clear()
 {
-  Arrays::fill<size_t, size_t>(data.begin(), data.length(), 0);
+  Arrays::fill<size_t, size_t>(data_.begin(), data_.size(), 0);
 }
 
-Bitset Bitset::operator ~() const
+Bitset Bitset::operator~() const
 {
   Bitset r = *this;
   return r.flip();
 }
 
-Bitset Bitset::operator &(const Bitset& b) const
+Bitset Bitset::operator&(const Bitset& b) const
 {
-  OZ_ASSERT(data.length() == b.data.length());
+  OZ_ASSERT(data_.size() == b.data_.size());
 
   Bitset r = *this;
   return r &= b;
 }
 
-Bitset Bitset::operator |(const Bitset& b) const
+Bitset Bitset::operator|(const Bitset& b) const
 {
-  OZ_ASSERT(data.length() == b.data.length());
+  OZ_ASSERT(data_.size() == b.data_.size());
 
   Bitset r = *this;
   return r |= b;
 }
 
-Bitset Bitset::operator ^(const Bitset& b) const
+Bitset Bitset::operator^(const Bitset& b) const
 {
-  OZ_ASSERT(data.length() == b.data.length());
+  OZ_ASSERT(data_.size() == b.data_.size());
 
   Bitset r = *this;
   return r ^= b;
@@ -124,32 +124,32 @@ Bitset Bitset::operator ^(const Bitset& b) const
 
 Bitset& Bitset::flip()
 {
-  for (int i = 0; i < data.length(); ++i) {
-    data[i] = ~data[i];
+  for (int i = 0; i < data_.size(); ++i) {
+    data_[i] = ~data_[i];
   }
   return *this;
 }
 
-Bitset& Bitset::operator &=(const Bitset& b)
+Bitset& Bitset::operator&=(const Bitset& b)
 {
-  for (int i = 0; i < data.length(); ++i) {
-    data[i] &= b.data[i];
+  for (int i = 0; i < data_.size(); ++i) {
+    data_[i] &= b.data_[i];
   }
   return *this;
 }
 
-Bitset& Bitset::operator |=(const Bitset& b)
+Bitset& Bitset::operator|=(const Bitset& b)
 {
-  for (int i = 0; i < data.length(); ++i) {
-    data[i] |= b.data[i];
+  for (int i = 0; i < data_.size(); ++i) {
+    data_[i] |= b.data_[i];
   }
   return *this;
 }
 
-Bitset& Bitset::operator ^=(const Bitset& b)
+Bitset& Bitset::operator^=(const Bitset& b)
 {
-  for (int i = 0; i < data.length(); ++i) {
-    data[i] ^= b.data[i];
+  for (int i = 0; i < data_.size(); ++i) {
+    data_[i] ^= b.data_[i];
   }
   return *this;
 }
@@ -158,7 +158,7 @@ void Bitset::resize(int nBits)
 {
   OZ_ASSERT(nBits >= 0);
 
-  data.resize(Alloc::alignUp(nBits, PORT_BITS) / UNIT_BITS, true);
+  data_.resize(Alloc::alignUp(nBits, PORT_BITS) / UNIT_BITS, true);
 }
 
 }

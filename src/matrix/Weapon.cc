@@ -36,7 +36,7 @@ bool Weapon::onUse(Bot* user)
     user->weapon = user->weapon == index ? -1 : index;
     return true;
   }
-  else if (user->items.length() < user->clazz->nItems) {
+  else if (user->items.size() < user->clazz->nItems) {
     user->items.add(index);
     user->weapon = index;
 

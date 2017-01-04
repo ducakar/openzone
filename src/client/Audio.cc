@@ -35,7 +35,7 @@ Collider Audio::collider;
 
 void Audio::playSound(int sound, float volume, const Object* parent) const
 {
-  OZ_ASSERT(uint(sound) < uint(liber.sounds.length()));
+  OZ_ASSERT(uint(sound) < uint(liber.sounds.size()));
 
   const Dynamic* dynParent = static_cast<const Dynamic*>(parent);
 
@@ -79,7 +79,7 @@ void Audio::playSound(int sound, float volume, const Object* parent) const
 
 void Audio::playContSound(int sound, float volume, const Object* parent) const
 {
-  OZ_ASSERT(uint(sound) < uint(liber.sounds.length()));
+  OZ_ASSERT(uint(sound) < uint(liber.sounds.size()));
 
   int key = obj->index * ObjectClass::MAX_SOUNDS + sound;
 
@@ -161,7 +161,7 @@ bool Audio::playSpeak(const char* text, float volume, const Object* parent) cons
 
 void Audio::playEngineSound(int sound, float volume, float pitch, const Object* parent) const
 {
-  OZ_ASSERT(uint(sound) < uint(liber.sounds.length()));
+  OZ_ASSERT(uint(sound) < uint(liber.sounds.size()));
   OZ_ASSERT(obj->flags & Object::VEHICLE_BIT);
 
   const Vehicle* veh = static_cast<const Vehicle*>(obj);

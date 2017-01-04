@@ -41,17 +41,17 @@ struct PoolAlloc::Block
   alignas(Slot) char data[1];
 
   OZ_INTERNAL
-  static Block* create(int slotSize, int nSlots, Block* nextBlock)
+  static Block* create(int slotSize, int blockSlots, Block* nextBlock)
   {
-    char*  chunk = new char[OZ_ALIGNMENT + nSlots * slotSize];
+    char*  chunk = new char[OZ_ALIGNMENT + blockSlots * slotSize];
     Block* block = new(chunk) Block;
 
     block->nextBlock = nextBlock;
 
-    for (int i = 0; i < nSlots - 1; ++i) {
+    for (int i = 0; i < blockSlots - 1; ++i) {
       block->slot(i, slotSize)->nextSlot = block->slot(i + 1, slotSize);
     }
-    block->slot(nSlots - 1, slotSize)->nextSlot = nullptr;
+    block->slot(blockSlots - 1, slotSize)->nextSlot = nullptr;
 
     return block;
   }
@@ -71,7 +71,7 @@ struct PoolAlloc::Block
 };
 
 PoolAlloc::PoolAlloc(int slotSize, int blockSlots) :
-  objectSize(slotSize), nSlots(blockSlots)
+  slotSize_(slotSize), blockSlots_(blockSlots)
 {}
 
 PoolAlloc::~PoolAlloc()
@@ -79,55 +79,55 @@ PoolAlloc::~PoolAlloc()
   free();
 }
 
-PoolAlloc::PoolAlloc(PoolAlloc&& p) :
-  firstBlock(p.firstBlock), freeSlot(p.freeSlot), objectSize(p.objectSize), nSlots(p.nSlots),
-  count(p.count), size(p.size)
+PoolAlloc::PoolAlloc(PoolAlloc&& other) :
+  firstBlock_(other.firstBlock_), freeSlot_(other.freeSlot_), slotSize_(other.slotSize_),
+  blockSlots_(other.blockSlots_), size_(other.size_), capacity_(other.capacity_)
 {
-  p.firstBlock = nullptr;
-  p.freeSlot   = nullptr;
-  p.objectSize = 0;
-  p.nSlots     = 0;
-  p.count      = 0;
-  p.size       = 0;
+  other.firstBlock_ = nullptr;
+  other.freeSlot_   = nullptr;
+  other.slotSize_   = 0;
+  other.blockSlots_ = 0;
+  other.size_       = 0;
+  other.capacity_   = 0;
 }
 
-PoolAlloc& PoolAlloc::operator =(PoolAlloc&& p)
+PoolAlloc& PoolAlloc::operator=(PoolAlloc&& other)
 {
-  if (&p != this) {
+  if (&other != this) {
     free();
 
-    firstBlock = p.firstBlock;
-    freeSlot   = p.freeSlot;
-    objectSize = p.objectSize;
-    nSlots     = p.nSlots;
-    count      = p.count;
-    size       = p.size;
+    firstBlock_ = other.firstBlock_;
+    freeSlot_   = other.freeSlot_;
+    slotSize_   = other.slotSize_;
+    blockSlots_ = other.blockSlots_;
+    size_       = other.size_;
+    capacity_   = other.capacity_;
 
-    p.firstBlock = nullptr;
-    p.freeSlot   = nullptr;
-    p.objectSize = 0;
-    p.nSlots     = 0;
-    p.count      = 0;
-    p.size       = 0;
+    other.firstBlock_ = nullptr;
+    other.freeSlot_   = nullptr;
+    other.slotSize_   = 0;
+    other.blockSlots_ = 0;
+    other.size_       = 0;
+    other.capacity_   = 0;
   }
   return *this;
 }
 
 void* PoolAlloc::allocate()
 {
-  ++count;
+  ++size_;
 
-  if (freeSlot == nullptr) {
-    firstBlock = Block::create(objectSize, nSlots, firstBlock);
-    freeSlot   = firstBlock->slot(1, objectSize);
-    size      += nSlots;
+  if (freeSlot_ == nullptr) {
+    firstBlock_ = Block::create(slotSize_, blockSlots_, firstBlock_);
+    freeSlot_   = firstBlock_->slot(1, slotSize_);
+    capacity_  += blockSlots_;
 
-    return firstBlock->slot(0, objectSize)->storage;
+    return firstBlock_->slot(0, slotSize_)->storage;
   }
   else {
-    Slot* slot = freeSlot;
+    Slot* slot = freeSlot_;
 
-    freeSlot = slot->nextSlot;
+    freeSlot_ = slot->nextSlot;
     return slot->storage;
   }
 }
@@ -138,25 +138,25 @@ void PoolAlloc::deallocate(void* ptr)
     return;
   }
 
-  OZ_ASSERT(count != 0);
+  OZ_ASSERT(size_ != 0);
 
   Slot* slot = static_cast<Slot*>(ptr);
 
 #ifndef NDEBUG
-  memset(slot, 0xee, objectSize);
+  memset(slot, 0xee, slotSize_);
 #endif
 
-  slot->nextSlot = freeSlot;
-  freeSlot = slot;
-  --count;
+  slot->nextSlot = freeSlot_;
+  freeSlot_ = slot;
+  --size_;
 }
 
 void PoolAlloc::free()
 {
-  OZ_ASSERT(count == 0);
+  OZ_ASSERT(size_ == 0);
 
-  if (count == 0) {
-    for (Block* block = firstBlock; block != nullptr;) {
+  if (size_ == 0) {
+    for (Block* block = firstBlock_; block != nullptr;) {
       Block* next = block->nextBlock;
 
       block->destroy();
@@ -164,10 +164,10 @@ void PoolAlloc::free()
     }
   }
 
-  firstBlock = nullptr;
-  freeSlot   = nullptr;
-  count      = 0;
-  size       = 0;
+  firstBlock_ = nullptr;
+  freeSlot_   = nullptr;
+  size_       = 0;
+  capacity_   = 0;
 }
 
 }

@@ -179,13 +179,13 @@ void MD3::buildMesh(const char* name, int frame)
     List<MD3Shader>        surfaceShaders(surface.nShaders);
     List<client::TexCoord> surfaceTexCoords(surface.nVertices);
     List<MD3Vertex>        surfaceVertices(surface.nFrames * surface.nVertices);
-    List<Vec3>             normals(surfaceVertices.length());
-    List<Point>            vertices(surfaceVertices.length());
+    List<Vec3>             normals(surfaceVertices.size());
+    List<Point>            vertices(surfaceVertices.size());
 
     is.rewind();
     is.readSkip(surfaceStart + surface.offTriangles);
 
-    for (int j = 0; j < surfaceTriangles.length(); ++j) {
+    for (int j = 0; j < surfaceTriangles.size(); ++j) {
       surfaceTriangles[j].vertices[0] = is.readInt();
       surfaceTriangles[j].vertices[1] = is.readInt();
       surfaceTriangles[j].vertices[2] = is.readInt();
@@ -194,7 +194,7 @@ void MD3::buildMesh(const char* name, int frame)
     is.rewind();
     is.readSkip(surfaceStart + surface.offShaders);
 
-    for (int i = 0; i < surfaceShaders.length(); ++i) {
+    for (int i = 0; i < surfaceShaders.size(); ++i) {
       Arrays::copy(is.readSkip(64), 64, surfaceShaders[i].name);
       surfaceShaders[i].index = is.readInt();
     }
@@ -211,7 +211,7 @@ void MD3::buildMesh(const char* name, int frame)
     is.rewind();
     is.readSkip(surfaceStart + surface.offTexCoords);
 
-    for (int j = 0; j < surfaceTexCoords.length(); ++j) {
+    for (int j = 0; j < surfaceTexCoords.size(); ++j) {
       surfaceTexCoords[j].u = is.readFloat();
       surfaceTexCoords[j].v = 1.0f - is.readFloat();
     }
@@ -219,7 +219,7 @@ void MD3::buildMesh(const char* name, int frame)
     is.rewind();
     is.readSkip(surfaceStart + surface.offVertices);
 
-    for (int j = 0; j < surfaceVertices.length(); ++j) {
+    for (int j = 0; j < surfaceVertices.size(); ++j) {
       vertices[j].y = float(+is.readShort()) / 64.0f * scale;
       vertices[j].x = float(-is.readShort()) / 64.0f * scale;
       vertices[j].z = float(+is.readShort()) / 64.0f * scale;
@@ -240,7 +240,7 @@ void MD3::buildMesh(const char* name, int frame)
     compiler.texture(dir / texture);
     compiler.begin(Compiler::TRIANGLES);
 
-    for (int j = 0; j < surfaceTriangles.length(); ++j) {
+    for (int j = 0; j < surfaceTriangles.size(); ++j) {
       for (int k = 0; k < 3; ++k) {
         int l = surfaceTriangles[j].vertices[k];
         int m = frame == -1 ? l : frame * surface.nVertices + l;

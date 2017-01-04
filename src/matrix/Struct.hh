@@ -128,7 +128,7 @@ public:
 
   // no copying
   Struct(const Struct&) = delete;
-  Struct& operator = (const Struct&) = delete;
+  Struct& operator=(const Struct&) = delete;
 
   /**
    * Rotate vector from structure coordinate system to absolute coordinate system.

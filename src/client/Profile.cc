@@ -88,7 +88,7 @@ void Profile::init()
 
     if (clazz != nullptr) {
       const Json& itemsConfig = profileConfig["items"];
-      int nItems = itemsConfig.length();
+      int nItems = itemsConfig.size();
 
       if (nItems > clazz->nItems) {
         OZ_ERROR("Too many items for player class '%s' in profile", clazz->name.c());
@@ -113,7 +113,7 @@ void Profile::init()
       weaponItem = profileConfig["weaponItem"].get(-1);
 
       if (weaponItem != -1) {
-        if (uint(weaponItem) >= uint(items.length())) {
+        if (uint(weaponItem) >= uint(items.size())) {
           OZ_ERROR("Invalid weaponItem #%d in profile", weaponItem);
         }
 

@@ -70,7 +70,7 @@ bool Bot::hasAttribute(int attribute) const
     return true;
   }
 
-  for (int i = 0; i < items.length(); ++i) {
+  for (int i = 0; i < items.size(); ++i) {
     const Object* item = orbis.obj(items[i]);
 
     if (item != nullptr && (item->clazz->attributes & attribute)) {
@@ -329,7 +329,7 @@ void Bot::heal()
 
 void Bot::rearm()
 {
-  for (int i = 0; i < items.length(); ++i) {
+  for (int i = 0; i < items.size(); ++i) {
     Weapon* weaponObj = orbis.obj<Weapon>(items[i]);
 
     if (weaponObj != nullptr && (weaponObj->flags & Object::WEAPON_BIT)) {
@@ -941,7 +941,7 @@ stepSucceeded:
       Dynamic* item   = orbis.obj<Dynamic>(instrument);
       Object*  source = orbis.obj(container);
 
-      if (item != nullptr && source != nullptr && items.length() != clazz->nItems &&
+      if (item != nullptr && source != nullptr && items.size() != clazz->nItems &&
           source->items.contains(instrument) && canReach(source))
       {
         OZ_ASSERT((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
@@ -953,7 +953,7 @@ stepSucceeded:
       Dynamic* item   = orbis.obj<Dynamic>(instrument);
       Object*  target = orbis.obj(container);
 
-      if (item != nullptr && target != nullptr && target->items.length() != target->clazz->nItems &&
+      if (item != nullptr && target != nullptr && target->items.size() != target->clazz->nItems &&
           items.contains(instrument) && canReach(target))
       {
         OZ_ASSERT((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
@@ -984,7 +984,7 @@ stepSucceeded:
       else if (actions & ~oldActions & ACTION_TAKE) {
         Dynamic* item = orbis.obj<Dynamic>(instrument);
 
-        if (item != nullptr && items.length() != clazz->nItems &&
+        if (item != nullptr && items.size() != clazz->nItems &&
             abs(item->mass * physics.gravity) <= clazz->grabWeight && canReach(item))
         {
           OZ_ASSERT((item->flags & DYNAMIC_BIT) && (item->flags & ITEM_BIT));
@@ -1138,7 +1138,7 @@ Bot::Bot(const BotClass* clazz_, int index, const Json& json) :
   stairRate  = 0.0f;
 
   cargo      = -1;
-  weapon     = clamp(json["weapon"].get(-1), -1, items.length() - 1);
+  weapon     = clamp(json["weapon"].get(-1), -1, items.size() - 1);
   grabHandle = 0.0f;
   meleeTime  = 0.0f;
 

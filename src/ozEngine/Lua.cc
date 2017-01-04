@@ -76,18 +76,18 @@ Lua::Result::~Result()
   }
 }
 
-Lua::Result::Result(Result&& r) :
-  l(r.l)
+Lua::Result::Result(Result&& other) :
+  l(other.l)
 {
-  r.l = nullptr;
+  other.l = nullptr;
 }
 
-Lua::Result& Lua::Result::operator = (Lua::Result&& r)
+Lua::Result& Lua::Result::operator=(Lua::Result&& other)
 {
-  if (&r != this) {
-    l = r.l;
+  if (&other != this) {
+    l = other.l;
 
-    r.l = nullptr;
+    other.l = nullptr;
   }
   return *this;
 }
@@ -207,15 +207,15 @@ Lua::Result Lua::Field::call(int nArgs) const
   return Result(l);
 }
 
-Lua::Field& Lua::Field::operator = (const Lua::Field& s)
+Lua::Field& Lua::Field::operator=(const Lua::Field& other)
 {
   if (parent == nullptr) {
-    s.push();
+    other.push();
     lua_setglobal(l, name);
   }
   else {
     parent->push();
-    s.push();
+    other.push();
 
     if (name == nullptr) {
       lua_rawseti(l, -2, index);
@@ -229,7 +229,7 @@ Lua::Field& Lua::Field::operator = (const Lua::Field& s)
   return *this;
 }
 
-Lua::Field& Lua::Field::operator = (const Lua::Result&)
+Lua::Field& Lua::Field::operator=(const Lua::Result&)
 {
   if (parent == nullptr) {
     lua_pushvalue(l, 1);
@@ -251,7 +251,7 @@ Lua::Field& Lua::Field::operator = (const Lua::Result&)
   return *this;
 }
 
-Lua::Field& Lua::Field::operator = (Lua::Type type)
+Lua::Field& Lua::Field::operator=(Lua::Type type)
 {
   if (parent != nullptr) {
     parent->push();
@@ -306,7 +306,7 @@ Lua::Field& Lua::Field::operator = (Lua::Type type)
   return *this;
 }
 
-Lua::Field& Lua::Field::operator = (bool value)
+Lua::Field& Lua::Field::operator=(bool value)
 {
   if (parent == nullptr) {
     lua_pushboolean(l, value);
@@ -328,7 +328,7 @@ Lua::Field& Lua::Field::operator = (bool value)
   return *this;
 }
 
-Lua::Field& Lua::Field::operator = (int value)
+Lua::Field& Lua::Field::operator=(int value)
 {
   if (parent == nullptr) {
     lua_pushinteger(l, value);
@@ -350,7 +350,7 @@ Lua::Field& Lua::Field::operator = (int value)
   return *this;
 }
 
-Lua::Field& Lua::Field::operator = (float value)
+Lua::Field& Lua::Field::operator=(float value)
 {
   if (parent == nullptr) {
     lua_pushnumber(l, value);
@@ -372,7 +372,7 @@ Lua::Field& Lua::Field::operator = (float value)
   return *this;
 }
 
-Lua::Field& Lua::Field::operator = (const char* value)
+Lua::Field& Lua::Field::operator=(const char* value)
 {
   if (parent == nullptr) {
     lua_pushstring(l, value);
@@ -394,7 +394,7 @@ Lua::Field& Lua::Field::operator = (const char* value)
   return *this;
 }
 
-Lua::Field& Lua::Field::operator = (Lua::Function* value)
+Lua::Field& Lua::Field::operator=(Lua::Function* value)
 {
   if (parent == nullptr) {
     lua_pushcfunction(l, value);
@@ -416,12 +416,12 @@ Lua::Field& Lua::Field::operator = (Lua::Function* value)
   return *this;
 }
 
-Lua::Field Lua::Field::operator [] (const char* name) const
+Lua::Field Lua::Field::operator[](const char* name) const
 {
   return Field(l, this, name);
 }
 
-Lua::Field Lua::Field::operator [] (int index) const
+Lua::Field Lua::Field::operator[](int index) const
 {
   return Field(l, this, index);
 }
@@ -524,23 +524,23 @@ Lua::~Lua()
   destroy();
 }
 
-Lua::Lua(Lua&& s) :
-  l(s.l)
+Lua::Lua(Lua&& other) :
+  l(other.l)
 {
-  s.l = nullptr;
+  other.l = nullptr;
 }
 
-Lua& Lua::operator = (Lua&& s)
+Lua& Lua::operator=(Lua&& other)
 {
-  if (&s != this) {
-    l = s.l;
+  if (&other != this) {
+    l = other.l;
 
-    s.l = nullptr;
+    other.l = nullptr;
   }
   return *this;
 }
 
-Lua::Result Lua::operator () (const char* code) const
+Lua::Result Lua::operator()(const char* code) const
 {
   if (luaL_dostring(l, code) != 0) {
     OZ_ERROR("oz::Lua: %s", lua_tostring(l, -1));
@@ -548,7 +548,7 @@ Lua::Result Lua::operator () (const char* code) const
   return Result(l);
 }
 
-Lua::Field Lua::operator [] (const char* name) const
+Lua::Field Lua::operator[](const char* name) const
 {
   return Field(l, nullptr, name);
 }

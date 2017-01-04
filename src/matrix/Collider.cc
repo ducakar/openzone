@@ -121,7 +121,7 @@ bool Collider::overlapsAABBEntities()
   Point  originalStartPos = startPos;
   Bounds localTrace       = str->toStructCS(trace);
 
-  for (int i = 0; i < str->entities.length(); ++i) {
+  for (int i = 0; i < str->entities.size(); ++i) {
     entity = &str->entities[i];
 
     if (localTrace.overlaps(*entity->clazz + entity->offset)) {
@@ -158,7 +158,7 @@ bool Collider::overlapsAABBOrbis()
     for (int y = span.minY; y <= span.maxY; ++y) {
       const Cell& cell = orbis.cells[x][y];
 
-      for (int i = 0; i < cell.structs.length(); ++i) {
+      for (int i = 0; i < cell.structs.size(); ++i) {
         int strIndex = cell.structs[i];
 
         str = orbis.str(strIndex);
@@ -522,7 +522,7 @@ void Collider::trimAABBEntities()
   Point  originalEndPos   = endPos;
   Bounds localTrace       = str->toStructCS(trace);
 
-  for (int i = 0; i < str->entities.length(); ++i) {
+  for (int i = 0; i < str->entities.size(); ++i) {
     entity = &str->entities[i];
 
     if (localTrace.overlaps(*entity->clazz + entity->offset)) {
@@ -644,7 +644,7 @@ void Collider::trimAABBOrbis()
     for (int y = span.minY; y <= span.maxY; ++y) {
       const Cell& cell = orbis.cells[x][y];
 
-      for (int i = 0; i < cell.structs.length(); ++i) {
+      for (int i = 0; i < cell.structs.size(); ++i) {
         int strIndex = cell.structs[i];
 
         str = orbis.str(strIndex);
@@ -737,7 +737,7 @@ void Collider::getOrbisOverlaps(List<Struct*>* structs, List<Object*>* objects)
       const Cell& cell = orbis.cells[x][y];
 
       if (structs != nullptr) {
-        for (int i = 0; i < cell.structs.length(); ++i) {
+        for (int i = 0; i < cell.structs.size(); ++i) {
           str = orbis.str(cell.structs[i]);
 
           if (trace.overlaps(*str) && !structs->contains(const_cast<Struct*>(str))) {

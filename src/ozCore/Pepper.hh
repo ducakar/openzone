@@ -138,7 +138,7 @@ private:
 
 private:
 
-  static thread_local Semaphore* localSemaphore; ///< Thread-local semaphore for synchronous calls.
+  static thread_local Semaphore* localSemaphore_; ///< Thread-local semaphore for synchronous calls.
 
 #endif
 
@@ -152,7 +152,7 @@ public:
    * On platforms other that NaCl the code is executed immediately on caller's thread.
    */
   template <typename Function>
-  void operator <<(Function function) const
+  void operator<<(Function function) const
   {
 #ifdef __native_client__
 
@@ -173,7 +173,7 @@ public:
           cw->semaphore->post();
         }
       };
-      CallbackWrapper cw = {function, localSemaphore};
+      CallbackWrapper cw = {function, localSemaphore_};
 
       Pepper::mainCall(CallbackWrapper::callback, &cw);
       localSemaphore->wait();
@@ -196,7 +196,7 @@ public:
    * On platforms other that NaCl the code is executed immediately on caller's thread.
    */
   template <typename Function>
-  void operator +=(Function function) const
+  void operator+=(Function function) const
   {
 #ifdef __native_client__
 

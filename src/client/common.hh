@@ -60,31 +60,31 @@ struct TexCoord
   {}
 
   OZ_ALWAYS_INLINE
-  bool operator == (const TexCoord& tc) const
+  bool operator==(const TexCoord& tc) const
   {
     return u == tc.u && v == tc.v;
   }
 
   OZ_ALWAYS_INLINE
-  bool operator != (const TexCoord& tc) const
+  bool operator!=(const TexCoord& tc) const
   {
-    return !operator == (tc);
+    return !operator==(tc);
   }
 
   OZ_ALWAYS_INLINE
-  operator const float* () const
-  {
-    return &u;
-  }
-
-  OZ_ALWAYS_INLINE
-  operator float* ()
+  operator const float*() const
   {
     return &u;
   }
 
   OZ_ALWAYS_INLINE
-  const float& operator [] (int i) const
+  operator float*()
+  {
+    return &u;
+  }
+
+  OZ_ALWAYS_INLINE
+  const float& operator[](int i) const
   {
     OZ_ASSERT(0 <= i && i < 2);
 
@@ -92,7 +92,7 @@ struct TexCoord
   }
 
   OZ_ALWAYS_INLINE
-  float& operator [] (int i)
+  float& operator[](int i)
   {
     OZ_ASSERT(0 <= i && i < 2);
 

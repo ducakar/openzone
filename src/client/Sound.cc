@@ -73,7 +73,7 @@ void Sound::playCell(int cellX, int cellY)
 {
   const Cell& cell = orbis.cells[cellX][cellY];
 
-  for (int i = 0; i < cell.structs.length(); ++i) {
+  for (int i = 0; i < cell.structs.size(); ++i) {
     int strIndex = cell.structs[i];
 
     if (!playedStructs.get(strIndex)) {

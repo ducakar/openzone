@@ -540,7 +540,7 @@ void Builder::packArchive(const char* name, bool useCompression, bool use7zip)
     OZ_ERROR(use7zip ? "Packing 7zip archive failed" : "Packing ZIP archive failed");
   }
 
-  int size = archive.size();
+  int size = archive.length();
   if (size >= 0) {
     Log::println();
     Log::println("Archive size: %.2f MiB = %.2f MB",

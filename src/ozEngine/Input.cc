@@ -43,9 +43,9 @@ static inline void updateModKey(ushort modMask)
            modMask & KMOD_SHIFT ? Input::SHIFT : Input::NONE;
 }
 
-SBitset<Input::MAX_ACTIONS> Input::downActions;
-SBitset<Input::MAX_ACTIONS> Input::pressedActions;
-SBitset<Input::MAX_ACTIONS> Input::releasedActions;
+SBitset<Input::MAX_ACTIONS> Input::downActions_;
+SBitset<Input::MAX_ACTIONS> Input::pressedActions_;
+SBitset<Input::MAX_ACTIONS> Input::releasedActions_;
 Input::Mouse                Input::mouse;
 Input::Config               Input::config = {
   {

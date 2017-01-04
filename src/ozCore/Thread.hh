@@ -54,7 +54,7 @@ private:
 
   struct Descriptor;
 
-  Descriptor* descriptor = nullptr; ///< Internal thread descriptor.
+  Descriptor* descriptor_ = nullptr; ///< Internal thread descriptor.
 
 public:
 
@@ -101,12 +101,12 @@ public:
   /**
    * Move constructor.
    */
-  Thread(Thread&& t);
+  Thread(Thread&& other);
 
   /**
    * Move operator.
    */
-  Thread& operator =(Thread&& t);
+  Thread& operator=(Thread&& other);
 
   /**
    * True iff a joinable thread has been started but not yet joined or detached.
@@ -114,7 +114,7 @@ public:
   OZ_ALWAYS_INLINE
   bool isValid() const
   {
-    return descriptor != nullptr;
+    return descriptor_ != nullptr;
   }
 
   /**

@@ -31,7 +31,7 @@ private:
 
 public:
 
-  Elem*& operator [](int i) const
+  Elem*& operator[](int i) const
   {
     if (i == -1) {
       return nullptr;

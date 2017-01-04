@@ -255,14 +255,14 @@ File::File(String&& path) :
   String(static_cast<String&&>(path))
 {}
 
-File& File::operator =(const String& path)
+File& File::operator=(const String& path)
 {
-  return static_cast<File&>(String::operator =(path));
+  return static_cast<File&>(String::operator=(path));
 }
 
-File& File::operator =(String&& path)
+File& File::operator=(String&& path)
 {
-  return static_cast<File&>(String::operator =(static_cast<String&&>(path)));
+  return static_cast<File&>(String::operator=(static_cast<String&&>(path)));
 }
 
 bool File::exists() const
@@ -386,17 +386,17 @@ String File::realPath() const
   }
 }
 
-File File::operator +(const String& pathElem) const
+File File::operator+(const String& pathElem) const
 {
   return File(begin(), length(), pathElem, pathElem.length());
 }
 
-File File::operator +(const char* pathElem) const
+File File::operator+(const char* pathElem) const
 {
   return File(begin(), length(), pathElem, length(pathElem));
 }
 
-File File::operator /(const String& pathElem) const
+File File::operator/(const String& pathElem) const
 {
   int separator = length();
 
@@ -406,7 +406,7 @@ File File::operator /(const String& pathElem) const
   return newPath;
 }
 
-File File::operator /(const char* pathElem) const
+File File::operator/(const char* pathElem) const
 {
   int separator = length();
 
@@ -416,19 +416,19 @@ File File::operator /(const char* pathElem) const
   return newPath;
 }
 
-File& File::operator +=(const String& pathElem)
+File& File::operator+=(const String& pathElem)
 {
   *this = File(begin(), length(), pathElem, pathElem.length());
   return *this;
 }
 
-File& File::operator +=(const char* pathElem)
+File& File::operator+=(const char* pathElem)
 {
   *this = File(begin(), length(), pathElem, length(pathElem));
   return *this;
 }
 
-File& File::operator /=(const String& pathElem)
+File& File::operator/=(const String& pathElem)
 {
   int separator = length();
 
@@ -438,7 +438,7 @@ File& File::operator /=(const String& pathElem)
   return *this;
 }
 
-File& File::operator /=(const char* pathElem)
+File& File::operator/=(const char* pathElem)
 {
   int separator = length();
 
@@ -727,7 +727,7 @@ void File::destroy()
 {
   PHYSFS_deinit();
 
-  Arrays::clear<File>(specialFiles, Arrays::length<File>(specialFiles));
+  Arrays::clear<File>(specialFiles, Arrays::size<File>(specialFiles));
 }
 
 }

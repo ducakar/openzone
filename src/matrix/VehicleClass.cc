@@ -144,7 +144,7 @@ void VehicleClass::init(const Json& config, const char* name_)
   }
 
   const Json& weaponsConfig = config["weapons"];
-  nWeapons = max(weaponsConfig.length(), 0);
+  nWeapons = max(weaponsConfig.size(), 0);
 
   if (nWeapons > VehicleClass::MAX_WEAPONS) {
     OZ_ERROR("%s: Vehicle must have between 0 and %d weapons.", name_, VehicleClass::MAX_WEAPONS);

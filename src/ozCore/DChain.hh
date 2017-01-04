@@ -94,9 +94,9 @@ public:
 
 private:
 
-  using Chain<Elem, INDEX>::firstElem;
+  using Chain<Elem, INDEX>::firstElem_;
 
-  Elem* lastElem = nullptr; ///< Pointer to the last element in the chain.
+  Elem* lastElem_ = nullptr; ///< Pointer to the last element in the chain.
 
 public:
 
@@ -105,7 +105,7 @@ public:
   using Chain<Elem, INDEX>::begin;
   using Chain<Elem, INDEX>::end;
   using Chain<Elem, INDEX>::first;
-  using Chain<Elem, INDEX>::length;
+  using Chain<Elem, INDEX>::size;
   using Chain<Elem, INDEX>::isEmpty;
   using Chain<Elem, INDEX>::has;
   using Chain<Elem, INDEX>::contains;
@@ -118,36 +118,25 @@ public:
   /**
    * Move constructor, rebinds elements to the new chain.
    */
-  DChain(DChain&& c) :
-    Chain<Elem, INDEX>(static_cast<DChain&&>(c)), lastElem(c.lastElem)
+  DChain(DChain&& other) :
+    Chain<Elem, INDEX>(static_cast<DChain&&>(other)), lastElem_(other.lastElem_)
   {
-    c.lastElem = nullptr;
+    other.lastElem_ = nullptr;
   }
 
   /**
    * Move operator, rebinds elements to the destination chain.
    */
-  DChain& operator =(DChain&& c)
+  DChain& operator=(DChain&& other)
   {
-    if (&c != this) {
-      firstElem = c.firstElem;
-      lastElem  = c.lastElem;
+    if (&other != this) {
+      firstElem_ = other.firstElem_;
+      lastElem_  = other.lastElem_;
 
-      c.firstElem = nullptr;
-      c.lastElem  = nullptr;
+      other.firstElem_ = nullptr;
+      other.lastElem_  = nullptr;
     }
     return *this;
-  }
-
-  /**
-   * True iff same size and respective elements are equal.
-   *
-   * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
-   * copies always differ in `prev[INDEX]` and `next[INDEX]` members.
-   */
-  bool operator ==(const DChain& c) const
-  {
-    return Chain<Elem, INDEX>::equals(c);
   }
 
   /**
@@ -156,7 +145,7 @@ public:
   OZ_ALWAYS_INLINE
   Elem* last() const
   {
-    return lastElem;
+    return lastElem_;
   }
 
   /**
@@ -183,7 +172,7 @@ public:
     prev->next[INDEX] = elem;
 
     if (next == nullptr) {
-      lastElem = elem;
+      lastElem_ = elem;
     }
     else {
       next->prev[INDEX] = elem;
@@ -204,7 +193,7 @@ public:
     next->prev[INDEX] = elem;
 
     if (prev == nullptr) {
-      firstElem = elem;
+      firstElem_ = elem;
     }
     else {
       next->prev[INDEX] = elem;
@@ -217,13 +206,13 @@ public:
   void erase(Elem* elem)
   {
     if (elem->prev[INDEX] == nullptr) {
-      firstElem = elem->next[INDEX];
+      firstElem_ = elem->next[INDEX];
     }
     else {
       elem->prev[INDEX]->next[INDEX] = elem->next[INDEX];
     }
     if (elem->next[INDEX] == nullptr) {
-      lastElem = elem->prev[INDEX];
+      lastElem_ = elem->prev[INDEX];
     }
     else {
       elem->next[INDEX]->prev[INDEX] = elem->prev[INDEX];
@@ -238,15 +227,15 @@ public:
     OZ_ASSERT(elem != nullptr);
 
     elem->prev[INDEX] = nullptr;
-    elem->next[INDEX] = firstElem;
+    elem->next[INDEX] = firstElem_;
 
-    if (firstElem == nullptr) {
-      firstElem = elem;
-      lastElem  = elem;
+    if (firstElem_ == nullptr) {
+      firstElem_ = elem;
+      lastElem_  = elem;
     }
     else {
-      firstElem->prev[INDEX] = elem;
-      firstElem = elem;
+      firstElem_->prev[INDEX] = elem;
+      firstElem_ = elem;
     }
   }
 
@@ -257,16 +246,16 @@ public:
   {
     OZ_ASSERT(elem != nullptr);
 
-    elem->prev[INDEX] = lastElem;
+    elem->prev[INDEX] = lastElem_;
     elem->next[INDEX] = nullptr;
 
-    if (lastElem == nullptr) {
-      firstElem = elem;
-      lastElem  = elem;
+    if (lastElem_ == nullptr) {
+      firstElem_ = elem;
+      lastElem_  = elem;
     }
     else {
-      lastElem->next[INDEX] = elem;
-      lastElem = elem;
+      lastElem_->next[INDEX] = elem;
+      lastElem_ = elem;
     }
   }
 
@@ -275,17 +264,17 @@ public:
    */
   Elem* popFirst()
   {
-    OZ_ASSERT(firstElem != nullptr);
+    OZ_ASSERT(firstElem_ != nullptr);
 
-    Elem* e = firstElem;
+    Elem* e = firstElem_;
 
-    firstElem = firstElem->next[INDEX];
+    firstElem_ = firstElem_->next[INDEX];
 
-    if (firstElem == nullptr) {
-      lastElem = nullptr;
+    if (firstElem_ == nullptr) {
+      lastElem_ = nullptr;
     }
     else {
-      firstElem->prev[INDEX] = nullptr;
+      firstElem_->prev[INDEX] = nullptr;
     }
     return e;
   }
@@ -295,17 +284,17 @@ public:
    */
   Elem* popLast()
   {
-    OZ_ASSERT(lastElem != nullptr);
+    OZ_ASSERT(lastElem_ != nullptr);
 
-    Elem* e = lastElem;
+    Elem* e = lastElem_;
 
-    lastElem = lastElem->prev[INDEX];
+    lastElem_ = lastElem_->prev[INDEX];
 
-    if (lastElem == nullptr) {
-      firstElem = nullptr;
+    if (lastElem_ == nullptr) {
+      firstElem_ = nullptr;
     }
     else {
-      lastElem->next[INDEX] = nullptr;
+      lastElem_->next[INDEX] = nullptr;
     }
     return e;
   }
@@ -315,8 +304,8 @@ public:
    */
   void clear()
   {
-    firstElem = nullptr;
-    lastElem  = nullptr;
+    firstElem_ = nullptr;
+    lastElem_  = nullptr;
   }
 
   /**
@@ -325,7 +314,7 @@ public:
   void free()
   {
     Chain<Elem, INDEX>::free();
-    lastElem = nullptr;
+    lastElem_ = nullptr;
   }
 
 };
