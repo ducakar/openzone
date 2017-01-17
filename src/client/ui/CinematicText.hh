@@ -37,7 +37,7 @@ class CinematicText : public Area
 {
 private:
 
-  Text text;
+  Text text_;
 
 protected:
 
@@ -48,7 +48,7 @@ public:
 
   CinematicText();
 
-  void set(const char* title);
+  void set(const char* text);
 
 };
 

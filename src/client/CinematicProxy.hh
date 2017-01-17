@@ -63,8 +63,8 @@ private:
   Point      beginPos;
   Mat4       beginColour;
 
-  String     title;
-  int        nTitleChars;
+  String     text;
+  int        textPos;
 
   float      stepTime;
   int        prevState;

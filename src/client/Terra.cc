@@ -50,10 +50,10 @@ void Terra::draw()
   // we draw column-major (triangle strips along y axis) for better cache performance
   glFrontFace(GL_CW);
 
-  span.minX = max(int((camera.p.x - frustum.radius + oz::Terra::DIM) / TILE_SIZE), 0);
-  span.minY = max(int((camera.p.y - frustum.radius + oz::Terra::DIM) / TILE_SIZE), 0);
-  span.maxX = min(int((camera.p.x + frustum.radius + oz::Terra::DIM) / TILE_SIZE), TILES - 1);
-  span.maxY = min(int((camera.p.y + frustum.radius + oz::Terra::DIM) / TILE_SIZE), TILES - 1);
+  span.minX = max(int((camera.p.x - frustum.radius() + oz::Terra::DIM) / TILE_SIZE), 0);
+  span.minY = max(int((camera.p.y - frustum.radius() + oz::Terra::DIM) / TILE_SIZE), 0);
+  span.maxX = min(int((camera.p.x + frustum.radius() + oz::Terra::DIM) / TILE_SIZE), TILES - 1);
+  span.maxY = min(int((camera.p.y + frustum.radius() + oz::Terra::DIM) / TILE_SIZE), TILES - 1);
 
   shader.program(landShaderId);
 

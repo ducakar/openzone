@@ -31,6 +31,8 @@ static LuaClient& lua = luaClient;
 
 void LuaClient::staticCall(const char* functionName)
 {
+  lua_State* l = l_;
+
   ms.obj      = nullptr;
   ms.str      = nullptr;
   ms.frag     = nullptr;
@@ -51,6 +53,8 @@ void LuaClient::staticCall(const char* functionName)
 
 bool LuaClient::exec(const char* code) const
 {
+  lua_State* l = l_;
+
   OZ_ASSERT(l_gettop() == 0);
 
   ms.obj      = nullptr;
@@ -130,6 +134,8 @@ void LuaClient::create(const char* mission)
 
 void LuaClient::read(Stream* is)
 {
+  lua_State* l = l_;
+
   OZ_ASSERT(l_gettop() == 0);
 
   cs.mission = is->readString();
@@ -155,9 +161,9 @@ void LuaClient::read(Stream* is)
       continue;
     }
 
-    Stream is = file.read();
+    Stream mis = file.read();
 
-    if (is.available() == 0 || l_dobufferx(is.begin(), is.available(), file, "t") != 0) {
+    if (mis.available() == 0 || l_dobufferx(mis.begin(), mis.available(), file, "t") != 0) {
       OZ_ERROR("Client Lua script error in %s", file.c());
     }
   }
@@ -165,7 +171,7 @@ void LuaClient::read(Stream* is)
   const char* name = is->readString();
 
   while (!String::isEmpty(name)) {
-    readValue(l, is);
+    readValue(l_, is);
 
     l_setglobal(name);
 
@@ -177,6 +183,8 @@ void LuaClient::read(Stream* is)
 
 void LuaClient::write(Stream* os)
 {
+  lua_State* l = l_;
+
   OZ_ASSERT(l_gettop() == 0);
 
   os->writeString(cs.mission);
@@ -196,7 +204,7 @@ void LuaClient::write(Stream* os)
     const char* name = l_tostring(-2);
     if (String::beginsWith(name, "oz_")) {
       os->writeString(name);
-      writeValue(l, os);
+      writeValue(l_, os);
     }
 
     l_pop(1);
@@ -214,6 +222,7 @@ void LuaClient::init()
   Log::print("Initialising Client Lua ...");
 
   Lua::init("tsm");
+  lua_State* l = l_;
 
   ls.envName = "client";
   ms.structs.reserve(32);
@@ -644,12 +653,12 @@ void LuaClient::init()
   IMPORT_FUNC(ozUIBell);
   IMPORT_FUNC(ozUIBuildFrame);
 
-  importMatrixConstants(l);
-  importNirvanaConstants(l);
-  importClientConstants(l);
+  importMatrixConstants(l_);
+  importNirvanaConstants(l_);
+  importClientConstants(l_);
 
   // Import profile persistance.
-  readValue(l, profile.persistent);
+  readValue(l_, profile.persistent);
   l_setglobal("ozPersistent");
 
   loadDir("@lua/common");
@@ -662,14 +671,16 @@ void LuaClient::init()
 
 void LuaClient::destroy()
 {
-  if (l == nullptr) {
+  lua_State* l = l_;
+
+  if (l_ == nullptr) {
     return;
   }
 
   Log::print("Destroying Client Lua ...");
 
   l_getglobal("ozPersistent");
-  profile.persistent = writeValue(l);
+  profile.persistent = writeValue(l_);
   l_settop(0);
 
   ms.structs.clear();

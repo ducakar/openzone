@@ -308,10 +308,10 @@ void Synapse::remove(Object* obj)
     List<Object*> overlappingObjs;
     collider.getOverlaps(*obj, nullptr, &overlappingObjs, 2.0f * EPSILON);
 
-    for (Object* obj : overlappingObjs) {
-      if (obj->flags & Object::DYNAMIC_BIT) {
-        obj->flags &= ~Object::DISABLED_BIT;
-        obj->flags |= Object::ENABLE_BIT;
+    for (Object* sObj : overlappingObjs) {
+      if (sObj->flags & Object::DYNAMIC_BIT) {
+        sObj->flags &= ~Object::DISABLED_BIT;
+        sObj->flags |= Object::ENABLE_BIT;
       }
     }
 

@@ -305,7 +305,7 @@ void Loader::preloadRun()
 
 void Loader::makeScreenshot()
 {
-  File picturesDir = config["dir.pictures"].get(File::PICTURES);
+  File picturesDir = appConfig["dir.pictures"].get(File::PICTURES);
   File screenshot  = picturesDir / "OpenZone";
 
   picturesDir.mkdir();

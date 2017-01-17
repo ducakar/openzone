@@ -226,10 +226,10 @@ void Sound::soundRun()
   }
 }
 
-void Sound::setVolume(float volume_)
+void Sound::setVolume(float volume)
 {
-  volume = volume_;
-  alListenerf(AL_GAIN, volume_);
+  volume_ = volume;
+  alListenerf(AL_GAIN, volume);
 }
 
 void Sound::setMusicVolume(float volume) const
@@ -261,7 +261,7 @@ void Sound::stopMusic()
 
 void Sound::resume() const
 {
-  alListenerf(AL_GAIN, volume);
+  alListenerf(AL_GAIN, volume_);
 }
 
 void Sound::suspend() const
@@ -384,10 +384,10 @@ void Sound::init()
 
   alSourcei(musicSource, AL_SOURCE_RELATIVE, AL_TRUE);
 
-  setVolume(config.include("sound.volume", 1.0f).get(0.0f));
+  setVolume(appConfig.include("sound.volume", 1.0f).get(0.0f));
   setMusicVolume(0.5f);
 
-  String speaker = config.include("sound.speaker", "en").get("");
+  String speaker = appConfig.include("sound.speaker", "en").get("");
 
   if (espeak_Initialize != nullptr) {
     context.speakSampleRate = espeak_Initialize(AUDIO_OUTPUT_SYNCHRONOUS, 500, nullptr, 0);

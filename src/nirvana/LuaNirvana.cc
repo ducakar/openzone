@@ -29,6 +29,8 @@ static LuaNirvana& lua = luaNirvana;
 
 void LuaNirvana::mindCall(const char* functionName, Mind* mind, Bot* self)
 {
+  lua_State* l = l_;
+
   OZ_ASSERT(l_gettop() == 1 && mind != nullptr && self != nullptr);
 
   ms.self     = self;
@@ -55,6 +57,8 @@ void LuaNirvana::mindCall(const char* functionName, Mind* mind, Bot* self)
 
 void LuaNirvana::registerMind(int botIndex)
 {
+  lua_State* l = l_;
+
   OZ_ASSERT(l_gettop() == 1);
 
   l_newtable();
@@ -63,6 +67,8 @@ void LuaNirvana::registerMind(int botIndex)
 
 void LuaNirvana::unregisterMind(int botIndex)
 {
+  lua_State* l = l_;
+
   OZ_ASSERT(l_gettop() == 1);
 
   l_pushnil();
@@ -71,6 +77,8 @@ void LuaNirvana::unregisterMind(int botIndex)
 
 void LuaNirvana::read(Stream* is)
 {
+  lua_State* l = l_;
+
   OZ_ASSERT(l_gettop() == 1);
   OZ_ASSERT((l_pushnil(), true));
   OZ_ASSERT(!l_next(1));
@@ -78,7 +86,7 @@ void LuaNirvana::read(Stream* is)
   int index = is->readInt();
 
   while (index != -1) {
-    readValue(l, is);
+    readValue(l_, is);
 
     l_rawseti(1, index);
 
@@ -88,6 +96,8 @@ void LuaNirvana::read(Stream* is)
 
 void LuaNirvana::write(Stream* os)
 {
+  lua_State* l = l_;
+
   OZ_ASSERT(l_gettop() == 1);
 
   l_pushnil();
@@ -96,7 +106,7 @@ void LuaNirvana::write(Stream* os)
     OZ_ASSERT(l_type(-1) == LUA_TTABLE);
 
     os->writeInt(l_toint(-2));
-    writeValue(l, os);
+    writeValue(l_, os);
 
     l_pop(1);
   }
@@ -109,6 +119,7 @@ void LuaNirvana::init()
   Log::print("Initialising Nirvana Lua ...");
 
   Lua::init("tsm");
+  lua_State* l = l_;
 
   ls.envName = "nirvana";
   ms.structs.reserve(32);
@@ -496,8 +507,8 @@ void LuaNirvana::init()
   IMPORT_FUNC(ozNirvanaRemoveDevice);
   IMPORT_FUNC(ozNirvanaAddMemo);
 
-  importMatrixConstants(l);
-  importNirvanaConstants(l);
+  importMatrixConstants(l_);
+  importNirvanaConstants(l_);
 
   l_newtable();
   l_setglobal("ozLocalData");
@@ -513,7 +524,9 @@ void LuaNirvana::init()
 
 void LuaNirvana::destroy()
 {
-  if (l == nullptr) {
+  lua_State* l = l_;
+
+  if (l_ == nullptr) {
     return;
   }
 

@@ -672,14 +672,14 @@ void Json::copyValue(const Json& other)
   }
 
   comment_     = cloneString(other.comment_);
-  type_   = other.type_;
+  type_        = other.type_;
   wasAccessed_ = other.wasAccessed_;
 }
 
 Json& Json::copyComment(const char* comment)
 {
-  delete[] comment;
-  comment = cloneString(comment);
+  delete[] comment_;
+  comment_ = cloneString(comment);
   return *this;
 }
 

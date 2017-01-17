@@ -44,7 +44,7 @@ private:
   SharedLib                   libeSpeak;
 
   SBitset<Orbis::MAX_STRUCTS> playedStructs;
-  float                       volume;
+  float                       volume_;
 
   uint                        musicSource;
   uint                        musicBufferIds[2];

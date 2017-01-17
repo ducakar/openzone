@@ -24,7 +24,7 @@ namespace oz
 namespace builder
 {
 
-Json config;
+Json builderConfig;
 
 }
 }

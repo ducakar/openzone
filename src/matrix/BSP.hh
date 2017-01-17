@@ -138,6 +138,8 @@ public:
     Heading            heading;
   };
 
+  char*           data;
+
   Plane*          planes;
   Node*           nodes;
   Leaf*           leaves;

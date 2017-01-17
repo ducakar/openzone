@@ -545,8 +545,8 @@ void Render::resize()
     return;
   }
 
-  frameWidth  = Math::lround(float(Window::width()) * scale);
-  frameHeight = Math::lround(float(Window::height()) * scale);
+  frameWidth  = Math::lround(float(Window::width()) * frameScale);
+  frameHeight = Math::lround(float(Window::height()) * frameScale);
 
   if (mainFrame != 0) {
     glDeleteFramebuffers(1, &mainFrame);
@@ -571,8 +571,8 @@ void Render::resize()
   glGenTextures(1, &colourBuffer);
   glBindTexture(GL_TEXTURE_2D, colourBuffer);
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, scaleFilter);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, scaleFilter);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, frameScaleFilter);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, frameScaleFilter);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
@@ -778,17 +778,17 @@ void Render::init()
     {Model::MODEL_MAJOR, "MODEL_MAJOR"}
   };
 
-  Model::setCollation(collationMap[config.include("render.collation", "MODEL_MAJOR").get("")]);
+  Model::setCollation(collationMap[appConfig.include("render.collation", "MODEL_MAJOR").get("")]);
 
-  isOffscreen     = config.include("render.forceFBO",   false).get(false);
-  scale           = config.include("render.scale",      1.0f).get(0.0f);
-  scaleFilter     = scaleFilterMap[config.include("render.scaleFilter", "LINEAR").get("")];
+  isOffscreen     = appConfig.include("render.forceFBO",   false).get(false);
+  frameScale           = appConfig.include("render.scale",      1.0f).get(0.0f);
+  frameScaleFilter     = scaleFilterMap[appConfig.include("render.scaleFilter", "LINEAR").get("")];
 
-  visibilityRange = config.include("render.distance",   350.0f).get(0.0f);
-  showBounds      = config.include("render.showBounds", false).get(false);
-  showAim         = config.include("render.showAim",    false).get(false);
+  visibilityRange = appConfig.include("render.distance",   350.0f).get(0.0f);
+  showBounds      = appConfig.include("render.showBounds", false).get(false);
+  showAim         = appConfig.include("render.showAim",    false).get(false);
 
-  isOffscreen     = isOffscreen || shader.doPostprocess || scale != 1.0f;
+  isOffscreen     = isOffscreen || shader.doPostprocess || frameScale != 1.0f;
   windPhi         = 0.0f;
 
   mainFrame       = 0;
@@ -796,7 +796,7 @@ void Render::init()
 
   if (!shader.hasFBO) {
     shader.doPostprocess = false;
-    scale                = 1.0f;
+    frameScale                = 1.0f;
     isOffscreen          = false;
   }
 

@@ -46,7 +46,7 @@ void MD3::readAnimData()
   fclose(fs);
 }
 
-void MD3::buildMesh(const char* name, int frame)
+void MD3::buildMesh(const char* name, int meshFrame)
 {
   Log::print("Mesh '%s' ...", name);
 
@@ -194,9 +194,9 @@ void MD3::buildMesh(const char* name, int frame)
     is.rewind();
     is.readSkip(surfaceStart + surface.offShaders);
 
-    for (int i = 0; i < surfaceShaders.size(); ++i) {
-      Arrays::copy(is.readSkip(64), 64, surfaceShaders[i].name);
-      surfaceShaders[i].index = is.readInt();
+    for (int j = 0; j < surfaceShaders.size(); ++j) {
+      Arrays::copy(is.readSkip(64), 64, surfaceShaders[j].name);
+      surfaceShaders[j].index = is.readInt();
     }
 
     if (skin.isEmpty()) {
@@ -243,7 +243,7 @@ void MD3::buildMesh(const char* name, int frame)
     for (int j = 0; j < surfaceTriangles.size(); ++j) {
       for (int k = 0; k < 3; ++k) {
         int l = surfaceTriangles[j].vertices[k];
-        int m = frame == -1 ? l : frame * surface.nVertices + l;
+        int m = meshFrame == -1 ? l : meshFrame * surface.nVertices + l;
 
         compiler.texCoord(surfaceTexCoords[l]);
         compiler.normal(meshTransf * normals[m]);

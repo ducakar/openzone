@@ -150,7 +150,9 @@ void Model::animate(const Instance* instance)
       }
     }
 
-    upload(vertexAnimBuffer, nVertices, GL_STREAM_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, nVertices * sizeof(Vertex), vertexAnimBuffer, GL_STREAM_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
   }
 }
 
@@ -555,13 +557,6 @@ const File* Model::preload()
   }
 
   return &preloadData->modelFile;
-}
-
-void Model::upload(const Vertex* vertices, int nVertices, uint usage) const
-{
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, nVertices * sizeof(Vertex), vertices, usage);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Model::load()

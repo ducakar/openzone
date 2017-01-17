@@ -159,12 +159,12 @@ static List<Animation>    animations;
 
 static Bounds             bounds;
 
-static Vertex             vert;
-static Mesh               mesh;
-static Light              light;
+static Vertex             currentVert;
+static Mesh               currentMesh;
+static Light              currentLlight;
 static Node               root;
-static Node*              node;
-static Animation::Channel channel;
+static Node*              currentNode;
+static Animation::Channel currentChannel;
 static Animation          animation;
 
 static Environment        environment;
@@ -248,21 +248,21 @@ void Compiler::beginModel()
   bounds.mins          = Point(+Math::INF, +Math::INF, +Math::INF);
   bounds.maxs          = Point(-Math::INF, -Math::INF, -Math::INF);
 
-  mesh.flags           = Model::SOLID_BIT;
-  mesh.texture         = "";
+  currentMesh.flags           = Model::SOLID_BIT;
+  currentMesh.texture         = "";
 
-  light.pos            = Point::ORIGIN;
-  light.dir            = Vec3::ZERO;
-  light.colour         = Vec3::ZERO;
-  light.coneCoeff[0]   = 0.0f;
-  light.coneCoeff[1]   = 0.0f;
-  light.attenuation[0] = 0.0f;
-  light.attenuation[1] = 0.0f;
-  light.attenuation[2] = 0.0f;
-  light.type           = Light::POINT;
+  currentLlight.pos            = Point::ORIGIN;
+  currentLlight.dir            = Vec3::ZERO;
+  currentLlight.colour         = Vec3::ZERO;
+  currentLlight.coneCoeff[0]   = 0.0f;
+  currentLlight.coneCoeff[1]   = 0.0f;
+  currentLlight.attenuation[0] = 0.0f;
+  currentLlight.attenuation[1] = 0.0f;
+  currentLlight.attenuation[2] = 0.0f;
+  currentLlight.type           = Light::POINT;
 
   root                 = Node("");
-  node                 = &root;
+  currentNode                 = &root;
 
   environment          = MODEL;
   caps                 = 0;
@@ -332,45 +332,45 @@ void Compiler::beginNode(const char* name)
 {
   OZ_ASSERT(environment == MODEL);
 
-  Node* newNode = new Node(name, node);
+  Node* newNode = new Node(name, currentNode);
 
-  node->children.add(newNode);
-  node = newNode;
+  currentNode->children.add(newNode);
+  currentNode = newNode;
 }
 
 void Compiler::endNode()
 {
-  OZ_ASSERT(environment == MODEL && node != &root);
+  OZ_ASSERT(environment == MODEL && currentNode != &root);
 
-  node = node->parent;
+  currentNode = currentNode->parent;
 }
 
 void Compiler::transform(const Mat4& t)
 {
-  OZ_ASSERT(environment == MODEL && node != &root);
+  OZ_ASSERT(environment == MODEL && currentNode != &root);
 
-  node->transf = t;
+  currentNode->transf = t;
 }
 
 void Compiler::includeInBounds(bool value)
 {
-  OZ_ASSERT(environment == MODEL && node != &root);
+  OZ_ASSERT(environment == MODEL && currentNode != &root);
 
-  node->includeInBounds = value;
+  currentNode->includeInBounds = value;
 }
 
 void Compiler::bindMesh(int id)
 {
-  OZ_ASSERT(environment == MODEL && node != &root);
+  OZ_ASSERT(environment == MODEL && currentNode != &root);
 
-  node->mesh = id;
+  currentNode->mesh = id;
 }
 
 void Compiler::bindLight(int id)
 {
-  OZ_ASSERT(environment == MODEL && node != &root);
+  OZ_ASSERT(environment == MODEL && currentNode != &root);
 
-  lights[id].node = node;
+  lights[id].node = currentNode;
 }
 
 void Compiler::beginMesh()
@@ -378,9 +378,9 @@ void Compiler::beginMesh()
   OZ_ASSERT(environment == MODEL);
   environment = MESH;
 
-  mesh.flags     = Model::SOLID_BIT;
-  mesh.texture   = "";
-  mesh.shininess = 50.0f;
+  currentMesh.flags     = Model::SOLID_BIT;
+  currentMesh.texture   = "";
+  currentMesh.shininess = 50.0f;
 }
 
 int Compiler::endMesh()
@@ -388,8 +388,8 @@ int Compiler::endMesh()
   OZ_ASSERT(environment == MESH);
   environment = MODEL;
 
-  meshes.add(mesh);
-  mesh.indices.clear();
+  meshes.add(currentMesh);
+  currentMesh.indices.clear();
 
   return meshes.size() - 1;
 }
@@ -398,19 +398,19 @@ void Compiler::texture(const char* texture)
 {
   OZ_ASSERT(environment == MESH);
 
-  mesh.texture = texture;
+  currentMesh.texture = texture;
 }
 
 void Compiler::shininess(float exponent)
 {
-  mesh.shininess = exponent;
+  currentMesh.shininess = exponent;
 }
 
 void Compiler::blend(bool doBlend)
 {
   OZ_ASSERT(environment == MESH);
 
-  mesh.flags = doBlend ? Model::ALPHA_BIT : Model::SOLID_BIT;
+  currentMesh.flags = doBlend ? Model::ALPHA_BIT : Model::SOLID_BIT;
 }
 
 void Compiler::begin(Compiler::PolyMode mode_)
@@ -418,17 +418,17 @@ void Compiler::begin(Compiler::PolyMode mode_)
   OZ_ASSERT(environment == MESH);
   environment = POLY;
 
-  vert.pos         = Point::ORIGIN;
-  vert.texCoord    = TexCoord(0.0f, 0.0f);
-  vert.normal      = Vec3::ZERO;
-  vert.tangent     = Vec3::ZERO;
-  vert.binormal    = Vec3::ZERO;
-  vert.boneName[0] = "";
-  vert.boneName[1] = "";
-  vert.bone[0]     = 0;
-  vert.bone[1]     = 0;
-  vert.weight[0]   = 0.0f;
-  vert.weight[1]   = 0.0f;
+  currentVert.pos         = Point::ORIGIN;
+  currentVert.texCoord    = TexCoord(0.0f, 0.0f);
+  currentVert.normal      = Vec3::ZERO;
+  currentVert.tangent     = Vec3::ZERO;
+  currentVert.binormal    = Vec3::ZERO;
+  currentVert.boneName[0] = "";
+  currentVert.boneName[1] = "";
+  currentVert.bone[0]     = 0;
+  currentVert.bone[1]     = 0;
+  currentVert.weight[0]   = 0.0f;
+  currentVert.weight[1]   = 0.0f;
 
   mode             = mode_;
   vertNum          = 0;
@@ -448,7 +448,7 @@ void Compiler::end()
     case TRIANGLES: {
       OZ_ASSERT(vertNum >= 3 && vertNum % 3 == 0);
 
-      mesh.indices.takeAll(polyIndices.begin(), polyIndices.size());
+      currentMesh.indices.takeAll(polyIndices.begin(), polyIndices.size());
       break;
     }
     case POLYGON: {
@@ -460,17 +460,17 @@ void Compiler::end()
 
       for (int i = 0; bottom <= top; ++i) {
         if (i & 1) {
-          mesh.indices.add(polyIndices[last[0]]);
-          mesh.indices.add(polyIndices[last[1]]);
-          mesh.indices.add(polyIndices[bottom]);
+          currentMesh.indices.add(polyIndices[last[0]]);
+          currentMesh.indices.add(polyIndices[last[1]]);
+          currentMesh.indices.add(polyIndices[bottom]);
 
           last[1] = bottom;
           ++bottom;
         }
         else {
-          mesh.indices.add(polyIndices[last[0]]);
-          mesh.indices.add(polyIndices[last[1]]);
-          mesh.indices.add(polyIndices[top]);
+          currentMesh.indices.add(polyIndices[last[0]]);
+          currentMesh.indices.add(polyIndices[last[1]]);
+          currentMesh.indices.add(polyIndices[top]);
 
           last[0] = top;
           --top;
@@ -486,16 +486,16 @@ void Compiler::boneWeight(int which, const char* name, float weight)
   OZ_ASSERT(environment == POLY);
   OZ_ASSERT(which == 0 || which == 1);
 
-  vert.boneName[which] = name;
-  vert.weight[which]   = weight;
+  currentVert.boneName[which] = name;
+  currentVert.weight[which]   = weight;
 }
 
 void Compiler::texCoord(float u, float v)
 {
   OZ_ASSERT(environment == POLY);
 
-  vert.texCoord[0] = u;
-  vert.texCoord[1] = v;
+  currentVert.texCoord[0] = u;
+  currentVert.texCoord[1] = v;
 }
 
 void Compiler::texCoord(const float* v)
@@ -507,9 +507,9 @@ void Compiler::normal(float x, float y, float z)
 {
   OZ_ASSERT(environment == POLY);
 
-  vert.normal.x = x;
-  vert.normal.y = y;
-  vert.normal.z = z;
+  currentVert.normal.x = x;
+  currentVert.normal.y = y;
+  currentVert.normal.z = z;
 }
 
 void Compiler::normal(const float* v)
@@ -522,21 +522,21 @@ void Compiler::vertex(float x, float y, float z)
   OZ_ASSERT(environment == POLY);
   OZ_ASSERT(nFrames == 0 || (y == 0.0f && z == 0.0f));
 
-  vert.pos.x = x;
-  vert.pos.y = y;
-  vert.pos.z = z;
+  currentVert.pos.x = x;
+  currentVert.pos.y = y;
+  currentVert.pos.z = z;
 
   int index;
 
   if (caps & UNIQUE) {
-    index = int(&vertices.include(vert) - vertices.begin());
+    index = int(&vertices.include(currentVert) - vertices.begin());
 
     polyIndices.add(ushort(index));
   }
   else {
     index = vertices.size();
 
-    vertices.add(vert);
+    vertices.add(currentVert);
     polyIndices.add(ushort(index));
   }
 
@@ -563,7 +563,7 @@ void Compiler::beginLight(Light::Type type)
   OZ_ASSERT(environment == MODEL);
   environment = LIGHT;
 
-  light.type = type;
+  currentLlight.type = type;
 }
 
 int Compiler::endLight()
@@ -571,7 +571,7 @@ int Compiler::endLight()
   OZ_ASSERT(environment == LIGHT);
   environment = MODEL;
 
-  lights.add(light);
+  lights.add(currentLlight);
   return lights.size() - 1;
 }
 
@@ -579,44 +579,44 @@ void Compiler::position(float x, float y, float z)
 {
   OZ_ASSERT(environment == LIGHT);
 
-  light.pos.x = x;
-  light.pos.y = y;
-  light.pos.z = z;
+  currentLlight.pos.x = x;
+  currentLlight.pos.y = y;
+  currentLlight.pos.z = z;
 }
 
 void Compiler::direction(float x, float y, float z)
 {
   OZ_ASSERT(environment == LIGHT);
 
-  light.dir.x = x;
-  light.dir.y = y;
-  light.dir.z = z;
+  currentLlight.dir.x = x;
+  currentLlight.dir.y = y;
+  currentLlight.dir.z = z;
 }
 
 void Compiler::colour(float r, float g, float b)
 {
   OZ_ASSERT(environment == LIGHT);
 
-  light.colour.x = r;
-  light.colour.y = g;
-  light.colour.z = b;
+  currentLlight.colour.x = r;
+  currentLlight.colour.y = g;
+  currentLlight.colour.z = b;
 }
 
 void Compiler::attenuation(float constant, float linear, float quadratic)
 {
   OZ_ASSERT(environment == LIGHT);
 
-  light.attenuation[0] = constant;
-  light.attenuation[1] = linear;
-  light.attenuation[2] = quadratic;
+  currentLlight.attenuation[0] = constant;
+  currentLlight.attenuation[1] = linear;
+  currentLlight.attenuation[2] = quadratic;
 }
 
 void Compiler::coneAngles(float inner, float outer)
 {
   OZ_ASSERT(environment == LIGHT);
 
-  light.coneCoeff[0] = Math::tan(inner / 2.0f);
-  light.coneCoeff[1] = Math::tan(outer / 2.0f);
+  currentLlight.coneCoeff[0] = Math::tan(inner / 2.0f);
+  currentLlight.coneCoeff[1] = Math::tan(outer / 2.0f);
 }
 
 void Compiler::beginAnimation()
@@ -640,9 +640,9 @@ void Compiler::beginChannel()
   OZ_ASSERT(environment == ANIMATION);
   environment = CHANNEL;
 
-  channel.positionKeys.clear();
-  channel.rotationKeys.clear();
-  channel.scalingKeys.clear();
+  currentChannel.positionKeys.clear();
+  currentChannel.rotationKeys.clear();
+  currentChannel.scalingKeys.clear();
 }
 
 void Compiler::endChannel()
@@ -650,28 +650,28 @@ void Compiler::endChannel()
   OZ_ASSERT(environment == CHANNEL);
   environment = ANIMATION;
 
-  animation.channels.add(static_cast<Animation::Channel&&>(channel));
+  animation.channels.add(static_cast<Animation::Channel&&>(currentChannel));
 }
 
 void Compiler::positionKey(const Point& pos, float time)
 {
   OZ_ASSERT(environment == CHANNEL);
 
-  channel.positionKeys.add(Animation::PositionKey{pos, time});
+  currentChannel.positionKeys.add(Animation::PositionKey{pos, time});
 }
 
 void Compiler::rotationKey(const Quat& rot, float time)
 {
   OZ_ASSERT(environment == CHANNEL);
 
-  channel.rotationKeys.add(Animation::RotationKey{rot, time});
+  currentChannel.rotationKeys.add(Animation::RotationKey{rot, time});
 }
 
 void Compiler::scalingKey(const Vec3& scale, float time)
 {
   OZ_ASSERT(environment == CHANNEL);
 
-  channel.scalingKeys.add(Animation::ScalingKey{scale, time});
+  currentChannel.scalingKeys.add(Animation::ScalingKey{scale, time});
 }
 
 void Compiler::writeModel(Stream* os, bool globalTextures)
@@ -923,9 +923,9 @@ void Compiler::destroy()
   animations.clear();
   animations.trim();
 
-  mesh.texture = "";
-  mesh.indices.clear();
-  mesh.indices.trim();
+  currentMesh.texture = "";
+  currentMesh.indices.clear();
+  currentMesh.indices.trim();
 
   root.children.free();
   Node::pool.free();
@@ -933,9 +933,9 @@ void Compiler::destroy()
   polyIndices.clear();
   polyIndices.trim();
 
-  OZ_ASSERT(channel.positionKeys.capacity() == 0);
-  OZ_ASSERT(channel.rotationKeys.capacity() == 0);
-  OZ_ASSERT(channel.scalingKeys.capacity() == 0);
+  OZ_ASSERT(currentChannel.positionKeys.capacity() == 0);
+  OZ_ASSERT(currentChannel.rotationKeys.capacity() == 0);
+  OZ_ASSERT(currentChannel.scalingKeys.capacity() == 0);
 
   OZ_ASSERT(animation.channels.capacity() == 0);
 }

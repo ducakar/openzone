@@ -76,14 +76,14 @@ public:
 
   private:
 
-    lua_State* l; ///< %Lua state.
+    lua_State* l_; ///< %Lua state.
 
   private:
 
     /**
      * Create stack
      */
-    explicit Result(lua_State* l);
+    explicit Result(lua_State* l_);
 
     /**
      * Read a bool value at a given (1-based) stack index.
@@ -273,22 +273,22 @@ public:
 
   private:
 
-    lua_State*   l;      ///< %Lua state.
-    const Field* parent; ///< Parent field / global variable.
-    const char*  name;   ///< %String key.
-    int          index;  ///< Integer key.
+    lua_State*   l_;      ///< %Lua state.
+    const Field* parent_; ///< Parent field / global variable.
+    const char*  name_;   ///< %String key.
+    int          index_;  ///< Integer key.
 
   private:
 
     /**
      * Create accessor for string key.
      */
-    explicit Field(lua_State* l, const Field* parent, const char* name);
+    explicit Field(lua_State* l_, const Field* parent, const char* name);
 
     /**
      * Create accessor for integer key.
      */
-    explicit Field(lua_State* l, const Field* parent, int index);
+    explicit Field(lua_State* l_, const Field* parent, int index);
 
     /**
      * Recursively push all parent field values and finally this field value onto the stack.
@@ -330,10 +330,10 @@ public:
      * Push values onto the stack.
      */
     template <typename Value, typename... Tail>
-    void pushValue(Value value, Tail... tail) const
+    void pushValue(const Value& value, const Tail&... tail) const
     {
       pushValue(value);
-      pushValue(static_cast<Tail&&>(tail)...);
+      pushValue(tail...);
     }
 
     /**
@@ -423,21 +423,21 @@ public:
     /**
      * Access a field of the current field (should be a table).
      */
-    Field operator[](const char* name) const;
+    Field operator[](const char* name_) const;
 
     /**
      * Access a field of the current field (should be a table).
      */
-    Field operator[](int index) const;
+    Field operator[](int index_) const;
 
     /**
      * Call the current field (must be a function).
      */
     template <typename... Params>
-    Result operator()(Params... params) const
+    Result operator()(const Params&... params) const
     {
       push();
-      pushValue(static_cast<Params&&>(params)...);
+      pushValue(params...);
       return call(sizeof...(params));
     }
 
@@ -528,13 +528,13 @@ public:
     /**
      * Set metatable or remove it if null.
      */
-    void setMetatable(const char* name);
+    void setMetatable(const char* name_);
 
   };
 
 public:
 
-  lua_State* l = nullptr; ///< %Lua state escriptor.
+  lua_State* l_ = nullptr; ///< %Lua state escriptor.
 
 public:
 
@@ -582,22 +582,22 @@ public:
   /**
    * Read serialised Lua value and push it on the stack (recursively for tables).
    */
-  static void readValue(lua_State* l, Stream* is);
+  static void readValue(lua_State* l_, Stream* is);
 
   /**
    * Read Lua value from a JSON value and push it on the stack (recursively for tables).
    */
-  static void readValue(lua_State* l, const Json& json);
+  static void readValue(lua_State* l_, const Json& json);
 
   /**
    * Serialise Lua value at the top of the stack (recursively for tables).
    */
-  static void writeValue(lua_State* l, Stream* os);
+  static void writeValue(lua_State* l_, Stream* os);
 
   /**
    * Return Lua value at the top of the stack (recursively for tables) as a JSON value.
    */
-  static Json writeValue(lua_State* l);
+  static Json writeValue(lua_State* l_);
 
   /**
    * Load and execute a script.

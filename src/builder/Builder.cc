@@ -554,7 +554,7 @@ void Builder::packArchive(const char* name, bool useCompression, bool use7zip)
 
 int Builder::main(int argc, char** argv)
 {
-  config = Json::OBJECT;
+  builderConfig = Json::OBJECT;
 
   bool doCat          = false;
   bool doUI           = false;
@@ -743,9 +743,9 @@ int Builder::main(int argc, char** argv)
     OZ_ERROR("Failed to add directory '%s' to search path", srcDir.c());
   }
 
-  config.add("window.width", 400);
-  config.add("window.height", 40);
-  config.add("window.fullscreen", false);
+  builderConfig.add("window.width", 400);
+  builderConfig.add("window.height", 40);
+  builderConfig.add("window.fullscreen", false);
 
   context.init();
   compiler.init();
@@ -827,7 +827,7 @@ int Builder::main(int argc, char** argv)
 
   compiler.destroy();
   context.destroy();
-  config.clear();
+  builderConfig.clear();
 
   ImageBuilder::destroy();
   File::destroy();

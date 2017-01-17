@@ -268,7 +268,6 @@ public:
   }
 
   const File* preload();
-  void upload(const Vertex* vertices, int nVertices, uint usage) const;
   void load();
   void unload();
 

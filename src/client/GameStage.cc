@@ -484,7 +484,7 @@ void GameStage::init()
   Log::println("Initialising GameStage {");
   Log::indent();
 
-  File statePath = config["dir.data"].get(String::EMPTY) + "/state";
+  File statePath = appConfig["dir.data"].get(String::EMPTY) + "/state";
 
   statePath.mkdir();
 

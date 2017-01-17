@@ -435,7 +435,7 @@ void Input::update()
 
 void Input::init()
 {
-  File configFile = config["dir.config"].get(File::CONFIG) + "/input.json";
+  File configFile = appConfig["dir.config"].get(File::CONFIG) + "/input.json";
 
   Log::print("Initialising Input from '%s' ...", configFile.c());
 
@@ -514,7 +514,7 @@ void Input::init()
 
 void Input::destroy()
 {
-  File configFile = config["dir.config"].get(File::CONFIG) + "/input.json";
+  File configFile = appConfig["dir.config"].get(File::CONFIG) + "/input.json";
 
   Log::print("Writing Input configuration to '%s' ...", configFile.c());
 

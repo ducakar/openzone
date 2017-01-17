@@ -130,49 +130,49 @@ bool Input::loadConfig(const File& file)
 {
   config = Config();
 
-  Json root(file);
+  Json rootJson(file);
 
-  if (root.isNull()) {
+  if (rootJson.isNull()) {
     return false;
   }
 
-  Json keyboard = root["keyboard"];
-  Json mouse    = root["mouse"];
+  Json keyboardJson = rootJson["keyboard"];
+  Json mouseJson    = rootJson["mouse"];
 
-  config.keyboard.sensitivity = keyboard["sensitivity"].get(config.keyboard.sensitivity);
-  config.keyboard.leftKey     = keyboard["leftKey"].get(config.keyboard.leftKey);
-  config.keyboard.rightKey    = keyboard["rightKey"].get(config.keyboard.rightKey);
-  config.keyboard.downKey     = keyboard["downKey"].get(config.keyboard.downKey);
-  config.keyboard.upKey       = keyboard["upKey"].get(config.keyboard.upKey);
-  config.keyboard.inKey       = keyboard["inKey"].get(config.keyboard.inKey);
-  config.keyboard.outKey      = keyboard["outKey"].get(config.keyboard.outKey);
+  config.keyboard.sensitivity = keyboardJson["sensitivity"].get(config.keyboard.sensitivity);
+  config.keyboard.leftKey     = keyboardJson["leftKey"].get(config.keyboard.leftKey);
+  config.keyboard.rightKey    = keyboardJson["rightKey"].get(config.keyboard.rightKey);
+  config.keyboard.downKey     = keyboardJson["downKey"].get(config.keyboard.downKey);
+  config.keyboard.upKey       = keyboardJson["upKey"].get(config.keyboard.upKey);
+  config.keyboard.inKey       = keyboardJson["inKey"].get(config.keyboard.inKey);
+  config.keyboard.outKey      = keyboardJson["outKey"].get(config.keyboard.outKey);
 
-  config.mouse.sensitivity    = mouse["sensitivity"].get(config.mouse.sensitivity);
-  config.mouse.smoothing      = mouse["smoothing"].get(config.mouse.smoothing);
-  config.mouse.isRaw          = mouse["isRaw"].get(config.mouse.isRaw);
+  config.mouse.sensitivity    = mouseJson["sensitivity"].get(config.mouse.sensitivity);
+  config.mouse.smoothing      = mouseJson["smoothing"].get(config.mouse.smoothing);
+  config.mouse.isRaw          = mouseJson["isRaw"].get(config.mouse.isRaw);
 
   return true;
 }
 
 bool Input::saveConfig(const File& file)
 {
-  Json keyboard = Json::OBJECT;
-  Json mouse    = Json::OBJECT;
-  Json root     = {keyboard, mouse};
+  Json keyboardJson = Json::OBJECT;
+  Json mouseJson    = Json::OBJECT;
+  Json rootJson     = {keyboardJson, mouseJson};
 
-  keyboard.add("sensitivity", config.keyboard.sensitivity);
-  keyboard.add("leftKey", config.keyboard.leftKey);
-  keyboard.add("rightKey", config.keyboard.rightKey);
-  keyboard.add("downKey", config.keyboard.downKey);
-  keyboard.add("upKey", config.keyboard.upKey);
-  keyboard.add("inKey", config.keyboard.inKey);
-  keyboard.add("outKey", config.keyboard.outKey);
+  keyboardJson.add("sensitivity", config.keyboard.sensitivity);
+  keyboardJson.add("leftKey", config.keyboard.leftKey);
+  keyboardJson.add("rightKey", config.keyboard.rightKey);
+  keyboardJson.add("downKey", config.keyboard.downKey);
+  keyboardJson.add("upKey", config.keyboard.upKey);
+  keyboardJson.add("inKey", config.keyboard.inKey);
+  keyboardJson.add("outKey", config.keyboard.outKey);
 
-  mouse.add("sensitivity", config.mouse.sensitivity);
-  mouse.add("smoothing", config.mouse.smoothing);
-  mouse.add("isRaw", config.mouse.isRaw);
+  mouseJson.add("sensitivity", config.mouse.sensitivity);
+  mouseJson.add("smoothing", config.mouse.smoothing);
+  mouseJson.add("isRaw", config.mouse.isRaw);
 
-  return root.save(file);
+  return rootJson.save(file);
 }
 
 }

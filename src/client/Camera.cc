@@ -80,9 +80,9 @@ void Camera::updateReferences()
   vehicle    = vehicleObj == nullptr ? -1 : botObj->parent;
 
   for (int i = 0; i < switchableUnits.size();) {
-    const Bot* unit = orbis.obj<const Bot>(switchableUnits[i]);
+    const Bot* switchableUnit = orbis.obj<const Bot>(switchableUnits[i]);
 
-    if (unit == nullptr) {
+    if (switchableUnit == nullptr) {
       switchableUnits.erase(i);
     }
     else {
@@ -352,8 +352,8 @@ void Camera::init()
   centreX       = Window::width() / 2;
   centreY       = Window::height() / 2;
 
-  float angle   = Math::rad(config.include("camera.angle", 80.0f).get(0.0f));
-  aspect        = config.include("camera.aspect", 0.0f).get(0.0f);
+  float angle   = Math::rad(appConfig.include("camera.angle", 80.0f).get(0.0f));
+  aspect        = appConfig.include("camera.aspect", 0.0f).get(0.0f);
   isFixedAspect = aspect != 0.0f;
   aspect        = isFixedAspect ? aspect : float(width) / float(height);
   coeff         = Math::tan(angle / 2.0f);

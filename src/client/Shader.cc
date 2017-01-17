@@ -101,11 +101,7 @@ void Transform::setColour(float r, float g, float b, float a) const
 
 Transform tf;
 
-Shader::Light::Light(const Point& pos_, const Vec4& colour_) :
-  pos(pos_), colour(colour_)
-{}
-
-void Shader::compileShader(uint shaderId, const String& defines, const File& file) const
+void Shader::compileShader(uint shaderId, const File& file) const
 {
   Stream is = file.read();
 
@@ -300,14 +296,14 @@ void Shader::init()
 {
   Log::print("Initialising Shader ...");
 
-  doVertexEffects = OZ_CONF_INC(config, "shader.vertexEffects", true, "Perform vertex shader "
+  doVertexEffects = OZ_CONF_INC(appConfig, "shader.vertexEffects", true, "Perform vertex shader "
                                 "effects (e.g. trees swaying in wind).").get(false);
-  doEnvMap        = OZ_CONF_INC(config, "shader.envMap", true, "Fake reflections, makes nice shiny "
-                                "surfaces.").get(false);
-  doBumpMap       = OZ_CONF_INC(config, "shader.bumpMap", true, "Visual effect that renders (fake) "
-                                "relief on flat surfaces.").get(false);
-  doPostprocess   = OZ_CONF_INC(config, "shader.postprocess", false, "Postprocesses image and add "
-                                "bloom effect. Severly impacts performance.").get(false);
+  doEnvMap        = OZ_CONF_INC(appConfig, "shader.envMap", true, "Fake reflections, makes nice "
+                                "shiny surfaces.").get(false);
+  doBumpMap       = OZ_CONF_INC(appConfig, "shader.bumpMap", true, "Visual effect that renders "
+                                "(fake) relief on flat surfaces.").get(false);
+  doPostprocess   = OZ_CONF_INC(appConfig, "shader.postprocess", false, "Postprocesses image and "
+                                "add bloom effect. Severly impacts performance.").get(false);
 
 #ifdef OZ_GL_ES
   doPostprocess = false;
@@ -394,13 +390,13 @@ void Shader::init()
         uint id = glCreateShader(GL_VERTEX_SHADER);
 
         vertShaders.add(file.baseName(), id);
-        compileShader(id, defines, file);
+        compileShader(id, file);
       }
       else if (file.hasExtension("frag")) {
         uint id = glCreateShader(GL_FRAGMENT_SHADER);
 
         fragShaders.add(file.baseName(), id);
-        compileShader(id, defines, file);
+        compileShader(id, file);
       }
     }
 

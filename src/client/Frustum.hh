@@ -34,24 +34,29 @@ class Frustum
 {
 private:
 
-  Plane left;
-  Plane right;
-  Plane down;
-  Plane up;
-  Plane front;
+  Plane left_;
+  Plane right_;
+  Plane down_;
+  Plane up_;
+  Plane front_;
+  float radius_;
 
 public:
 
-  float radius;
+  OZ_ALWAYS_INLINE
+  float radius() const
+  {
+    return radius_;
+  }
 
   OZ_ALWAYS_INLINE
   bool isVisible(const Point& p, float radius = 0.0f) const
   {
-    return p * left  > -radius &&
-           p * right > -radius &&
-           p * up    > -radius &&
-           p * down  > -radius &&
-           p * front < +radius;
+    return p * left_  > -radius &&
+           p * right_ > -radius &&
+           p * up_    > -radius &&
+           p * down_  > -radius &&
+           p * front_ < +radius;
   }
 
   OZ_ALWAYS_INLINE
@@ -60,11 +65,11 @@ public:
     Point mins = Point(x, y, -Orbis::DIM);
     Point maxs = Point(x, y, +Orbis::DIM);
 
-    return (mins * left  > -radius || maxs * left  > -radius) &&
-           (mins * right > -radius || maxs * right > -radius) &&
-           (mins * up    > -radius || maxs * up    > -radius) &&
-           (mins * down  > -radius || maxs * down  > -radius) &&
-           (mins * front < +radius || maxs * front < +radius);
+    return (mins * left_  > -radius || maxs * left_  > -radius) &&
+           (mins * right_ > -radius || maxs * right_ > -radius) &&
+           (mins * up_    > -radius || maxs * up_    > -radius) &&
+           (mins * down_  > -radius || maxs * down_  > -radius) &&
+           (mins * front_ < +radius || maxs * front_ < +radius);
   }
 
   // get min and max index for cells per each axis, which should be included in PVS

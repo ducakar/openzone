@@ -158,8 +158,7 @@ const char* Stream::readSkip(int count)
     OZ_ERROR("oz::Stream: Position overflow");
   }
   else if (pos_ > end_) {
-    OZ_ERROR("oz::Stream: Overrun for %d B during a read of %d B",
-             int(pos_ - end_), count);
+    OZ_ERROR("oz::Stream: Overrun for %d B during a read of %d B", int(pos_ - end_), count);
   }
   return oldPos;
 }
@@ -177,8 +176,8 @@ char* Stream::writeSkip(int count)
   }
   else if (pos_ > end_) {
     if (flags_ & BUFFERED) {
+      size_t oldLength = oldPos - begin_;
       size_t newLength = pos_ - begin_;
-      size_t length    = newLength - count;
       size_t size      = end_ - begin_;
 
       size = size == 0 ? 4096 : size + size / 2;
@@ -187,18 +186,17 @@ char* Stream::writeSkip(int count)
       char* newData = new char[size];
 
       if (begin_ != nullptr) {
-        memcpy(newData, begin_, length);
+        memcpy(newData, begin_, oldLength);
         delete[] begin_;
       }
 
       begin_ = newData;
       end_   = newData + size;
       pos_   = newData + newLength;
-      oldPos = newData + length;
+      oldPos = newData + oldLength;
     }
     else {
-      OZ_ERROR("oz::Stream: Overrun for %d B during a write of %d B",
-               int(pos_ - end_), count);
+      OZ_ERROR("oz::Stream: Overrun for %d B during a write of %d B", int(pos_ - end_), count);
     }
   }
   return oldPos;
@@ -484,8 +482,7 @@ String Stream::readLine()
 
   int length = int(pos_ - begin);
 
-  pos_ += (pos_ < end_) +
-               (pos_ + 2 == end_ && pos_[0] == '\r' && pos_[1] == '\n');
+  pos_ += (pos_ < end_) + (pos_ + 2 == end_ && pos_[0] == '\r' && pos_[1] == '\n');
 
   return String(begin, length);
 }

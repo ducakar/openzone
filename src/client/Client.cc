@@ -467,29 +467,29 @@ int Client::init(int argc, char** argv)
 
   // Load configuration.
   File configFile = configDir / "client.json";
-  if (config.load(configFile) && String::equals(config["_version"].get(""), OZ_VERSION)) {
+  if (appConfig.load(configFile) && String::equals(appConfig["_version"].get(""), OZ_VERSION)) {
     Log::printEnd("Configuration read from '%s'", configFile.c());
     initFlags |= INIT_CONFIG;
   }
   else {
     Log::println("Invalid configuration file version, default settings used.");
 
-    config = Json::OBJECT;
-    config.add("_version", OZ_VERSION).get(String::EMPTY);
+    appConfig = Json::OBJECT;
+    appConfig.add("_version", OZ_VERSION).get(String::EMPTY);
   }
 
-  config.add("dir.config", configDir).get(String::EMPTY);
-  config.add("dir.data", dataDir).get(String::EMPTY);
-  config.include("dir.pictures", picturesDir).get(String::EMPTY);
-  config.include("dir.music", musicDir).get(String::EMPTY);
-  config.include("dir.prefix", prefixDir).get(String::EMPTY);
+  appConfig.add("dir.config", configDir).get(String::EMPTY);
+  appConfig.add("dir.data", dataDir).get(String::EMPTY);
+  appConfig.include("dir.pictures", picturesDir).get(String::EMPTY);
+  appConfig.include("dir.music", musicDir).get(String::EMPTY);
+  appConfig.include("dir.prefix", prefixDir).get(String::EMPTY);
 
-  windowWidth  = config.include("window.windowWidth",  1280).get(0);
-  windowHeight = config.include("window.windowHeight", 720 ).get(0);
-  screenWidth  = config.include("window.screenWidth",  0   ).get(0);
-  screenHeight = config.include("window.screenHeight", 0   ).get(0);
+  windowWidth  = appConfig.include("window.windowWidth",  1280).get(0);
+  windowHeight = appConfig.include("window.windowHeight", 720 ).get(0);
+  screenWidth  = appConfig.include("window.screenWidth",  0   ).get(0);
+  screenHeight = appConfig.include("window.screenHeight", 0   ).get(0);
 
-  bool fullscreen = config.include("window.fullscreen", true).get(false);
+  bool fullscreen = appConfig.include("window.fullscreen", true).get(false);
 
   if (!Window::create("OpenZone " OZ_VERSION,
                       fullscreen ? screenWidth : windowWidth,
@@ -521,8 +521,8 @@ int Client::init(int argc, char** argv)
 
 #if !defined(__ANDROID__) && !defined(__native_client__)
 
-  File globalDataDir = config["dir.prefix"].get(String::EMPTY) + "/share/openzone";
-  File userMusicDir  = config["dir.music"].get(File::MUSIC);
+  File globalDataDir = appConfig["dir.prefix"].get(String::EMPTY) + "/share/openzone";
+  File userMusicDir  = appConfig["dir.music"].get(File::MUSIC);
 
   if (userMusicDir.mountAt("/userMusic", true)) {
     Log::println("%s [mounted on /userMusic]", userMusicDir.c());
@@ -559,10 +559,10 @@ int Client::init(int argc, char** argv)
   Log::unindent();
   Log::println("}");
 
-  config.include("lingua", "AUTO").get(String::EMPTY);
+  appConfig.include("lingua", "AUTO").get(String::EMPTY);
 
   if (language.isEmpty()) {
-    language = config["lingua"].get("AUTO");
+    language = appConfig["lingua"].get("AUTO");
   }
   if (language == "AUTO") {
     language = Lingua::detectLanguage("en");
@@ -578,19 +578,19 @@ int Client::init(int argc, char** argv)
     Log::printEnd(" Failed");
   }
 
-  config.include("seed", "TIME");
+  appConfig.include("seed", "TIME");
 
   int seed;
 
-  if (config["seed"].type() == Json::STRING) {
-    if (config["seed"].get(String::EMPTY) != "TIME") {
+  if (appConfig["seed"].type() == Json::STRING) {
+    if (appConfig["seed"].get(String::EMPTY) != "TIME") {
       OZ_ERROR("Configuration variable 'sees' must be either \"TIME\" or an integer");
     }
 
     seed = int(Time::epoch());
   }
   else {
-    seed = config["seed"].get(42);
+    seed = appConfig["seed"].get(42);
   }
 
   if (isBenchmark) {
@@ -605,7 +605,7 @@ int Client::init(int argc, char** argv)
   sound.initLibs();
 
   initFlags |= INIT_LIBRARY;
-  liber.init(config["dir.music"].get(""));
+  liber.init(appConfig["dir.music"].get(""));
 
   Font::init();
   initFlags |= INIT_SDL_TTF;
@@ -700,19 +700,19 @@ void Client::shutdown()
     Window::destroy();
   }
   if (initFlags & INIT_MAIN_LOOP) {
-    File configFile = config["dir.config"].get(File::CONFIG) + "/client.json";
+    File configFile = appConfig["dir.config"].get(File::CONFIG) + "/client.json";
 
     if (!(initFlags & INIT_CONFIG)) {
-      config.exclude("dir.config");
-      config.exclude("dir.data");
+      appConfig.exclude("dir.config");
+      appConfig.exclude("dir.data");
 
       Log::print("Writing configuration to '%s' ...", configFile.c());
-      config.save(configFile, CONFIG_FORMAT);
+      appConfig.save(configFile, CONFIG_FORMAT);
       Log::printEnd(" OK");
     }
   }
 
-  config.clear(initFlags & INIT_CONFIG);
+  appConfig.clear(initFlags & INIT_CONFIG);
 
   File::destroy();
 

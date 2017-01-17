@@ -35,23 +35,23 @@ void CinematicText::onRealign()
   y     = camera.height / 12;
   width = (camera.width * 3) / 4;
 
-  text.setWidth(width);
+  text_.setWidth(width);
 }
 
 void CinematicText::onDraw()
 {
-  text.draw(this);
+  text_.draw(this);
 }
 
 CinematicText::CinematicText() :
-  Area(600, 400), text(0, 0, 600, Area::ALIGN_NONE, &style.titleFont, "")
+  Area(600, 400), text_(0, 0, 600, Area::ALIGN_NONE, &style.titleFont, "")
 {
   flags |= PINNED_BIT;
 }
 
-void CinematicText::set(const char* title)
+void CinematicText::set(const char* text)
 {
-  text.setText("%s", title);
+  text_.setText("%s", text);
 }
 
 }

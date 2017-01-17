@@ -176,20 +176,22 @@ void Area::show(bool doShow)
   }
 }
 
-Pos2 Area::align(int localX, int localY, int width, int height) const
+Pos2 Area::alignChild(int localChildX, int localChildY, int childWidth, int childHeight) const
 {
   return {
-    localX == CENTRE ? x + (this->width - width) / 2 :
-    localX < 0 ? x + this->width - width + localX : x + localX,
-    localY == CENTRE ? y + (this->height - height) / 2 :
-    localY < 0 ? y + this->height - height + localY : y + localY
+    localChildX == CENTRE ? x + (width - childWidth) / 2
+    : localChildX < 0 ? x + width - childWidth + localChildX
+    : x + localChildX,
+    localChildY == CENTRE ? y + (height - childHeight) / 2
+    : localChildY < 0 ? y + height - childHeight + localChildY
+    : y + localChildY
   };
 }
 
 void Area::realign()
 {
   if (parent != nullptr) {
-    Pos2 pos = parent->align(defaultX, defaultY, width, height);
+    Pos2 pos = parent->alignChild(defaultX, defaultY, width, height);
 
     x = pos.x;
     y = pos.y;
@@ -202,20 +204,20 @@ void Area::realign()
   }
 }
 
-void Area::move(int moveX, int moveY)
+void Area::move(int dx, int dy)
 {
   if (parent == nullptr) {
     return;
   }
 
-  moveX = clamp(moveX, parent->x - x, parent->x + parent->width  - x - width);
-  moveY = clamp(moveY, parent->y - y, parent->y + parent->height - y - height);
+  dx = clamp(dx, parent->x - x, parent->x + parent->width  - x - width);
+  dy = clamp(dy, parent->y - y, parent->y + parent->height - y - height);
 
-  x += moveX;
-  y += moveY;
+  x += dx;
+  y += dy;
 
   for (Area& child : children) {
-    child.move(moveX, moveY);
+    child.move(dx, dy);
   }
 }
 

@@ -31,13 +31,13 @@ void Class::scanObjClass(const char* className)
   String name       = className;
   File   configFile = "@class/" + name + ".json";
 
-  if (!config.load(configFile)) {
+  if (!builderConfig.load(configFile)) {
     OZ_ERROR("Failed to load '%s'", configFile.c());
   }
 
-  context.usedModels.include(config["imagoModel"].get(""), name + " (Object class)");
+  context.usedModels.include(builderConfig["imagoModel"].get(""), name + " (Object class)");
 
-  const Json& soundsConfig = config["audioSounds"];
+  const Json& soundsConfig = builderConfig["audioSounds"];
   for (const auto& sound : soundsConfig.objectCIter()) {
     context.usedSounds.include(sound.value.get("?"), name + " (Object class)");
   }

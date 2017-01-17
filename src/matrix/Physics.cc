@@ -488,13 +488,13 @@ void Physics::updateEnt(Entity* ent, const Vec3& localMove)
     collider.translate(ent, localMove);
 
     if (collider.hit.obj != nullptr) {
-      Object* obj = collider.hit.obj;
+      Object* sObj = collider.hit.obj;
 
-      if (obj->flags & Object::DYNAMIC_BIT) {
-        Dynamic* dyn = static_cast<Dynamic*>(obj);
+      if (sObj->flags & Object::DYNAMIC_BIT) {
+        Dynamic* sDyn = static_cast<Dynamic*>(sObj);
 
-        dyn->momentum -= 8.0f * collider.hit.normal;
-        dyn->flags    &= ~Object::DISABLED_BIT;
+        sDyn->momentum -= 8.0f * collider.hit.normal;
+        sDyn->flags    &= ~Object::DISABLED_BIT;
       }
     }
 

@@ -72,7 +72,7 @@ void CinematicProxy::executeSequence(const File& file, const Lingua* missionLing
       step.colour = colourArray.get(Mat4::ID);
     }
 
-    step.code = stepConfig["exec"].get("");
+    step.code = stepConfig["exec"].get(String::EMPTY);
 
     const Json& trackConfig = stepConfig["track"];
     const String& track = trackConfig.get(String::EMPTY);
@@ -145,7 +145,7 @@ void CinematicProxy::begin()
   beginPos    = camera.p;
   beginColour = camera.colour;
 
-  cinematicText->set(title.substring(0, nTitleChars));
+  cinematicText->set(text.substring(0, textPos));
 }
 
 void CinematicProxy::end()
@@ -155,8 +155,8 @@ void CinematicProxy::end()
   ui::ui.musicPlayer->enable(true);
   ui::ui.galileoFrame->enable(true);
 
-  title       = "";
-  nTitleChars = 0;
+  text       = "";
+  textPos = 0;
 
   stepTime    = 0.0f;
 
@@ -188,15 +188,12 @@ void CinematicProxy::update()
   camera.colour = Math::mix(beginColour, step.colour, t);
   camera.align();
 
-  if (nTitleChars < title.length()) {
-    nTitleChars = min(nTitleChars + 1, title.length());
+  if (textPos < text.length()) {
+    int nBytes = int(mblen(&text[textPos], text.length() - textPos));
 
-    // Take all bytes of a UTF-8 character.
-    while (nTitleChars < title.length() && (title[nTitleChars - 1] & title[nTitleChars] & 0x80)) {
-      ++nTitleChars;
-    }
+    textPos += nBytes <= 0 ? 1 : nBytes;
 
-    cinematicText->set(title.substring(0, nTitleChars));
+    cinematicText->set(text.substring(0, textPos));
   }
 
   stepTime += Timer::TICK_TIME;
@@ -234,8 +231,8 @@ void CinematicProxy::update()
     }
 
     if (!step.title.isEmpty()) {
-      title       = step.title;
-      nTitleChars = 0;
+      text       = step.title;
+      textPos = 0;
 
       cinematicText->set("");
     }
@@ -248,8 +245,8 @@ void CinematicProxy::reset()
   beginPos    = Point::ORIGIN;
   beginColour = Mat4::ID;
 
-  title       = "";
-  nTitleChars = 0;
+  text       = "";
+  textPos = 0;
 
   stepTime    = 0.0f;
 
@@ -265,8 +262,8 @@ void CinematicProxy::read(Stream* is)
   beginPos    = is->read<Point>();
   beginColour = is->read<Mat4>();
 
-  title       = is->readString();
-  nTitleChars = is->readInt();
+  text       = is->readString();
+  textPos = is->readInt();
 
   stepTime    = is->readFloat();
   prevState   = is->readInt();
@@ -299,8 +296,8 @@ void CinematicProxy::write(Stream* os) const
   os->write<Point>(beginPos);
   os->write<Mat4>(beginColour);
 
-  os->writeString(title);
-  os->writeInt(nTitleChars);
+  os->writeString(text);
+  os->writeInt(textPos);
 
   os->writeFloat(stepTime);
   os->writeInt(prevState);

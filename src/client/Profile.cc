@@ -33,7 +33,7 @@ namespace client
 
 void Profile::save()
 {
-  File profileFile = config["dir.config"].get(String::EMPTY) + "/profile.json";
+  File profileFile = appConfig["dir.config"].get(String::EMPTY) + "/profile.json";
   Json profileConfig = Json::OBJECT;
 
   profileConfig.add("_version", OZ_VERSION);
@@ -53,7 +53,7 @@ void Profile::save()
 
 void Profile::init()
 {
-  File profileFile = config["dir.config"].get(String::EMPTY) + "/profile.json";
+  File profileFile = appConfig["dir.config"].get(String::EMPTY) + "/profile.json";
   Json profileConfig(profileFile);
 
   name       = profileConfig["name"].get("");
@@ -71,11 +71,11 @@ void Profile::init()
       wchar_t wcUserName[128];
       char    mbUserName[128];
 
-      mbstowcs(wcUserName, userName, 128);
+      mbstowcs(wcUserName, userName, 127);
       wcUserName[0] = wchar_t(towupper(wint_t(wcUserName[0])));
       wcUserName[127] = L'\0';
 
-      wcstombs(mbUserName, wcUserName, 128);
+      wcstombs(mbUserName, wcUserName, 127);
       mbUserName[127] = '\0';
 
       name = mbUserName;

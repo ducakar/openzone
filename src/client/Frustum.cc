@@ -28,10 +28,10 @@ namespace client
 
 void Frustum::getExtrems(Span& span, const Point& p)
 {
-  span.minX = max(int((p.x - radius + Orbis::DIM) / Cell::SIZE), 0);
-  span.minY = max(int((p.y - radius + Orbis::DIM) / Cell::SIZE), 0);
-  span.maxX = min(int((p.x + radius + Orbis::DIM) / Cell::SIZE), Orbis::CELLS - 1);
-  span.maxY = min(int((p.y + radius + Orbis::DIM) / Cell::SIZE), Orbis::CELLS - 1);
+  span.minX = max(int((p.x - radius_ + Orbis::DIM) / Cell::SIZE), 0);
+  span.minY = max(int((p.y - radius_ + Orbis::DIM) / Cell::SIZE), 0);
+  span.maxX = min(int((p.x + radius_ + Orbis::DIM) / Cell::SIZE), Orbis::CELLS - 1);
+  span.maxY = min(int((p.y + radius_ + Orbis::DIM) / Cell::SIZE), Orbis::CELLS - 1);
 }
 
 void Frustum::update()
@@ -55,13 +55,13 @@ void Frustum::update()
   float dUp    = camera.p * nUp;
   float dFront = camera.p * nFront + camera.maxDist;
 
-  left  = Plane(nLeft,  dLeft );
-  right = Plane(nRight, dRight);
-  down  = Plane(nDown,  dDown );
-  up    = Plane(nUp,    dUp   );
-  front = Plane(nFront, dFront);
+  left_  = Plane(nLeft,  dLeft );
+  right_ = Plane(nRight, dRight);
+  down_  = Plane(nDown,  dDown );
+  up_    = Plane(nUp,    dUp   );
+  front_ = Plane(nFront, dFront);
 
-  radius = camera.maxDist / cx;
+  radius_ = camera.maxDist / cx;
 }
 
 Frustum frustum;

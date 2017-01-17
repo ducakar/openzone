@@ -26,7 +26,7 @@ namespace oz
 {
 
 BSP::BSP(const char* name_, int id_) :
-  name(name_), id(id_)
+  data(nullptr), name(name_), id(id_)
 {}
 
 void BSP::load()
@@ -73,7 +73,7 @@ void BSP::load()
   size += Alloc::alignUp(nEntities     * sizeof(entities[0]));
   size += Alloc::alignUp(nBoundObjects * sizeof(boundObjects[0]));
 
-  char* data = new char[size];
+  data = new char[size];
 
   OZ_ASSERT(data == Alloc::alignUp(data));
 
@@ -189,7 +189,7 @@ void BSP::load()
 
 void BSP::unload()
 {
-  delete[] reinterpret_cast<char*>(planes);
+  delete[] data;
 }
 
 }

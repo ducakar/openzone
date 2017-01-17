@@ -29,6 +29,8 @@ static LuaMatrix& lua = luaMatrix;
 
 String LuaMatrix::nameGenCall(const char* functionName)
 {
+  lua_State* l = l_;
+
   ms.self     = nullptr;
   ms.user     = nullptr;
   ms.obj      = nullptr;
@@ -60,6 +62,8 @@ String LuaMatrix::nameGenCall(const char* functionName)
 
 bool LuaMatrix::objectCall(const char* functionName, Object* self, Bot* user)
 {
+  lua_State* l = l_;
+
   ms.self     = self;
   ms.user     = user;
   ms.obj      = self;
@@ -92,6 +96,8 @@ bool LuaMatrix::objectCall(const char* functionName, Object* self, Bot* user)
 
 void LuaMatrix::registerObject(int index)
 {
+  lua_State* l = l_;
+
   // We cannot assume that `ozLocalData` exists at index 1 as this function may be called from a
   // handler script creating an object.
   l_getglobal("ozLocalData");
@@ -102,6 +108,8 @@ void LuaMatrix::registerObject(int index)
 
 void LuaMatrix::unregisterObject(int index)
 {
+  lua_State* l = l_;
+
   // We cannot assume that `ozLocalData` exists at index 1 as this function may be called from a
   // handler script creating an object.
   l_getglobal("ozLocalData");
@@ -112,6 +120,8 @@ void LuaMatrix::unregisterObject(int index)
 
 void LuaMatrix::read(Stream* is)
 {
+  lua_State* l = l_;
+
   OZ_ASSERT(l_gettop() == 1);
   OZ_ASSERT((l_pushnil(), true));
   OZ_ASSERT(!l_next(1));
@@ -119,7 +129,7 @@ void LuaMatrix::read(Stream* is)
   int index = is->readInt();
 
   while (index != -1) {
-    readValue(l, is);
+    readValue(l_, is);
 
     l_rawseti(1, index);
 
@@ -129,6 +139,8 @@ void LuaMatrix::read(Stream* is)
 
 void LuaMatrix::write(Stream* os)
 {
+  lua_State* l = l_;
+
   OZ_ASSERT(l_gettop() == 1);
 
   l_pushnil();
@@ -137,7 +149,7 @@ void LuaMatrix::write(Stream* os)
     OZ_ASSERT(l_type(-1) == LUA_TTABLE);
 
     os->writeInt(l_toint(-2));
-    writeValue(l, os);
+    writeValue(l_, os);
 
     l_pop(1);
   }
@@ -150,6 +162,7 @@ void LuaMatrix::init()
   Log::print("Initialising Matrix Lua ...");
 
   Lua::init("tsm");
+  lua_State* l = l_;
 
   ls.envName = "matrix";
   ms.structs.reserve(32);
@@ -450,7 +463,7 @@ void LuaMatrix::init()
   IMPORT_FUNC(ozFragIsVisibleFromSelf);
   IMPORT_FUNC(ozFragIsVisibleFromSelfEye);
 
-  importMatrixConstants(l);
+  importMatrixConstants(l_);
 
   l_newtable();
   l_setglobal("ozLocalData");
@@ -466,7 +479,9 @@ void LuaMatrix::init()
 
 void LuaMatrix::destroy()
 {
-  if (l == nullptr) {
+  lua_State* l = l_;
+
+  if (l_ == nullptr) {
     return;
   }
 

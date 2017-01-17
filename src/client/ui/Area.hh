@@ -117,7 +117,7 @@ public:
   /**
    * Calculate global (x, y) for given relative rectangle coordinates/dimension.
    */
-  Pos2 align(int localX, int localY, int width, int height) const;
+  Pos2 alignChild(int localX, int localY, int width, int height) const;
 
   /**
    * Fix position if parent has been resized.
@@ -127,7 +127,7 @@ public:
   /**
    * Move for `moveX` to the right and for `moveY` up.
    */
-  void move(int moveX, int moveY);
+  void move(int dx, int dy);
 
   void add(Area* area, int localX, int localY);
   void remove(Area* area);

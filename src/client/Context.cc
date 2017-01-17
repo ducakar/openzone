@@ -785,8 +785,8 @@ void Context::init()
 {
   Log::print("Initialising Context ...");
 
-  textureLod     = config.include("context.textureLod", 0).get(0);
-  dynamicLoading = config.include("context.dynamicLoading", false).get(false);
+  textureLod     = appConfig.include("context.textureLod", 0).get(0);
+  dynamicLoading = appConfig.include("context.dynamicLoading", false).get(false);
 
   if (!liber.imagines.isEmpty()) {
     imagoClasses = new Imago::CreateFunc*[liber.imagines.size()] {};

@@ -31,7 +31,7 @@ namespace oz
 namespace builder
 {
 
-extern Json config;
+extern Json builderConfig;
 
 }
 }

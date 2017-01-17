@@ -168,7 +168,7 @@ mark_as_advanced(MINGW32_LIBRARY)
 # Local libmad, faad and eSpeak headers.
 include_directories(SYSTEM etc/include)
 
-set(flags "-std=c++14 -ffast-math -fsized-deallocation -fvisibility-inlines-hidden")
+set(flags "-std=c++14 -fvisibility-inlines-hidden -fsized-deallocation -fstrict-enums -ffast-math")
 
 if(BUILD_SHARED_LIBS)
   set(flags "${flags} -fPIC")
@@ -185,10 +185,10 @@ endif()
 
 # Additional flags.
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
-  set(flags "${flags} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-date-time")
+  set(flags "${flags} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic")
   set(flags "${flags} -Wno-exit-time-destructors -Wno-global-constructors")
-  set(flags "${flags} -Wno-sign-conversion -Wno-double-promotion -Wno-float-equal")
-  set(flags "${flags} -Wno-padded -Wno-switch-enum")
+  set(flags "${flags} -Wno-date-time -Wno-padded -Wno-switch-enum -Wno-sign-conversion")
+  set(flags "${flags} -Wno-float-equal -Wno-double-promotion")
 else()
   set(flags "${flags} -Wall -Wextra -Wcast-align -Winit-self -Wlogical-op -Wundef -Winvalid-pch")
   set(flags "${flags} -Wmissing-declarations -Wnon-virtual-dtor -Woverloaded-virtual -Wformat=2")

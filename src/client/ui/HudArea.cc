@@ -183,7 +183,8 @@ void HudArea::drawBotStatus()
   const Weapon* weaponObj = orbis.obj<const Weapon>(bot->weapon);
 
   if (weaponObj != nullptr) {
-    Pos2 pos = align(style.botWeapon.x, style.botWeapon.y, style.botWeapon.w, style.botWeapon.h);
+    Pos2 pos = alignChild(style.botWeapon.x, style.botWeapon.y,
+                          style.botWeapon.w, style.botWeapon.h);
 
     shape.colour(style.colours.frame);
     shape.fill(pos.x, pos.y, style.botWeapon.w, style.botWeapon.h);
@@ -235,7 +236,7 @@ void HudArea::drawVehicleStatus()
     Text& roundsLabel = vehicleWeaponRounds[labelIndex];
     const Style::Area& areaStyle = style.vehicleWeapon[labelIndex];
 
-    Pos2 pos = align(areaStyle.x, areaStyle.y, areaStyle.w, areaStyle.h);
+    Pos2 pos = alignChild(areaStyle.x, areaStyle.y, areaStyle.w, areaStyle.h);
 
     if (i == vehicle->weapon) {
       shape.colour(style.colours.frame);

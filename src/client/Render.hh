@@ -91,8 +91,8 @@ private:
   int                         windowHeight;
   int                         frameWidth;
   int                         frameHeight;
-  float                       scale;
-  uint                        scaleFilter;
+  float                       frameScale;
+  uint                        frameScaleFilter;
 
   uint                        mainFrame;
   uint                        minGlowFrame;

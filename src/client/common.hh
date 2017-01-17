@@ -103,8 +103,7 @@ struct TexCoord
 extern const Json::Format CONFIG_FORMAT;
 
 extern Collider collider;
-extern Json     config;
-extern File     configDir;
+extern Json     appConfig;
 
 }
 }

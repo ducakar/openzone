@@ -137,9 +137,6 @@ private:
   {
     Point pos;
     Vec4  colour;
-
-    Light() = default;
-    explicit Light(const Point& pos, const Vec4& colour);
   };
 
 public:
@@ -171,7 +168,9 @@ private:
   float             lightingDistance;
   CaelumLight       caelumLight;
 
-  void compileShader(uint shaderId, const String& defines, const File& file) const;
+private:
+
+  void compileShader(uint shaderId, const File& file) const;
   void loadProgram(int id);
 
 public:

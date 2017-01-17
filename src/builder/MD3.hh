@@ -143,7 +143,7 @@ private:
   Mat4   meshTransf;
 
   void readAnimData();
-  void buildMesh(const char* name, int frame);
+  void buildMesh(const char* name, int meshFrame);
 
   void load();
   void save();
