@@ -87,9 +87,8 @@ protected:
     /**
      * Create hashtable iterator, initially pointing to the first hashtable element.
      */
-    explicit HashIterator(const HashSet& other) :
-      detail::IteratorBase<EntryType>(other.capacity_ == 0 ? nullptr : other.data_[0]),
-      table_(&other), index_(0)
+    explicit HashIterator(const HashSet& table) :
+      detail::IteratorBase<EntryType>(nullptr), table_(&table), index_(0)
     {
       while (elem_ == nullptr && index_ < table_->capacity_) {
         elem_ = table_->data_[index_];

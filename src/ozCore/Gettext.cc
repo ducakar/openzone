@@ -28,8 +28,9 @@
 namespace oz
 {
 
-static const uint GETTEXT_MAGIC = 0x950412de;
-static const int  MAX_MESSAGES  = 1 << 16;
+static const char* const ENV_VARS[]    = {"LC_ALL", "LC_MESSAGES", "LANG"};
+static const uint        GETTEXT_MAGIC = 0x950412de;
+static const int         MAX_MESSAGES  = 1 << 16;
 
 struct Gettext::Message
 {
@@ -40,7 +41,7 @@ struct Gettext::Message
 
 const char* Gettext::systemLanguage(const char* fallback)
 {
-  for (const char* envVar : {"LC_ALL", "LC_MESSAGES", "LANG"}) {
+  for (const char* envVar : ENV_VARS) {
     const char* lang = getenv(envVar);
 
     if (lang != nullptr && !String::isEmpty(lang)) {

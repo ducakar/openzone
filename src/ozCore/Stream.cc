@@ -138,13 +138,13 @@ void Stream::seek(int offset)
 
 void Stream::resize(int newSize)
 {
-  int size = min<int>(tell(), newSize);
+  int length = min<int>(tell(), newSize);
 
   char* newData = new char[newSize];
-  memcpy(newData, begin_, size);
+  memcpy(newData, begin_, length);
   delete[] begin_;
 
-  pos_   = newData + size;
+  pos_   = newData + length;
   begin_ = newData;
   end_   = newData + newSize;
 }

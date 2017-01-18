@@ -107,8 +107,8 @@ protected:
      * Create chain iterator, initially pointing to a given element.
      */
     OZ_ALWAYS_INLINE
-    explicit ChainIterator(const Chain& other) :
-      detail::IteratorBase<ElemType>(other.firstElem_)
+    explicit ChainIterator(const Chain& chain) :
+      detail::IteratorBase<ElemType>(chain.firstElem_)
     {}
 
     /**
