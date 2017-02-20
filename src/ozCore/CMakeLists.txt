@@ -51,7 +51,6 @@ add_library(ozCore
   Vec4.hh
   Alloc.cc
   Bitset.cc
-  CallOnce.cc
   EnumMap.cc
   File.cc
   Gettext.cc

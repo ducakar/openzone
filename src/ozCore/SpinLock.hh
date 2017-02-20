@@ -93,6 +93,17 @@ public:
     __atomic_clear(&isLocked_, __ATOMIC_RELEASE);
   }
 
+  /**
+   * Wrap a (lambda) function with the spin lock.
+   */
+  template <typename Function>
+  void operator<<(Function function)
+  {
+    lock();
+    function();
+    unlock();
+  }
+
 };
 
 }

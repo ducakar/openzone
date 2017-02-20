@@ -67,7 +67,7 @@ Mutex::~Mutex()
   free(descriptor_);
 }
 
-void Mutex::lock() const
+void Mutex::lock()
 {
 #ifdef _WIN32
   WaitForSingleObject(descriptor_->mutex, INFINITE);
@@ -76,7 +76,7 @@ void Mutex::lock() const
 #endif
 }
 
-bool Mutex::tryLock() const
+bool Mutex::tryLock()
 {
 #ifdef _WIN32
   return WaitForSingleObject(descriptor_->mutex, 0) == WAIT_OBJECT_0;
@@ -85,7 +85,7 @@ bool Mutex::tryLock() const
 #endif
 }
 
-void Mutex::unlock() const
+void Mutex::unlock()
 {
 #ifdef _WIN32
   ReleaseMutex(descriptor_->mutex);

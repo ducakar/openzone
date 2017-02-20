@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "common.hh"
+#include "SpinLock.hh"
 
 namespace oz
 {
@@ -40,15 +40,10 @@ namespace oz
  */
 class CallOnce
 {
-public:
-
-  /// %Function type.
-  typedef void Function();
-
 private:
 
-  volatile bool hasEntered_  = false; ///< Flipped to true when function starts executing.
-  volatile bool hasFinished_ = false; ///< Flipped to true when function finishes.
+  SpinLock      lock_;              ///< Lock wrapping the call.
+  volatile bool wasCalled_ = false; ///< Flipped to true when the function finishes.
 
 public:
 
@@ -70,14 +65,23 @@ public:
   /**
    * Call function if this is the first call on this object.
    *
-   * The `call()` function only executes the given function first time it is called on this object.
-   * Internal locking mechanism prevents race conditions when this is done from two threads
-   * simultaneously.
-   *
-   * If `function` is null, this object is just set as used, as if it would have already called a
-   * function.
+   * This function is implemented as a typical double-checked lock and guarantees that the function
+   * is called only once even when called simultanueusly from two threads.
    */
-  void call(Function* function);
+  template <typename Function>
+  void operator<<(Function function)
+  {
+    if (!wasCalled_) {
+      lock_.lock();
+
+      if (!wasCalled_) {
+        function();
+        wasCalled_ = true;
+      }
+
+      lock_.unlock();
+    }
+  }
 
 };
 

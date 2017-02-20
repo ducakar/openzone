@@ -74,7 +74,7 @@ public:
    * @note
    * Locking a mutex that is already locked by the current thread results in undefined behaviour.
    */
-  void lock() const;
+  void lock();
 
   /**
    * Lock if not already locked.
@@ -84,7 +84,7 @@ public:
    *
    * @return True on success.
    */
-  bool tryLock() const;
+  bool tryLock();
 
   /**
    * Unlock.
@@ -92,7 +92,21 @@ public:
    * @note
    * Unlocking an unlocked mutex results in undefined behaviour.
    */
-  void unlock() const;
+  void unlock();
+
+  /**
+   * Wrap a (lambda) function with the mutex.
+   *
+   * @note
+   * Locking a mutex that is already locked by the current thread results in undefined behaviour.
+   */
+  template <typename Function>
+  void operator<<(Function function)
+  {
+    lock();
+    function();
+    unlock();
+  }
 
 };
 
