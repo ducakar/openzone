@@ -94,9 +94,9 @@ public:
 
 private:
 
-  using Chain<Elem, INDEX>::firstElem_;
+  using Chain<Elem, INDEX>::first_;
 
-  Elem* lastElem_ = nullptr; ///< Pointer to the last element in the chain.
+  Elem* last_ = nullptr; ///< Pointer to the last element in the chain.
 
 public:
 
@@ -119,9 +119,9 @@ public:
    * Move constructor, rebinds elements to the new chain.
    */
   DChain(DChain&& other) :
-    Chain<Elem, INDEX>(static_cast<DChain&&>(other)), lastElem_(other.lastElem_)
+    Chain<Elem, INDEX>(static_cast<DChain&&>(other)), last_(other.last_)
   {
-    other.lastElem_ = nullptr;
+    other.last_ = nullptr;
   }
 
   /**
@@ -130,11 +130,11 @@ public:
   DChain& operator=(DChain&& other)
   {
     if (&other != this) {
-      firstElem_ = other.firstElem_;
-      lastElem_  = other.lastElem_;
+      first_ = other.first_;
+      last_  = other.last_;
 
-      other.firstElem_ = nullptr;
-      other.lastElem_  = nullptr;
+      other.first_ = nullptr;
+      other.last_  = nullptr;
     }
     return *this;
   }
@@ -145,7 +145,7 @@ public:
   OZ_ALWAYS_INLINE
   Elem* last() const
   {
-    return lastElem_;
+    return last_;
   }
 
   /**
@@ -172,7 +172,7 @@ public:
     prev->next[INDEX] = elem;
 
     if (next == nullptr) {
-      lastElem_ = elem;
+      last_ = elem;
     }
     else {
       next->prev[INDEX] = elem;
@@ -193,7 +193,7 @@ public:
     next->prev[INDEX] = elem;
 
     if (prev == nullptr) {
-      firstElem_ = elem;
+      first_ = elem;
     }
     else {
       next->prev[INDEX] = elem;
@@ -206,13 +206,13 @@ public:
   void erase(Elem* elem)
   {
     if (elem->prev[INDEX] == nullptr) {
-      firstElem_ = elem->next[INDEX];
+      first_ = elem->next[INDEX];
     }
     else {
       elem->prev[INDEX]->next[INDEX] = elem->next[INDEX];
     }
     if (elem->next[INDEX] == nullptr) {
-      lastElem_ = elem->prev[INDEX];
+      last_ = elem->prev[INDEX];
     }
     else {
       elem->next[INDEX]->prev[INDEX] = elem->prev[INDEX];
@@ -227,15 +227,15 @@ public:
     OZ_ASSERT(elem != nullptr);
 
     elem->prev[INDEX] = nullptr;
-    elem->next[INDEX] = firstElem_;
+    elem->next[INDEX] = first_;
 
-    if (firstElem_ == nullptr) {
-      firstElem_ = elem;
-      lastElem_  = elem;
+    if (first_ == nullptr) {
+      first_ = elem;
+      last_  = elem;
     }
     else {
-      firstElem_->prev[INDEX] = elem;
-      firstElem_ = elem;
+      first_->prev[INDEX] = elem;
+      first_ = elem;
     }
   }
 
@@ -246,16 +246,16 @@ public:
   {
     OZ_ASSERT(elem != nullptr);
 
-    elem->prev[INDEX] = lastElem_;
+    elem->prev[INDEX] = last_;
     elem->next[INDEX] = nullptr;
 
-    if (lastElem_ == nullptr) {
-      firstElem_ = elem;
-      lastElem_  = elem;
+    if (last_ == nullptr) {
+      first_ = elem;
+      last_  = elem;
     }
     else {
-      lastElem_->next[INDEX] = elem;
-      lastElem_ = elem;
+      last_->next[INDEX] = elem;
+      last_ = elem;
     }
   }
 
@@ -264,17 +264,17 @@ public:
    */
   Elem* popFirst()
   {
-    OZ_ASSERT(firstElem_ != nullptr);
+    OZ_ASSERT(first_ != nullptr);
 
-    Elem* e = firstElem_;
+    Elem* e = first_;
 
-    firstElem_ = firstElem_->next[INDEX];
+    first_ = first_->next[INDEX];
 
-    if (firstElem_ == nullptr) {
-      lastElem_ = nullptr;
+    if (first_ == nullptr) {
+      last_ = nullptr;
     }
     else {
-      firstElem_->prev[INDEX] = nullptr;
+      first_->prev[INDEX] = nullptr;
     }
     return e;
   }
@@ -284,17 +284,17 @@ public:
    */
   Elem* popLast()
   {
-    OZ_ASSERT(lastElem_ != nullptr);
+    OZ_ASSERT(last_ != nullptr);
 
-    Elem* e = lastElem_;
+    Elem* e = last_;
 
-    lastElem_ = lastElem_->prev[INDEX];
+    last_ = last_->prev[INDEX];
 
-    if (lastElem_ == nullptr) {
-      firstElem_ = nullptr;
+    if (last_ == nullptr) {
+      first_ = nullptr;
     }
     else {
-      lastElem_->next[INDEX] = nullptr;
+      last_->next[INDEX] = nullptr;
     }
     return e;
   }
@@ -304,8 +304,8 @@ public:
    */
   void clear()
   {
-    firstElem_ = nullptr;
-    lastElem_  = nullptr;
+    first_ = nullptr;
+    last_  = nullptr;
   }
 
   /**
@@ -314,7 +314,7 @@ public:
   void free()
   {
     Chain<Elem, INDEX>::free();
-    lastElem_ = nullptr;
+    last_ = nullptr;
   }
 
 };

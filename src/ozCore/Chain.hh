@@ -108,7 +108,7 @@ protected:
      */
     OZ_ALWAYS_INLINE
     explicit ChainIterator(const Chain& chain) :
-      detail::IteratorBase<ElemType>(chain.firstElem_)
+      detail::IteratorBase<ElemType>(chain.first_)
     {}
 
     /**
@@ -157,7 +157,7 @@ public:
 
 protected:
 
-  Elem* firstElem_ = nullptr; ///< Pointer to the first element in the chain.
+  Elem* first_ = nullptr; ///< Pointer to the first element in the chain.
 
 public:
 
@@ -170,9 +170,9 @@ public:
    * Move constructor, rebinds elements to the new chain.
    */
   Chain(Chain&& other) :
-    firstElem_(other.firstElem_)
+    first_(other.first_)
   {
-    other.firstElem_ = nullptr;
+    other.first_ = nullptr;
   }
 
   /**
@@ -181,9 +181,9 @@ public:
   Chain& operator=(Chain&& other)
   {
     if (&other != this) {
-      firstElem_ = other.firstElem_;
+      first_ = other.first_;
 
-      other.firstElem_ = nullptr;
+      other.first_ = nullptr;
     }
     return *this;
   }
@@ -248,7 +248,7 @@ public:
   int size() const
   {
     int   i = 0;
-    Elem* e = firstElem_;
+    Elem* e = first_;
 
     while (e != nullptr) {
       e = e->next[INDEX];
@@ -263,7 +263,7 @@ public:
   OZ_ALWAYS_INLINE
   bool isEmpty() const
   {
-    return firstElem_ == nullptr;
+    return first_ == nullptr;
   }
 
   /**
@@ -272,7 +272,7 @@ public:
   OZ_ALWAYS_INLINE
   Elem* first() const
   {
-    return firstElem_;
+    return first_;
   }
 
   /**
@@ -282,7 +282,7 @@ public:
    */
   Elem* before(const Elem* elem) const
   {
-    Elem* current = firstElem_;
+    Elem* current = first_;
     Elem* before  = nullptr;
 
     while (current != elem) {
@@ -303,7 +303,7 @@ public:
   {
     OZ_ASSERT(elem != nullptr);
 
-    Elem* p = firstElem_;
+    Elem* p = first_;
 
     while (p != nullptr && p != elem) {
       p = p->next[INDEX];
@@ -321,7 +321,7 @@ public:
   {
     OZ_ASSERT(elem != nullptr);
 
-    Elem* e = firstElem_;
+    Elem* e = first_;
 
     while (e != nullptr && !(*e == *elem)) {
       e = e->next[INDEX];
@@ -361,7 +361,7 @@ public:
     OZ_ASSERT(prev == nullptr || prev->next[INDEX] == elem);
 
     if (prev == nullptr) {
-      firstElem_ = elem->next[INDEX];
+      first_ = elem->next[INDEX];
     }
     else {
       prev->next[INDEX] = elem->next[INDEX];
@@ -375,8 +375,8 @@ public:
   {
     OZ_ASSERT(elem != nullptr);
 
-    elem->next[INDEX] = firstElem_;
-    firstElem_ = elem;
+    elem->next[INDEX] = first_;
+    first_ = elem;
   }
 
   /**
@@ -384,11 +384,11 @@ public:
    */
   Elem* popFirst()
   {
-    OZ_ASSERT(firstElem_ != nullptr);
+    OZ_ASSERT(first_ != nullptr);
 
-    Elem* e = firstElem_;
+    Elem* e = first_;
 
-    firstElem_ = firstElem_->next[INDEX];
+    first_ = first_->next[INDEX];
     return e;
   }
 
@@ -397,7 +397,7 @@ public:
    */
   void clear()
   {
-    firstElem_ = nullptr;
+    first_ = nullptr;
   }
 
   /**
@@ -405,7 +405,7 @@ public:
    */
   void free()
   {
-    Elem* e = firstElem_;
+    Elem* e = first_;
 
     while (e != nullptr) {
       Elem* next = e->next[INDEX];
@@ -414,7 +414,7 @@ public:
       e = next;
     }
 
-    firstElem_ = nullptr;
+    first_ = nullptr;
   }
 
 };

@@ -530,8 +530,9 @@ void Builder::packArchive(const char* name, bool useCompression, bool use7zip)
 
   File archive = String::format("../%s.%s", name, use7zip ? "7z" : "zip");
 
-  String cmdLine = use7zip ? String::format("7z u -ms=off -mx=9 '%s' *", archive.c()) :
-                   String::format("zip -ur %s '%s' *", useCompression ? "-9" : "-0", archive.c());
+  String cmdLine = use7zip ? String::format("7z u -ms=off -mx=9 '%s' *", archive.c())
+                           : String::format("zip -ur %s '%s' *",
+                                            useCompression ? "-9" : "-0", archive.c());
 
   Log::println("%s", cmdLine.c());
   Log::println();
@@ -540,7 +541,7 @@ void Builder::packArchive(const char* name, bool useCompression, bool use7zip)
     OZ_ERROR(use7zip ? "Packing 7zip archive failed" : "Packing ZIP archive failed");
   }
 
-  int size = archive.length();
+  int size = archive.size();
   if (size >= 0) {
     Log::println();
     Log::println("Archive size: %.2f MiB = %.2f MB",

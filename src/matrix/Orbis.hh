@@ -54,9 +54,9 @@ public:
   // # of cells on each (x, y) axis
   static const int DIM         = MAX_WORLD_COORD;
   static const int CELLS       = 2 * DIM / Cell::SIZE;
-  static const int MAX_STRUCTS = (1 << 10) - 1;
-  static const int MAX_OBJECTS = (1 << 15) - 1;
-  static const int MAX_FRAGS   = (1 << 12) - 1;
+  static const int MAX_STRUCTS = 1 << 10;
+  static const int MAX_OBJECTS = 1 << 15;
+  static const int MAX_FRAGS   = 1 << 12;
 
   Caelum  caelum;
   Terra   terra;
@@ -64,9 +64,9 @@ public:
 
 private:
 
-  Struct* structs[1 + MAX_STRUCTS];
-  Object* objects[1 + MAX_OBJECTS];
-  Frag*   frags[1 + MAX_FRAGS];
+  Struct* structs[MAX_STRUCTS];
+  Object* objects[MAX_OBJECTS];
+  Frag*   frags[MAX_FRAGS];
 
 private:
 
@@ -104,7 +104,7 @@ public:
   {
     OZ_ASSERT(uint(1 + index) <= uint(MAX_STRUCTS));
 
-    return structs[1 + index];
+    return index == -1 ? nullptr : structs[index];
   }
 
   /**
@@ -112,19 +112,24 @@ public:
    */
   Entity* ent(int index) const
   {
-    OZ_ASSERT(uint(1 + index) <= uint(MAX_STRUCTS * Struct::MAX_ENTITIES));
+    OZ_ASSERT(uint(1 + index) <= uint((MAX_STRUCTS - 1) * Struct::MAX_ENTITIES));
 
-    int     strIndex = index >> Struct::MAX_ENT_SHIFT;
-    Struct* str      = structs[1 + strIndex];
-
-    if (str == nullptr) {
+    if (index == -1) {
       return nullptr;
     }
     else {
-      int     entIndex = index & (Struct::MAX_ENTITIES - 1);
-      Entity* entity   = &str->entities[entIndex];
+      int     strIndex = index >> Struct::MAX_ENT_SHIFT;
+      Struct* str      = structs[strIndex];
 
-      return entity;
+      if (str == nullptr) {
+        return nullptr;
+      }
+      else {
+        int     entIndex = index & (Struct::MAX_ENTITIES - 1);
+        Entity* ent      = &str->entities[entIndex];
+
+        return ent;
+      }
     }
   }
 
@@ -137,7 +142,7 @@ public:
   {
     OZ_ASSERT(uint(1 + index) <= uint(MAX_OBJECTS));
 
-    return static_cast<ObjectType*>(objects[1 + index]);
+    return index == -1 ? nullptr : static_cast<ObjectType*>(objects[index]);
   }
 
   /**
@@ -148,7 +153,7 @@ public:
   {
     OZ_ASSERT(uint(1 + index) <= uint(MAX_FRAGS));
 
-    return frags[1 + index];
+    return index == -1 ? nullptr : frags[index];
   }
 
   /**
@@ -159,7 +164,7 @@ public:
   {
     OZ_ASSERT(uint(1 + index) <= uint(MAX_STRUCTS));
 
-    return structs[1 + index] == nullptr ? -1 : index;
+    return index == -1 || structs[index] == nullptr ? -1 : index;
   }
 
   /**
@@ -170,10 +175,15 @@ public:
   {
     OZ_ASSERT(uint(1 + index) <= uint(MAX_STRUCTS * Struct::MAX_ENTITIES));
 
-    int     strIndex = index >> Struct::MAX_ENT_SHIFT;
-    Struct* str      = structs[1 + strIndex];
+    if (index == -1) {
+      return -1;
+    }
+    else {
+      int     strIndex = index >> Struct::MAX_ENT_SHIFT;
+      Struct* str      = structs[strIndex];
 
-    return str == nullptr ? -1 : index;
+      return str == nullptr ? -1 : index;
+    }
   }
 
   /**
@@ -184,7 +194,7 @@ public:
   {
     OZ_ASSERT(uint(1 + index) <= uint(MAX_OBJECTS));
 
-    return objects[1 + index] == nullptr ? -1 : index;
+    return index == -1 || objects[index] == nullptr ? -1 : index;
   }
 
   /**
@@ -195,7 +205,7 @@ public:
   {
     OZ_ASSERT(uint(1 + index) <= uint(MAX_FRAGS));
 
-    return frags[1 + index] == nullptr ? -1 : index;
+    return index == -1 || frags[index] == nullptr ? -1 : index;
   }
 
   OZ_ALWAYS_INLINE

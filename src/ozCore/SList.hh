@@ -70,7 +70,7 @@ private:
 public:
 
   /**
-   * Create an empty list with capacity SIZE.
+   * Create an empty list with capacity CAPACITY.
    */
   SList() = default;
 
@@ -101,8 +101,6 @@ public:
 
   /**
    * Assign from an initialiser list.
-   *
-   * Existing storage is reused if it suffices.
    */
   SList& operator=(InitialiserList<Elem> il)
   {
