@@ -226,11 +226,11 @@ protected:
    */
   OZ_ALWAYS_INLINE
 #ifdef OZ_SIMD
-  explicit VectorBase3(float x_, float y_, float z_, float w_) :
-    f4{x_, y_, z_, w_}
+  explicit VectorBase3(float x_, float y_, float z_, float w_)
+    : f4{x_, y_, z_, w_}
 #else
-  explicit VectorBase3(float x_, float y_, float z_, float) :
-    x(x_), y(y_), z(z_)
+  explicit VectorBase3(float x_, float y_, float z_, float)
+    : x(x_), y(y_), z(z_)
 #endif
   {}
 
@@ -239,8 +239,8 @@ public:
 #ifdef OZ_SIMD
 
   OZ_ALWAYS_INLINE
-  explicit VectorBase3(float4 f4_) :
-    f4(f4_)
+  explicit VectorBase3(float4 f4_)
+    : f4(f4_)
   {}
 
 #endif
@@ -334,8 +334,8 @@ protected:
    * Create a vector with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit VectorBase4(float x_, float y_, float z_, float w_) :
-    VectorBase3(x_, y_, z_, 0.0f), w(w_)
+  explicit VectorBase4(float x_, float y_, float z_, float w_)
+    : VectorBase3(x_, y_, z_, 0.0f), w(w_)
   {}
 
 #endif

@@ -217,8 +217,10 @@ void Window::resize(int newWidth, int newHeight, Mode newMode)
   }
 
   if (newMode != WINDOWED) {
-    SDL_SetWindowFullscreen(window, newMode == EXCLUSIVE ? SDL_WINDOW_FULLSCREEN :
-                                                           SDL_WINDOW_FULLSCREEN_DESKTOP);
+    SDL_SetWindowFullscreen(window,
+                            newMode == EXCLUSIVE
+                            ? SDL_WINDOW_FULLSCREEN
+                            : SDL_WINDOW_FULLSCREEN_DESKTOP);
   }
 
   windowMode = newMode;
@@ -314,8 +316,9 @@ bool Window::create(const char* title, int width, int height, Mode mode)
              mode == EXCLUSIVE ? "exclusive" : mode == DESKTOP ? "desktop" : "windowed");
 
   uint flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE |
-               (mode == EXCLUSIVE ? SDL_WINDOW_FULLSCREEN :
-                mode == DESKTOP ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+               (mode == EXCLUSIVE ? SDL_WINDOW_FULLSCREEN
+                : mode == DESKTOP ? SDL_WINDOW_FULLSCREEN_DESKTOP
+                : 0);
 
   // Force old Mesa drivers to turn on partial S3TC support even when libtxc_dxtn is not present.
   // We don't use online texture compression anywhere so partial S3TC support is enough.

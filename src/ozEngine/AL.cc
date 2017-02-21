@@ -350,12 +350,12 @@ bool AL::Decoder::VorbisStream::decode(AL::Decoder* decoder)
   return true;
 }
 
-AL::Decoder::Decoder() :
-  samples_(nullptr), size_(0), capacity_(0), format_(0), rate_(0), stream_(nullptr)
+AL::Decoder::Decoder()
+  : samples_(nullptr), size_(0), capacity_(0), format_(0), rate_(0), stream_(nullptr)
 {}
 
-AL::Decoder::Decoder(const File& file, bool isStreaming) :
-  samples_(nullptr), size_(0), capacity_(0), format_(0), rate_(0), stream_(nullptr)
+AL::Decoder::Decoder(const File& file, bool isStreaming)
+  : samples_(nullptr), size_(0), capacity_(0), format_(0), rate_(0), stream_(nullptr)
 {
   if (file.hasExtension("wav")) {
     stream_ = new WaveStream(this, file);
@@ -379,9 +379,9 @@ AL::Decoder::~Decoder()
   delete stream_;
 }
 
-AL::Decoder::Decoder(Decoder&& other) :
-  samples_(other.samples_), size_(other.size_), capacity_(other.capacity_), format_(other.format_),
-  rate_(other.rate_), stream_(other.stream_)
+AL::Decoder::Decoder(Decoder&& other)
+  : samples_(other.samples_), size_(other.size_), capacity_(other.capacity_),
+    format_(other.format_), rate_(other.rate_), stream_(other.stream_)
 {
   other.samples_  = nullptr;
   other.size_     = 0;

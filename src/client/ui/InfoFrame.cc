@@ -82,9 +82,9 @@ void InfoFrame::onDraw()
   text.draw(this);
 }
 
-InfoFrame::InfoFrame() :
-  Frame(320, 12 + 30 * style.sansFont.height(), ""),
-  text(6, -HEADER_SIZE - 4, 308, Area::ALIGN_TOP, &style.sansFont, ""), lastId(-1)
+InfoFrame::InfoFrame()
+  : Frame(320, 12 + 30 * style.sansFont.height(), ""),
+    text(6, -HEADER_SIZE - 4, 308, Area::ALIGN_TOP, &style.sansFont, ""), lastId(-1)
 {
   flags |= PINNED_BIT;
 }

@@ -486,8 +486,8 @@ float Vehicle::getStatus() const
   return max(fuel / clazz->fuel, 0.0f);
 }
 
-Vehicle::Vehicle(const VehicleClass* clazz_, int index_, const Point& p_, Heading heading) :
-  Dynamic(clazz_, index_, p_, heading)
+Vehicle::Vehicle(const VehicleClass* clazz_, int index_, const Point& p_, Heading heading)
+  : Dynamic(clazz_, index_, p_, heading)
 {
   const VehicleClass* clazz = static_cast<const VehicleClass*>(this->clazz);
 
@@ -499,8 +499,7 @@ Vehicle::Vehicle(const VehicleClass* clazz_, int index_, const Point& p_, Headin
   actions    = 0;
   oldActions = 0;
 
-  rot        = clazz->type == VehicleClass::MECH ? Mat4::rotationZ(h) :
-                                                   Mat4::rotationZXZ(h, v, w);
+  rot        = clazz->type == VehicleClass::MECH ? Mat4::rotationZ(h) : Mat4::rotationZXZ(h, v, w);
   state      = clazz->state;
   oldState   = clazz->state;
   fuel       = clazz->fuel;
@@ -517,8 +516,8 @@ Vehicle::Vehicle(const VehicleClass* clazz_, int index_, const Point& p_, Headin
   }
 }
 
-Vehicle::Vehicle(const VehicleClass* clazz_, int index, const Json& json) :
-  Dynamic(clazz_, index, json)
+Vehicle::Vehicle(const VehicleClass* clazz_, int index, const Json& json)
+  : Dynamic(clazz_, index, json)
 {
   const VehicleClass* clazz = static_cast<const VehicleClass*>(this->clazz);
 
@@ -530,8 +529,7 @@ Vehicle::Vehicle(const VehicleClass* clazz_, int index, const Json& json) :
   actions    = json["actions"].get(0);
   oldActions = json["oldActions"].get(0);
 
-  rot        = clazz->type == VehicleClass::MECH ? Mat4::rotationZ(h) :
-                                                   Mat4::rotationZXZ(h, v, w);
+  rot        = clazz->type == VehicleClass::MECH ? Mat4::rotationZ(h) : Mat4::rotationZXZ(h, v, w);
   state      = json["state"].get(0);
   oldState   = json["oldState"].get(0);
   fuel       = json["fuel"].get(0.0f);
@@ -553,8 +551,8 @@ Vehicle::Vehicle(const VehicleClass* clazz_, int index, const Json& json) :
   }
 }
 
-Vehicle::Vehicle(const VehicleClass* clazz_, Stream* is) :
-  Dynamic(clazz_, is)
+Vehicle::Vehicle(const VehicleClass* clazz_, Stream* is)
+  : Dynamic(clazz_, is)
 {
   const VehicleClass* clazz = static_cast<const VehicleClass*>(this->clazz);
 
@@ -566,8 +564,7 @@ Vehicle::Vehicle(const VehicleClass* clazz_, Stream* is) :
   actions    = is->readInt();
   oldActions = is->readInt();
 
-  rot        = clazz->type == VehicleClass::MECH ? Mat4::rotationZ(h) :
-                                                   Mat4::rotationZXZ(h, v, w);
+  rot        = clazz->type == VehicleClass::MECH ? Mat4::rotationZ(h) : Mat4::rotationZXZ(h, v, w);
   state      = is->readInt();
   oldState   = is->readInt();
   fuel       = is->readFloat();

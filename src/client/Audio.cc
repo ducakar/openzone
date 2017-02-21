@@ -207,8 +207,8 @@ void Audio::playEngineSound(int sound, float volume, float pitch, const Object* 
   OZ_AL_CHECK_ERROR();
 }
 
-Audio::Audio(const Object* obj_) :
-  obj(obj_), clazz(obj_->clazz), flags(0)
+Audio::Audio(const Object* obj_)
+  : obj(obj_), clazz(obj_->clazz), flags(0)
 {
   const int* sounds = clazz->audioSounds;
 

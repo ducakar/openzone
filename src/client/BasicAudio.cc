@@ -28,8 +28,8 @@ namespace client
 
 Pool<BasicAudio> BasicAudio::pool(2048);
 
-BasicAudio::BasicAudio(const Object* obj) :
-  Audio(obj), recent{}
+BasicAudio::BasicAudio(const Object* obj)
+  : Audio(obj), recent{}
 {}
 
 Audio* BasicAudio::create(const Object* obj)

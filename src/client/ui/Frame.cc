@@ -75,9 +75,10 @@ void Frame::onDraw()
   drawChildren();
 }
 
-Frame::Frame(int width, int height, const char* text) :
-  Area(width, height + HEADER_SIZE),
-  title(width / 2, -HEADER_SIZE / 2, 0, ALIGN_HCENTRE | ALIGN_VCENTRE, &style.largeFont, "%s", text)
+Frame::Frame(int width, int height, const char* text)
+  : Area(width, height + HEADER_SIZE),
+    title(width / 2, -HEADER_SIZE / 2, 0, ALIGN_HCENTRE | ALIGN_VCENTRE, &style.largeFont,
+          "%s", text)
 {}
 
 }

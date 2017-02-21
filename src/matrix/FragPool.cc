@@ -25,8 +25,8 @@
 namespace oz
 {
 
-FragPool::FragPool(const Json& config, const char* name_, int id_) :
-  name(name_), id(id_)
+FragPool::FragPool(const Json& config, const char* name_, int id_)
+  : name(name_), id(id_)
 {
   flags = 0;
 

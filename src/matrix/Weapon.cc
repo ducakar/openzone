@@ -101,22 +101,22 @@ void Weapon::trigger(Bot* user)
   }
 }
 
-Weapon::Weapon(const WeaponClass* clazz_, int index_, const Point& p_, Heading heading) :
-  Dynamic(clazz_, index_, p_, heading)
+Weapon::Weapon(const WeaponClass* clazz_, int index_, const Point& p_, Heading heading)
+  : Dynamic(clazz_, index_, p_, heading)
 {
   nRounds  = clazz_->nRounds;
   shotTime = 0.0f;
 }
 
-Weapon::Weapon(const WeaponClass* clazz_, int index, const Json& json) :
-  Dynamic(clazz_, index, json)
+Weapon::Weapon(const WeaponClass* clazz_, int index, const Json& json)
+  : Dynamic(clazz_, index, json)
 {
   nRounds  = json["nRounds"].get(0);
   shotTime = 0.0f;
 }
 
-Weapon::Weapon(const WeaponClass* clazz_, Stream* is) :
-  Dynamic(clazz_, is)
+Weapon::Weapon(const WeaponClass* clazz_, Stream* is)
+  : Dynamic(clazz_, is)
 {
   nRounds  = is->readInt();
   shotTime = is->readFloat();

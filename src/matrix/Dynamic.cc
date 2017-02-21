@@ -77,8 +77,8 @@ bool Dynamic::rotate(int steps)
   }
 }
 
-Dynamic::Dynamic(const DynamicClass* clazz_, int index_, const Point& p_, Heading heading) :
-  Object(clazz_, index_, p_, heading)
+Dynamic::Dynamic(const DynamicClass* clazz_, int index_, const Point& p_, Heading heading)
+  : Object(clazz_, index_, p_, heading)
 {
   velocity = Vec3::ZERO;
   momentum = Vec3::ZERO;
@@ -90,8 +90,8 @@ Dynamic::Dynamic(const DynamicClass* clazz_, int index_, const Point& p_, Headin
   lift     = clazz_->lift;
 }
 
-Dynamic::Dynamic(const DynamicClass* clazz_, int index, const Json& json) :
-  Object(clazz_, index, json)
+Dynamic::Dynamic(const DynamicClass* clazz_, int index, const Json& json)
+  : Object(clazz_, index, json)
 {
   velocity = Vec3::ZERO;
   momentum = Vec3::ZERO;
@@ -103,8 +103,8 @@ Dynamic::Dynamic(const DynamicClass* clazz_, int index, const Json& json) :
   lift     = clazz_->lift;
 }
 
-Dynamic::Dynamic(const DynamicClass* clazz_, Stream* is) :
-  Object(clazz_, is)
+Dynamic::Dynamic(const DynamicClass* clazz_, Stream* is)
+  : Object(clazz_, is)
 {
   velocity = is->read<Vec3>();
   momentum = is->read<Vec3>();

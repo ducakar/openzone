@@ -43,8 +43,8 @@ namespace client
 //   sparks[i].lifeTime = sparkGen->lifeTime;
 // }
 //
-// ParticleGen::ParticleGen(SparkGen* sparkGen_) :
-//   sparkGen(sparkGen_)
+// ParticleGen::ParticleGen(SparkGen* sparkGen_)
+//   : sparkGen(sparkGen_)
 // {
 //   sparks = new Spark[sparkGen->number];
 //   startMillis = float(timer.millis);

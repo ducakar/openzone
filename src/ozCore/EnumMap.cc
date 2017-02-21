@@ -46,8 +46,8 @@ int EnumMapImpl::operator[](const char* name) const
   OZ_ERROR("oz::EnumMap: Invalid name '%s'", name);
 }
 
-EnumMapImpl::EnumMapImpl(InitialiserList<Pair> l) :
-  entries_(l)
+EnumMapImpl::EnumMapImpl(InitialiserList<Pair> l)
+  : entries_(l)
 {}
 
 const char* EnumMapImpl::defaultName() const

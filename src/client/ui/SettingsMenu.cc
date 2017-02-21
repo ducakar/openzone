@@ -126,8 +126,8 @@ void SettingsMenu::onDraw()
 SettingsMenu::~SettingsMenu()
 {}
 
-SettingsMenu::SettingsMenu() :
-  Area(camera.width, camera.height)
+SettingsMenu::SettingsMenu()
+  : Area(camera.width, camera.height)
 {
   Button* backButton     = new Button(OZ_GETTEXT("Back"),     back,         200, 30);
   Button* applyButton    = new Button(OZ_GETTEXT("Apply"),    apply,        200, 30);

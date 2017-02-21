@@ -131,9 +131,9 @@ MD2::AnimType MD2::AnimState::extractAnim()
   }
 }
 
-MD2::AnimState::AnimState(const Bot* bot_) :
-  bot(bot_), vehicle(nullptr), currType(ANIM_STAND), nextType(ANIM_STAND),
-  frameRatio(0.0f), prevAttack(false)
+MD2::AnimState::AnimState(const Bot* bot_)
+  : bot(bot_), vehicle(nullptr), currType(ANIM_STAND), nextType(ANIM_STAND), frameRatio(0.0f),
+    prevAttack(false)
 {
   if (bot->state & Bot::DEAD_BIT) {
     currType = AnimType(ANIM_DEATH_FALLBACK + Math::rand(3));
@@ -148,9 +148,9 @@ MD2::AnimState::AnimState(const Bot* bot_) :
   nextFrame = lastFrame;
 }
 
-MD2::AnimState::AnimState(const Vehicle* vehicle_) :
-  bot(nullptr), vehicle(vehicle_), currType(ANIM_STAND), nextType(ANIM_STAND),
-  frameRatio(0.0f), prevAttack(false)
+MD2::AnimState::AnimState(const Vehicle* vehicle_)
+  : bot(nullptr), vehicle(vehicle_), currType(ANIM_STAND), nextType(ANIM_STAND), frameRatio(0.0f),
+    prevAttack(false)
 {
   nextType = extractAnim();
 

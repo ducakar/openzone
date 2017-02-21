@@ -46,9 +46,9 @@ void LoadingArea::onDraw()
   status.draw(this);
 }
 
-LoadingArea::LoadingArea() :
-  Area(camera.width, camera.height),
-  status(width / 2, height / 5, 0, ALIGN_CENTRE, &style.largeFont, "")
+LoadingArea::LoadingArea()
+  : Area(camera.width, camera.height),
+    status(width / 2, height / 5, 0, ALIGN_CENTRE, &style.largeFont, "")
 {
   flags |= PINNED_BIT;
 }

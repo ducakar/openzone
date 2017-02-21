@@ -133,8 +133,8 @@ public:
   /**
    * Create enumerator mapping from an initialiser list.
    */
-  EnumMap(InitialiserList<Pair> l) :
-    EnumMapImpl(l)
+  EnumMap(InitialiserList<Pair> l)
+    : EnumMapImpl(l)
   {}
 
   /**

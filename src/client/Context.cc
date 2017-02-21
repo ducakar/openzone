@@ -256,13 +256,12 @@ void Context::releaseSpeakSource()
   speakSource.thread.join();
 }
 
-Context::Context() :
-  imagoClasses(nullptr), audioClasses(nullptr), textures(nullptr), sounds(nullptr), models(nullptr),
-  bspImagines(nullptr)
+Context::Context()
+  : imagoClasses(nullptr), audioClasses(nullptr), textures(nullptr), sounds(nullptr),
+    models(nullptr), bspImagines(nullptr)
 {}
 
-Texture Context::loadTexture(const File& albedoFile, const File& masksFile,
-                             const File& normalsFile)
+Texture Context::loadTexture(const File& albedoFile, const File& masksFile, const File& normalsFile)
 {
   Texture texture;
   texture.id = -2;

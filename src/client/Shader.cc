@@ -251,8 +251,8 @@ void Shader::loadProgram(int id)
   OZ_GL_CHECK_ERROR();
 }
 
-Shader::Shader() :
-  plain(-1), defaultMasks(0)
+Shader::Shader()
+  : plain(-1), defaultMasks(0)
 {}
 
 void Shader::program(int id)

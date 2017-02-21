@@ -68,8 +68,8 @@ private:
      * @param past successor of the last element.
      */
     OZ_ALWAYS_INLINE
-    explicit ArrayIterator(Elem* first, Elem* past) :
-      detail::IteratorBase<Elem>(first), past_(past)
+    explicit ArrayIterator(Elem* first, Elem* past)
+      : detail::IteratorBase<Elem>(first), past_(past)
     {}
 
     /**

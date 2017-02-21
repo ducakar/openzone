@@ -28,8 +28,8 @@ namespace client
 namespace ui
 {
 
-Bar::Bar(const Style::Bar* style_) :
-  style(style_)
+Bar::Bar(const Style::Bar* style_)
+  : style(style_)
 {}
 
 void Bar::setStyle(const Style::Bar* style_)
@@ -47,10 +47,12 @@ void Bar::draw(const Area* area, float ratio) const
 void Bar::draw(const Area* area, int barX, int barY, int barWidth, int barHeight,
                float ratio) const
 {
-  int x = barX == Area::CENTRE ? (area->width - barWidth) / 2 :
-          barX < 0 ? area->width - barWidth + barX : barX;
-  int y = barY == Area::CENTRE ? (area->height - barHeight) / 2 :
-          barY < 0 ? area->height - barHeight + barY : barY;
+  int x = barX == Area::CENTRE
+          ? (area->width - barWidth) / 2
+          : barX < 0 ? area->width - barWidth + barX : barX;
+  int y = barY == Area::CENTRE
+          ? (area->height - barHeight) / 2
+          : barY < 0 ? area->height - barHeight + barY : barY;
 
   drawAbs(x, y, barWidth, barHeight, ratio);
 }

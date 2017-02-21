@@ -200,15 +200,15 @@ public:
   /**
    * Create an empty pool.
    */
-  Pool() :
-    PoolAlloc(sizeof(Elem), 256)
+  Pool()
+    : PoolAlloc(sizeof(Elem), 256)
   {}
 
   /**
    * Create an empty pool with a given block size.
    */
-  explicit Pool(int blockSlots) :
-    PoolAlloc(sizeof(Elem), blockSlots)
+  explicit Pool(int blockSlots)
+    : PoolAlloc(sizeof(Elem), blockSlots)
   {}
 
 };

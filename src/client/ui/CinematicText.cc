@@ -43,8 +43,8 @@ void CinematicText::onDraw()
   text_.draw(this);
 }
 
-CinematicText::CinematicText() :
-  Area(600, 400), text_(0, 0, 600, Area::ALIGN_NONE, &style.titleFont, "")
+CinematicText::CinematicText()
+  : Area(600, 400), text_(0, 0, 600, Area::ALIGN_NONE, &style.titleFont, "")
 {
   flags |= PINNED_BIT;
 }

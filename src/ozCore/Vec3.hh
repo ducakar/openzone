@@ -64,16 +64,16 @@ public:
    * Create a vector with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit Vec3(float x, float y, float z) :
-    VectorBase3(x, y, z, 0.0f)
+  explicit Vec3(float x, float y, float z)
+    : VectorBase3(x, y, z, 0.0f)
   {}
 
   /**
    * Create from an array of 3 floats.
    */
   OZ_ALWAYS_INLINE
-  explicit Vec3(const float* v) :
-    VectorBase3(v[0], v[1], v[2], 0.0f)
+  explicit Vec3(const float* v)
+    : VectorBase3(v[0], v[1], v[2], 0.0f)
   {}
 
   /**

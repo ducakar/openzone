@@ -31,8 +31,8 @@ void Label::onDraw()
   text.draw(this);
 }
 
-Label::Label(int width, int height, int align, Font* font, const char* s, ...) :
-  Area(width, height), text(0, 0, width, align, font, "")
+Label::Label(int width, int height, int align, Font* font, const char* s, ...)
+  : Area(width, height), text(0, 0, width, align, font, "")
 {
   va_list ap;
   va_start(ap, s);

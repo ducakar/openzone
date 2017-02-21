@@ -41,10 +41,10 @@ const float       Caelum::BLUE_COEF             = -0.10f;
 const Vec4        Caelum::DAY_COLOUR            = Vec4(0.45f, 0.55f, 0.95f, 1.0f);
 const Vec4        Caelum::NIGHT_COLOUR          = Vec4(0.02f, 0.02f, 0.05f, 1.0f);
 
-Caelum::Caelum() :
-  sunTexId(0), moonTexId(0), lightDir(0.0f, 0.0f, 1.0f),
-  diffuseColour(1.0f, 1.0f, 1.0f, 1.0f), ambientColour(1.0f, 1.0f, 1.0f, 1.0f),
-  caelumColour(1.0f, 1.0f, 1.0f, 1.0f), id(-1)
+Caelum::Caelum()
+  : sunTexId(0), moonTexId(0), lightDir(0.0f, 0.0f, 1.0f),
+    diffuseColour(1.0f, 1.0f, 1.0f, 1.0f), ambientColour(1.0f, 1.0f, 1.0f, 1.0f),
+    caelumColour(1.0f, 1.0f, 1.0f, 1.0f), id(-1)
 {}
 
 void Caelum::update()

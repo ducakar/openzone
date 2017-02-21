@@ -111,8 +111,8 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  Set(InitialiserList<Elem> il) :
-    List<Elem>(il)
+  Set(InitialiserList<Elem> il)
+    : List<Elem>(il)
   {
     List<Elem>::template sort<LessFunc>();
   }

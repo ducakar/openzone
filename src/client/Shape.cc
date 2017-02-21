@@ -215,8 +215,8 @@ const ushort Shape::INDICES[] = {
   56 + 2
 };
 
-Shape::Shape() :
-  vbo(0), ibo(0)
+Shape::Shape()
+  : vbo(0), ibo(0)
 {}
 
 void Shape::bind() const

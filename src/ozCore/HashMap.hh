@@ -119,15 +119,15 @@ public:
   /**
    * Create an empty hashtable with a given number of pre-allocated buckets.
    */
-  explicit HashMap(int capacity) :
-    HashSet<Pair, HashFunc>(capacity)
+  explicit HashMap(int capacity)
+    : HashSet<Pair, HashFunc>(capacity)
   {}
 
   /**
    * Initialise from an initialiser list.
    */
-  HashMap(InitialiserList<Pair> il) :
-    HashMap(int(il.size()) * 4 / 3)
+  HashMap(InitialiserList<Pair> il)
+    : HashMap(int(il.size()) * 4 / 3)
   {
     for (const Pair& p : il) {
       add(p.key, p.value);

@@ -107,8 +107,8 @@ protected:
      * Create chain iterator, initially pointing to a given element.
      */
     OZ_ALWAYS_INLINE
-    explicit ChainIterator(const Chain& chain) :
-      detail::IteratorBase<ElemType>(chain.first_)
+    explicit ChainIterator(const Chain& chain)
+      : detail::IteratorBase<ElemType>(chain.first_)
     {}
 
     /**
@@ -169,8 +169,8 @@ public:
   /**
    * Move constructor, rebinds elements to the new chain.
    */
-  Chain(Chain&& other) :
-    first_(other.first_)
+  Chain(Chain&& other)
+    : first_(other.first_)
   {
     other.first_ = nullptr;
   }

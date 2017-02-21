@@ -28,12 +28,12 @@
 namespace oz
 {
 
-Bitset::Bitset(int nBits) :
-  data_(Alloc::alignUp<int>(nBits, PORT_BITS) / UNIT_BITS)
+Bitset::Bitset(int nBits)
+  : data_(Alloc::alignUp<int>(nBits, PORT_BITS) / UNIT_BITS)
 {}
 
-Bitset::Bitset(const char* s) :
-  Bitset(String::length(s))
+Bitset::Bitset(const char* s)
+  : Bitset(String::length(s))
 {
   for (int i = 0; s[i] != '\0'; ++i) {
     data_[i / UNIT_BITS] |= size_t(s[i] != '0') << (i % UNIT_BITS);

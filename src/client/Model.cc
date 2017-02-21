@@ -337,11 +337,11 @@ void Model::deallocate()
   sceneLights.trim();
 }
 
-Model::Model(const File& path_) :
-  path(path_), vbo(0), ibo(0), animationTexId(0),
-  nTextures(0), nVertices(0), nIndices(0), nFrames(0), nFramePositions(0),
-  vertices(nullptr), positions(nullptr), normals(nullptr),
-  preloadData(nullptr), dim(Vec3::ONE), size(dim.fastN())
+Model::Model(const File& path_)
+  : path(path_), vbo(0), ibo(0), animationTexId(0),
+    nTextures(0), nVertices(0), nIndices(0), nFrames(0), nFramePositions(0),
+    vertices(nullptr), positions(nullptr), normals(nullptr),
+    preloadData(nullptr), dim(Vec3::ONE), size(dim.fastN())
 {}
 
 Model::~Model()

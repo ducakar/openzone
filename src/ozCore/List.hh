@@ -95,15 +95,15 @@ public:
   /**
    * Create a list with a given initial length and capacity.
    */
-  explicit List(int size) :
-    data_(Arrays::reallocate<Elem>(nullptr, 0, size)), size_(size), capacity_(size)
+  explicit List(int size)
+    : data_(Arrays::reallocate<Elem>(nullptr, 0, size)), size_(size), capacity_(size)
   {}
 
   /**
    * Initialise from a C++ array.
    */
-  explicit List(const Elem* array, int size) :
-    List(size)
+  explicit List(const Elem* array, int size)
+    : List(size)
   {
     Arrays::copy<Elem>(array, size, data_);
   }
@@ -111,8 +111,8 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  List(InitialiserList<Elem> il) :
-    List(il.begin(), int(il.size()))
+  List(InitialiserList<Elem> il)
+    : List(il.begin(), int(il.size()))
   {}
 
   /**
@@ -126,15 +126,15 @@ public:
   /**
    * Copy constructor, copies elements.
    */
-  List(const List& other) :
-    List(other.data_, other.size_)
+  List(const List& other)
+    : List(other.data_, other.size_)
   {}
 
   /**
    * Move constructor, moves element storage.
    */
-  List(List&& other) :
-    data_(other.data_), size_(other.size_), capacity_(other.capacity_)
+  List(List&& other)
+    : data_(other.data_), size_(other.size_), capacity_(other.capacity_)
   {
     other.data_  = nullptr;
     other.size_ = 0;

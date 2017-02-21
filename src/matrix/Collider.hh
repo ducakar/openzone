@@ -156,8 +156,6 @@ public:
   void getOverlaps(const AABB& aabb, List<Struct*>* structs, List<Object*>* objects, float margin);
   void getOverlaps(const Entity* entity, List<Object*>* objects, float margin);
 
-
-
 };
 
 extern Collider collider;

@@ -28,9 +28,9 @@ namespace client
 namespace ui
 {
 
-Area::Area(int width_, int height_) :
-  flags(ENABLED_BIT | VISIBLE_BIT), parent(nullptr),
-  x(0), y(0), width(width_), height(height_), defaultX(0), defaultY(0)
+Area::Area(int width_, int height_)
+  : flags(ENABLED_BIT | VISIBLE_BIT), parent(nullptr),
+    x(0), y(0), width(width_), height(height_), defaultX(0), defaultY(0)
 {}
 
 Area::~Area()

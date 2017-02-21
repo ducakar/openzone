@@ -140,11 +140,11 @@ void ModelField::onDraw()
   isClicked     = false;
 }
 
-ModelField::ModelField(Callback* callback_, int size) :
-  Area(size, size), callback(callback_), bsp(nullptr), model(-1),
-  defaultRot(DEFAULT_ROTATION), currRot(DEFAULT_ROTATION), nextRot(DEFAULT_ROTATION),
-  clickMask(Input::LEFT_BUTTON), isHighlighted(false), isClicked(false), wasClicked(false),
-  id(-1)
+ModelField::ModelField(Callback* callback_, int size)
+  : Area(size, size), callback(callback_), bsp(nullptr), model(-1),
+    defaultRot(DEFAULT_ROTATION), currRot(DEFAULT_ROTATION), nextRot(DEFAULT_ROTATION),
+    clickMask(Input::LEFT_BUTTON), isHighlighted(false), isClicked(false), wasClicked(false),
+    id(-1)
 {}
 
 void ModelField::setDefaultRotation(float defaultRotation)

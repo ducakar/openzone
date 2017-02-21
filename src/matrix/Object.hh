@@ -206,8 +206,8 @@ public:
   public:
 
     OZ_ALWAYS_INLINE
-    explicit Event(int id_, float intensity_) :
-      id(id_), intensity(intensity_)
+    explicit Event(int id_, float intensity_)
+      : id(id_), intensity(intensity_)
     {}
 
     OZ_STATIC_POOL_ALLOC(pool)

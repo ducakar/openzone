@@ -55,24 +55,24 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  Quat() :
-    VectorBase4(0.0f, 0.0f, 0.0f, 1.0f)
+  Quat()
+    : VectorBase4(0.0f, 0.0f, 0.0f, 1.0f)
   {}
 
   /**
    * Create a quaternion with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit Quat(float x, float y, float z, float w) :
-    VectorBase4(x, y, z, w)
+  explicit Quat(float x, float y, float z, float w)
+    : VectorBase4(x, y, z, w)
   {}
 
   /**
    * Create from an array of 4 floats.
    */
   OZ_ALWAYS_INLINE
-  explicit Quat(const float* q) :
-    VectorBase4(q[0], q[1], q[2], q[3])
+  explicit Quat(const float* q)
+    : VectorBase4(q[0], q[1], q[2], q[3])
   {}
 
   /**

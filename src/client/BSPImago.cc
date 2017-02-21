@@ -26,8 +26,8 @@ namespace oz
 namespace client
 {
 
-BSPImago::BSPImago(const BSP* bsp) :
-  model("@bsp/" + bsp->name + ".ozcModel")
+BSPImago::BSPImago(const BSP* bsp)
+  : model("@bsp/" + bsp->name + ".ozcModel")
 {}
 
 BSPImago::~BSPImago()

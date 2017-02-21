@@ -192,9 +192,9 @@ void BuildFrame::startPlacement(ModelField* sender, bool isClicked)
     }
   }
   else {
-    const ObjectClass* clazz = buildFrame->mode == UNITS ? techGraph.allowedUnits[sender->id] :
-                               buildFrame->mode == ITEMS ? techGraph.allowedItems[sender->id] :
-                                                           techGraph.allowedObjects[sender->id];
+    const ObjectClass* clazz = buildFrame->mode == UNITS ? techGraph.allowedUnits[sender->id]
+                               : buildFrame->mode == ITEMS ? techGraph.allowedItems[sender->id]
+                               : techGraph.allowedObjects[sender->id];
 
     buildFrame->title.setText("%s", clazz->title.c());
 
@@ -316,9 +316,9 @@ void BuildFrame::onDraw()
     nScrollRows = max(0, (techGraph.allowedBuildings.size() + 2) / 3 - rows);
   }
   else {
-    const List<const ObjectClass*> allowed = mode == UNITS ? techGraph.allowedUnits :
-                                             mode == ITEMS ? techGraph.allowedItems :
-                                                             techGraph.allowedObjects;
+    const List<const ObjectClass*> allowed = mode == UNITS ? techGraph.allowedUnits
+                                             : mode == ITEMS ? techGraph.allowedItems
+                                             : techGraph.allowedObjects;
 
     for (int i = 0; i < rows * 3; ++i) {
       int index = scroll * 3 + i;
@@ -364,10 +364,10 @@ void BuildFrame::onDraw()
   isOverModel = false;
 }
 
-BuildFrame::BuildFrame() :
-  Frame(240, 54, OZ_GETTEXT("Buildings")), mode(BUILDINGS), models(nullptr),
-  overlayBSP(nullptr), overlayClass(nullptr), overlayHeading(NORTH),
-  rows(0), nScrollRows(0), scroll(0), isOverModel(false), wasOverModel(false)
+BuildFrame::BuildFrame()
+  : Frame(240, 54, OZ_GETTEXT("Buildings")), mode(BUILDINGS), models(nullptr),
+    overlayBSP(nullptr), overlayClass(nullptr), overlayHeading(NORTH),
+    rows(0), nScrollRows(0), scroll(0), isOverModel(false), wasOverModel(false)
 {}
 
 BuildFrame::~BuildFrame()

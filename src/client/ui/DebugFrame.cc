@@ -90,8 +90,8 @@ void DebugFrame::onDraw()
   }
 }
 
-DebugFrame::DebugFrame() :
-  Frame(560, 10 + 7 * (style.monoFont.height() + 2), OZ_GETTEXT("Debug"))
+DebugFrame::DebugFrame()
+  : Frame(560, 10 + 7 * (style.monoFont.height() + 2), OZ_GETTEXT("Debug"))
 {
   flags |= PINNED_BIT;
 

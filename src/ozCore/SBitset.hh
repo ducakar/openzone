@@ -66,8 +66,8 @@ public:
   /**
    * Initialise all bits to zero.
    */
-  SBitset() :
-    data_(SIZE)
+  SBitset()
+    : data_(SIZE)
   {}
 
   /**
@@ -76,8 +76,8 @@ public:
    * Characters other than '0' are treated as ones. The rest of the bitset is initialised to zeros
    * if the string is shorter than the bitset.
    */
-  explicit SBitset(const char* s) :
-    data_(SIZE)
+  explicit SBitset(const char* s)
+    : data_(SIZE)
   {
     for (int i = 0; s[i] != '\0'; ++i) {
       data_[i / UNIT_BITS] |= size_t(s[i] != '0') << (i % UNIT_BITS);

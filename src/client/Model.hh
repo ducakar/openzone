@@ -51,9 +51,9 @@ struct Texture
   uint masks;
   uint normals;
 
-  Texture() :
-    id(-1), albedo(shader.defaultTexture), masks(shader.defaultMasks),
-    normals(shader.defaultNormals)
+  Texture()
+    : id(-1), albedo(shader.defaultTexture), masks(shader.defaultMasks),
+      normals(shader.defaultNormals)
   {}
 };
 

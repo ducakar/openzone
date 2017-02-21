@@ -171,8 +171,8 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  Map(InitialiserList<Pair> il) :
-    Set<Pair>(il)
+  Map(InitialiserList<Pair> il)
+    : Set<Pair>(il)
   {}
 
   /**

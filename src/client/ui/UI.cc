@@ -42,11 +42,11 @@ namespace client
 namespace ui
 {
 
-UI::UI() :
-  fps(0.0f), fpsLabel(nullptr), isFreelook(false), showFPS(false), showDebug(false),
-  isVisible(true), root(nullptr), loadingScreen(nullptr), hudArea(nullptr), strategicArea(nullptr),
-  questFrame(nullptr), galileoFrame(nullptr), musicPlayer(nullptr), inventory(nullptr),
-  buildFrame(nullptr), debugFrame(nullptr)
+UI::UI()
+  : fps(0.0f), fpsLabel(nullptr), isFreelook(false), showFPS(false), showDebug(false),
+    isVisible(true), root(nullptr), loadingScreen(nullptr), hudArea(nullptr),
+    strategicArea(nullptr), questFrame(nullptr), galileoFrame(nullptr), musicPlayer(nullptr),
+    inventory(nullptr), buildFrame(nullptr), debugFrame(nullptr)
 {}
 
 void UI::showLoadingScreen(bool doShow)

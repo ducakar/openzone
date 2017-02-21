@@ -167,8 +167,8 @@ Thread::~Thread()
   }
 }
 
-Thread::Thread(Thread&& other) :
-  descriptor_(other.descriptor_)
+Thread::Thread(Thread&& other)
+  : descriptor_(other.descriptor_)
 {
   other.descriptor_ = nullptr;
 }

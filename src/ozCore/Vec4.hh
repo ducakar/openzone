@@ -66,27 +66,27 @@ public:
    * Create a vector with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit Vec4(float x, float y, float z, float w) :
-    VectorBase4(x, y, z, w)
+  explicit Vec4(float x, float y, float z, float w)
+    : VectorBase4(x, y, z, w)
   {}
 
   /**
    * Create from an array of 4 floats.
    */
   OZ_ALWAYS_INLINE
-  explicit Vec4(const float* v) :
-    VectorBase4(v[0], v[1], v[2], v[3])
+  explicit Vec4(const float* v)
+    : VectorBase4(v[0], v[1], v[2], v[3])
   {}
 
   /**
    * Create vector from a point (the additional component is one).
    */
   OZ_ALWAYS_INLINE
-  explicit Vec4(const Point& p) :
+  explicit Vec4(const Point& p)
 #ifdef OZ_SIMD
-    VectorBase4(p.f4)
+    : VectorBase4(p.f4)
 #else
-    VectorBase4(p.x, p.y, p.z, 1.0f)
+    : VectorBase4(p.x, p.y, p.z, 1.0f)
 #endif
   {}
 

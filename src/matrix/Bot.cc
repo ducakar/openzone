@@ -1094,8 +1094,8 @@ float Bot::getStatus() const
   return max(stamina / clazz->stamina, 0.0f);
 }
 
-Bot::Bot(const BotClass* clazz_, int index, const Point& p_, Heading heading) :
-  Dynamic(clazz_, index, p_, heading)
+Bot::Bot(const BotClass* clazz_, int index, const Point& p_, Heading heading)
+  : Dynamic(clazz_, index, p_, heading)
 {
   h          = float(heading) * Math::TAU / 4.0f;
   v          = Math::TAU / 4.0f;
@@ -1121,8 +1121,8 @@ Bot::Bot(const BotClass* clazz_, int index, const Point& p_, Heading heading) :
   mind       = clazz_->mind;
 }
 
-Bot::Bot(const BotClass* clazz_, int index, const Json& json) :
-  Dynamic(clazz_, index, json)
+Bot::Bot(const BotClass* clazz_, int index, const Json& json)
+  : Dynamic(clazz_, index, json)
 {
   h          = json["h"].get(0.0f);
   v          = json["v"].get(0.0f);
@@ -1163,8 +1163,8 @@ Bot::Bot(const BotClass* clazz_, int index, const Json& json) :
   }
 }
 
-Bot::Bot(const BotClass* clazz_, Stream* is) :
-  Dynamic(clazz_, is)
+Bot::Bot(const BotClass* clazz_, Stream* is)
+  : Dynamic(clazz_, is)
 {
   h          = is->readFloat();
   v          = is->readFloat();

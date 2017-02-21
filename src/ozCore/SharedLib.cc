@@ -54,8 +54,8 @@ SharedLib::~SharedLib()
   close();
 }
 
-SharedLib::SharedLib(SharedLib&& l) :
-  handle_(l.handle_)
+SharedLib::SharedLib(SharedLib&& l)
+  : handle_(l.handle_)
 {
   l.handle_ = nullptr;
 }

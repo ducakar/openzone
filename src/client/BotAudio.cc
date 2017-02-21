@@ -31,8 +31,8 @@ const float BotAudio::FOOTSTEP_DISTANCE_SQ = 32.0f*32.0f;
 
 Pool<BotAudio> BotAudio::pool(256);
 
-BotAudio::BotAudio(const Object* obj) :
-  BasicAudio(obj), prevStep(0)
+BotAudio::BotAudio(const Object* obj)
+  : BasicAudio(obj), prevStep(0)
 {}
 
 Audio* BotAudio::create(const Object* obj)

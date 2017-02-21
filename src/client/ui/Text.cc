@@ -50,8 +50,8 @@ void Text::realign()
   }
 }
 
-Text::Text(int x_, int y_, int width_, int align_, Font* font_, const char* s, ...) :
-  x(x_), y(y_), width(width_), align(align_), font(font_)
+Text::Text(int x_, int y_, int width_, int align_, Font* font_, const char* s, ...)
+  : x(x_), y(y_), width(width_), align(align_), font(font_)
 {
   va_list ap;
   va_start(ap, s);
@@ -64,9 +64,9 @@ Text::~Text()
   clear();
 }
 
-Text::Text(Text&& l) :
-  x(l.x), y(l.y), width(l.width), align(l.align), font(l.font), lastHash(l.lastHash),
-  texX(l.texX), texY(l.texY), texWidth(l.texWidth), texHeight(l.texHeight), texId(l.texId)
+Text::Text(Text&& l)
+  : x(l.x), y(l.y), width(l.width), align(l.align), font(l.font), lastHash(l.lastHash),
+    texX(l.texX), texY(l.texY), texWidth(l.texWidth), texHeight(l.texHeight), texId(l.texId)
 {
   l.x         = 0;
   l.y         = 0;

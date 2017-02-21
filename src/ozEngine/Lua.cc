@@ -34,8 +34,8 @@
 namespace oz
 {
 
-Lua::Result::Result(lua_State* l) :
-  l_(l)
+Lua::Result::Result(lua_State* l)
+  : l_(l)
 {}
 
 void Lua::Result::read(int index, bool& value) const
@@ -76,8 +76,8 @@ Lua::Result::~Result()
   }
 }
 
-Lua::Result::Result(Result&& other) :
-  l_(other.l_)
+Lua::Result::Result(Result&& other)
+  : l_(other.l_)
 {
   other.l_ = nullptr;
 }
@@ -92,12 +92,12 @@ Lua::Result& Lua::Result::operator=(Lua::Result&& other)
   return *this;
 }
 
-Lua::Field::Field(lua_State* l, const Field* parent, const char* name) :
-  l_(l), parent_(parent), name_(name), index_(0)
+Lua::Field::Field(lua_State* l, const Field* parent, const char* name)
+  : l_(l), parent_(parent), name_(name), index_(0)
 {}
 
-Lua::Field::Field(lua_State* l, const Field* parent, int index) :
-  l_(l), parent_(parent), name_(nullptr), index_(index)
+Lua::Field::Field(lua_State* l, const Field* parent, int index)
+  : l_(l), parent_(parent), name_(nullptr), index_(index)
 {
   OZ_ASSERT(parent != nullptr);
 }
@@ -524,8 +524,8 @@ Lua::~Lua()
   destroy();
 }
 
-Lua::Lua(Lua&& other) :
-  l_(other.l_)
+Lua::Lua(Lua&& other)
+  : l_(other.l_)
 {
   other.l_ = nullptr;
 }

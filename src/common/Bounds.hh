@@ -52,8 +52,8 @@ public:
    * Create from a given minimal and maximal point.
    */
   OZ_ALWAYS_INLINE
-  explicit Bounds(const Point& mins_, const Point& maxs_) :
-    mins(mins_), maxs(maxs_)
+  explicit Bounds(const Point& mins_, const Point& maxs_)
+    : mins(mins_), maxs(maxs_)
   {}
 
   /**

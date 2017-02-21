@@ -99,8 +99,8 @@ public:
   /**
    * Create an instance for a given path.
    */
-  File(const char* path) :
-    String(path)
+  File(const char* path)
+    : String(path)
   {}
 
   /**

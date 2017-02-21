@@ -76,8 +76,9 @@ static int ozPrintln(lua_State* l)
 
   OZ_ASSERT(ls.envName != nullptr);
 
-  const char* s = l_type(1) == LUA_TBOOLEAN ? (l_tobool(1) ? "true" : "false") :
-                                              l_tostring(1);
+  const char* s = l_type(1) == LUA_TBOOLEAN
+                  ? (l_tobool(1) ? "true" : "false")
+                  : l_tostring(1);
 
   Log::println("Lua:%s> %s", ls.envName, s);
   return 0;

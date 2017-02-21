@@ -158,10 +158,10 @@ void MainMenu::onDraw()
   drawChildren();
 }
 
-MainMenu::MainMenu() :
-  Area(camera.width, camera.height),
-  copyright(20, 10, 360, Area::ALIGN_NONE, &style.smallFont, ""),
-  title(-120, -20, 0, ALIGN_HCENTRE | ALIGN_VCENTRE, &style.largeFont, "OpenZone " OZ_VERSION)
+MainMenu::MainMenu()
+  : Area(camera.width, camera.height),
+    copyright(20, 10, 360, Area::ALIGN_NONE, &style.smallFont, ""),
+    title(-120, -20, 0, ALIGN_HCENTRE | ALIGN_VCENTRE, &style.largeFont, "OpenZone " OZ_VERSION)
 {
   flags |= UPDATE_BIT;
 

@@ -25,8 +25,8 @@
 namespace oz
 {
 
-BSP::BSP(const char* name_, int id_) :
-  data(nullptr), name(name_), id(id_)
+BSP::BSP(const char* name_, int id_)
+  : data(nullptr), name(name_), id(id_)
 {}
 
 void BSP::load()

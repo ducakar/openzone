@@ -28,8 +28,8 @@ struct Foo
   Foo* next[1];
   Foo* prev[1];
 
-  Foo(int n = 0) :
-    number(n)
+  Foo(int n = 0)
+    : number(n)
   {
     Log() << "Foo(int) : " << number;
   }
@@ -39,14 +39,14 @@ struct Foo
     Log() << "~Foo() : " << number;
   }
 
-  Foo(const Foo& f) :
-    number(f.number)
+  Foo(const Foo& f)
+    : number(f.number)
   {
     Log() << "Foo(const Foo&) : " << number;
   }
 
-  Foo(Foo&& f) :
-    number(f.number)
+  Foo(Foo&& f)
+    : number(f.number)
   {
     Log() << "Foo(Foo&&) : " << number;
   }

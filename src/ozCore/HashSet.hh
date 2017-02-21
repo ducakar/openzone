@@ -87,8 +87,8 @@ protected:
     /**
      * Create hashtable iterator, initially pointing to the first hashtable element.
      */
-    explicit HashIterator(const HashSet& table) :
-      detail::IteratorBase<EntryType>(nullptr), table_(&table), index_(0)
+    explicit HashIterator(const HashSet& table)
+      : detail::IteratorBase<EntryType>(nullptr), table_(&table), index_(0)
     {
       while (elem_ == nullptr && index_ < table_->capacity_) {
         elem_ = table_->data_[index_];
@@ -287,8 +287,8 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  HashSet(InitialiserList<Elem> il) :
-    HashSet(int(il.size()) * 4 / 3)
+  HashSet(InitialiserList<Elem> il)
+    : HashSet(int(il.size()) * 4 / 3)
   {
     for (const Elem& e : il) {
       add(e);
@@ -307,8 +307,8 @@ public:
   /**
    * Copy constructor, copies elements but does not preserve bucket array length.
    */
-  HashSet(const HashSet& ht) :
-    HashSet(ht.pool_.size() * 4 / 3)
+  HashSet(const HashSet& ht)
+    : HashSet(ht.pool_.size() * 4 / 3)
   {
     for (const Elem& e : ht) {
       add(e);
@@ -318,8 +318,8 @@ public:
   /**
    * Move constructor, moves storage.
    */
-  HashSet(HashSet&& other) :
-    pool_(static_cast<Pool<Entry>&&>(other.pool_)), data_(other.data_), capacity_(other.capacity_)
+  HashSet(HashSet&& other)
+    : pool_(static_cast<Pool<Entry>&&>(other.pool_)), data_(other.data_), capacity_(other.capacity_)
   {
     other.data_     = nullptr;
     other.capacity_ = 0;

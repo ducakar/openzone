@@ -38,10 +38,12 @@ void GalileoFrame::onRealign()
 {
   int maxSize     = camera.height < camera.width ? camera.height - 64 : camera.width - 64;
 
-  normalX         = defaultX < 0 ? parent->x + parent->width - normalWidth + defaultX :
-                                   parent->x + defaultX;
-  normalY         = defaultY < 0 ? parent->y + parent->height - normalHeight + defaultY :
-                                   parent->y + defaultY;
+  normalX         = defaultX < 0
+                    ? parent->x + parent->width - normalWidth + defaultX
+                    : parent->x + defaultX;
+  normalY         = defaultY < 0
+                    ? parent->y + parent->height - normalHeight + defaultY
+                    : parent->y + defaultY;
 
   maximisedX      = camera.centreX - maxSize / 2;
   maximisedY      = camera.centreY - maxSize / 2;
@@ -141,9 +143,9 @@ void GalileoFrame::onDraw()
   glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 }
 
-GalileoFrame::GalileoFrame() :
-  Frame(240, 232 - HEADER_SIZE, ""), mapTexId(0), colour(style.colours.galileoNormal),
-  clickX(Math::NaN), clickY(Math::NaN), isMaximised(false)
+GalileoFrame::GalileoFrame()
+  : Frame(240, 232 - HEADER_SIZE, ""), mapTexId(0), colour(style.colours.galileoNormal),
+    clickX(Math::NaN), clickY(Math::NaN), isMaximised(false)
 {
   flags |= UPDATE_BIT | PINNED_BIT;
 

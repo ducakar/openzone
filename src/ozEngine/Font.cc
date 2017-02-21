@@ -43,8 +43,8 @@ void Font::close()
   fileBuffer.free();
 }
 
-Font::Font(const File& file, int height) :
-  fontHeight(height), fileBuffer(file.read())
+Font::Font(const File& file, int height)
+  : fontHeight(height), fileBuffer(file.read())
 {
   if (fileBuffer.available() == 0) {
     OZ_ERROR("oz::Font: Failed to read font file `%s'", file.c());
@@ -67,8 +67,8 @@ Font::~Font()
   close();
 }
 
-Font::Font(Font&& f) :
-  handle(f.handle), fontHeight(f.fontHeight), fileBuffer(static_cast<Stream&&>(f.fileBuffer))
+Font::Font(Font&& f)
+  : handle(f.handle), fontHeight(f.fontHeight), fileBuffer(static_cast<Stream&&>(f.fileBuffer))
 {
   f.handle     = nullptr;
   f.fontHeight = 0;
@@ -99,9 +99,9 @@ void Font::sizeOf(const char* s, int* width, int* height) const
 void Font::upload(const char* s, int* width, int* height) const
 {
   TTF_Font*    font    = static_cast<TTF_Font*>(handle);
-  SDL_Surface* surface = width != nullptr && *width > 0 ?
-                         TTF_RenderUTF8_Blended_Wrapped(font, s, WHITE_COLOUR, *width) :
-                         TTF_RenderUTF8_Blended(font, s, WHITE_COLOUR);
+  SDL_Surface* surface = width != nullptr && *width > 0
+                         ? TTF_RenderUTF8_Blended_Wrapped(font, s, WHITE_COLOUR, *width)
+                         : TTF_RenderUTF8_Blended(font, s, WHITE_COLOUR);
 
   if (surface == nullptr) {
     OZ_ERROR("oz::Font: %s", TTF_GetError());

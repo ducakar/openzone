@@ -60,24 +60,24 @@ public:
    * Create form a pair of normal and distance from the origin.
    */
   OZ_ALWAYS_INLINE
-  explicit Plane(const Vec3& n_, float d_) :
-    n(n_), d(d_)
+  explicit Plane(const Vec3& n_, float d_)
+    : n(n_), d(d_)
   {}
 
   /**
    * Create from an array of 4 floats.
    */
   OZ_ALWAYS_INLINE
-  explicit Plane(const float* p) :
-    n(p[0], p[1], p[2]), d(p[3])
+  explicit Plane(const float* p)
+    : n(p[0], p[1], p[2]), d(p[3])
   {}
 
   /**
    * Create with given member values.
    */
   OZ_ALWAYS_INLINE
-  explicit Plane(float nx, float ny, float nz, float d_) :
-    n(nx, ny, nz), d(d_)
+  explicit Plane(float nx, float ny, float nz, float d_)
+    : n(nx, ny, nz), d(d_)
   {}
 
   /**

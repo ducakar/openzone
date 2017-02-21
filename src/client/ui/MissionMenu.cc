@@ -55,8 +55,8 @@ bool MissionButton::onMouseEvent()
 }
 
 MissionButton::MissionButton(const char* text, Callback* callback, MissionMenu* missionMenu_,
-                             int index_, int width, int height) :
-  Button(text, callback, width, height), missionMenu(missionMenu_), index(index_)
+                             int index_, int width, int height)
+  : Button(text, callback, width, height), missionMenu(missionMenu_), index(index_)
 {}
 
 void MissionMenu::loadMission(Button* sender)
@@ -177,10 +177,10 @@ MissionMenu::~MissionMenu()
   OZ_GL_CHECK_ERROR();
 }
 
-MissionMenu::MissionMenu() :
-  Area(camera.width, camera.height),
-  description(40, 190, width - 320, ALIGN_TOP, &style.sansFont, ""),
-  imageId(0)
+MissionMenu::MissionMenu()
+  : Area(camera.width, camera.height),
+    description(40, 190, width - 320, ALIGN_TOP, &style.sansFont, ""),
+    imageId(0)
 {
   Button* backButton = new Button(OZ_GETTEXT("Back"), back, 200, 30);
   add(backButton, -20, 20);

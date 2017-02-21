@@ -208,8 +208,9 @@ void StrategicArea::drawHoverRect(const Span& span, const Struct* str, const Obj
   else {
     const ObjectClass* clazz = obj->clazz;
 
-    life   = obj->flags & Object::BOT_BIT ? (2.0f * obj->life - clazz->life) / clazz->life :
-                                            obj->life / clazz->life;
+    life   = obj->flags & Object::BOT_BIT
+             ? (2.0f * obj->life - clazz->life) / clazz->life
+             : obj->life / clazz->life;
     status = obj->status();
   }
 
@@ -246,8 +247,9 @@ void StrategicArea::drawTagRect(const Span& span, const Struct* str, const Objec
     else {
       float maxLife = obj->clazz->life;
 
-      life   = obj->flags & Object::BOT_BIT ? (2.0f * obj->life - maxLife) / maxLife :
-                                              obj->life / maxLife;
+      life   = obj->flags & Object::BOT_BIT
+               ? (2.0f * obj->life - maxLife) / maxLife
+               : obj->life / maxLife;
       status = obj->status();
     }
 
@@ -452,12 +454,12 @@ void StrategicArea::onDraw()
   dragObjs.clear();
 }
 
-StrategicArea::StrategicArea() :
-  Area(camera.width, camera.height),
-  unitName(0, 0, 0, ALIGN_HCENTRE, &style.sansFont, ""),
-  overlayCallback(nullptr), overlaySender(nullptr),
-  hoverStr(-1), hoverEnt(-1), hoverObj(-1), taggedStr(-1),
-  mouseW(0.0f)
+StrategicArea::StrategicArea()
+  : Area(camera.width, camera.height),
+    unitName(0, 0, 0, ALIGN_HCENTRE, &style.sansFont, ""),
+    overlayCallback(nullptr), overlaySender(nullptr),
+    hoverStr(-1), hoverEnt(-1), hoverObj(-1), taggedStr(-1),
+    mouseW(0.0f)
 {
   flags |= UPDATE_BIT | PINNED_BIT;
 }

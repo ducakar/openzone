@@ -86,8 +86,8 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  Heap(InitialiserList<Elem> il) :
-    List<Elem>(int(il.size()))
+  Heap(InitialiserList<Elem> il)
+    : List<Elem>(int(il.size()))
   {
     size_ = 0;
 

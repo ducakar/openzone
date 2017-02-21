@@ -257,8 +257,8 @@ String::String(const char* s, int length)
   begin[size_] = '\0';
 }
 
-String::String(const char* s, const char* t) :
-  String(s, length(s), t, length(t))
+String::String(const char* s, const char* t)
+  : String(s, length(s), t, length(t))
 {}
 
 String::String(const char* s, int sLength, const char* t, int tLength)
@@ -269,8 +269,8 @@ String::String(const char* s, int sLength, const char* t, int tLength)
   memcpy(begin + sLength, t, tLength + 1);
 }
 
-String::String(bool b) :
-  String(b ? "true" : "false", 5)
+String::String(bool b)
+  : String(b ? "true" : "false", 5)
 {}
 
 #pragma GCC diagnostic push
@@ -295,8 +295,8 @@ String::~String()
   }
 }
 
-String::String(const String& other) :
-  String(other.begin(), other.size_)
+String::String(const String& other)
+  : String(other.begin(), other.size_)
 {}
 
 String::String(String&& other)

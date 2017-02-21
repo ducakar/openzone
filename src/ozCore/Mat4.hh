@@ -66,16 +66,16 @@ public:
    * Create matrix with given columns.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat4(const Vec4& a, const Vec4& b, const Vec4& c, const Vec4& d) :
-    x(a), y(b), z(c), w(d)
+  explicit Mat4(const Vec4& a, const Vec4& b, const Vec4& c, const Vec4& d)
+    : x(a), y(b), z(c), w(d)
   {}
 
   /**
    * Create matrix for base vector images `a`, `b`, `c` and translation `d`.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat4(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d) :
-    x(a), y(b), z(c), w(d.x, d.y, d.z, 1.0f)
+  explicit Mat4(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d)
+    : x(a), y(b), z(c), w(d.x, d.y, d.z, 1.0f)
   {}
 
   /**
@@ -85,27 +85,27 @@ public:
   explicit Mat4(float xx, float xy, float xz, float xw,
                 float yx, float yy, float yz, float yw,
                 float zx, float zy, float zz, float zw,
-                float wx, float wy, float wz, float ww) :
-    x(xx, xy, xz, xw),
-    y(yx, yy, yz, yw),
-    z(zx, zy, zz, zw),
-    w(wx, wy, wz, ww)
+                float wx, float wy, float wz, float ww)
+    : x(xx, xy, xz, xw),
+      y(yx, yy, yz, yw),
+      z(zx, zy, zz, zw),
+      w(wx, wy, wz, ww)
   {}
 
   /**
    * Create matrix from an array of 16 floats.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat4(const float* v) :
-    x(&v[0]), y(&v[4]), z(&v[8]), w(&v[12])
+  explicit Mat4(const float* v)
+    : x(&v[0]), y(&v[4]), z(&v[8]), w(&v[12])
   {}
 
   /**
    * Create from a 3x3 matrix.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat4(const Mat3& m) :
-    x(m.x), y(m.y), z(m.z), w(Vec4::ID)
+  explicit Mat4(const Mat3& m)
+    : x(m.x), y(m.y), z(m.z), w(Vec4::ID)
   {}
 
   /**
@@ -559,8 +559,8 @@ inline Mat4 clamp(const Mat4& c, const Mat4& a, const Mat4& b)
               clamp(c.w, a.w, b.w));
 }
 
-inline Mat3::Mat3(const Mat4& m) :
-  Mat3(Vec3(m.x), Vec3(m.y), Vec3(m.z))
+inline Mat3::Mat3(const Mat4& m)
+  : Mat3(Vec3(m.x), Vec3(m.y), Vec3(m.z))
 {}
 
 }

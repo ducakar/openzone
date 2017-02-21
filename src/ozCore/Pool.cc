@@ -70,8 +70,8 @@ struct PoolAlloc::Block
   }
 };
 
-PoolAlloc::PoolAlloc(int slotSize, int blockSlots) :
-  slotSize_(slotSize), blockSlots_(blockSlots)
+PoolAlloc::PoolAlloc(int slotSize, int blockSlots)
+  : slotSize_(slotSize), blockSlots_(blockSlots)
 {}
 
 PoolAlloc::~PoolAlloc()
@@ -79,9 +79,9 @@ PoolAlloc::~PoolAlloc()
   free();
 }
 
-PoolAlloc::PoolAlloc(PoolAlloc&& other) :
-  firstBlock_(other.firstBlock_), freeSlot_(other.freeSlot_), slotSize_(other.slotSize_),
-  blockSlots_(other.blockSlots_), size_(other.size_), capacity_(other.capacity_)
+PoolAlloc::PoolAlloc(PoolAlloc&& other)
+  : firstBlock_(other.firstBlock_), freeSlot_(other.freeSlot_), slotSize_(other.slotSize_),
+    blockSlots_(other.blockSlots_), size_(other.size_), capacity_(other.capacity_)
 {
   other.firstBlock_ = nullptr;
   other.freeSlot_   = nullptr;

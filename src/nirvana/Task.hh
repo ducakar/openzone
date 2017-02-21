@@ -52,8 +52,8 @@ public:
   static Task* create(const Task* parent);
   static Task* read(Stream* is, const Task* parent);
 
-  explicit Task(Mind* mind_, Task* parent_) :
-    flags(0), mind(mind_), parent(parent_)
+  explicit Task(Mind* mind_, Task* parent_)
+    : flags(0), mind(mind_), parent(parent_)
   {}
 
   virtual ~Task();

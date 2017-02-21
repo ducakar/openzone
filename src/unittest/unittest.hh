@@ -55,26 +55,26 @@ struct Foo : oz::DChainNode<Foo>
 
   int value;
 
-  Foo() :
-    value(-1)
+  Foo()
+    : value(-1)
   {}
 
-  Foo(const Foo& f) :
-    value(f.value)
+  Foo(const Foo& f)
+    : value(f.value)
   {
     OZ_CHECK(allowCopy);
   }
 
-  Foo(Foo&& f) :
-    value(f.value)
+  Foo(Foo&& f)
+    : value(f.value)
   {
     OZ_CHECK(allowMove);
 
     f.value = -1;
   }
 
-  Foo(int i) :
-    value(i)
+  Foo(int i)
+    : value(i)
   {}
 
   Foo& operator=(const Foo& f)

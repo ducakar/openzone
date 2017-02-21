@@ -133,8 +133,8 @@ struct Node
   Node*       prev[1];
   Node*       next[1];
 
-  explicit Node(const char* name_ = "", Node* parent_ = nullptr) :
-    transf(Mat4::ID), mesh(-1), name(name_), includeInBounds(true), parent(parent_)
+  explicit Node(const char* name_ = "", Node* parent_ = nullptr)
+    : transf(Mat4::ID), mesh(-1), name(name_), includeInBounds(true), parent(parent_)
   {}
 
   Node& operator=(Node&&) = default;

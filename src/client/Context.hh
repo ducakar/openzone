@@ -74,8 +74,8 @@ private:
     uint    id;
     int     sound;
 
-    explicit Source(uint sourceId, int sound_) :
-      id(sourceId), sound(sound_)
+    explicit Source(uint sourceId, int sound_)
+      : id(sourceId), sound(sound_)
     {}
 
     static Pool<Source> pool;

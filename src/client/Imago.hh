@@ -52,8 +52,8 @@ public:
 
 protected:
 
-  explicit Imago(const Object* obj_) :
-    obj(obj_), clazz(obj_->clazz), flags(0)
+  explicit Imago(const Object* obj_)
+    : obj(obj_), clazz(obj_->clazz), flags(0)
   {}
 
 public:

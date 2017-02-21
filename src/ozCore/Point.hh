@@ -60,16 +60,16 @@ public:
    * Create a point with given coordinates.
    */
   OZ_ALWAYS_INLINE
-  explicit Point(float x, float y, float z) :
-    VectorBase3(x, y, z, 1.0f)
+  explicit Point(float x, float y, float z)
+    : VectorBase3(x, y, z, 1.0f)
   {}
 
   /**
    * Create from an array of 3 floats.
    */
   OZ_ALWAYS_INLINE
-  explicit Point(const float* v) :
-    VectorBase3(v[0], v[1], v[2], 1.0f)
+  explicit Point(const float* v)
+    : VectorBase3(v[0], v[1], v[2], 1.0f)
   {}
 
   /**

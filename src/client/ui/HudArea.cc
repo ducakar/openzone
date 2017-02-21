@@ -298,18 +298,18 @@ void HudArea::onDraw()
   drawChildren();
 }
 
-HudArea::HudArea() :
-  Area(camera.width, camera.height),
-  title(0, 0, 0, ALIGN_CENTRE, &style.largeFont, ""),
-  weaponName(0, 0, 0, ALIGN_LEFT, &style.largeFont, ""),
-  weaponRounds(0, 0, 0, ALIGN_RIGHT, &style.largeFont, "∞"),
-  taggedLife(&style.taggedLife),
-  taggedStatus(&style.taggedStatus),
-  botLife(&style.botLife),
-  botStamina(&style.botStamina),
-  vehicleHull(&style.vehicleHull),
-  vehicleFuel(&style.vehicleFuel),
-  vehicleModel(nullptr)
+HudArea::HudArea()
+  : Area(camera.width, camera.height),
+    title(0, 0, 0, ALIGN_CENTRE, &style.largeFont, ""),
+    weaponName(0, 0, 0, ALIGN_LEFT, &style.largeFont, ""),
+    weaponRounds(0, 0, 0, ALIGN_RIGHT, &style.largeFont, "∞"),
+    taggedLife(&style.taggedLife),
+    taggedStatus(&style.taggedStatus),
+    botLife(&style.botLife),
+    botStamina(&style.botStamina),
+    vehicleHull(&style.vehicleHull),
+    vehicleFuel(&style.vehicleFuel),
+    vehicleModel(nullptr)
 {
   flags |= UPDATE_BIT | PINNED_BIT;
 

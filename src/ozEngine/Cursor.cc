@@ -37,8 +37,8 @@ namespace oz
 
 const Cursor::Image* Cursor::lastImage = nullptr;
 
-Cursor::Cursor(const File& file, Mode mode, int size) :
-  mode_(mode)
+Cursor::Cursor(const File& file, Mode mode, int size)
+  : mode_(mode)
 {
   Stream is = file.read(Endian::LITTLE);
 
@@ -149,9 +149,9 @@ Cursor::~Cursor()
   destroy();
 }
 
-Cursor::Cursor(Cursor&& other) :
-  mode_(other.mode_), frame_(other.frame_), lastFrame_(-1), frameTime_(other.frameTime_),
-  images_(static_cast<List<Image>&&>(other.images_))
+Cursor::Cursor(Cursor&& other)
+  : mode_(other.mode_), frame_(other.frame_), lastFrame_(-1), frameTime_(other.frameTime_),
+    images_(static_cast<List<Image>&&>(other.images_))
 {
   other.mode_      = SYSTEM;
   other.frame_     = 0;

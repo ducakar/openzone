@@ -22,8 +22,8 @@
 namespace oz
 {
 
-QuestList::QuestList() :
-  activeQuest(-1)
+QuestList::QuestList()
+  : activeQuest(-1)
 {}
 
 void QuestList::add(const char* title, const char* description, const Point& place,

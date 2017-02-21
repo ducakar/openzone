@@ -47,14 +47,14 @@ private:
 
 private:
 
-  explicit MD2Imago(const Bot* bot) :
-    Imago(bot), anim(bot)
+  explicit MD2Imago(const Bot* bot)
+    : Imago(bot), anim(bot)
   {
     flags |= Imago::MD2MODEL_BIT;
   }
 
-  explicit MD2Imago(const Vehicle* vehicle) :
-    Imago(vehicle), anim(vehicle)
+  explicit MD2Imago(const Vehicle* vehicle)
+    : Imago(vehicle), anim(vehicle)
   {
     flags |= Imago::MD2MODEL_BIT;
   }

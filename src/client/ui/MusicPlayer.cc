@@ -154,12 +154,12 @@ void MusicPlayer::onDraw()
   volumeLabel.draw(this);
 }
 
-MusicPlayer::MusicPlayer() :
-  Frame(240, 36 + style.smallFont.height(), OZ_GETTEXT("Music Player")),
-  trackTitle(width / 2, 32, 0, ALIGN_HCENTRE, &style.smallFont, ""),
-  trackLabel(39, 14, 0, ALIGN_CENTRE, &style.smallFont, "0"),
-  volumeLabel(201, 14, 0, ALIGN_CENTRE, &style.smallFont, "5"),
-  currentTrack(0), volume(5), isPlaying(false)
+MusicPlayer::MusicPlayer()
+  : Frame(240, 36 + style.smallFont.height(), OZ_GETTEXT("Music Player")),
+    trackTitle(width / 2, 32, 0, ALIGN_HCENTRE, &style.smallFont, ""),
+    trackLabel(39, 14, 0, ALIGN_CENTRE, &style.smallFont, "0"),
+    volumeLabel(201, 14, 0, ALIGN_CENTRE, &style.smallFont, "5"),
+    currentTrack(0), volume(5), isPlaying(false)
 {
   flags |= UPDATE_BIT;
 

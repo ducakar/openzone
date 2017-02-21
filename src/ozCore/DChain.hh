@@ -118,8 +118,8 @@ public:
   /**
    * Move constructor, rebinds elements to the new chain.
    */
-  DChain(DChain&& other) :
-    Chain<Elem, INDEX>(static_cast<DChain&&>(other)), last_(other.last_)
+  DChain(DChain&& other)
+    : Chain<Elem, INDEX>(static_cast<DChain&&>(other)), last_(other.last_)
   {
     other.last_ = nullptr;
   }

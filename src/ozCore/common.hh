@@ -207,8 +207,8 @@ protected:
    * Create an iterator pointing to a given element.
    */
   OZ_ALWAYS_INLINE
-  explicit IteratorBase(Elem* first) :
-    elem_(first)
+  explicit IteratorBase(Elem* first)
+    : elem_(first)
   {}
 
 public:

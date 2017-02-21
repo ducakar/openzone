@@ -147,8 +147,8 @@ public:
   }
 
   OZ_INTERNAL
-  explicit Parser(Stream* is_, const char* path_) :
-    is(is_), path(path_), line(1), column(0), oldLine(1), oldColumn(0)
+  explicit Parser(Stream* is_, const char* path_)
+    : is(is_), path(path_), line(1), column(0), oldLine(1), oldColumn(0)
   {}
 
   OZ_INTERNAL
@@ -640,8 +640,8 @@ static char* cloneString(const char* s)
 
 const Json::Format Json::DEFAULT_FORMAT = {2, 32, "%.9g", "\n"};
 
-Json::Json(const float* vector, int count, const char* comment) :
-  data_(new ArrayData{List<Json>(count)}), comment_(cloneString(comment)), type_(ARRAY)
+Json::Json(const float* vector, int count, const char* comment)
+  : data_(new ArrayData{List<Json>(count)}), comment_(cloneString(comment)), type_(ARRAY)
 {
   List<Json>& list = static_cast<ArrayData*>(data_)->list;
 
@@ -701,8 +701,8 @@ bool Json::getVector(float* vector, int count) const
   return true;
 }
 
-Json::Json(Type type) :
-  type_(type)
+Json::Json(Type type)
+  : type_(type)
 {
   switch (type) {
     default: {
@@ -723,72 +723,72 @@ Json::Json(Type type) :
   }
 }
 
-Json::Json(nullptr_t, const char* comment) :
-  comment_(cloneString(comment))
+Json::Json(nullptr_t, const char* comment)
+  : comment_(cloneString(comment))
 {}
 
-Json::Json(bool value, const char* comment) :
-  boolean_(value), comment_(cloneString(comment)), type_(BOOLEAN)
+Json::Json(bool value, const char* comment)
+  : boolean_(value), comment_(cloneString(comment)), type_(BOOLEAN)
 {}
 
-Json::Json(int value, const char* comment) :
-  Json(double(value), comment)
+Json::Json(int value, const char* comment)
+  : Json(double(value), comment)
 {}
 
-Json::Json(float value, const char* comment) :
-  Json(double(value), comment)
+Json::Json(float value, const char* comment)
+  : Json(double(value), comment)
 {}
 
-Json::Json(double value, const char* comment) :
-  number_(value), comment_(cloneString(comment)), type_(NUMBER)
+Json::Json(double value, const char* comment)
+  : number_(value), comment_(cloneString(comment)), type_(NUMBER)
 {}
 
-Json::Json(const String& value, const char* comment) :
-  data_(new StringData{value}), comment_(cloneString(comment)), type_(STRING)
+Json::Json(const String& value, const char* comment)
+  : data_(new StringData{value}), comment_(cloneString(comment)), type_(STRING)
 {}
 
-Json::Json(const char* value, const char* comment) :
-  data_(new StringData{value}), comment_(cloneString(comment)), type_(STRING)
+Json::Json(const char* value, const char* comment)
+  : data_(new StringData{value}), comment_(cloneString(comment)), type_(STRING)
 {}
 
-Json::Json(const Vec3& v, const char* comment) :
-  Json(v, 3, comment)
+Json::Json(const Vec3& v, const char* comment)
+  : Json(v, 3, comment)
 {}
 
-Json::Json(const Point& p, const char* comment) :
-  Json(p, 3, comment)
+Json::Json(const Point& p, const char* comment)
+  : Json(p, 3, comment)
 {}
 
-Json::Json(const Plane& p, const char* comment) :
-  Json(Vec4(p.n.x, p.n.y, p.n.y, p.d), comment)
+Json::Json(const Plane& p, const char* comment)
+  : Json(Vec4(p.n.x, p.n.y, p.n.y, p.d), comment)
 {}
 
-Json::Json(const Vec4& v, const char* comment) :
-  Json(v, 4, comment)
+Json::Json(const Vec4& v, const char* comment)
+  : Json(v, 4, comment)
 {}
 
-Json::Json(const Quat& q, const char* comment) :
-  Json(q, 4, comment)
+Json::Json(const Quat& q, const char* comment)
+  : Json(q, 4, comment)
 {}
 
-Json::Json(const Mat3& m, const char* comment) :
-  Json(m, 9, comment)
+Json::Json(const Mat3& m, const char* comment)
+  : Json(m, 9, comment)
 {}
 
-Json::Json(const Mat4& m, const char* comment) :
-  Json(m, 16, comment)
+Json::Json(const Mat4& m, const char* comment)
+  : Json(m, 16, comment)
 {}
 
-Json::Json(InitialiserList<Json> l, const char* comment) :
-  data_(new ArrayData()), comment_(cloneString(comment)), type_(ARRAY)
+Json::Json(InitialiserList<Json> l, const char* comment)
+  : data_(new ArrayData()), comment_(cloneString(comment)), type_(ARRAY)
 {
   List<Json>& list = static_cast<ArrayData*>(data_)->list;
 
   list.addAll(l.begin(), int(l.size()));
 }
 
-Json::Json(InitialiserList<Pair> l, const char* comment) :
-  data_(new ObjectData()), comment_(cloneString(comment)), type_(OBJECT)
+Json::Json(InitialiserList<Pair> l, const char* comment)
+  : data_(new ObjectData()), comment_(cloneString(comment)), type_(OBJECT)
 {
   Map<String, Json>& map = static_cast<ObjectData*>(data_)->map;
 
@@ -807,9 +807,9 @@ Json::Json(const Json& other)
   copyValue(other);
 }
 
-Json::Json(Json&& other) :
-  number_(other.number_), comment_(other.comment_), type_(other.type_),
-  wasAccessed_(other.wasAccessed_)
+Json::Json(Json&& other)
+  : number_(other.number_), comment_(other.comment_), type_(other.type_),
+    wasAccessed_(other.wasAccessed_)
 {
   other.number_      = 0.0;
   other.comment_     = nullptr;

@@ -77,8 +77,8 @@ public:
   /**
    * Create a list with a given initial length.
    */
-  explicit SList(int size) :
-    size_(size)
+  explicit SList(int size)
+    : size_(size)
   {
     OZ_ASSERT(size_ <= CAPACITY);
   }
@@ -86,8 +86,8 @@ public:
   /**
    * Initialise from a C++ array.
    */
-  explicit SList(const Elem* array, int size) :
-    SList(size)
+  explicit SList(const Elem* array, int size)
+    : SList(size)
   {
     Arrays::copy<Elem>(array, size, data_);
   }
@@ -95,8 +95,8 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  SList(InitialiserList<Elem> il) :
-    SList(il.begin(), int(il.size()))
+  SList(InitialiserList<Elem> il)
+    : SList(il.begin(), int(il.size()))
   {}
 
   /**

@@ -247,12 +247,12 @@ const File& File::PICTURES   = specialFiles[7];
 const File& File::VIDEOS     = specialFiles[8];
 const File& File::EXECUTABLE = specialFiles[9];
 
-File::File(const String& path) :
-  String(path)
+File::File(const String& path)
+  : String(path)
 {}
 
-File::File(String&& path) :
-  String(static_cast<String&&>(path))
+File::File(String&& path)
+  : String(static_cast<String&&>(path))
 {}
 
 File& File::operator=(const String& path)

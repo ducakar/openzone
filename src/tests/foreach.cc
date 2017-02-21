@@ -27,8 +27,8 @@ struct Elem : DChainNode<Elem>
 {
   int value;
 
-  explicit Elem(int value_) :
-    value(value_)
+  explicit Elem(int value_)
+    : value(value_)
   {}
 };
 

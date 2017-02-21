@@ -188,8 +188,9 @@ void Inventory::drawComponent(int height, const Object* container, const Dynamic
         goto noIcon;
       }
 
-      texId = taggedItem->index == camera.botObj->weapon ? style.images.unequip :
-              style.images.equip;
+      texId = taggedItem->index == camera.botObj->weapon
+              ? style.images.unequip
+              : style.images.equip;
     }
 
     shape.colour(1.0f, 1.0f, 1.0f, 1.0f);
@@ -292,12 +293,12 @@ void Inventory::onDraw()
   }
 }
 
-Inventory::Inventory() :
-  Frame(COLS*SLOT_SIZE, SINGLE_HEIGHT, ""),
-  owner(nullptr), other(nullptr),
-  lifeBar(&style.taggedLife), statusBar(&style.taggedStatus),
-  itemDesc(-ICON_SIZE - 12, FOOTER_SIZE / 2, 0, ALIGN_RIGHT | ALIGN_VCENTRE, &style.sansFont, ""),
-  taggedItemIndex(-1), taggedOwnerComponent(true), scrollOwner(0), scrollOther(0)
+Inventory::Inventory()
+  : Frame(COLS*SLOT_SIZE, SINGLE_HEIGHT, ""),
+    owner(nullptr), other(nullptr),
+    lifeBar(&style.taggedLife), statusBar(&style.taggedStatus),
+    itemDesc(-ICON_SIZE - 12, FOOTER_SIZE / 2, 0, ALIGN_RIGHT | ALIGN_VCENTRE, &style.sansFont, ""),
+    taggedItemIndex(-1), taggedOwnerComponent(true), scrollOwner(0), scrollOther(0)
 {
   flags |= UPDATE_BIT;
 

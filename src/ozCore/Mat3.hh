@@ -67,8 +67,8 @@ public:
    * Create matrix with given columns.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat3(const Vec3& a, const Vec3& b, const Vec3& c) :
-    x(a), y(b), z(c)
+  explicit Mat3(const Vec3& a, const Vec3& b, const Vec3& c)
+    : x(a), y(b), z(c)
   {}
 
   /**
@@ -77,18 +77,18 @@ public:
   OZ_ALWAYS_INLINE
   explicit Mat3(float xx, float xy, float xz,
                 float yx, float yy, float yz,
-                float zx, float zy, float zz) :
-    x(xx, xy, xz),
-    y(yx, yy, yz),
-    z(zx, zy, zz)
+                float zx, float zy, float zz)
+    : x(xx, xy, xz),
+      y(yx, yy, yz),
+      z(zx, zy, zz)
   {}
 
   /**
    * Create matrix from an array of 9 floats.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat3(const float* v) :
-    x(&v[0]), y(&v[3]), z(&v[6])
+  explicit Mat3(const float* v)
+    : x(&v[0]), y(&v[3]), z(&v[6])
   {}
 
   /**

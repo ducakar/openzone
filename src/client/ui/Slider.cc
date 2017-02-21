@@ -94,11 +94,11 @@ void Slider::onDraw()
   isClicked     = false;
 }
 
-Slider::Slider(float min, float max, float step, float value_, int width, int height) :
-  Area(width, height),
-  text(width / 2, height / 2, 0, ALIGN_CENTRE, &style.sansFont, "%g", value_),
-  isHighlighted(false), isClicked(false), wasClicked(false),
-  minValue(min), maxValue(max), valueStep(step), value(value_)
+Slider::Slider(float min, float max, float step, float value_, int width, int height)
+  : Area(width, height),
+    text(width / 2, height / 2, 0, ALIGN_CENTRE, &style.sansFont, "%g", value_),
+    isHighlighted(false), isClicked(false), wasClicked(false),
+    minValue(min), maxValue(max), valueStep(step), value(value_)
 {}
 
 }

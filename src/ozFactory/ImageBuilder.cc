@@ -353,12 +353,12 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
 int   ImageBuilder::options = 0;
 float ImageBuilder::scale   = 1.0f;
 
-ImageData::ImageData() :
-  width(0), height(0), flags(0), pixels(nullptr)
+ImageData::ImageData()
+  : width(0), height(0), flags(0), pixels(nullptr)
 {}
 
-ImageData::ImageData(int width_, int height_) :
-  width(width_), height(height_), flags(0), pixels(new char[width* height * 4])
+ImageData::ImageData(int width_, int height_)
+  : width(width_), height(height_), flags(0), pixels(new char[width* height * 4])
 {}
 
 ImageData::~ImageData()
@@ -366,8 +366,8 @@ ImageData::~ImageData()
   delete[] pixels;
 }
 
-ImageData::ImageData(ImageData&& other) :
-  width(other.width), height(other.height), flags(other.flags), pixels(other.pixels)
+ImageData::ImageData(ImageData&& other)
+  : width(other.width), height(other.height), flags(other.flags), pixels(other.pixels)
 {
   other.width  = 0;
   other.height = 0;

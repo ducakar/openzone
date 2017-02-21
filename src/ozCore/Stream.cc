@@ -76,18 +76,18 @@ void Stream::writeFloats(const float* values, int count)
   }
 }
 
-Stream::Stream(const char* start, const char* end, Endian::Order order) :
-  pos_(const_cast<char*>(start)), begin_(const_cast<char*>(start)), end_(const_cast<char*>(end)),
-  flags_(0), order_(order)
+Stream::Stream(const char* start, const char* end, Endian::Order order)
+  : pos_(const_cast<char*>(start)), begin_(const_cast<char*>(start)), end_(const_cast<char*>(end)),
+    flags_(0), order_(order)
 {}
 
-Stream::Stream(char* start, char* end, Endian::Order order) :
-  pos_(start), begin_(start), end_(end), flags_(WRITABLE), order_(order)
+Stream::Stream(char* start, char* end, Endian::Order order)
+  : pos_(start), begin_(start), end_(end), flags_(WRITABLE), order_(order)
 {}
 
-Stream::Stream(int size, Endian::Order order) :
-  pos_(size == 0 ? nullptr : new char[size]), begin_(pos_), end_(pos_ + size),
-  flags_(WRITABLE | BUFFERED), order_(order)
+Stream::Stream(int size, Endian::Order order)
+  : pos_(size == 0 ? nullptr : new char[size]), begin_(pos_), end_(pos_ + size),
+    flags_(WRITABLE | BUFFERED), order_(order)
 {}
 
 Stream::~Stream()
@@ -95,9 +95,9 @@ Stream::~Stream()
   free();
 }
 
-Stream::Stream(Stream&& other) :
-  pos_(other.pos_), begin_(other.begin_), end_(other.end_), flags_(other.flags_),
-  order_(other.order_)
+Stream::Stream(Stream&& other)
+  : pos_(other.pos_), begin_(other.begin_), end_(other.end_), flags_(other.flags_),
+    order_(other.order_)
 {
   other.pos_   = nullptr;
   other.begin_ = nullptr;
