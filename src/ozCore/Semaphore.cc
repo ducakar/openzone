@@ -81,19 +81,27 @@ int Semaphore::counter() const
   return descriptor_->counter;
 }
 
-void Semaphore::post() const
+void Semaphore::post(int increment) const
 {
+  OZ_ASSERT(increment > 0);
+
 #ifdef _WIN32
 
-  InterlockedIncrement(&descriptor_->counter);
-  ReleaseSemaphore(descriptor_->semaphore, 1, nullptr);
+  InterlockedAdd(&descriptor_->counter, increment);
+  ReleaseSemaphore(descriptor_->semaphore, increment, nullptr);
 
 #else
 
   pthread_mutex_lock(&descriptor_->mutex);
-  ++descriptor_->counter;
-  pthread_cond_signal(&descriptor_->cond);
+  descriptor_->counter += increment;
   pthread_mutex_unlock(&descriptor_->mutex);
+
+  if (increment == 1) {
+    pthread_cond_signal(&descriptor_->cond);
+  }
+  else {
+    pthread_cond_broadcast(&descriptor_->cond);
+  }
 
 #endif
 }
@@ -108,10 +116,12 @@ void Semaphore::wait() const
 #else
 
   pthread_mutex_lock(&descriptor_->mutex);
+
   while (descriptor_->counter == 0) {
     pthread_cond_wait(&descriptor_->cond, &descriptor_->mutex);
   }
   --descriptor_->counter;
+
   pthread_mutex_unlock(&descriptor_->mutex);
 
 #endif
@@ -132,10 +142,12 @@ bool Semaphore::tryWait() const
   bool hasSucceeded = false;
 
   pthread_mutex_lock(&descriptor_->mutex);
+
   if (descriptor_->counter != 0) {
     --descriptor_->counter;
     hasSucceeded = true;
   }
+
   pthread_mutex_unlock(&descriptor_->mutex);
 
   return hasSucceeded;

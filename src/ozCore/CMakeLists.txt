@@ -6,6 +6,7 @@ add_library(ozCore
 #BEGIN SOURCES
   Alloc.hh
   Arrays.hh
+  Atomic.hh
   Bitset.hh
   CallOnce.hh
   Chain.hh

@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "common.hh"
+#include "Atomic.hh"
 
 namespace oz
 {
@@ -36,13 +36,13 @@ namespace oz
 /**
  * Spin lock.
  *
- * @sa `oz::Mutex`, `oz::Semaphore`, `oz::CallOnce`, `oz::Thread`
+ * @sa `oz::Atomic`, `oz::Mutex`, `oz::Semaphore`, `oz::CallOnce`, `oz::Thread`
  */
 class SpinLock
 {
 private:
 
-  volatile bool isLocked_ = false; ///< True iff locked.
+  Atomic<bool> isLocked_ = false; ///< True iff locked.
 
 public:
 
@@ -66,7 +66,7 @@ public:
    */
   void lock()
   {
-    while (__atomic_test_and_set(&isLocked_, __ATOMIC_ACQUIRE)) {
+    while (isLocked_.testAndSet(ATOMIC_ACQUIRE)) {
 #if defined(__ARM_ACLE__)
       __builtin_arm_yield();
 #elif defined(__i386__) || defined(__x86_64__)
@@ -82,7 +82,7 @@ public:
    */
   bool tryLock()
   {
-    return !__atomic_test_and_set(&isLocked_, __ATOMIC_ACQUIRE);
+    return !isLocked_.testAndSet(ATOMIC_ACQUIRE);
   }
 
   /**
@@ -90,7 +90,7 @@ public:
    */
   void unlock()
   {
-    __atomic_clear(&isLocked_, __ATOMIC_RELEASE);
+    isLocked_.clear(ATOMIC_RELEASE);
   }
 
   /**

@@ -100,6 +100,7 @@
 /*
  * Threads.
  */
+#include "Atomic.hh"
 #include "SpinLock.hh"
 #include "Mutex.hh"
 #include "Semaphore.hh"

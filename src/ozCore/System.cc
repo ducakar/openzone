@@ -107,14 +107,14 @@ struct Wave
 #endif
 
 static SpinLock              bellLock;
-static volatile BellState    bellState    = NONE;
 #ifdef _WIN32
 static HANDLE                bellThread;
 #else
 static pthread_t             bellThread;
 #endif
-static System::CrashHandler* crashHandler = nullptr;
-static int                   initFlags    = 0;
+static bool                  hasBellThread = false;
+static System::CrashHandler* crashHandler  = nullptr;
+static int                   initFlags     = 0;
 
 OZ_NORETURN
 static void abort(bool doHalt);
@@ -241,7 +241,6 @@ static void* bellMain(void*)
   (*outputMix)->Destroy(outputMix);
   (*engine)->Destroy(engine);
 
-  bellState = FINISHED;
   return nullptr;
 }
 
@@ -291,7 +290,6 @@ static void* bellMain(void*)
     }
   }
 
-  bellState = FINISHED;
   return nullptr;
 }
 
@@ -332,7 +330,6 @@ static DWORD WINAPI bellMain(void*)
   genBellSamples(wave->samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
   PlaySound(reinterpret_cast<LPCSTR>(wave), nullptr, SND_MEMORY | SND_SYNC);
 
-  bellState = FINISHED;
   return 0;
 }
 
@@ -370,7 +367,6 @@ static void* bellMain(void*)
     snd_pcm_close(alsa);
   }
 
-  bellState = FINISHED;
   return nullptr;
 }
 
@@ -386,13 +382,13 @@ static void waitBell()
 
   bellLock.lock();
 
-  if (bellState != NONE) {
+  if (hasBellThread) {
 #ifdef _WIN32
     WaitForSingleObject(bellThread, INFINITE);
 #else
     pthread_join(bellThread, nullptr);
 #endif
-    bellState = NONE;
+    hasBellThread = false;
   }
 
   bellLock.unlock();
@@ -438,10 +434,8 @@ void System::trap()
 
 void System::bell()
 {
-  bellLock.tryLock();
-
-  if (bellState != PLAYING) {
-    if (bellState == FINISHED) {
+  if (bellLock.tryLock()) {
+    if (hasBellThread) {
 #ifdef _WIN32
       WaitForSingleObject(bellThread, INFINITE);
 #else
@@ -449,19 +443,15 @@ void System::bell()
 #endif
     }
 
-    bellState = PLAYING;
-
 #ifdef _WIN32
     bellThread = CreateThread(nullptr, 0, bellMain, nullptr, 0, nullptr);
-    if (bellThread == nullptr) {
+    hasBellThread = bellThread != nullptr;
 #else
-    if (pthread_create(&bellThread, nullptr, bellMain, nullptr) != 0) {
+    hasBellThread = pthread_create(&bellThread, nullptr, bellMain, nullptr) == 0;
 #endif
-      bellState = NONE;
-    }
-  }
 
-  bellLock.unlock();
+    bellLock.unlock();
+  }
 }
 
 void System::error(const char* function, const char* file, int line, int nSkippedFrames,

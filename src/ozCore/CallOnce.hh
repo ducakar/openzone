@@ -36,14 +36,14 @@ namespace oz
 /**
  * Call a function only once, even if called from several threads.
  *
- * @sa `oz::SpinLock`, `oz::Mutex`, `oz::Semaphore`, `oz::Thread`
+ * @sa `oz::Atomic`, `oz::SpinLock`, `oz::Mutex`, `oz::Semaphore`, `oz::Thread`
  */
 class CallOnce
 {
 private:
 
-  SpinLock      lock_;              ///< Lock wrapping the call.
-  volatile bool wasCalled_ = false; ///< Flipped to true when the function finishes.
+  SpinLock     lock_;              ///< Lock wrapping the call.
+  Atomic<bool> wasCalled_ = false; ///< Flipped to true when the function finishes.
 
 public:
 
@@ -71,12 +71,12 @@ public:
   template <typename Function>
   void operator<<(Function function)
   {
-    if (!wasCalled_) {
+    if (!wasCalled_.load(ATOMIC_ACQUIRE)) {
       lock_.lock();
 
-      if (!wasCalled_) {
+      if (!wasCalled_.load(ATOMIC_RELAXED)) {
         function();
-        wasCalled_ = true;
+        wasCalled_.store(true, ATOMIC_RELEASE);
       }
 
       lock_.unlock();

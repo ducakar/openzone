@@ -39,7 +39,7 @@ namespace oz
  * It is implemented as a wrapper for condition variable if a platform supports it since it should
  * yield a better performance.
  *
- * @sa `oz::SpinLock`, `oz::Mutex`, `oz::CallOnce`, `oz::Thread`
+ * @sa `oz::Atomic`, `oz::SpinLock`, `oz::Mutex`, `oz::CallOnce`, `oz::Thread`
  */
 class Semaphore
 {
@@ -79,7 +79,7 @@ public:
   /**
    * Atomically increment counter and signal waiting threads.
    */
-  void post() const;
+  void post(int increment = 1) const;
 
   /**
    * Wait until counter becomes positive. Then atomically decrement it and resume.

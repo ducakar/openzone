@@ -36,7 +36,7 @@ namespace oz
 /**
  * %Thread.
  *
- * @sa `oz::SpinLock`, `oz::Mutex`, `oz::Semaphore`, `oz::CallOnce`
+ * @sa `oz::Atomic`, `oz::SpinLock`, `oz::Mutex`, `oz::Semaphore`, `oz::CallOnce`
  */
 class Thread
 {
