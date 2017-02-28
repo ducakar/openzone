@@ -27,9 +27,7 @@
 
 #include <AL/alext.h>
 #include <cstring>
-# ifdef OZ_OPUS
 #include <opus/opusfile.h>
-# endif
 #include <vorbis/vorbisfile.h>
 
 namespace oz
@@ -188,8 +186,6 @@ bool AL::Decoder::WaveStream::decode(AL::Decoder* decoder)
   return true;
 }
 
-#ifdef OZ_OPUS
-
 struct AL::Decoder::OpusStream : AL::Decoder::StreamBase
 {
   OZ_INTERNAL
@@ -218,10 +214,10 @@ struct AL::Decoder::OpusStream : AL::Decoder::StreamBase
       OZ_ERROR("oz::AL::Decoder: Only mono and stereo Opus supported `%s'", file.c());
     }
 
-    decoder->format   = nChannels == 2 ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_MONO_FLOAT32;
-    decoder->rate     = 48000;
-    decoder->capacity = isStreaming ? FRAME_SIZE * nChannels : nSamples * nChannels;
-    decoder->samples  = new float[decoder->capacity];
+    decoder->format_   = nChannels == 2 ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_MONO_FLOAT32;
+    decoder->rate_     = 48000;
+    decoder->capacity_ = isStreaming ? FRAME_SIZE * nChannels : nSamples * nChannels;
+    decoder->samples_  = new float[decoder->capacity_];
   }
 
   OZ_INTERNAL
@@ -242,32 +238,30 @@ AL::Decoder::OpusStream::~OpusStream()
 
 bool AL::Decoder::OpusStream::decode(AL::Decoder* decoder)
 {
-  decoder->count = 0;
+  decoder->size_ = 0;
 
   do {
     int result;
 
-    if (decoder->format == AL_FORMAT_STEREO_FLOAT32) {
-      result = op_read_float_stereo(opFile, decoder->samples + decoder->count,
-                                    decoder->capacity - decoder->count) * 2;
+    if (decoder->format_ == AL_FORMAT_STEREO_FLOAT32) {
+      result = op_read_float_stereo(opFile, decoder->samples_ + decoder->size_,
+                                    decoder->capacity_ - decoder->size_) * 2;
     }
     else {
-      result = op_read_float(opFile, decoder->samples + decoder->count,
-                             decoder->capacity - decoder->count, nullptr);
+      result = op_read_float(opFile, decoder->samples_ + decoder->size_,
+                             decoder->capacity_ - decoder->size_, nullptr);
     }
 
     if (result <= 0) {
-      return decoder->count != 0;
+      return decoder->size_ != 0;
     }
 
-    decoder->count += result;
+    decoder->size_ += result;
   }
-  while (decoder->count != decoder->capacity);
+  while (decoder->size_ != decoder->capacity_);
 
   return true;
 }
-
-#endif
 
 struct AL::Decoder::VorbisStream : AL::Decoder::StreamBase
 {

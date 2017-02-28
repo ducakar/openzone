@@ -98,7 +98,7 @@ static void decoderMain(void*)
           else {
             nSamples += result * nChannels;
 
-            if (nSamples + FRAME_SIZE * nChannels > samples.length()) {
+            if (nSamples + FRAME_SIZE * nChannels > samples.size()) {
               decodeMainSemaphore.post();
               decodeThreadSemaphore.wait();
 

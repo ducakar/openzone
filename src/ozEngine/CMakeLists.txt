@@ -25,9 +25,9 @@ add_library(ozEngine
 #END SOURCES
 )
 
-target_link_libraries(ozEngine ${LUA_LIBRARIES} ${GL_LIBRARIES} ${OPENAL_LIBRARY} ${PNG_LIBRARIES}
-#                               ${OPUSFILE_LIBRARIES}
-                               ${VORBISFILE_LIBRARIES} ${SDL_LIBRARIES} ${SDL_TTF_LIBRARIES})
+target_link_libraries(ozEngine ${LUA_LIBRARIES} ${GL_LIBRARIES} ${OPENAL_LIBRARY}
+                               ${PNG_LIBRARIES} ${OPUSFILE_LIBRARIES} ${VORBISFILE_LIBRARIES}
+                               ${SDL_LIBRARIES} ${SDL_TTF_LIBRARIES})
 
 if(NOT NACL)
 #  target_link_libraries(ozEngine ${SDL_NET_LIBRARIES})
