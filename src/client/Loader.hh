@@ -63,14 +63,16 @@ private:
   static const uint SOUND_CLEAR_INTERVAL      = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 100 s)
   static const uint SOUND_CLEAR_LAG           = 100 * Timer::TICKS_PER_SEC;
 
-  Thread preloadThread;
+private:
 
-  Semaphore preloadMainSemaphore;
-  Semaphore preloadAuxSemaphore;
+  Thread       preloadThread;
 
-  volatile bool isPreloadAlive;
+  Semaphore    preloadMainSemaphore;
+  Semaphore    preloadAuxSemaphore;
 
-  uint tick;
+  Atomic<bool> isPreloadAlive;
+
+  uint         tick;
 
 private:
 

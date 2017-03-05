@@ -39,11 +39,11 @@ struct Semaphore::Descriptor
 {
 #ifdef _WIN32
   HANDLE          semaphore;
-  volatile long   counter   = 0;
+  long            counter   = 0;
 #else
   pthread_mutex_t mutex     = PTHREAD_MUTEX_INITIALIZER;
   pthread_cond_t  cond      = PTHREAD_COND_INITIALIZER;
-  volatile int    counter   = 0;
+  int             counter   = 0;
 #endif
 };
 

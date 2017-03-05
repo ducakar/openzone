@@ -26,22 +26,22 @@
 
 using namespace oz;
 
-static const int     FRAME_SIZE = 120 * 48;
-static const int     OGG_BUFFER = 4 * 1024;
+static const int    FRAME_SIZE = 120 * 48;
+static const int    OGG_BUFFER = 4 * 1024;
 
-static List<float>   samples;
-static volatile int  nSamples = 0;
+static List<float>  samples;
+static int          nSamples = 0;
 
-static ALuint        buffers[2];
-static ALuint        source;
-static Semaphore     decodeMainSemaphore;
-static Semaphore     decodeThreadSemaphore;
-static Thread        decodeThread;
-static volatile bool isDecoderAlive = true;
+static ALuint       buffers[2];
+static ALuint       source;
+static Semaphore    decodeMainSemaphore;
+static Semaphore    decodeThreadSemaphore;
+static Thread       decodeThread;
+static Atomic<bool> isDecoderAlive = {true};
 
 static void decoderMain(void*)
 {
-  Stream is = File("/home/davorin/Glasba/Whatever.opus").read();
+  Stream is = File("/home/davorin/Glasba/Whatever1.opus").read();
 
   ogg_sync_state sync;
   ogg_sync_init(&sync);
@@ -52,16 +52,16 @@ static void decoderMain(void*)
   int          nChannels = 0;
   OpusDecoder* decoder   = nullptr;
 
-  while (isDecoderAlive && is.available()) {
-    int   nBytes = min<int>(OGG_BUFFER, is.available());
-    char* data   = ogg_sync_buffer(&sync, nBytes);
+  while (isDecoderAlive.load(ATOMIC_ACQUIRE) && is.available()) {
+    int   nBytes         = min<int>(OGG_BUFFER, is.available());
+    char* data           = ogg_sync_buffer(&sync, nBytes);
     int   nHeaderPackets = 0;
 
     is.read(data, nBytes);
     ogg_sync_wrote(&sync, nBytes);
 
     ogg_page page;
-    while (isDecoderAlive && ogg_sync_pageout(&sync, &page) != 0) {
+    while (isDecoderAlive.load(ATOMIC_ACQUIRE) && ogg_sync_pageout(&sync, &page) != 0) {
       int serialno = ogg_page_serialno(&page);
       if (stream.serialno != serialno) {
         ogg_stream_reset_serialno(&stream, serialno);
@@ -70,7 +70,7 @@ static void decoderMain(void*)
       ogg_stream_pagein(&stream, &page);
 
       ogg_packet packet;
-      while (isDecoderAlive && ogg_stream_packetout(&stream, &packet) == 1) {
+      while (isDecoderAlive.load(ATOMIC_ACQUIRE) && ogg_stream_packetout(&stream, &packet) == 1) {
         if (nHeaderPackets != 0) {
           --nHeaderPackets;
         }
@@ -111,10 +111,12 @@ static void decoderMain(void*)
   }
 finishedDecoding:
 
+  nSamples = 0;
+
   ogg_stream_clear(&stream);
   ogg_sync_clear(&sync);
 
-  while (isDecoderAlive) {
+  while (isDecoderAlive.load(ATOMIC_ACQUIRE)) {
     decodeMainSemaphore.post();
     decodeThreadSemaphore.wait();
   }
@@ -164,7 +166,7 @@ void MainStage::load()
 
 void MainStage::unload()
 {
-  isDecoderAlive = false;
+  isDecoderAlive.store(false, ATOMIC_RELEASE);
 
   decodeThreadSemaphore.post();
   decodeThread.join();

@@ -79,7 +79,9 @@ struct SampleInfo
   int                nFrameSamples;
   int                nSamples;
   int                offset;
-  volatile bool      isFinished;
+  pthread_mutex_t    finishMutex   = PTHREAD_MUTEX_INITIALIZER;
+  pthread_cond_t     finishCond    = PTHREAD_COND_INITIALIZER;
+  bool               isFinished    = false;
 };
 
 #elif defined(_WIN32)
@@ -259,7 +261,10 @@ static void bellCallback(void* buffer, uint, void* info_)
   short*      samples = static_cast<short*>(buffer);
 
   if (info->offset >= info->nSamples) {
+    pthread_mutex_lock(&info.finishMutex);
     info->isFinished = true;
+    pthread_mutex_unlock(&info.finishMutex);
+    pthread_cond_signal(&info.finishCond);
   }
   else {
     genBellSamples(samples, info->nSamples, info->rate, info->offset,
@@ -270,26 +275,28 @@ static void bellCallback(void* buffer, uint, void* info_)
 
 static void* bellMain(void*)
 {
-  if (initFlags & INITIALISED_BIT) {
-    pp::InstanceHandle ppInstance(PSGetInstanceId());
-    PP_AudioSampleRate rate = pp::AudioConfig::RecommendSampleRate(ppInstance);
+  pp::InstanceHandle ppInstance(PSGetInstanceId());
+  PP_AudioSampleRate rate = pp::AudioConfig::RecommendSampleRate(ppInstance);
 
-    int nFrameSamples = pp::AudioConfig::RecommendSampleFrameCount(ppInstance, rate, 4096);
-    int nSamples      = min<int>(int(BELL_TIME * float(rate)), 2 * BELL_SAMPLES);
+  int nFrameSamples = pp::AudioConfig::RecommendSampleFrameCount(ppInstance, rate, 4096);
+  int nSamples      = min<int>(int(BELL_TIME * float(rate)), 2 * BELL_SAMPLES);
 
-    SampleInfo      info = {rate, nFrameSamples, nSamples, 0, false};
-    pp::AudioConfig config(ppInstance, rate, nFrameSamples);
-    pp::Audio       audio(ppInstance, config, bellCallback, &info);
+  SampleInfo      info = {rate, nFrameSamples, nSamples, 0, false};
+  pp::AudioConfig config(ppInstance, rate, nFrameSamples);
+  pp::Audio       audio(ppInstance, config, bellCallback, &info);
 
-    if (audio.StartPlayback() == PP_TRUE) {
-      do {
-        Time::sleep(10);
-      }
-      while (!info.isFinished);
-      audio.StopPlayback();
+  if (audio.StartPlayback() == PP_TRUE) {
+    pthread_mutex_lock(&info.finishMutex);
+    while (!info.isFinished) {
+      pthread_cond_wait(&info.finishCond, &info.finishMutex);
     }
+    pthread_mutex_unlock(&info.finishMutex);
+
+    audio.StopPlayback();
   }
 
+  pthread_cond_destroy(&info.finishCond);
+  pthread_mutex_destroy(&info.finishMutex);
   return nullptr;
 }
 

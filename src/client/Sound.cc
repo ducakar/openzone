@@ -64,7 +64,7 @@ void Sound::musicRun()
     }
 
     if (streamedTrack >= 0) {
-      streamedBytes = musicDecoder.decode();
+      hasStreamedBytes = musicDecoder.decode();
     }
   }
 }
@@ -134,7 +134,7 @@ void Sound::updateMusic()
     alGetSourcei(musicSource, AL_BUFFERS_PROCESSED, &nProcessed);
 
     if (nProcessed != 0) {
-      if (streamedBytes) {
+      if (hasStreamedBytes) {
         hasLoaded = true;
 
         uint buffer;
@@ -151,7 +151,7 @@ void Sound::updateMusic()
       }
     }
     // If beginning of a track.
-    else if (musicBuffersQueued != 2 && streamedBytes) {
+    else if (musicBuffersQueued != 2 && hasStreamedBytes) {
       hasLoaded = true;
 
       int i = musicBuffersQueued;

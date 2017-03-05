@@ -38,34 +38,34 @@ private:
   // 2.5 min.
   static const uint AUTOSAVE_INTERVAL;
 
-  ulong64       startTicks;
-  long64        sleepMicros;
-  long64        loadingMicros;
-  long64        uiMicros;
-  long64        loaderMicros;
-  long64        presentMicros;
-  long64        matrixMicros;
-  long64        nirvanaMicros;
+  ulong64      startTicks;
+  long64       sleepMicros;
+  long64       loadingMicros;
+  long64       uiMicros;
+  long64       loaderMicros;
+  long64       presentMicros;
+  long64       matrixMicros;
+  long64       nirvanaMicros;
 
-  uint          autosaveTicks;
+  uint         autosaveTicks;
 
-  Stream        saveStream;
-  File          saveFile;
-  Thread        saveThread;
+  Stream       saveStream;
+  File         saveFile;
+  Thread       saveThread;
 
-  Thread        auxThread;
-  Semaphore     mainSemaphore;
-  Semaphore     auxSemaphore;
-  volatile bool isAuxAlive;
+  Thread       auxThread;
+  Semaphore    mainSemaphore;
+  Semaphore    auxSemaphore;
+  Atomic<bool> isAuxAlive;
 
 public:
 
-  Proxy*        proxy;
+  Proxy*       proxy;
 
-  File          autosaveFile;
-  File          quicksaveFile;
-  File          stateFile;
-  String        mission;
+  File         autosaveFile;
+  File         quicksaveFile;
+  File         stateFile;
+  String       mission;
 
 private:
 

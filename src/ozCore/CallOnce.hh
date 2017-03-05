@@ -42,8 +42,8 @@ class CallOnce
 {
 private:
 
-  SpinLock     lock_;              ///< Lock wrapping the call.
-  Atomic<bool> wasCalled_ = false; ///< Flipped to true when the function finishes.
+  SpinLock     lock_;                ///< Lock wrapping the call.
+  Atomic<bool> wasCalled_ = {false}; ///< Flipped to true when the function finishes.
 
 public:
 
@@ -71,12 +71,12 @@ public:
   template <typename Function>
   void operator<<(Function function)
   {
-    if (!wasCalled_.load(ATOMIC_ACQUIRE)) {
+    if (!wasCalled_.load<ATOMIC_ACQUIRE>()) {
       lock_.lock();
 
-      if (!wasCalled_.load(ATOMIC_RELAXED)) {
+      if (!wasCalled_.load<ATOMIC_RELAXED>()) {
         function();
-        wasCalled_.store(true, ATOMIC_RELEASE);
+        wasCalled_.store<ATOMIC_RELEASE>(true);
       }
 
       lock_.unlock();

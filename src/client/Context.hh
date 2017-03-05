@@ -94,18 +94,18 @@ private:
   {
     static const int BUFFER_SIZE = 44100;
 
-    uint          id;
-    uint          bufferIds[2];
-    int           nQueuedBuffers;
-    int           nSamples;
+    uint         id;
+    uint         bufferIds[2];
+    int          nQueuedBuffers;
+    int          nSamples;
 
-    volatile int  owner;
-    volatile bool isAlive;              // Set to false to terminate source before it finishes.
-    Mutex         mutex;
-    Thread        thread;
+    Atomic<int>  owner;
+    Atomic<bool> isAlive;              // Set to false to terminate source before it finishes.
+    Mutex        mutex;
+    Thread       thread;
 
-    String        text;
-    short         samples[BUFFER_SIZE];
+    String       text;
+    short        samples[BUFFER_SIZE];
   };
 
 private:

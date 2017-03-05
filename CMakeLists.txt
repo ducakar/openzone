@@ -123,6 +123,8 @@ endif()
 
 find_package(OpenAL REQUIRED)
 find_package(PNG REQUIRED)
+pkg_check_modules(OGG REQUIRED ogg)
+pkg_check_modules(OPUS REQUIRED opus)
 pkg_check_modules(OPUSFILE REQUIRED opusfile)
 pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 

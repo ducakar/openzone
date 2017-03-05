@@ -39,7 +39,7 @@ private:
   Thread         auxThread;
   Semaphore      mainSemaphore;
   Semaphore      auxSemaphore;
-  volatile bool  isAuxAlive;
+  Atomic<bool>   isAuxAlive;
 
 public:
 

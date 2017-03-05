@@ -53,8 +53,8 @@ private:
 
   // Music track id to switch to, -1 to do nothing, -2 stop playing.
   int                         selectedTrack;
-  volatile int                streamedTrack;
-  volatile bool               streamedBytes;
+  Atomic<int>                 streamedTrack;
+  Atomic<bool>                hasStreamedBytes;
 
   Thread                      musicThread;
   Thread                      soundThread;
@@ -64,8 +64,8 @@ private:
   Semaphore                   soundMainSemaphore;
   Semaphore                   soundAuxSemaphore;
 
-  volatile bool               isMusicAlive;
-  volatile bool               isSoundAlive;
+  Atomic<bool>                isMusicAlive;
+  Atomic<bool>               isSoundAlive;
 
 public:
 

@@ -106,7 +106,7 @@ private:
   Semaphore                   effectsMainSemaphore;
   Semaphore                   effectsAuxSemaphore;
 
-  volatile bool               areEffectsAlive;
+  Atomic<bool>                areEffectsAlive;
 
 public:
 
