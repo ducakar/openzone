@@ -354,11 +354,9 @@ AL::Decoder::Decoder(const File& file, bool isStreaming)
   if (file.hasExtension("wav")) {
     stream_ = new WaveStream(this, file);
   }
-#ifdef OZ_OPUS
   else if (file.hasExtension("opus")) {
-    stream = new OpusStream(this, file, isStreaming);
+    stream_ = new OpusStream(this, file, isStreaming);
   }
-#endif
   else if (file.hasExtension("oga") || file.hasExtension("ogg")) {
     stream_ = new VorbisStream(this, file, isStreaming);
   }

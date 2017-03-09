@@ -138,14 +138,14 @@ void Loader::updateSound()
   }
 
   // Stop speaker if owner has been removed.
-  int speaker = context.speakSource.owner;
+  int speaker = context.speakSource.owner.load<ATOMIC_RELAXED>();
   if (speaker == -1) {
     if (context.speakSource.thread.isValid()) {
       context.releaseSpeakSource();
     }
   }
   else if (orbis.obj(speaker) == nullptr) {
-    context.speakSource.isAlive = false;
+    context.speakSource.isAlive.store<ATOMIC_RELAXED>(false);
   }
 
   OZ_AL_CHECK_ERROR();
@@ -295,7 +295,7 @@ void Loader::preloadRun()
 {
   preloadAuxSemaphore.wait();
 
-  while (isPreloadAlive) {
+  while (isPreloadAlive.load<ATOMIC_RELAXED>()) {
     preloadRender();
 
     preloadMainSemaphore.post();
@@ -369,14 +369,14 @@ void Loader::unload()
 
 void Loader::init()
 {
-  isPreloadAlive = true;
+  isPreloadAlive.store<ATOMIC_RELAXED>(true);
 
   preloadThread = Thread("preload", preloadMain);
 }
 
 void Loader::destroy()
 {
-  isPreloadAlive = false;
+  isPreloadAlive.store<ATOMIC_RELAXED>(false);
 
   preloadAuxSemaphore.post();
   preloadThread.join();

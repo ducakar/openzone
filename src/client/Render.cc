@@ -121,7 +121,7 @@ void Render::effectsRun()
 {
   effectsAuxSemaphore.wait();
 
-  while (areEffectsAlive) {
+  while (areEffectsAlive.load<ATOMIC_RELAXED>()) {
     Span span = orbis.getInters(camera.p, EFFECTS_DISTANCE);
 
     for (int x = span.minX ; x <= span.maxX; ++x) {
@@ -645,7 +645,7 @@ void Render::load()
 
   ui::ui.load();
 
-  areEffectsAlive = true;
+  areEffectsAlive.store<ATOMIC_RELAXED>(true);
 
   effectsThread = Thread("effects", effectsMain);
 
@@ -678,7 +678,7 @@ void Render::unload()
   objects.clear();
   objects.trim();
 
-  areEffectsAlive = false;
+  areEffectsAlive.store<ATOMIC_RELAXED>(false);
 
   effectsAuxSemaphore.post();
   effectsThread.join();

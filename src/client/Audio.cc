@@ -122,9 +122,10 @@ void Audio::playContSound(int sound, float volume, const Object* parent) const
 bool Audio::playSpeak(const char* text, float volume, const Object* parent) const
 {
   const Dynamic* dynParent = static_cast<const Dynamic*>(parent);
+  int            owner = context.speakSource.owner.load<ATOMIC_RELAXED>();
   uint           srcId;
 
-  if (context.speakSource.owner == -1) {
+  if (owner == -1) {
     if (text == nullptr) {
       return false;
     }
@@ -138,7 +139,7 @@ bool Audio::playSpeak(const char* text, float volume, const Object* parent) cons
 
     alSourcef(srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR);
   }
-  else if (context.speakSource.owner == obj->index) {
+  else if (owner == obj->index) {
     srcId = context.speakSource.id;
   }
   else {

@@ -122,12 +122,12 @@ int Context::speakCallback(short int* samples, int nSamples, void*)
       }
 
       speakSource.mutex.unlock();
-    }
-    while (nProcessed == 0 && speakSource.isAlive);
 
-    if (!speakSource.isAlive) {
-      return 1;
+      if (!speakSource.isAlive.load<ATOMIC_RELAXED>()) {
+        return 1;
+      }
     }
+    while (nProcessed == 0);
 
     speakSource.mutex.lock();
 
@@ -158,7 +158,7 @@ void Context::speakMain(void*)
                nullptr, nullptr);
 
   int value = AL_PLAYING;
-  while (speakSource.isAlive && value != AL_STOPPED) {
+  while (speakSource.isAlive.load<ATOMIC_RELAXED>() && value != AL_STOPPED) {
     Time::sleep(100);
 
     speakSource.mutex.lock();
@@ -167,8 +167,8 @@ void Context::speakMain(void*)
     speakSource.mutex.unlock();
   }
 
-  speakSource.owner   = -1;
-  speakSource.isAlive = false;
+  speakSource.owner.store<ATOMIC_RELAXED>(-1);
+  speakSource.isAlive.store<ATOMIC_RELAXED>(false);
 }
 
 Context::Source* Context::addSource(int sound)
@@ -240,8 +240,8 @@ Context::SpeakSource* Context::requestSpeakSource(const char* text, int owner)
 
   speakSource.nQueuedBuffers = 0;
   speakSource.nSamples       = 0;
-  speakSource.owner          = owner;
-  speakSource.isAlive        = true;
+  speakSource.owner.value    = owner;
+  speakSource.isAlive.value  = true;
   speakSource.text           = text;
 
   speakSource.thread = Thread("speak", speakMain);
@@ -252,7 +252,7 @@ void Context::releaseSpeakSource()
 {
   OZ_ASSERT(speakSource.thread.isValid());
 
-  speakSource.isAlive = false;
+  speakSource.isAlive.store<ATOMIC_RELAXED>(false);
   speakSource.thread.join();
 }
 
@@ -662,7 +662,7 @@ void Context::load()
 {
   OZ_NACL_IS_MAIN(true);
 
-  speakSource.owner = -1;
+  speakSource.owner.store<ATOMIC_RELAXED>(-1);
 
   alGenBuffers(2, speakSource.bufferIds);
   alGenSources(1, &speakSource.id);

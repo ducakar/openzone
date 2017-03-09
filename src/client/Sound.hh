@@ -52,8 +52,8 @@ private:
   AL::Decoder                 musicDecoder;
 
   // Music track id to switch to, -1 to do nothing, -2 stop playing.
-  int                         selectedTrack;
-  Atomic<int>                 streamedTrack;
+  Atomic<int>                 selectedTrack;
+  int                         streamedTrack;
   Atomic<bool>                hasStreamedBytes;
 
   Thread                      musicThread;
