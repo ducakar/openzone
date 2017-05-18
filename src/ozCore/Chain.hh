@@ -43,7 +43,7 @@ struct ChainNode
 };
 
 /**
- * Linked list with external storage.
+ * Intrusive linked list.
  *
  * This is not a real container but a way of binding existing elements into a linked list.
  *

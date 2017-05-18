@@ -44,7 +44,7 @@ struct DChainNode
 };
 
 /**
- * Double-linked list with external storage.
+ * Intrusive doubly linked list.
  *
  * This is not a real container but a way of binding existing elements into a linked list.
  *

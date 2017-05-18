@@ -44,7 +44,7 @@ class String
 private:
 
   /// Size of static buffer for short strin optimisation.
-  static const int BUFFER_SIZE = 32 - sizeof(char*);
+  static const int BUFFER_SIZE = 32 - sizeof(int);
 
 public:
 

@@ -52,7 +52,7 @@ static void decoderMain(void*)
   int          nChannels = 0;
   OpusDecoder* decoder   = nullptr;
 
-  while (isDecoderAlive.load(ATOMIC_ACQUIRE) && is.available()) {
+  while (isDecoderAlive.load<ATOMIC_ACQUIRE>() && is.available()) {
     int   nBytes         = min<int>(OGG_BUFFER, is.available());
     char* data           = ogg_sync_buffer(&sync, nBytes);
     int   nHeaderPackets = 0;
@@ -61,7 +61,7 @@ static void decoderMain(void*)
     ogg_sync_wrote(&sync, nBytes);
 
     ogg_page page;
-    while (isDecoderAlive && ogg_sync_pageout(&sync, &page) != 0) {
+    while (isDecoderAlive.load<ATOMIC_RELAXED>() && ogg_sync_pageout(&sync, &page) != 0) {
       int serialno = ogg_page_serialno(&page);
       if (stream.serialno != serialno) {
         ogg_stream_reset_serialno(&stream, serialno);
@@ -70,7 +70,7 @@ static void decoderMain(void*)
       ogg_stream_pagein(&stream, &page);
 
       ogg_packet packet;
-      while (isDecoderAlive && ogg_stream_packetout(&stream, &packet) == 1) {
+      while (isDecoderAlive.load<ATOMIC_RELAXED>() && ogg_stream_packetout(&stream, &packet) == 1) {
         if (nHeaderPackets != 0) {
           --nHeaderPackets;
         }
@@ -116,7 +116,7 @@ finishedDecoding:
   ogg_stream_clear(&stream);
   ogg_sync_clear(&sync);
 
-  while (isDecoderAlive) {
+  while (isDecoderAlive.load<ATOMIC_RELAXED>()) {
     decodeMainSemaphore.post();
     decodeThreadSemaphore.wait();
   }
@@ -166,7 +166,7 @@ void MainStage::load()
 
 void MainStage::unload()
 {
-  isDecoderAlive = false;
+  isDecoderAlive.store<ATOMIC_RELAXED>(false);
 
   decodeThreadSemaphore.post();
   decodeThread.join();
