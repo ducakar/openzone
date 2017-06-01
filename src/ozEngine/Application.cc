@@ -87,7 +87,6 @@ void Application::run(Stage* initialStage)
   nextStage = initialStage;
 
 #ifdef __native_client__
-
   Pepper::init();
 
   const PPB_View* view = PSInterfaceView();
@@ -102,7 +101,6 @@ void Application::run(Stage* initialStage)
 
   NACL_SetScreenResolution(rect.size.width, rect.size.height, 0);
   SDL_SetMainReady();
-
 #endif
 
   File::init();
@@ -147,7 +145,6 @@ void Application::run(Stage* initialStage)
 //    input.prepare();
 
 #ifdef __native_client__
-
     PSEventSetFilter(PSE_INSTANCE_HANDLEINPUT | PSE_INSTANCE_DIDCHANGEVIEW |
                      PSE_MOUSELOCK_MOUSELOCKLOST);
 
@@ -194,7 +191,6 @@ void Application::run(Stage* initialStage)
     }
 
     PSEventSetFilter(PSE_ALL);
-
 #endif
 
     SDL_Event event;
@@ -240,10 +236,8 @@ void Application::run(Stage* initialStage)
     }
 
 #ifdef __native_client__
-
 //    input.keys[SDLK_ESCAPE]    = false;
 //    input.oldKeys[SDLK_ESCAPE] = false;
-
 #endif
 
     // Waste time when iconified.

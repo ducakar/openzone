@@ -59,7 +59,7 @@ char* String::resize(int newSize, bool keepContents)
     }
 
     data_ = newBuffer;
-    size_  = newSize;
+    size_ = newSize;
   }
 
   return data_;

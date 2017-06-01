@@ -36,7 +36,7 @@ namespace oz
 /**
  * String.
  *
- * Class has static storage of `BUFFER_SIZE` bytes, if string is larger it is stored in a
+ * Class has static storage of `BUFFER_SIZE` bytes, if the string is larger it is stored in a
  * dynamically allocated storage. To deallocate storage just assign an empty string.
  */
 class String
@@ -68,7 +68,7 @@ private:
   int     size_                  = 0;       ///< Length in bytes (without the final null char).
   union
   {
-    char* data_                  = nullptr; ///< Pointer to the current buffer.
+    char* data_                  = nullptr; ///< Pointer to the current buffer (iff not static).
     char  baseData_[BUFFER_SIZE];           ///< Static buffer.
   };
 

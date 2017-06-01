@@ -12,7 +12,6 @@ Source0:        https://github.com/downloads/ducakar/openzone/%{name}-src-%{vers
 Source1:        https://github.com/downloads/ducakar/openzone/%{name}-data-%{version}.tar.xz
 
 BuildRequires:  cmake
-BuildRequires:  ninja
 BuildRequires:  alsa-lib-devel
 BuildRequires:  zlib-devel
 BuildRequires:  physfs-devel
@@ -74,7 +73,6 @@ Game data for OpenZone. Includes tutorial, test world and Cviček mission.
 mkdir -p build && cd build
 
 cmake \
-  -G Ninja \
   -D CMAKE_INSTALL_PREFIX=/usr \
   -D CMAKE_BUILD_TYPE=Release \
   -D CMAKE_CXX_FLAGS="-msse3 -mfpmath=sse" \
@@ -85,7 +83,7 @@ cmake \
   -D OZ_TOOLS=1 \
   ..
 
-ninja
+make %{?_smp_mflags}
 
 %install
 rm -rf "$RPM_BUILD_ROOT"
