@@ -120,14 +120,14 @@ void GameStage::auxRun()
      * World is being updated, other threads should not access world structures here.
      */
 
-    uint beginMicros = Time::uclock();
+    Duration beginInstant = Time::clock();
 
     network.update();
 
     // update world
     matrix.update();
 
-    matrixMicros += Time::uclock() - beginMicros;
+    matrixDuration += Time::clock() - beginInstant;
 
     mainSemaphore.post();
     auxSemaphore.wait();
@@ -138,7 +138,7 @@ void GameStage::auxRun()
      * Process AI, main thread renders world and plays sound.
      */
 
-    beginMicros = Time::uclock();
+    beginInstant = Time::clock();
 
     // sync nirvana
     nirvana.sync();
@@ -149,7 +149,7 @@ void GameStage::auxRun()
     // update minds
     nirvana.update();
 
-    nirvanaMicros += Time::uclock() - beginMicros;
+    nirvanaDuration += Time::clock() - beginInstant;
 
     // we can now manipulate world from the main thread after synapse lists have been cleared
     // and nirvana is not accessing matrix any more
@@ -166,7 +166,7 @@ void GameStage::auxRun()
 
 bool GameStage::update()
 {
-  uint beginMicros;
+  Duration beginInstant;
 
   mainSemaphore.wait();
 
@@ -176,7 +176,7 @@ bool GameStage::update()
    * UI update, world may be updated from the main thread during this phase.
    */
 
-  beginMicros = Time::uclock();
+  beginInstant = Time::clock();
 
   if (input.keys[Input::KEY_QUIT]) {
     Stage::nextStage = &menuStage;
@@ -214,7 +214,7 @@ bool GameStage::update()
 
   luaClient.update();
 
-  uiMicros += Time::uclock() - beginMicros;
+  uiDuration += Time::clock() - beginInstant;
 
   auxSemaphore.post();
 
@@ -225,12 +225,12 @@ bool GameStage::update()
    * game.
    */
 
-  beginMicros = Time::uclock();
+  beginInstant = Time::clock();
 
   context.updateLoad();
   loader.update();
 
-  loaderMicros += Time::uclock() - beginMicros;
+  loaderDuration += Time::clock() - beginInstant;
 
   auxSemaphore.post();
   mainSemaphore.wait();
@@ -248,23 +248,23 @@ bool GameStage::update()
 
 void GameStage::present(bool isFull)
 {
-  uint beginMicros = Time::uclock();
-  uint currentMicros;
+  Duration beginInstant   = Time::clock();
+  Duration currentInstant;
 
   sound.play();
   render.update(Render::EFFECTS_BIT | (isFull ? Render::ORBIS_BIT | Render::UI_BIT : 0));
 
   sound.sync();
 
-  currentMicros = Time::uclock();
-  presentMicros += currentMicros - beginMicros;
+  currentInstant = Time::clock();
+  presentDuration += currentInstant - beginInstant;
 }
 
-void GameStage::wait(uint micros)
+void GameStage::wait(Duration duration)
 {
-  sleepMicros += micros;
+  sleepDuration += duration;
 
-  Time::usleep(micros);
+  Time::sleep(duration);
 }
 
 void GameStage::load()
@@ -272,7 +272,7 @@ void GameStage::load()
   Log::println("[%s] Loading GameStage {", Time::local().toString().c());
   Log::indent();
 
-  loadingMicros = Time::uclock();
+  Duration beginInstant = Time::clock();
 
   ui::mouse.isVisible = false;
   ui::ui.loadingScreen->status.setText("%s", OZ_GETTEXT("Loading ..."));
@@ -282,12 +282,12 @@ void GameStage::load()
 
   timer.reset();
 
-  sleepMicros   = 0;
-  uiMicros      = 0;
-  loaderMicros  = 0;
-  presentMicros = 0;
-  matrixMicros  = 0;
-  nirvanaMicros = 0;
+  sleepDuration   = Duration::ZERO;
+  uiDuration      = Duration::ZERO;
+  loaderDuration  = Duration::ZERO;
+  presentDuration = Duration::ZERO;
+  matrixDuration  = Duration::ZERO;
+  nirvanaDuration = Duration::ZERO;
 
   network.connect();
 
@@ -352,7 +352,7 @@ void GameStage::load()
   ui::ui.showLoadingScreen(false);
   present(true);
 
-  loadingMicros = Time::uclock() - loadingMicros;
+  loadingDuration = Time::clock() - beginInstant;
   autosaveTicks = 0;
 
   Log::unindent();
@@ -382,35 +382,35 @@ void GameStage::unload()
   mainSemaphore.wait();
   auxThread.join();
 
-  ulong64 ticks                 = timer.ticks - startTicks;
-  long64  soundMicros           = sound.effectsMicros + sound.musicMicros;
-  long64  renderMicros          = render.prepareMicros + render.caelumMicros + render.terraMicros +
-                                  render.meshesMicros + render.miscMicros +
-                                  render.postprocessMicros + render.uiMicros + render.swapMicros;
-  float   sleepTime             = float(sleepMicros)                    * 1.0e-6f;
-  float   uiTime                = float(uiMicros)                       * 1.0e-6f;
-  float   loaderTime            = float(loaderMicros)                   * 1.0e-6f;
-  float   presentTime           = float(presentMicros)                  * 1.0e-6f;
-  float   soundTime             = float(soundMicros)                    * 1.0e-6f;
-  float   soundEffectsTime      = float(sound.effectsMicros)            * 1.0e-6f;
-  float   soundMusicTime        = float(sound.musicMicros)              * 1.0e-6f;
-  float   renderTime            = float(renderMicros)                   * 1.0e-6f;
-  float   renderPrepareTime     = float(render.prepareMicros)           * 1.0e-6f;
-  float   renderCaelumTime      = float(render.caelumMicros)            * 1.0e-6f;
-  float   renderTerraTime       = float(render.terraMicros)             * 1.0e-6f;
-  float   renderMeshesTime      = float(render.meshesMicros)            * 1.0e-6f;
-  float   renderMiscTime        = float(render.miscMicros)              * 1.0e-6f;
-  float   renderPostprocessTime = float(render.postprocessMicros)       * 1.0e-6f;
-  float   renderUITime          = float(render.uiMicros)                * 1.0e-6f;
-  float   renderSwapTime        = float(render.swapMicros)              * 1.0e-6f;
-  float   matrixTime            = float(matrixMicros)                   * 1.0e-6f;
-  float   nirvanaTime           = float(nirvanaMicros)                  * 1.0e-6f;
-  float   loadingTime           = float(loadingMicros)                  * 1.0e-6f;
-  float   runTime               = float(timer.runMicros)                * 1.0e-6f;
-  float   gameTime              = float(timer.micros)                   * 1.0e-6f;
-  float   droppedTime           = float(timer.runMicros - timer.micros) * 1.0e-6f;
-  ulong64 nFrameDrops           = ticks - timer.nFrames;
-  float   frameDropRate         = float(ticks - timer.nFrames) / float(ticks);
+  ulong64  ticks                 = timer.ticks - startTicks;
+  Duration soundMicros           = sound.effectsDuration + sound.musicDuration;
+  Duration renderMicros          = render.prepareDuration + render.caelumDuration + render.terraDuration +
+                                   render.meshesDuration + render.miscDuration +
+                                   render.postprocessDuration + render.uiDuration + render.swapDuration;
+  float    sleepTime             = sleepDuration.sf();
+  float    uiTime                = uiDuration.sf();
+  float    loaderTime            = loaderDuration.sf();
+  float    presentTime           = presentDuration.sf();
+  float    soundTime             = soundMicros.sf();
+  float    soundEffectsTime      = sound.effectsDuration.sf();
+  float    soundMusicTime        = sound.musicDuration.sf();
+  float    renderTime            = renderMicros.sf();
+  float    renderPrepareTime     = render.prepareDuration.sf();
+  float    renderCaelumTime      = render.caelumDuration.sf();
+  float    renderTerraTime       = render.terraDuration.sf();
+  float    renderMeshesTime      = render.meshesDuration.sf();
+  float    renderMiscTime        = render.miscDuration.sf();
+  float    renderPostprocessTime = render.postprocessDuration.sf();
+  float    renderUITime          = render.uiDuration.sf();
+  float    renderSwapTime        = render.swapDuration.sf();
+  float    matrixTime            = matrixDuration.sf();
+  float    nirvanaTime           = nirvanaDuration.sf();
+  float    loadingTime           = loadingDuration.sf();
+  float    runTime               = timer.runTime.sf();
+  float    gameTime              = timer.time.sf();
+  float    droppedTime           = (timer.runTime - timer.time).sf();
+  ulong64  nFrameDrops           = ticks - timer.nFrames;
+  float    frameDropRate         = float(ticks - timer.nFrames) / float(ticks);
 
   if (stateFile.isEmpty()) {
     stateFile = autosaveFile;

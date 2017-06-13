@@ -38,15 +38,15 @@ public:
 
   virtual ~Stage();
 
-  virtual bool update()             = 0;
-  virtual void present(bool isFull) = 0;
-  virtual void wait(uint micros)    = 0;
+  virtual bool update()                = 0;
+  virtual void present(bool isFull)    = 0;
+  virtual void wait(Duration duration) = 0;
 
-  virtual void load()               = 0;
-  virtual void unload()             = 0;
+  virtual void load()                  = 0;
+  virtual void unload()                = 0;
 
-  virtual void init()               = 0;
-  virtual void destroy()            = 0;
+  virtual void init()                  = 0;
+  virtual void destroy()               = 0;
 
 };
 

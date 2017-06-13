@@ -65,12 +65,12 @@ private:
   Semaphore                   soundAuxSemaphore;
 
   Atomic<bool>                isMusicAlive;
-  Atomic<bool>               isSoundAlive;
+  Atomic<bool>                isSoundAlive;
 
 public:
 
-  ulong64                     effectsMicros;
-  ulong64                     musicMicros;
+  Duration                    effectsDuration;
+  Duration                    musicDuration;
 
 private:
 

@@ -54,16 +54,16 @@ private:
 
 private:
 
-  Stage* stage;
-  int    initFlags;
+  Stage*   stage;
+  int      initFlags;
 
-  int    windowWidth;
-  int    windowHeight;
-  int    screenWidth;
-  int    screenHeight;
+  int      windowWidth;
+  int      windowHeight;
+  int      screenWidth;
+  int      screenHeight;
 
-  float  benchmarkTime;
-  bool   isBenchmark;
+  Duration benchmarkTime;
+  bool     isBenchmark;
 
 private:
 

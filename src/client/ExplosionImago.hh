@@ -37,8 +37,8 @@ private:
 
   static int modelId;
 
-  Model* model;
-  uint   startMicros;
+  Model*   model;
+  Duration startTime;
 
 private:
 

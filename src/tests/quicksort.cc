@@ -171,7 +171,7 @@ int main()
 
   srand(32);
 
-  long64 t0 = Time::clock();
+  Duration t0 = Time::clock();
   for (int i = 0; i < TESTS; ++i) {
     for (int j = 0; j < MAX; ++j) {
       array[j] = rand() % MAX;
@@ -182,7 +182,7 @@ int main()
     Arrays::sort(array, MAX);
     //aSort<int, 100>(array, MAX);
   }
-  printf("%d ms\n", int(Time::clock() - t0));
+  printf("%d ms\n", int((Time::clock() - t0).ms()));
 //   for (int i = 0; i < MAX; ++i) {
 //     printf("%d ", array[i]);
 //   }

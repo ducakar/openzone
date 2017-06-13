@@ -79,7 +79,7 @@ Cursor::Cursor(const File& file, Mode mode, int size)
     image.height      = is.readInt();
     image.hotspotLeft = is.readInt();
     image.hotspotTop  = is.readInt();
-    image.delay       = is.readInt();
+    image.delay       = is.readInt() * 1_ms;
 
     int   nBytes = image.width * image.height * 4;
     char* pixels = new char[nBytes];
@@ -150,13 +150,13 @@ Cursor::~Cursor()
 }
 
 Cursor::Cursor(Cursor&& other)
-  : mode_(other.mode_), frame_(other.frame_), lastFrame_(-1), frameTime_(other.frameTime_),
+  : mode_(other.mode_), frame_(other.frame_), lastFrame_(-1), frameDuration_(other.frameDuration_),
     images_(static_cast<List<Image>&&>(other.images_))
 {
-  other.mode_      = SYSTEM;
-  other.frame_     = 0;
-  other.lastFrame_ = -1;
-  other.frameTime_ = 0;
+  other.mode_          = SYSTEM;
+  other.frame_         = 0;
+  other.lastFrame_     = -1;
+  other.frameDuration_ = Duration::ZERO;
 }
 
 Cursor& Cursor::operator=(Cursor&& other)
@@ -164,37 +164,37 @@ Cursor& Cursor::operator=(Cursor&& other)
   if (&other != this) {
     destroy();
 
-    mode_      = other.mode_;
-    frame_     = other.frame_;
-    lastFrame_ = other.lastFrame_;
-    frameTime_ = other.frameTime_;
-    images_    = static_cast<List<Image>&&>(other.images_);
+    mode_          = other.mode_;
+    frame_         = other.frame_;
+    lastFrame_     = other.lastFrame_;
+    frameDuration_ = other.frameDuration_;
+    images_        = static_cast<List<Image>&&>(other.images_);
 
-    other.mode_      = SYSTEM;
-    other.frame_     = 0;
-    other.lastFrame_ = -1;
-    other.frameTime_ = 0;
+    other.mode_          = SYSTEM;
+    other.frame_         = 0;
+    other.lastFrame_     = -1;
+    other.frameDuration_ = Duration::ZERO;
   }
   return *this;
 }
 
 void Cursor::reset()
 {
-  frame_     = 0;
-  frameTime_ = 0;
+  frame_         = 0;
+  frameDuration_ = Duration::ZERO;
 }
 
-void Cursor::update(int millis)
+void Cursor::update(Duration duration)
 {
   if (images_.isEmpty()) {
     return;
   }
 
-  int delay = images_[frame_].delay;
+  Duration delay = images_[frame_].delay;
 
-  frameTime_ += millis;
-  frame_      = (frame_ + frameTime_ / delay) % images_.size();
-  frameTime_  = frameTime_ % delay;
+  frameDuration_ += duration;
+  frame_          = (frame_ + frameDuration_ / delay) % images_.size();
+  frameDuration_  = frameDuration_ % delay;
 
   if (mode_ == SYSTEM) {
     const Image& image = images_[frame_];
@@ -236,10 +236,10 @@ void Cursor::destroy()
     };
   }
 
-  mode_      = SYSTEM;
-  frame_     = 0;
-  lastFrame_ = -1;
-  frameTime_ = 0;
+  mode_          = SYSTEM;
+  frame_         = 0;
+  lastFrame_     = -1;
+  frameDuration_ = Duration::ZERO;
   images_.clear();
 }
 

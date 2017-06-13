@@ -31,7 +31,7 @@
 namespace oz
 {
 
-uint Time::clock()
+Duration Time::clock()
 {
 #ifdef _WIN32
 
@@ -41,33 +41,8 @@ uint Time::clock()
   QueryPerformanceFrequency(&frequency);
   QueryPerformanceCounter(&ticks);
 
-  // This is not continuous when performance counter wraps around.
-  return uint((ticks.QuadPart * 1000) / frequency.QuadPart);
-
-#else
-
-  struct timespec now;
-  clock_gettime(CLOCK_MONOTONIC, &now);
-
-  // This is continuous if tv_sec wraps around at its maximum value since (time_t range) * 1000 is
-  // a multiple of uint range.
-  return uint(now.tv_sec * 1000 + now.tv_nsec / 1000000);
-
-#endif
-}
-
-uint Time::uclock()
-{
-#ifdef _WIN32
-
-  LARGE_INTEGER frequency;
-  LARGE_INTEGER ticks;
-
-  QueryPerformanceFrequency(&frequency);
-  QueryPerformanceCounter(&ticks);
-
-  // This is not continuous when performance counter wraps around.
-  return uint((ticks.QuadPart * 1000000) / frequency.QuadPart);
+  // NOTE This is not continuous when performance counter wraps around.
+  return Duration(long64((ticks.QuadPart * 1000000000) / frequency.QuadPart));
 
 #else
 
@@ -76,45 +51,24 @@ uint Time::uclock()
 
   // This is continuous if tv_sec wraps around at its maximum value since (time_t range) * 1000000
   // is a multiple of uint range.
-  return uint(now.tv_sec * 1000000 + now.tv_nsec / 1000);
+  return Duration(long64(now.tv_sec * 1000000000 + now.tv_nsec));
 
 #endif
 }
 
-void Time::sleep(uint milliseconds)
-{
-#ifdef _WIN32
-
-  Sleep(milliseconds);
-
-#else
-
-  struct timespec ts = {
-    time_t(milliseconds / 1000),
-    long((milliseconds % 1000) * 1000000)
-  };
-# ifdef __native_client__
-  nanosleep(&ts, nullptr);
-# else
-  clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, nullptr);
-# endif
-
-#endif
-}
-
-void Time::usleep(uint microseconds)
+void Time::sleep(Duration duration)
 {
 #ifdef _WIN32
 
   // Based on observations performed on Windows 7, adding a millisecond rather than rounding to the
   // nearest millisecond value gives the most accurate sleep periods for a given microsecond value.
-  Sleep(microseconds / 1000 + 1);
+  Sleep(duration.ms() + 1);
 
 #else
 
   struct timespec ts = {
-    time_t(microseconds / 1000000),
-    long((microseconds % 1000000) * 1000)
+    time_t(duration.s()),
+    long((duration.ns() % 1000000000))
   };
 # ifdef __native_client__
   nanosleep(&ts, nullptr);

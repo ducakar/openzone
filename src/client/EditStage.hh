@@ -60,7 +60,7 @@ public:
 
   bool update() override;
   void present(bool isFull) override;
-  void wait(uint micros) override;
+  void wait(Duration duration) override;
 
   void load() override;
   void unload() override;

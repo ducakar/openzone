@@ -66,7 +66,7 @@ int main()
                  Math::rand(), Math::rand(), Math::rand(), Math::rand());
   }
 
-  long64 t0 = Time::clock();
+  Duration t0 = Time::clock();
 
   for (int k = 0; k < 10000; ++k) {
     for (int i = 0; i < MAX; ++i) {
@@ -78,7 +78,7 @@ int main()
     }
   }
 
-  Log() << "Vectors: " << float(Time::clock() - t0) / 1000.0f;
+  Log() << "Vectors: " << (Time::clock() - t0).s();
 
   t0 = Time::clock();
 
@@ -90,6 +90,6 @@ int main()
     }
   }
 
-  Log() << "Matrices: " << float(Time::clock() - t0) / 1000.0f;
+  Log() << "Matrices: " << (Time::clock() - t0).s();
   return 0;
 }

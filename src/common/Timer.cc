@@ -22,44 +22,43 @@
 namespace oz
 {
 
+constexpr long64 Timer::TICKS_PER_SEC;
+constexpr Duration Timer::TICK_DURATION;
+constexpr float Timer::TICK_TIME;
+
 void Timer::reset()
 {
-  runMicros   = 0;
+  runTime    = Duration::ZERO;
 
-  ticks       = 0;
-  micros      = 0;
-  time        = 0.0f;
+  ticks      = 0;
+  time       = Duration::ZERO;
 
-  nFrames     = 0;
-  frameTicks  = 0;
-  frameMicros = 0;
-  frameTime   = 0.0f;
+  nFrames    = 0;
+  frameTicks = 0;
+  frameTime  = Duration::ZERO;
 }
 
 void Timer::tick()
 {
-  runMicros   += TICK_MICROS;
+  runTime    += TICK_DURATION;
 
-  ticks       += 1;
-  micros      += TICK_MICROS;
-  time         = float(micros) / 1.0e6f;
+  ticks      += 1;
+  time       += TICK_DURATION;
 
-  frameTicks  += 1;
-  frameMicros += TICK_MICROS;
-  frameTime    = float(frameMicros) / 1.0e6f;
+  frameTicks += 1;
+  frameTime  += TICK_DURATION;
 }
 
 void Timer::frame()
 {
   nFrames    += 1;
   frameTicks  = 0;
-  frameMicros = 0;
-  frameTime   = 0.0f;
+  frameTime   = Duration::ZERO;
 }
 
-void Timer::drop(uint micros_)
+void Timer::drop(Duration droppedTime)
 {
-  runMicros += micros_;
+  runTime += droppedTime;
 }
 
 Timer timer;

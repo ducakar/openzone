@@ -28,7 +28,9 @@
 
 #pragma once
 
+#include <ctime>
 #include "String.hh"
+#include "Duration.hh"
 
 namespace oz
 {
@@ -50,28 +52,16 @@ public:
 public:
 
   /**
-   * Monotonic clock from an unspecified point in time, with millisecond resolution.
-   *
-   * This clock wraps around in about 49.7 days.
-   */
-  static uint clock();
-
-  /**
    * Monotonic clock from an unspecified point in time, with microsecond resolution.
    *
    * This clock wraps around in about 71.6 min.
    */
-  static uint uclock();
+  static Duration clock();
 
   /**
-   * Sleep for given number of milliseconds.
+   * Sleep for given time duration.
    */
-  static void sleep(uint milliseconds);
-
-  /**
-   * Sleep for given number of microseconds.
-   */
-  static void usleep(uint microseconds);
+  static void sleep(Duration duration);
 
   /**
    * Get current time in seconds from the platform-dependent epoch.

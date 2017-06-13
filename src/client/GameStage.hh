@@ -39,13 +39,13 @@ private:
   static const uint AUTOSAVE_INTERVAL;
 
   ulong64      startTicks;
-  long64       sleepMicros;
-  long64       loadingMicros;
-  long64       uiMicros;
-  long64       loaderMicros;
-  long64       presentMicros;
-  long64       matrixMicros;
-  long64       nirvanaMicros;
+  Duration     sleepDuration;
+  Duration     loadingDuration;
+  Duration     uiDuration;
+  Duration     loaderDuration;
+  Duration     presentDuration;
+  Duration     matrixDuration;
+  Duration     nirvanaDuration;
 
   uint         autosaveTicks;
 
@@ -81,7 +81,7 @@ public:
 
   bool update() override;
   void present(bool isFull) override;
-  void wait(uint micros) override;
+  void wait(Duration duration) override;
 
   void load() override;
   void unload() override;

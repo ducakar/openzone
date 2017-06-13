@@ -192,9 +192,9 @@ void EditStage::present(bool isFull)
   sound.sync();
 }
 
-void EditStage::wait(uint micros)
+void EditStage::wait(Duration duration)
 {
-  Time::usleep(micros);
+  Time::sleep(duration);
 }
 
 void EditStage::load()

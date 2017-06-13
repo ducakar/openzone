@@ -181,8 +181,8 @@ void Render::scheduleCell(int cellX, int cellY)
 
 void Render::prepareDraw()
 {
-  uint currentMicros = Time::uclock();
-  uint beginMicros = currentMicros;
+  Duration currentInstant = Time::clock();
+  Duration beginInstant   = currentInstant;
 
   collider.translate(camera.p, Vec3::ZERO);
   shader.medium = collider.hit.medium;
@@ -262,20 +262,20 @@ void Render::prepareDraw()
     context.drawImago(objects[i].obj, nullptr);
   }
 
-  currentMicros = Time::uclock();
-  prepareMicros += currentMicros - beginMicros;
+  currentInstant = Time::clock();
+  prepareDuration += currentInstant - beginInstant;
 }
 
 void Render::drawGeometry()
 {
-  uint currentMicros = Time::uclock();
-  uint beginMicros = currentMicros;
+  Duration currentInstant = Time::clock();
+  Duration beginInstant = currentInstant;
 
   OZ_GL_CHECK_ERROR();
 
-  currentMicros = Time::uclock();
-  swapMicros += currentMicros - beginMicros;
-  beginMicros = currentMicros;
+  currentInstant = Time::clock();
+  swapDuration += currentInstant - beginInstant;
+  beginInstant = currentInstant;
 
   // camera transformation
   tf.projection();
@@ -297,9 +297,9 @@ void Render::drawGeometry()
     glUniform4f(uniform.wind, 1.0f, 1.0f, WIND_FACTOR, windPhi);
   }
 
-  currentMicros = Time::uclock();
-  miscMicros += currentMicros - beginMicros;
-  beginMicros = currentMicros;
+  currentInstant = Time::clock();
+  miscDuration += currentInstant - beginInstant;
+  beginInstant = currentInstant;
 
   if (!(shader.medium & Medium::LIQUID_MASK) && camera.p.z >= 0.0f) {
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -318,36 +318,36 @@ void Render::drawGeometry()
 
   glEnable(GL_DEPTH_TEST);
 
-  currentMicros = Time::uclock();
-  caelumMicros += currentMicros - beginMicros;
-  beginMicros = currentMicros;
+  currentInstant = Time::clock();
+  caelumDuration += currentInstant - beginInstant;
+  beginInstant = currentInstant;
 
   glDisable(GL_BLEND);
   Model::drawScheduled(Model::SCENE_QUEUE, Model::SOLID_BIT);
 
-  currentMicros = Time::uclock();
-  meshesMicros += currentMicros - beginMicros;
-  beginMicros = currentMicros;
+  currentInstant = Time::clock();
+  meshesDuration += currentInstant - beginInstant;
+  beginInstant = currentInstant;
 
   terra.draw();
   glEnable(GL_BLEND);
 
-  currentMicros = Time::uclock();
-  terraMicros += currentMicros - beginMicros;
-  beginMicros = currentMicros;
+  currentInstant = Time::clock();
+  terraDuration += currentInstant - beginInstant;
+  beginInstant = currentInstant;
 
   terra.drawLiquid();
 
-  currentMicros = Time::uclock();
-  terraMicros += currentMicros - beginMicros;
-  beginMicros = currentMicros;
+  currentInstant = Time::clock();
+  terraDuration += currentInstant - beginInstant;
+  beginInstant = currentInstant;
 
   Model::drawScheduled(Model::SCENE_QUEUE, Model::ALPHA_BIT);
   Model::clearScheduled(Model::SCENE_QUEUE);
 
-  currentMicros = Time::uclock();
-  meshesMicros += currentMicros - beginMicros;
-  beginMicros = currentMicros;
+  currentInstant = Time::clock();
+  meshesDuration += currentInstant - beginInstant;
+  beginInstant = currentInstant;
 
   Model::drawScheduled(Model::OVERLAY_QUEUE, Model::SOLID_BIT | Model::ALPHA_BIT);
   Model::clearScheduled(Model::OVERLAY_QUEUE);
@@ -401,8 +401,8 @@ void Render::drawGeometry()
   structs.clear();
   objects.clear();
 
-  currentMicros = Time::uclock();
-  miscMicros += currentMicros - beginMicros;
+  currentInstant = Time::clock();
+  miscDuration += currentInstant - beginInstant;
 }
 
 void Render::drawOrbis()
@@ -425,7 +425,7 @@ void Render::drawOrbis()
   prepareDraw();
   drawGeometry();
 
-  uint beginMicros = Time::uclock();
+  Duration beginInstant = Time::clock();
 
   if (isOffscreen) {
     glViewport(0, 0, windowWidth, windowHeight);
@@ -479,29 +479,29 @@ void Render::drawOrbis()
     glEnable(GL_CULL_FACE);
   }
 
-  postprocessMicros += Time::uclock() - beginMicros;
+  postprocessDuration += Time::clock() - beginInstant;
 
   OZ_GL_CHECK_ERROR();
 }
 
 void Render::drawUI()
 {
-  uint beginMicros = Time::uclock();
+  Duration beginInstant = Time::clock();
 
   ui::ui.draw();
 
-  uiMicros += Time::uclock() - beginMicros;
+  uiDuration += Time::clock() - beginInstant;
 }
 
 void Render::swap()
 {
   OZ_NACL_IS_MAIN(false);
 
-  uint beginMicros = Time::uclock();
+  Duration beginMicros = Time::clock();
 
   Window::swapBuffers();
 
-  swapMicros += Time::uclock() - beginMicros;
+  swapDuration += Time::clock() - beginMicros;
 }
 
 void Render::update(int flags)
@@ -652,14 +652,14 @@ void Render::load()
   structs.reserve(64);
   objects.reserve(8192);
 
-  prepareMicros     = 0;
-  caelumMicros      = 0;
-  terraMicros       = 0;
-  meshesMicros      = 0;
-  miscMicros        = 0;
-  postprocessMicros = 0;
-  uiMicros          = 0;
-  swapMicros        = 0;
+  prepareDuration     = Duration::ZERO;
+  caelumDuration      = Duration::ZERO;
+  terraDuration       = Duration::ZERO;
+  meshesDuration      = Duration::ZERO;
+  miscDuration        = Duration::ZERO;
+  postprocessDuration = Duration::ZERO;
+  uiDuration          = Duration::ZERO;
+  swapDuration        = Duration::ZERO;
 
   Log::printEnd(" OK");
 }

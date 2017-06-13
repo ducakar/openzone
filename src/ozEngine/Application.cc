@@ -133,12 +133,12 @@ void Application::run(Stage* initialStage)
     OZ_ERROR("oz::Application: Window creation failed");
   }
 
-  uint fps        = config["timing"]["fps"].get(defaults.timing.fps);
-  uint nTicks     = 0;
-  uint tickTime   = 0;
-  uint timeLast   = Time::uclock();
-  uint timeSpent  = 0;
-  uint frameTicks = 0;
+  uint     fps        = config["timing"]["fps"].get(defaults.timing.fps);
+  uint     nTicks     = 0;
+  uint     frameTicks = 0;
+  Duration tickTime   = 0_s;
+  Duration timeLast   = Time::clock();
+  Duration timeSpent  = 0_s;
 
   do {
     // read input & events
@@ -242,9 +242,9 @@ void Application::run(Stage* initialStage)
 
     // Waste time when iconified.
     if (!Window::isActive()) {
-      Time::usleep(1000000 / fps);
+      Time::sleep(1_s / fps);
 
-      timeSpent = Time::uclock() - timeLast;
+      timeSpent = Time::clock() - timeLast;
       timeLast += timeSpent;
       continue;
     }
@@ -264,17 +264,17 @@ void Application::run(Stage* initialStage)
 
       currentStage->load();
 
-      timeLast = Time::uclock();
+      timeLast = Time::clock();
       continue;
     }
 
-    tickTime = (nTicks + 1) * 1000000 / fps - nTicks * 1000000 / fps;
+    tickTime = (nTicks + 1) * 1_s / fps - nTicks * 1_s / fps;
     nTicks   = (nTicks + 1) % fps;
 
     currentStage->update();
 
     frameTicks += 1;
-    timeSpent   = Time::uclock() - timeLast;
+    timeSpent   = Time::clock() - timeLast;
 
     // Skip rendering graphics, only play sounds if there's not enough time left.
     if (timeSpent >= tickTime) {
@@ -284,17 +284,17 @@ void Application::run(Stage* initialStage)
       currentStage->present(true);
 
       frameTicks = 0;
-      timeSpent  = Time::uclock() - timeLast;
+      timeSpent  = Time::clock() - timeLast;
 
       // Sleep if there's still some time left.
       if (timeSpent < tickTime) {
-        Time::usleep(tickTime - timeSpent);
+        Time::sleep(tickTime - timeSpent);
         timeSpent = tickTime;
       }
     }
 
     // Drop skip time if we are more than 100 ms behind.
-    if (timeSpent > 100000) {
+    if (timeSpent > 100_ms) {
       timeLast += timeSpent - tickTime;
     }
 

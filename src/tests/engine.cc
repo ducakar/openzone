@@ -104,7 +104,7 @@ int main(int argc, char** argv)
 
     Window::swapBuffers();
 
-    cursor.update(15);
+    cursor.update(15_ms);
 
     if (decoder.isValid()) {
       ALint nProcessed;
@@ -121,7 +121,7 @@ int main(int argc, char** argv)
       }
     }
 
-    Time::sleep(15);
+    Time::sleep(15_ms);
   }
 
   alDeleteSources(1, &source);

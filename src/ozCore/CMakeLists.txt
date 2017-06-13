@@ -12,6 +12,7 @@ add_library(ozCore
   Chain.hh
   common.hh
   DChain.hh
+  Duration.hh
   Endian.hh
   EnumMap.hh
   File.hh
@@ -52,6 +53,7 @@ add_library(ozCore
   Vec4.hh
   Alloc.cc
   Bitset.cc
+  Duration.cc
   EnumMap.cc
   File.cc
   Gettext.cc

@@ -38,27 +38,22 @@ class Timer
 public:
 
   /// Number of ticks (game updates) per second.
-  static const uint TICKS_PER_SEC = 60;
+  static constexpr long64 TICKS_PER_SEC = 60;
 
-  /// Length of one tick in microseconds.
-  static const uint TICK_MICROS = (1000000 + TICKS_PER_SEC / 2) / TICKS_PER_SEC;
-
-  /// Length of one tick in milliseconds.
-  static const uint TICK_MILLIS = (1000 + TICKS_PER_SEC / 2) / TICKS_PER_SEC;
+  /// Length of one tick.
+  static constexpr Duration TICK_DURATION = (1_s + Duration(TICKS_PER_SEC / 2)) / TICKS_PER_SEC;
 
   /// Length of one tick in seconds.
   static constexpr float TICK_TIME = 1.0f / float(TICKS_PER_SEC);
 
-  ulong64 runMicros   = 0;    ///< Run time (game time plus dropped time).
+  Duration runTime;        ///< Run time (game time plus dropped time).
 
-  ulong64 ticks       = 0;    ///< Ticks from the start of the game.
-  ulong64 micros      = 0;    ///< Microseconds from the start of the game.
-  float   time        = 0.0f; ///< %Time from the start of the game is seconds.
+  long64   ticks      = 0; ///< Ticks from the start of the game.
+  Duration time;           ///< %Time from the start of the game.
 
-  ulong64 nFrames     = 0;    ///< Number of rendered frames from the start of the game.
-  uint    frameTicks  = 0;    ///< Ticks from the last rendered frame.
-  uint    frameMicros = 0;    ///< Microseconds of game time from the last rendered frame.
-  float   frameTime   = 0.0f; ///< Game time from the last rendered frame.
+  long64   nFrames    = 0; ///< Number of rendered frames from the start of the game.
+  long64   frameTicks = 0; ///< Ticks from the last rendered frame.
+  Duration frameTime;      ///< Microseconds of game time from the last rendered frame.
 
   /**
    * Reset all timer counters to zero.
@@ -83,7 +78,7 @@ public:
    * ticks. That would results in a period after each "freeze" during which simulation will run
    * faster than in real time.
    */
-  void drop(uint micros);
+  void drop(Duration droppedTime);
 
 };
 

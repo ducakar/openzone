@@ -71,11 +71,11 @@ private:
    */
   struct Image
   {
-    int width;                         ///< Image width.
-    int height;                        ///< Image height.
-    int hotspotLeft;                   ///< Hotspot offset from the left.
-    int hotspotTop;                    ///< Hotspot offset from the top.
-    int delay;                         ///< Frame time in milliseconds.
+    int      width;                    ///< Image width.
+    int      height;                   ///< Image height.
+    int      hotspotLeft;              ///< Hotspot offset from the left.
+    int      hotspotTop;               ///< Hotspot offset from the top.
+    Duration delay;                    ///< Frame duration.
 
     union
     {
@@ -88,13 +88,13 @@ private:
     };
   };
 
-  static const Image* lastImage;  ///< Keep track of the current image to avoid unnecessary updates.
+  static const Image* lastImage;       ///< Remember the current image to avoid unnecessary updates.
 
-  Mode        mode_      = SYSTEM; ///< Render mode.
-  int         frame_     = 0;      ///< Current animation frame.
-  int         lastFrame_ = -1;     ///< Last frame for OS cursor to avoid unnecessary updates.
-  int         frameTime_ = 0;      ///< Time in milliseconds of the current animation frame.
-  List<Image> images_;             ///< Cursor images.
+  Mode        mode_          = SYSTEM; ///< Render mode.
+  int         frame_         = 0;      ///< Current animation frame.
+  int         lastFrame_     = -1;     ///< Last frame for OS cursor to avoid unnecessary updates.
+  Duration    frameDuration_;          ///< Time of the current animation frame.
+  List<Image> images_;                 ///< Cursor images.
 
 public:
 
@@ -179,7 +179,7 @@ public:
   /**
    * Advance animation and update the current texture id or the system cursor.
    */
-  void update(int millis);
+  void update(Duration duration);
 
   /**
    * Destroy textures if loaded.

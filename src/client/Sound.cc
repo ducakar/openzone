@@ -187,8 +187,8 @@ void Sound::soundRun()
   soundAuxSemaphore.wait();
 
   while (isSoundAlive.load<ATOMIC_RELAXED>()) {
-    uint currentMicros = Time::uclock();
-    uint beginMicros = currentMicros;
+    Duration currentInstant = Time::clock();
+    Duration beginInstant = currentInstant;
 
     float orientation[] = {
       camera.at.x, camera.at.y, camera.at.z,
@@ -212,14 +212,14 @@ void Sound::soundRun()
       }
     }
 
-    currentMicros = Time::uclock();
-    effectsMicros += currentMicros - beginMicros;
-    beginMicros = currentMicros;
+    currentInstant = Time::clock();
+    effectsDuration += currentInstant - beginInstant ;
+    beginInstant  = currentInstant;
 
     updateMusic();
 
-    currentMicros = Time::uclock();
-    musicMicros += currentMicros - beginMicros;
+    currentInstant = Time::clock();
+    musicDuration += currentInstant - beginInstant ;
 
     soundMainSemaphore.post();
     soundAuxSemaphore.wait();
@@ -283,8 +283,8 @@ void Sound::sync()
 
 void Sound::load()
 {
-  effectsMicros = 0;
-  musicMicros   = 0;
+  effectsDuration = Duration::ZERO;
+  musicDuration   = Duration::ZERO;
 }
 
 void Sound::unload()

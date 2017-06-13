@@ -80,13 +80,13 @@ int Client::main()
 
   SDL_Event event;
 
-  bool isAlive   = true;
-  bool isActive  = true;
+  bool     isAlive   = true;
+  bool     isActive  = true;
   // Time spent on the current frame so far.
-  uint timeSpent = 0;
-  uint timeZero  = Time::uclock();
+  Duration timeSpent = Duration::ZERO;
+  Duration timeZero  = Time::clock();
   // Time at the end of the last frame.
-  uint timeLast  = timeZero;
+  Duration timeLast  = timeZero;
 
   initFlags |= INIT_MAIN_LOOP;
 
@@ -254,9 +254,9 @@ int Client::main()
 
     // Waste time when iconified.
     if (!isActive) {
-      Time::usleep(Timer::TICK_MICROS);
+      Time::sleep(Timer::TICK_DURATION);
 
-      timeSpent = Time::uclock() - timeLast;
+      timeSpent = Time::clock() - timeLast;
       timeLast += timeSpent;
 
       continue;
@@ -280,14 +280,14 @@ int Client::main()
 
       stage->load();
 
-      timeLast = Time::uclock();
+      timeLast = Time::clock();
       continue;
     }
 
-    timeSpent = Time::uclock() - timeLast;
+    timeSpent = Time::clock() - timeLast;
 
     // Skip rendering graphics, only play sounds if there's not enough time left.
-    if (timeSpent >= Timer::TICK_MICROS && timer.frameMicros < 100 * 1000) {
+    if (timeSpent >= Timer::TICK_DURATION && timer.frameTime < 100_ms) {
       stage->present(false);
     }
     else {
@@ -295,19 +295,19 @@ int Client::main()
       timer.frame();
 
       // If there's still some time left, sleep.
-      timeSpent = Time::uclock() - timeLast;
+      timeSpent = Time::clock() - timeLast;
 
-      if (timeSpent < Timer::TICK_MICROS) {
-        stage->wait(Timer::TICK_MICROS - timeSpent);
-        timeSpent = Timer::TICK_MICROS;
+      if (timeSpent < Timer::TICK_DURATION) {
+        stage->wait(Timer::TICK_DURATION - timeSpent);
+        timeSpent = Timer::TICK_DURATION;
       }
     }
 
-    if (timeSpent > 100 * 1000) {
-      timer.drop(timeSpent - Timer::TICK_MICROS);
-      timeLast += timeSpent - Timer::TICK_MICROS;
+    if (timeSpent > 100_ms) {
+      timer.drop(timeSpent - Timer::TICK_DURATION);
+      timeLast += timeSpent - Timer::TICK_DURATION;
     }
-    timeLast += Timer::TICK_MICROS;
+    timeLast += Timer::TICK_DURATION;
   }
   while (isAlive);
 
@@ -325,7 +325,7 @@ int Client::init(int argc, char** argv)
 
   initFlags     = 0;
   isBenchmark   = false;
-  benchmarkTime = 0.0f;
+  benchmarkTime = Duration::ZERO;
 
   File   prefixDir  = OZ_PREFIX;
   String language   = "";
@@ -356,7 +356,7 @@ int Client::init(int argc, char** argv)
       }
       case 't': {
         const char* end;
-        benchmarkTime = float(String::parseDouble(optarg, &end));
+        benchmarkTime = String::parseDouble(optarg, &end) * 1_s;
 
         if (end == optarg) {
           printUsage();

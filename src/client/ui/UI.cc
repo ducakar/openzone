@@ -117,7 +117,7 @@ void UI::draw()
 
   if (showFPS) {
     if (timer.frameTicks != 0) {
-      fps = Math::mix(fps, 1.0f / timer.frameTime, 0.04f);
+      fps = Math::mix(fps, 1.0f / timer.frameTime.sf(), 0.04f);
     }
 
     fpsLabel->setText("%.1f", fps);

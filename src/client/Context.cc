@@ -109,7 +109,7 @@ int Context::speakCallback(short int* samples, int nSamples, void*)
 
     int nProcessed;
     do {
-      Time::sleep(100);
+      Time::sleep(100_ms);
 
       speakSource.mutex.lock();
 
@@ -159,7 +159,7 @@ void Context::speakMain(void*)
 
   int value = AL_PLAYING;
   while (speakSource.isAlive.load<ATOMIC_RELAXED>() && value != AL_STOPPED) {
-    Time::sleep(100);
+    Time::sleep(100_ms);
 
     speakSource.mutex.lock();
     alGetSourcei(speakSource.id, AL_SOURCE_STATE, &value);

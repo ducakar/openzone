@@ -110,14 +110,14 @@ private:
 
 public:
 
-  ulong64                     prepareMicros;
-  ulong64                     caelumMicros;
-  ulong64                     terraMicros;
-  ulong64                     meshesMicros;
-  ulong64                     miscMicros;
-  ulong64                     postprocessMicros;
-  ulong64                     uiMicros;
-  ulong64                     swapMicros;
+  Duration                    prepareDuration;
+  Duration                    caelumDuration;
+  Duration                    terraDuration;
+  Duration                    meshesDuration;
+  Duration                    miscDuration;
+  Duration                    postprocessDuration;
+  Duration                    uiDuration;
+  Duration                    swapDuration;
 
 private:
 

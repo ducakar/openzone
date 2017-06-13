@@ -48,9 +48,9 @@ void MenuStage::present(bool isFull)
   sound.sync();
 }
 
-void MenuStage::wait(uint micros)
+void MenuStage::wait(Duration duration)
 {
-  Time::usleep(micros);
+  Time::sleep(duration);
 }
 
 void MenuStage::load()
