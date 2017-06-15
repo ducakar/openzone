@@ -807,7 +807,7 @@ Json::Json(const Json& other)
   copyValue(other);
 }
 
-Json::Json(Json&& other)
+Json::Json(Json&& other) noexcept
   : number_(other.number_), comment_(other.comment_), type_(other.type_),
     wasAccessed_(other.wasAccessed_)
 {
@@ -826,7 +826,7 @@ Json& Json::operator=(const Json& other)
   return *this;
 }
 
-Json& Json::operator=(Json&& other)
+Json& Json::operator=(Json&& other) noexcept
 {
   if (&other != this) {
     clear();

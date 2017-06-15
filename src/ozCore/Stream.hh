@@ -98,12 +98,12 @@ public:
   /**
    * Move construction, moves internal buffer.
    */
-  Stream(Stream&& other);
+  Stream(Stream&& other) noexcept;
 
   /**
    * Move operator, moves internal buffer.
    */
-  Stream& operator=(Stream&& other);
+  Stream& operator=(Stream&& other) noexcept;
 
   /**
    * Constant pointer to the beginning of the stream.

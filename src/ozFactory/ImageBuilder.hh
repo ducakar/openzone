@@ -64,12 +64,12 @@ struct ImageData
   /**
    * Move constructor, moves pixel data.
    */
-  ImageData(ImageData&& other);
+  ImageData(ImageData&& other) noexcept;
 
   /**
    * Move operator, moves pixel data.
    */
-  ImageData& operator=(ImageData&& other);
+  ImageData& operator=(ImageData&& other) noexcept;
 
   /**
    * True iff it holds no image data.

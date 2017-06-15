@@ -133,7 +133,7 @@ public:
   /**
    * Move constructor, moves element storage.
    */
-  List(List&& other)
+  List(List&& other) noexcept
     : data_(other.data_), size_(other.size_), capacity_(other.capacity_)
   {
     other.data_     = nullptr;
@@ -158,7 +158,7 @@ public:
   /**
    * Move operator, moves element storage.
    */
-  List& operator=(List&& other)
+  List& operator=(List&& other) noexcept
   {
     if (&other != this) {
       delete[] data_;

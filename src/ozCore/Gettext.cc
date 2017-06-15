@@ -56,7 +56,7 @@ Gettext::~Gettext()
   clear();
 }
 
-Gettext::Gettext(Gettext&& other)
+Gettext::Gettext(Gettext&& other) noexcept
   : buckets_(other.buckets_), messages_(other.messages_), strings_(other.strings_),
     nBuckets_(other.nBuckets_), nMessages_(other.nMessages_), stringsSize_(other.stringsSize_)
 {
@@ -68,7 +68,7 @@ Gettext::Gettext(Gettext&& other)
   other.stringsSize_ = 0;
 }
 
-Gettext& Gettext::operator=(Gettext&& other)
+Gettext& Gettext::operator=(Gettext&& other) noexcept
 {
   if (&other != this) {
     clear();

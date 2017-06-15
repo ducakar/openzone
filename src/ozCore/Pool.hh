@@ -114,12 +114,12 @@ public:
   /**
    * Move constructor, moves storage.
    */
-  PoolAlloc(PoolAlloc&& other);
+  PoolAlloc(PoolAlloc&& other) noexcept;
 
   /**
    * Move operator, moves storage.
    */
-  PoolAlloc& operator=(PoolAlloc&& other);
+  PoolAlloc& operator=(PoolAlloc&& other) noexcept;
 
   /**
    * Number of used slots in the pool.

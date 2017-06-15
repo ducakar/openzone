@@ -101,12 +101,12 @@ public:
   /**
    * Move constructor.
    */
-  Thread(Thread&& other);
+  Thread(Thread&& other) noexcept;
 
   /**
    * Move operator.
    */
-  Thread& operator=(Thread&& other);
+  Thread& operator=(Thread&& other) noexcept;
 
   /**
    * True iff a joinable thread has been started but not yet joined or detached.

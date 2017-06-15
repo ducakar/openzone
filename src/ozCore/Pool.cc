@@ -79,7 +79,7 @@ PoolAlloc::~PoolAlloc()
   free();
 }
 
-PoolAlloc::PoolAlloc(PoolAlloc&& other)
+PoolAlloc::PoolAlloc(PoolAlloc&& other) noexcept
   : firstBlock_(other.firstBlock_), freeSlot_(other.freeSlot_), slotSize_(other.slotSize_),
     blockSlots_(other.blockSlots_), size_(other.size_), capacity_(other.capacity_)
 {
@@ -91,7 +91,7 @@ PoolAlloc::PoolAlloc(PoolAlloc&& other)
   other.capacity_   = 0;
 }
 
-PoolAlloc& PoolAlloc::operator=(PoolAlloc&& other)
+PoolAlloc& PoolAlloc::operator=(PoolAlloc&& other) noexcept
 {
   if (&other != this) {
     free();

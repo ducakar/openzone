@@ -71,12 +71,12 @@ public:
   /**
    * Move constructor.
    */
-  Font(Font&& f);
+  Font(Font&& f) noexcept;
 
   /**
    * Move operator.
    */
-  Font& operator=(Font&& f);
+  Font& operator=(Font&& f) noexcept;
 
   /**
    * Height.

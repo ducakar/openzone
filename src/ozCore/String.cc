@@ -299,7 +299,7 @@ String::String(const String& other)
   : String(other.begin(), other.size_)
 {}
 
-String::String(String&& other)
+String::String(String&& other) noexcept
 {
   memcpy(this, &other, sizeof(String));
 
@@ -315,7 +315,7 @@ String& String::operator=(const String& other)
   return *this;
 }
 
-String& String::operator=(String&& other)
+String& String::operator=(String&& other) noexcept
 {
   if (&other != this) {
     if (size_ >= BUFFER_SIZE) {

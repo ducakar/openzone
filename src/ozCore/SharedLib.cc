@@ -54,13 +54,13 @@ SharedLib::~SharedLib()
   close();
 }
 
-SharedLib::SharedLib(SharedLib&& l)
+SharedLib::SharedLib(SharedLib&& l) noexcept
   : handle_(l.handle_)
 {
   l.handle_ = nullptr;
 }
 
-SharedLib& SharedLib::operator=(SharedLib&& l)
+SharedLib& SharedLib::operator=(SharedLib&& l) noexcept
 {
   if (&l != this) {
     close();

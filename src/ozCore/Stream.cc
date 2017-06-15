@@ -95,7 +95,7 @@ Stream::~Stream()
   free();
 }
 
-Stream::Stream(Stream&& other)
+Stream::Stream(Stream&& other) noexcept
   : pos_(other.pos_), begin_(other.begin_), end_(other.end_), flags_(other.flags_),
     order_(other.order_)
 {
@@ -106,7 +106,7 @@ Stream::Stream(Stream&& other)
   other.order_ = Endian::NATIVE;
 }
 
-Stream& Stream::operator=(Stream&& other)
+Stream& Stream::operator=(Stream&& other) noexcept
 {
   if (&other != this) {
     free();

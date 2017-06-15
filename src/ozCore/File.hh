@@ -94,7 +94,7 @@ public:
   /**
    * Create an instance for a given path.
    */
-  File(String&& path);
+  File(String&& path) noexcept;
 
   /**
    * Create an instance for a given path.
@@ -111,7 +111,7 @@ public:
   /**
    * Recreate instance for a given path.
    */
-  File& operator=(String&& path);
+  File& operator=(String&& path) noexcept;
 
   /**
    * Recreate instance for a given path.

@@ -167,13 +167,13 @@ Thread::~Thread()
   }
 }
 
-Thread::Thread(Thread&& other)
+Thread::Thread(Thread&& other) noexcept
   : descriptor_(other.descriptor_)
 {
   other.descriptor_ = nullptr;
 }
 
-Thread& Thread::operator=(Thread&& other)
+Thread& Thread::operator=(Thread&& other) noexcept
 {
   if (&other != this) {
     if (descriptor_ != nullptr) {
