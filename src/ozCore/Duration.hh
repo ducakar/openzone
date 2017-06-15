@@ -34,7 +34,7 @@ namespace oz
 {
 
 /**
- * %Time duration class.
+ * %Time interval.
  *
  * A time interval or a time relative to an unspecified epoch (as returned by `Time::clock()`).
  * The time interval is internally stored in nanoseconds (64-bit integer), hence nanosecond
@@ -273,31 +273,63 @@ public:
 /**
  * Create a duration for a given number of seconds.
  */
-inline constexpr Duration operator""_s(ulong64 value)
+inline constexpr Duration operator""_s(unsigned long long value)
 {
   return Duration(long64(value * 1000000000));
 }
 
 /**
+ * Create a duration for a given number of seconds.
+ */
+inline constexpr Duration operator""_s(long double value)
+{
+  return Duration(long64(value * 1000000000.0l));
+}
+
+/**
  * Create a duration for a given number of milliseconds.
  */
-inline constexpr Duration operator""_ms(ulong64 value)
+inline constexpr Duration operator""_ms(unsigned long long value)
 {
   return Duration(long64(value * 1000000));
 }
 
 /**
+ * Create a duration for a given number of milliseconds.
+ */
+inline constexpr Duration operator""_ms(long double value)
+{
+  return Duration(long64(value * 1000000.0l));
+}
+
+/**
  * Create a duration for a given number of microseconds.
  */
-inline constexpr Duration operator""_us(ulong64 value)
+inline constexpr Duration operator""_us(unsigned long long value)
 {
   return Duration(long64(value * 1000));
 }
 
 /**
+ * Create a duration for a given number of microseconds.
+ */
+inline constexpr Duration operator""_us(long double value)
+{
+  return Duration(long64(value * 1000.0l));
+}
+
+/**
  * Create a duration for a given number of nanoseconds.
  */
-inline constexpr Duration operator""_ns(ulong64 value)
+inline constexpr Duration operator""_ns(unsigned long long value)
+{
+  return Duration(long64(value));
+}
+
+/**
+ * Create a duration for a given number of nanoseconds.
+ */
+inline constexpr Duration operator""_ns(long double value)
 {
   return Duration(long64(value));
 }
