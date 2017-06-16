@@ -751,7 +751,7 @@ int Builder::main(int argc, char** argv)
   context.init();
   compiler.init();
 
-  Duration beginInstant = Time::clock();
+  Instant beginInstant = Instant::now();
 
   // copy package README/COPYING and credits
   copyFiles("@", ".", "txt", false);
@@ -823,7 +823,7 @@ int Builder::main(int argc, char** argv)
 
   packArchive(pkgName, useCompression, use7zip);
 
-  Duration endInstant = Time::clock();
+  Instant endInstant = Instant::now();
   Log::println("Build time: %.2f s", (endInstant - beginInstant).sf());
 
   compiler.destroy();

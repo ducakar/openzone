@@ -204,7 +204,7 @@ public:
    */
   Map& operator=(InitialiserList<Pair> il)
   {
-    return Set<Pair>::operator=(il);
+    return static_cast<Map&>(Set<Pair>::operator=(il));
   }
 
   /**

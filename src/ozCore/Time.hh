@@ -28,9 +28,7 @@
 
 #pragma once
 
-#include <ctime>
 #include "String.hh"
-#include "Duration.hh"
 
 namespace oz
 {
@@ -50,18 +48,6 @@ public:
   int second; ///< Second.
 
 public:
-
-  /**
-   * Monotonic clock from an unspecified point in time, with microsecond resolution.
-   *
-   * This clock wraps around in about 71.6 min.
-   */
-  static Duration clock();
-
-  /**
-   * Sleep for given time duration.
-   */
-  static void sleep(Duration duration);
 
   /**
    * Get current time in seconds from the platform-dependent epoch.

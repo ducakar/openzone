@@ -50,7 +50,7 @@ void MenuStage::present(bool isFull)
 
 void MenuStage::wait(Duration duration)
 {
-  Time::sleep(duration);
+  Thread::sleepFor(duration);
 }
 
 void MenuStage::load()

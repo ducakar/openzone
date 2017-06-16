@@ -194,7 +194,7 @@ void EditStage::present(bool isFull)
 
 void EditStage::wait(Duration duration)
 {
-  Time::sleep(duration);
+  Thread::sleepFor(duration);
 }
 
 void EditStage::load()

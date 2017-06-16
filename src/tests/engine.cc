@@ -121,7 +121,7 @@ int main(int argc, char** argv)
       }
     }
 
-    Time::sleep(15_ms);
+    Thread::sleepFor(15_ms);
   }
 
   alDeleteSources(1, &source);

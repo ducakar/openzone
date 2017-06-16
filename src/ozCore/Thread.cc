@@ -30,11 +30,13 @@
 #include <cstring>
 
 #if defined(__ANDROID__)
+# include <ctime>
 # include <jni.h>
 # include <pthread.h>
 #elif defined(_WIN32)
 # include <windows.h>
 #else
+# include <ctime>
 # include <pthread.h>
 #endif
 
@@ -116,6 +118,44 @@ void* Thread::Descriptor::mainWrapper(void* handle)
   return 0;
 #else
   return nullptr;
+#endif
+}
+
+void Thread::sleepFor(Duration duration)
+{
+#ifdef _WIN32
+
+  // Based on observations performed on Windows 7, adding a millisecond rather than rounding to the
+  // nearest millisecond value gives the most accurate sleep periods for a given microsecond value.
+  Sleep(duration.ms() + 1);
+
+#else
+
+  struct timespec ts = {time_t(duration.s()), long(duration.ns() % 1000000000)};
+# ifdef __native_client__
+  nanosleep(&ts, nullptr);
+# else
+  clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, nullptr);
+# endif
+#endif
+}
+
+void Thread::sleepUntil(Instant instant)
+{
+#ifdef _WIN32
+
+  // Based on observations performed on Windows 7, adding a millisecond rather than rounding to the
+  // nearest millisecond value gives the most accurate sleep periods for a given microsecond value.
+  Sleep(duration.ms() + 1);
+
+#else
+
+  struct timespec ts = {time_t(instant.s()), long(instant.ns() % 1000000000)};
+# ifdef __native_client__
+  nanosleep(&ts, nullptr);
+# else
+  clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &ts, nullptr);
+# endif
 #endif
 }
 

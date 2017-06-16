@@ -137,7 +137,7 @@ void Application::run(Stage* initialStage)
   uint     nTicks     = 0;
   uint     frameTicks = 0;
   Duration tickTime   = 0_s;
-  Duration timeLast   = Time::clock();
+  Instant  timeLast   = Instant::now();
   Duration timeSpent  = 0_s;
 
   do {
@@ -242,9 +242,9 @@ void Application::run(Stage* initialStage)
 
     // Waste time when iconified.
     if (!Window::isActive()) {
-      Time::sleep(1_s / fps);
+      Thread::sleepFor(1_s / fps);
 
-      timeSpent = Time::clock() - timeLast;
+      timeSpent = Instant::now() - timeLast;
       timeLast += timeSpent;
       continue;
     }
@@ -264,7 +264,7 @@ void Application::run(Stage* initialStage)
 
       currentStage->load();
 
-      timeLast = Time::clock();
+      timeLast = Instant::now();
       continue;
     }
 
@@ -274,7 +274,7 @@ void Application::run(Stage* initialStage)
     currentStage->update();
 
     frameTicks += 1;
-    timeSpent   = Time::clock() - timeLast;
+    timeSpent   = Instant::now() - timeLast;
 
     // Skip rendering graphics, only play sounds if there's not enough time left.
     if (timeSpent >= tickTime) {
@@ -284,11 +284,11 @@ void Application::run(Stage* initialStage)
       currentStage->present(true);
 
       frameTicks = 0;
-      timeSpent  = Time::clock() - timeLast;
+      timeSpent  = Instant::now() - timeLast;
 
       // Sleep if there's still some time left.
       if (timeSpent < tickTime) {
-        Time::sleep(tickTime - timeSpent);
+        Thread::sleepFor(tickTime - timeSpent);
         timeSpent = tickTime;
       }
     }

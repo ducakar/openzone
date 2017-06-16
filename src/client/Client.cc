@@ -84,9 +84,9 @@ int Client::main()
   bool     isActive  = true;
   // Time spent on the current frame so far.
   Duration timeSpent = Duration::ZERO;
-  Duration timeZero  = Time::clock();
+  Instant  timeZero  = Instant::now();
   // Time at the end of the last frame.
-  Duration timeLast  = timeZero;
+  Instant  timeLast  = timeZero;
 
   initFlags |= INIT_MAIN_LOOP;
 
@@ -254,9 +254,9 @@ int Client::main()
 
     // Waste time when iconified.
     if (!isActive) {
-      Time::sleep(Timer::TICK_DURATION);
+      Thread::sleepFor(Timer::TICK_DURATION);
 
-      timeSpent = Time::clock() - timeLast;
+      timeSpent = Instant::now() - timeLast;
       timeLast += timeSpent;
 
       continue;
@@ -280,11 +280,11 @@ int Client::main()
 
       stage->load();
 
-      timeLast = Time::clock();
+      timeLast = Instant::now();
       continue;
     }
 
-    timeSpent = Time::clock() - timeLast;
+    timeSpent = Instant::now() - timeLast;
 
     // Skip rendering graphics, only play sounds if there's not enough time left.
     if (timeSpent >= Timer::TICK_DURATION && timer.frameTime < 100_ms) {
@@ -295,7 +295,7 @@ int Client::main()
       timer.frame();
 
       // If there's still some time left, sleep.
-      timeSpent = Time::clock() - timeLast;
+      timeSpent = Instant::now() - timeLast;
 
       if (timeSpent < Timer::TICK_DURATION) {
         stage->wait(Timer::TICK_DURATION - timeSpent);

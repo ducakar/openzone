@@ -20,6 +20,7 @@ add_library(ozCore
   HashMap.hh
   HashSet.hh
   Heap.hh
+  Instant.hh
   Java.hh
   Json.hh
   List.hh
@@ -57,6 +58,7 @@ add_library(ozCore
   EnumMap.cc
   File.cc
   Gettext.cc
+  Instant.cc
   Java.cc
   Json.cc
   Log.cc

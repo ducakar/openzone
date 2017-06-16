@@ -388,12 +388,12 @@ String File::realPath() const
 
 File File::operator+(const String& pathElem) const
 {
-  return File(begin(), length(), pathElem, pathElem.length());
+  return static_cast<File&&>(String::operator+(pathElem));
 }
 
 File File::operator+(const char* pathElem) const
 {
-  return File(begin(), length(), pathElem, length(pathElem));
+  return static_cast<File&&>(String::operator+(pathElem));
 }
 
 File File::operator/(const String& pathElem) const
@@ -418,14 +418,12 @@ File File::operator/(const char* pathElem) const
 
 File& File::operator+=(const String& pathElem)
 {
-  *this = File(begin(), length(), pathElem, pathElem.length());
-  return *this;
+  return static_cast<File&>(String::operator+=(pathElem));
 }
 
 File& File::operator+=(const char* pathElem)
 {
-  *this = File(begin(), length(), pathElem, length(pathElem));
-  return *this;
+  return static_cast<File&>(String::operator+=(pathElem));
 }
 
 File& File::operator/=(const String& pathElem)

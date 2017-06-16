@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "common.hh"
+#include "Instant.hh"
 
 namespace oz
 {
@@ -57,6 +57,16 @@ private:
   Descriptor* descriptor_ = nullptr; ///< Internal thread descriptor.
 
 public:
+
+  /**
+   * Sleep for a given time duration.
+   */
+  static void sleepFor(Duration duration);
+
+  /**
+   * Sleep until a given time instant.
+   */
+  static void sleepUntil(Instant instant);
 
   /**
    * Get current thread's name.

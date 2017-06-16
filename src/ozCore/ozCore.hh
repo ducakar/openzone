@@ -111,6 +111,8 @@
 /*
  * Utilities.
  */
+#include "Duration.hh"
+#include "Instant.hh"
 #include "Time.hh"
 #include "Profiler.hh"
 #include "EnumMap.hh"

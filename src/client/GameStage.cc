@@ -120,14 +120,14 @@ void GameStage::auxRun()
      * World is being updated, other threads should not access world structures here.
      */
 
-    Duration beginInstant = Time::clock();
+    Instant beginInstant = Instant::now();
 
     network.update();
 
     // update world
     matrix.update();
 
-    matrixDuration += Time::clock() - beginInstant;
+    matrixDuration += Instant::now() - beginInstant;
 
     mainSemaphore.post();
     auxSemaphore.wait();
@@ -138,7 +138,7 @@ void GameStage::auxRun()
      * Process AI, main thread renders world and plays sound.
      */
 
-    beginInstant = Time::clock();
+    beginInstant = Instant::now();
 
     // sync nirvana
     nirvana.sync();
@@ -149,7 +149,7 @@ void GameStage::auxRun()
     // update minds
     nirvana.update();
 
-    nirvanaDuration += Time::clock() - beginInstant;
+    nirvanaDuration += Instant::now() - beginInstant;
 
     // we can now manipulate world from the main thread after synapse lists have been cleared
     // and nirvana is not accessing matrix any more
@@ -166,8 +166,6 @@ void GameStage::auxRun()
 
 bool GameStage::update()
 {
-  Duration beginInstant;
-
   mainSemaphore.wait();
 
   /*
@@ -176,7 +174,7 @@ bool GameStage::update()
    * UI update, world may be updated from the main thread during this phase.
    */
 
-  beginInstant = Time::clock();
+  Instant beginInstant = Instant::now();
 
   if (input.keys[Input::KEY_QUIT]) {
     Stage::nextStage = &menuStage;
@@ -214,7 +212,7 @@ bool GameStage::update()
 
   luaClient.update();
 
-  uiDuration += Time::clock() - beginInstant;
+  uiDuration += Instant::now() - beginInstant;
 
   auxSemaphore.post();
 
@@ -225,12 +223,12 @@ bool GameStage::update()
    * game.
    */
 
-  beginInstant = Time::clock();
+  beginInstant = Instant::now();
 
   context.updateLoad();
   loader.update();
 
-  loaderDuration += Time::clock() - beginInstant;
+  loaderDuration += Instant::now() - beginInstant;
 
   auxSemaphore.post();
   mainSemaphore.wait();
@@ -248,15 +246,15 @@ bool GameStage::update()
 
 void GameStage::present(bool isFull)
 {
-  Duration beginInstant   = Time::clock();
-  Duration currentInstant;
+  Instant beginInstant   = Instant::now();
+  Instant currentInstant;
 
   sound.play();
   render.update(Render::EFFECTS_BIT | (isFull ? Render::ORBIS_BIT | Render::UI_BIT : 0));
 
   sound.sync();
 
-  currentInstant = Time::clock();
+  currentInstant = Instant::now();
   presentDuration += currentInstant - beginInstant;
 }
 
@@ -264,7 +262,7 @@ void GameStage::wait(Duration duration)
 {
   sleepDuration += duration;
 
-  Time::sleep(duration);
+  Thread::sleepFor(duration);
 }
 
 void GameStage::load()
@@ -272,7 +270,7 @@ void GameStage::load()
   Log::println("[%s] Loading GameStage {", Time::local().toString().c());
   Log::indent();
 
-  Duration beginInstant = Time::clock();
+  Instant beginInstant = Instant::now();
 
   ui::mouse.isVisible = false;
   ui::ui.loadingScreen->status.setText("%s", OZ_GETTEXT("Loading ..."));
@@ -352,7 +350,7 @@ void GameStage::load()
   ui::ui.showLoadingScreen(false);
   present(true);
 
-  loadingDuration = Time::clock() - beginInstant;
+  loadingDuration = Instant::now() - beginInstant;
   autosaveTicks = 0;
 
   Log::unindent();

@@ -29,7 +29,7 @@
 #pragma once
 
 #include "HashMap.hh"
-#include "Time.hh"
+#include "Instant.hh"
 
 /**
  * Remember current time for a later `OZ_PROFILER_END()` macro with the same key.

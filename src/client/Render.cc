@@ -181,8 +181,8 @@ void Render::scheduleCell(int cellX, int cellY)
 
 void Render::prepareDraw()
 {
-  Duration currentInstant = Time::clock();
-  Duration beginInstant   = currentInstant;
+  Instant currentInstant = Instant::now();
+  Instant beginInstant   = currentInstant;
 
   collider.translate(camera.p, Vec3::ZERO);
   shader.medium = collider.hit.medium;
@@ -262,18 +262,18 @@ void Render::prepareDraw()
     context.drawImago(objects[i].obj, nullptr);
   }
 
-  currentInstant = Time::clock();
+  currentInstant = Instant::now();
   prepareDuration += currentInstant - beginInstant;
 }
 
 void Render::drawGeometry()
 {
-  Duration currentInstant = Time::clock();
-  Duration beginInstant = currentInstant;
+  Instant currentInstant = Instant::now();
+  Instant beginInstant = currentInstant;
 
   OZ_GL_CHECK_ERROR();
 
-  currentInstant = Time::clock();
+  currentInstant = Instant::now();
   swapDuration += currentInstant - beginInstant;
   beginInstant = currentInstant;
 
@@ -297,7 +297,7 @@ void Render::drawGeometry()
     glUniform4f(uniform.wind, 1.0f, 1.0f, WIND_FACTOR, windPhi);
   }
 
-  currentInstant = Time::clock();
+  currentInstant = Instant::now();
   miscDuration += currentInstant - beginInstant;
   beginInstant = currentInstant;
 
@@ -318,34 +318,34 @@ void Render::drawGeometry()
 
   glEnable(GL_DEPTH_TEST);
 
-  currentInstant = Time::clock();
+  currentInstant = Instant::now();
   caelumDuration += currentInstant - beginInstant;
   beginInstant = currentInstant;
 
   glDisable(GL_BLEND);
   Model::drawScheduled(Model::SCENE_QUEUE, Model::SOLID_BIT);
 
-  currentInstant = Time::clock();
+  currentInstant = Instant::now();
   meshesDuration += currentInstant - beginInstant;
   beginInstant = currentInstant;
 
   terra.draw();
   glEnable(GL_BLEND);
 
-  currentInstant = Time::clock();
+  currentInstant = Instant::now();
   terraDuration += currentInstant - beginInstant;
   beginInstant = currentInstant;
 
   terra.drawLiquid();
 
-  currentInstant = Time::clock();
+  currentInstant = Instant::now();
   terraDuration += currentInstant - beginInstant;
   beginInstant = currentInstant;
 
   Model::drawScheduled(Model::SCENE_QUEUE, Model::ALPHA_BIT);
   Model::clearScheduled(Model::SCENE_QUEUE);
 
-  currentInstant = Time::clock();
+  currentInstant = Instant::now();
   meshesDuration += currentInstant - beginInstant;
   beginInstant = currentInstant;
 
@@ -401,7 +401,7 @@ void Render::drawGeometry()
   structs.clear();
   objects.clear();
 
-  currentInstant = Time::clock();
+  currentInstant = Instant::now();
   miscDuration += currentInstant - beginInstant;
 }
 
@@ -425,7 +425,7 @@ void Render::drawOrbis()
   prepareDraw();
   drawGeometry();
 
-  Duration beginInstant = Time::clock();
+  Instant beginInstant = Instant::now();
 
   if (isOffscreen) {
     glViewport(0, 0, windowWidth, windowHeight);
@@ -479,29 +479,29 @@ void Render::drawOrbis()
     glEnable(GL_CULL_FACE);
   }
 
-  postprocessDuration += Time::clock() - beginInstant;
+  postprocessDuration += Instant::now() - beginInstant;
 
   OZ_GL_CHECK_ERROR();
 }
 
 void Render::drawUI()
 {
-  Duration beginInstant = Time::clock();
+  Instant beginInstant = Instant::now();
 
   ui::ui.draw();
 
-  uiDuration += Time::clock() - beginInstant;
+  uiDuration += Instant::now() - beginInstant;
 }
 
 void Render::swap()
 {
   OZ_NACL_IS_MAIN(false);
 
-  Duration beginMicros = Time::clock();
+  Instant beginInstant = Instant::now();
 
   Window::swapBuffers();
 
-  swapDuration += Time::clock() - beginMicros;
+  swapDuration += Instant::now() - beginInstant;
 }
 
 void Render::update(int flags)
