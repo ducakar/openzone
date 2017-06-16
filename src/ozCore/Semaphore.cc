@@ -25,26 +25,16 @@
 #include "System.hh"
 
 #include <cstdlib>
-
-#ifdef _WIN32
-# include <windows.h>
-#else
-# include <pthread.h>
-#endif
+#include <pthread.h>
 
 namespace oz
 {
 
 struct Semaphore::Descriptor
 {
-#ifdef _WIN32
-  HANDLE          semaphore;
-  long            counter   = 0;
-#else
-  pthread_mutex_t mutex     = PTHREAD_MUTEX_INITIALIZER;
-  pthread_cond_t  cond      = PTHREAD_COND_INITIALIZER;
-  int             counter   = 0;
-#endif
+  pthread_mutex_t mutex   = PTHREAD_MUTEX_INITIALIZER;
+  pthread_cond_t  cond    = PTHREAD_COND_INITIALIZER;
+  int             counter = 0;
 };
 
 Semaphore::Semaphore()
@@ -53,25 +43,12 @@ Semaphore::Semaphore()
   if (descriptor_ == nullptr) {
     OZ_ERROR("oz::Semaphore: Descriptor initialisation failed");
   }
-
-#ifdef _WIN32
-
-  descriptor_->semaphore = CreateSemaphore(nullptr, 0, 0x7fffffff, nullptr);
-  if (descriptor_->semaphore == nullptr) {
-    OZ_ERROR("oz::Semaphore: Semaphore creation failed");
-  }
-
-#endif
 }
 
 Semaphore::~Semaphore()
 {
-#ifdef _WIN32
-  CloseHandle(&descriptor_->semaphore);
-#else
   pthread_cond_destroy(&descriptor_->cond);
   pthread_mutex_destroy(&descriptor_->mutex);
-#endif
 
   free(descriptor_);
 }
@@ -85,13 +62,6 @@ void Semaphore::post(int increment) const
 {
   OZ_ASSERT(increment > 0);
 
-#ifdef _WIN32
-
-  InterlockedAdd(&descriptor_->counter, increment);
-  ReleaseSemaphore(descriptor_->semaphore, increment, nullptr);
-
-#else
-
   pthread_mutex_lock(&descriptor_->mutex);
   descriptor_->counter += increment;
   pthread_mutex_unlock(&descriptor_->mutex);
@@ -102,19 +72,10 @@ void Semaphore::post(int increment) const
   else {
     pthread_cond_broadcast(&descriptor_->cond);
   }
-
-#endif
 }
 
 void Semaphore::wait() const
 {
-#ifdef _WIN32
-
-  WaitForSingleObject(descriptor_->semaphore, INFINITE);
-  InterlockedDecrement(&descriptor_->counter);
-
-#else
-
   pthread_mutex_lock(&descriptor_->mutex);
 
   while (descriptor_->counter == 0) {
@@ -123,22 +84,10 @@ void Semaphore::wait() const
   --descriptor_->counter;
 
   pthread_mutex_unlock(&descriptor_->mutex);
-
-#endif
 }
 
 bool Semaphore::tryWait() const
 {
-#ifdef _WIN32
-
-  if (WaitForSingleObject(descriptor_->semaphore, 0) != WAIT_OBJECT_0) {
-    return false;
-  }
-  InterlockedDecrement(&descriptor_->counter);
-  return true;
-
-#else
-
   bool hasSucceeded = false;
 
   pthread_mutex_lock(&descriptor_->mutex);
@@ -151,8 +100,6 @@ bool Semaphore::tryWait() const
   pthread_mutex_unlock(&descriptor_->mutex);
 
   return hasSucceeded;
-
-#endif
 }
 
 }

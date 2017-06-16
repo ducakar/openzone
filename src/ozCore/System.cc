@@ -48,6 +48,7 @@
 # include <ppapi_simple/ps_interface.h>
 # include <pthread.h>
 #elif defined(_WIN32)
+# include <pthread.h>
 # include <windows.h>
 # include <mmsystem.h>
 #else
@@ -109,11 +110,7 @@ struct Wave
 #endif
 
 static SpinLock              bellLock;
-#ifdef _WIN32
-static HANDLE                bellThread;
-#else
 static pthread_t             bellThread;
-#endif
 static bool                  hasBellThread = false;
 static System::CrashHandler* crashHandler  = nullptr;
 static int                   initFlags     = 0;
@@ -302,7 +299,7 @@ static void* bellMain(void*)
 
 #elif defined(_WIN32)
 
-static DWORD WINAPI bellMain(void*)
+static void* bellMain(void*)
 {
   Wave* wave = static_cast<Wave*>(alloca(sizeof(Wave)));
 
@@ -337,7 +334,7 @@ static DWORD WINAPI bellMain(void*)
   genBellSamples(wave->samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
   PlaySound(reinterpret_cast<LPCSTR>(wave), nullptr, SND_MEMORY | SND_SYNC);
 
-  return 0;
+  return nullptr;
 }
 
 #else
@@ -390,11 +387,7 @@ static void waitBell()
   bellLock.lock();
 
   if (hasBellThread) {
-#ifdef _WIN32
-    WaitForSingleObject(bellThread, INFINITE);
-#else
     pthread_join(bellThread, nullptr);
-#endif
     hasBellThread = false;
   }
 
@@ -443,19 +436,10 @@ void System::bell()
 {
   if (bellLock.tryLock()) {
     if (hasBellThread) {
-#ifdef _WIN32
-      WaitForSingleObject(bellThread, INFINITE);
-#else
       pthread_join(bellThread, nullptr);
-#endif
     }
 
-#ifdef _WIN32
-    bellThread = CreateThread(nullptr, 0, bellMain, nullptr, 0, nullptr);
-    hasBellThread = bellThread != nullptr;
-#else
     hasBellThread = pthread_create(&bellThread, nullptr, bellMain, nullptr) == 0;
-#endif
 
     bellLock.unlock();
   }

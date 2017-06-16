@@ -22,65 +22,18 @@
 
 #include "Time.hh"
 
-#ifdef _WIN32
-# include <windows.h>
-#else
-# include <ctime>
-#endif
+#include <ctime>
 
 namespace oz
 {
 
 long64 Time::epoch()
 {
-#ifdef _WIN32
-
-  SYSTEMTIME     timeStruct;
-  FILETIME       fileTime;
-  ULARGE_INTEGER largeInteger;
-
-  GetSystemTime(&timeStruct);
-  SystemTimeToFileTime(&timeStruct, &fileTime);
-
-  largeInteger.LowPart  = fileTime.dwLowDateTime;
-  largeInteger.HighPart = fileTime.dwHighDateTime;
-
-  return largeInteger.QuadPart / 10000;
-
-#else
-
   return ::time(nullptr);
-
-#endif
 }
 
 long64 Time::toEpoch() const
 {
-#ifdef _WIN32
-
-  SYSTEMTIME     timeStruct;
-  FILETIME       localFileTime;
-  FILETIME       fileTime;
-  ULARGE_INTEGER largeInteger;
-
-  timeStruct.wYear         = ushort(year);
-  timeStruct.wMonth        = ushort(month);
-  timeStruct.wDay          = ushort(day);
-  timeStruct.wHour         = ushort(hour);
-  timeStruct.wMinute       = ushort(minute);
-  timeStruct.wSecond       = ushort(second);
-  timeStruct.wMilliseconds = 0;
-
-  SystemTimeToFileTime(&timeStruct, &localFileTime);
-  LocalFileTimeToFileTime(&localFileTime, &fileTime);
-
-  largeInteger.LowPart  = fileTime.dwLowDateTime;
-  largeInteger.HighPart = fileTime.dwHighDateTime;
-
-  return largeInteger.QuadPart / 10000;
-
-#else
-
   struct tm timeStruct;
 
   timeStruct.tm_sec   = second;
@@ -92,8 +45,6 @@ long64 Time::toEpoch() const
   timeStruct.tm_isdst = -1;
 
   return mktime(&timeStruct);
-
-#endif
 }
 
 Time Time::local()
@@ -103,38 +54,18 @@ Time Time::local()
 
 Time Time::local(long64 epoch)
 {
-#ifdef _WIN32
-
-  ULARGE_INTEGER largeInteger;
-  FILETIME       fileTime;
-  FILETIME       localFileTime;
-  SYSTEMTIME     timeStruct;
-
-  largeInteger.QuadPart = epoch * 10000;
-
-  fileTime.dwLowDateTime  = largeInteger.LowPart;
-  fileTime.dwHighDateTime = largeInteger.HighPart;
-
-  FileTimeToLocalFileTime(&fileTime, &localFileTime);
-  FileTimeToSystemTime(&localFileTime, &timeStruct);
-
-  return {
-    timeStruct.wYear, timeStruct.wMonth, timeStruct.wDay,
-    timeStruct.wHour, timeStruct.wMinute, timeStruct.wSecond
-  };
-
-#else
-
   time_t ctime = time_t(epoch);
   struct tm timeStruct;
+#ifdef _WIN32
+  localtime_s(&timeStruct, &ctime);
+#else
   localtime_r(&ctime, &timeStruct);
+#endif
 
   return {
     1900 + timeStruct.tm_year, 1 + timeStruct.tm_mon, timeStruct.tm_mday,
     timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec
   };
-
-#endif
 }
 
 String Time::toString() const

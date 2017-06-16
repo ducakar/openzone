@@ -25,23 +25,14 @@
 #include "System.hh"
 
 #include <cstdlib>
-
-#ifdef _WIN32
-# include <windows.h>
-#else
-# include <pthread.h>
-#endif
+#include <pthread.h>
 
 namespace oz
 {
 
 struct Mutex::Descriptor
 {
-#ifdef _WIN32
-  HANDLE          mutex;
-#else
   pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-#endif
 };
 
 Mutex::Mutex()
@@ -50,48 +41,28 @@ Mutex::Mutex()
   if (descriptor_ == nullptr) {
     OZ_ERROR("oz::Mutex: Descriptor initialisation failed");
   }
-
-#ifdef _WIN32
-  descriptor_->mutex = CreateMutex(nullptr, false, nullptr);
-#endif
 }
 
 Mutex::~Mutex()
 {
-#ifdef _WIN32
-  CloseHandle(descriptor_->mutex);
-#else
   pthread_mutex_destroy(&descriptor_->mutex);
-#endif
 
   free(descriptor_);
 }
 
 void Mutex::lock()
 {
-#ifdef _WIN32
-  WaitForSingleObject(descriptor_->mutex, INFINITE);
-#else
   pthread_mutex_lock(&descriptor_->mutex);
-#endif
 }
 
 bool Mutex::tryLock()
 {
-#ifdef _WIN32
-  return WaitForSingleObject(descriptor_->mutex, 0) == WAIT_OBJECT_0;
-#else
   return pthread_mutex_trylock(&descriptor_->mutex) == 0;
-#endif
 }
 
 void Mutex::unlock()
 {
-#ifdef _WIN32
-  ReleaseMutex(descriptor_->mutex);
-#else
   pthread_mutex_unlock(&descriptor_->mutex);
-#endif
 }
 
 }

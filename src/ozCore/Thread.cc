@@ -33,8 +33,6 @@
 # include <ctime>
 # include <jni.h>
 # include <pthread.h>
-#elif defined(_WIN32)
-# include <windows.h>
 #else
 # include <ctime>
 # include <pthread.h>
@@ -43,38 +41,22 @@
 namespace oz
 {
 
-#ifdef _WIN32
-static const HANDLE             MAIN_THREAD = GetCurrentThread();
-#else
 static const pthread_t          MAIN_THREAD = pthread_self();
-#endif
 static thread_local const char* threadName  = "";
 
 struct Thread::Descriptor
 {
-#ifdef _WIN32
-  HANDLE      thread;
-#else
   pthread_t   thread;
-#endif
   const char* name;
   Main*       main;
   void*       data;
   SpinLock    lock;
 
   OZ_INTERNAL
-#ifdef _WIN32
-  static DWORD WINAPI mainWrapper(void* handle);
-#else
   static void* mainWrapper(void* handle);
-#endif
 };
 
-#ifdef _WIN32
-DWORD WINAPI Thread::Descriptor::mainWrapper(void* handle)
-#else
 void* Thread::Descriptor::mainWrapper(void* handle)
-#endif
 {
   Descriptor* descriptor            = static_cast<Descriptor*>(handle);
   Main*       main                  = descriptor->main;
@@ -114,49 +96,27 @@ void* Thread::Descriptor::mainWrapper(void* handle)
   }
 #endif
 
-#ifdef _WIN32
-  return 0;
-#else
   return nullptr;
-#endif
 }
 
 void Thread::sleepFor(Duration duration)
 {
-#ifdef _WIN32
-
-  // Based on observations performed on Windows 7, adding a millisecond rather than rounding to the
-  // nearest millisecond value gives the most accurate sleep periods for a given microsecond value.
-  Sleep(duration.ms() + 1);
-
-#else
-
   struct timespec ts = {time_t(duration.s()), long(duration.ns() % 1000000000)};
 # ifdef __native_client__
   nanosleep(&ts, nullptr);
 # else
   clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, nullptr);
 # endif
-#endif
 }
 
 void Thread::sleepUntil(Instant instant)
 {
-#ifdef _WIN32
-
-  // Based on observations performed on Windows 7, adding a millisecond rather than rounding to the
-  // nearest millisecond value gives the most accurate sleep periods for a given microsecond value.
-  Sleep(duration.ms() + 1);
-
-#else
-
   struct timespec ts = {time_t(instant.s()), long(instant.ns() % 1000000000)};
 # ifdef __native_client__
   nanosleep(&ts, nullptr);
 # else
   clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &ts, nullptr);
 # endif
-#endif
 }
 
 const char* Thread::name()
@@ -166,11 +126,7 @@ const char* Thread::name()
 
 bool Thread::isMain()
 {
-#ifdef _WIN32
-  return GetCurrentThread() == MAIN_THREAD;
-#else
   return pthread_equal(pthread_self(), MAIN_THREAD);
-#endif
 }
 
 Thread::Thread(const char* name, Main* main, void* data)
@@ -185,16 +141,9 @@ Thread::Thread(const char* name, Main* main, void* data)
   descriptor_->data = data;
   descriptor_->lock.lock();
 
-#ifdef _WIN32
-  descriptor->thread = CreateThread(nullptr, 0, Descriptor::threadMain, descriptor_, 0, nullptr);
-  if (descriptor_->thread == nullptr) {
-    OZ_ERROR("oz::Thread: Thread creation failed");
-  }
-#else
   if (pthread_create(&descriptor_->thread, nullptr, Descriptor::mainWrapper, descriptor_) != 0) {
     OZ_ERROR("oz::Thread: Thread creation failed");
   }
-#endif
 
   // Wait while the thread accesses name pointer and descriptor during its initialisation.
   descriptor_->lock.lock();
@@ -233,11 +182,7 @@ void Thread::detach()
     OZ_ERROR("oz::Thread: Detaching invalid thread");
   }
 
-#ifdef _WIN32
-  CloseHandle(descriptor_->thread);
-#else
   pthread_detach(descriptor_->thread);
-#endif
 
   free(descriptor_);
   descriptor_ = nullptr;
@@ -249,16 +194,9 @@ void Thread::join()
     OZ_ERROR("oz::Thread: Joining invalid thread");
   }
 
-#ifdef _WIN32
-  if (WaitForSingleObject(descriptor_->thread, INFINITE) != WAIT_OBJECT_0) {
-    OZ_ERROR("oz::Thread: Join failed");
-  }
-  CloseHandle(descriptor_->thread);
-#else
   if (pthread_join(descriptor_->thread, nullptr) != 0) {
     OZ_ERROR("oz::Thread: Join failed");
   }
-#endif
 
   free(descriptor_);
   descriptor_ = nullptr;

@@ -43,7 +43,7 @@ SharedLib::SharedLib(const char* name)
 #if defined(__native_client__)
   static_cast<void>(name);
 #elif defined(_WIN32)
-  handle = static_cast<void*>(LoadLibrary(name));
+  handle_ = static_cast<void*>(LoadLibrary(name));
 #else
   handle_ = dlopen(name, RTLD_NOW);
 #endif
@@ -82,7 +82,7 @@ SharedLib::Function* SharedLib::get(const char* symbol) const
   static_cast<void>(symbol);
   return nullptr;
 #elif defined(_WIN32)
-  return reinterpret_cast<Function*>(GetProcAddress(static_cast<HMODULE>(handle), symbol));
+  return reinterpret_cast<Function*>(GetProcAddress(static_cast<HMODULE>(handle_), symbol));
 #else
   return reinterpret_cast<Function*>(dlsym(handle_, symbol));
 #endif
@@ -93,7 +93,7 @@ void SharedLib::close()
   if (handle_ != nullptr) {
 #if defined(__native_client__)
 #elif defined(_WIN32)
-    FreeLibrary(static_cast<HMODULE>(handle));
+    FreeLibrary(static_cast<HMODULE>(handle_));
 #else
     dlclose(handle_);
 #endif
