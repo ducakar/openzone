@@ -824,7 +824,7 @@ int Builder::main(int argc, char** argv)
   packArchive(pkgName, useCompression, use7zip);
 
   Instant endInstant = Instant::now();
-  Log::println("Build time: %.2f s", (endInstant - beginInstant).sf());
+  Log::println("Build time: %.2f s", (endInstant - beginInstant).t());
 
   compiler.destroy();
   context.destroy();

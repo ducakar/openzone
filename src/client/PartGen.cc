@@ -63,10 +63,10 @@ void PartGen::update()
       part.velocity = transf * localVel;
     }
 
-    part.p          += part.velocity * timer.frameTime.sf();
+    part.p          += part.velocity * timer.frameTime;
     part.velocity.z += physics.gravity;
     part.velocity   *= clazz->drag;
-    part.life       -= timer.frameTime.sf();
+    part.life       -= timer.frameTime;
   }
 }
 

@@ -228,7 +228,7 @@ void MD2::AnimState::advance()
     }
   }
 
-  frameRatio += timer.frameTime.sf() * frameFreq;
+  frameRatio += timer.frameTime * frameFreq;
 
   if (frameRatio >= 1.0f) {
     currType  = nextType;

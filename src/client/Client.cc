@@ -287,7 +287,7 @@ int Client::main()
     timeSpent = Instant::now() - timeLast;
 
     // Skip rendering graphics, only play sounds if there's not enough time left.
-    if (timeSpent >= Timer::TICK_DURATION && timer.frameTime < 100_ms) {
+    if (timeSpent >= Timer::TICK_DURATION && timer.frameDuration < 100_ms) {
       stage->present(false);
     }
     else {

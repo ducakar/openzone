@@ -28,37 +28,40 @@ constexpr float Timer::TICK_TIME;
 
 void Timer::reset()
 {
-  runTime    = Duration::ZERO;
+  runDuration   = Duration::ZERO;
 
-  ticks      = 0;
-  time       = Duration::ZERO;
+  ticks         = 0;
+  time          = Duration::ZERO;
 
-  nFrames    = 0;
-  frameTicks = 0;
-  frameTime  = Duration::ZERO;
+  nFrames       = 0;
+  frameTicks    = 0;
+  frameDuration = Duration::ZERO;
+  frameTime     = 0.0f;
 }
 
 void Timer::tick()
 {
-  runTime    += TICK_DURATION;
+  runDuration   += TICK_DURATION;
 
-  ticks      += 1;
-  time       += TICK_DURATION;
+  ticks         += 1;
+  time          += TICK_DURATION;
 
-  frameTicks += 1;
-  frameTime  += TICK_DURATION;
+  frameTicks    += 1;
+  frameDuration += TICK_DURATION;
+  frameTime     += TICK_TIME;
 }
 
 void Timer::frame()
 {
-  nFrames    += 1;
-  frameTicks  = 0;
-  frameTime   = Duration::ZERO;
+  nFrames      += 1;
+  frameTicks    = 0;
+  frameDuration = Duration::ZERO;
+  frameTime     = 0.0f;
 }
 
-void Timer::drop(Duration droppedTime)
+void Timer::drop(Duration duration)
 {
-  runTime += droppedTime;
+  runDuration += duration;
 }
 
 Timer timer;

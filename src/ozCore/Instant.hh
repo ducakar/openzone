@@ -41,7 +41,7 @@ class Instant : private Duration
 {
 public:
 
-  using Duration::sf;
+  using Duration::t;
   using Duration::s;
   using Duration::ms;
   using Duration::us;

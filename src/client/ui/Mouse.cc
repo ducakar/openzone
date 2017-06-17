@@ -108,7 +108,7 @@ void Mouse::draw()
                cursor.width(), cursor.height());
     glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
 
-    cursor.update(timer.frameTime / 1000);
+    cursor.update(timer.frameDuration);
   }
 
   wasVisible = isVisible;

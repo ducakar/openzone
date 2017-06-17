@@ -118,7 +118,7 @@ public:
   /**
    * Length in seconds.
    */
-  constexpr float sf() const
+  constexpr float t() const
   {
     return float(ns_) / 1000000000.0f;
   }

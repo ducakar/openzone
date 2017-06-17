@@ -53,7 +53,7 @@ void ExplosionImago::draw(const Imago*)
     return;
   }
 
-  float time   = (timer.time - startTime).sf();
+  float time   = (timer.time - startTime).t();
   float radius = 4.0f * time * obj->dim.z;
   float alpha  = 1.0f - 2.0f * time;
 
