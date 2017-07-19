@@ -26,7 +26,7 @@
 
 #pragma once
 
-#include "System.hh"
+#include "common.hh"
 
 namespace oz
 {

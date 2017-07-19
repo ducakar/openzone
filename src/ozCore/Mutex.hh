@@ -36,7 +36,7 @@ namespace oz
 /**
  * %Mutex.
  *
- * @sa `oz::Atomic`, `oz::SpinLock`, `oz::Semaphore`, `oz::CallOnce`, `oz::Thread`
+ * @sa `oz::Atomic`, `oz::SpinLock`, `oz::LockGuard`, `oz::Semaphore`, `oz::CallOnce`, `oz::Thread`
  */
 class Mutex
 {

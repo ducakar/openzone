@@ -24,6 +24,7 @@ add_library(ozCore
   Java.hh
   Json.hh
   List.hh
+  LockGuard.hh
   Log.hh
   Map.hh
   Mat3.hh

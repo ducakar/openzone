@@ -21,9 +21,9 @@
  */
 
 /**
- * @file ozCore/Time.hh
+ * @file ozCore/Instant.hh
  *
- * `Time` class.
+ * `Instant` class.
  */
 
 #pragma once
@@ -35,10 +35,20 @@ namespace oz
 {
 
 /**
- * Broken-down calendar time representation and other time-related utilities.
+ * %Time instant.
+ *
+ * The time is internally stored as nanoseconds (64-bit signed integer) from the UNIX epoch
+ * (1970-01-01 00:00:00 UTC).
  */
 class Instant : private Duration
 {
+public:
+
+  /**
+   * Epoch.
+   */
+  static const Instant EPOCH;
+
 public:
 
   using Duration::t;
@@ -47,10 +57,14 @@ public:
   using Duration::us;
   using Duration::ns;
 
-public:
-
+  /**
+   * Epoch.
+   */
   Instant() = default;
 
+  /**
+   * Create instant for a given nanosecond offset from the epoch.
+   */
   explicit Instant(long64 ns)
     : Duration(ns)
   {}

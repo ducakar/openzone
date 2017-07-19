@@ -36,9 +36,7 @@ namespace oz
 /**
  * %Time interval.
  *
- * A time interval or a time relative to an unspecified epoch (as returned by `Time::clock()`).
- * The time interval is internally stored in nanoseconds (64-bit integer), hence nanosecond
- * resolution.
+ * The time interval is internally stored in nanoseconds (64-bit signed integer).
  */
 class Duration
 {

@@ -32,7 +32,7 @@ platforms=(
 function clean()
 {
   for platform in ${platforms[@]}; do
-    rm -rf build/$platform
+    rm -rf build/$platform-$buildType
   done
   rm -rf build/{OpenZone-*,NaCl-test,Windows-test,Android,bundle}
 }

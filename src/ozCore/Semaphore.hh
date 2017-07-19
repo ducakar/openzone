@@ -36,8 +36,10 @@ namespace oz
 /**
  * %Semaphore.
  *
- * It is implemented as a wrapper for condition variable if a platform supports it since it should
- * yield a better performance.
+ * Besides the ordinary semaphore functions it also provides `waitAll()` and `tryWaitAll()` methods
+ * that zero the counter so it can also be used as a binary semaphore.
+ *
+ * The couter is clamped to [0, INT_MAX].
  *
  * @sa `oz::Atomic`, `oz::SpinLock`, `oz::Mutex`, `oz::CallOnce`, `oz::Thread`
  */
@@ -54,7 +56,7 @@ public:
   /**
    * Create and initialise semaphore.
    */
-  Semaphore();
+  Semaphore(int value = 0);
 
   /**
    * Destroy semaphore.
@@ -78,20 +80,37 @@ public:
 
   /**
    * Atomically increment counter and signal waiting threads.
+   *
+   * If counter needs to be increased past `INT_MAX` this method fails with counter remaining intact
+   * and no signals are sent to waiting threads.
+   *
+   * @return Counter has been successfully increased.
    */
-  void post(int increment = 1) const;
+  bool post(int increment = 1) const;
 
   /**
    * Wait until counter becomes positive. Then atomically decrement it and resume.
    */
-  void wait() const;
+  void wait(int decrement = 1) const;
+
+  /**
+   * Wait until counter becomes positive. Then atomically zero it and resume.
+   */
+  void waitAll() const;
 
   /**
    * Atomically check if counter is positive and decrement it if it is.
    *
    * @return True iff counter was decremented.
    */
-  bool tryWait() const;
+  bool tryWait(int decrement = 1) const;
+
+  /**
+   * Atomically check if counter is positive and zero it if it is.
+   *
+   * @return True iff counter was zeroed.
+   */
+  bool tryWaitAll() const;
 
 };
 

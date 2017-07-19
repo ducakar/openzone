@@ -103,6 +103,7 @@
 #include "Atomic.hh"
 #include "SpinLock.hh"
 #include "Mutex.hh"
+#include "LockGuard.hh"
 #include "Semaphore.hh"
 #include "CallOnce.hh"
 #include "Thread.hh"

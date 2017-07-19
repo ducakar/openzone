@@ -23,6 +23,7 @@
 #include "Semaphore.hh"
 
 #include "System.hh"
+#include "Atomic.hh"
 
 #include <cstdlib>
 #include <pthread.h>
@@ -34,15 +35,21 @@ struct Semaphore::Descriptor
 {
   pthread_mutex_t mutex   = PTHREAD_MUTEX_INITIALIZER;
   pthread_cond_t  cond    = PTHREAD_COND_INITIALIZER;
-  int             counter = 0;
+  Atomic<int>     counter;
 };
 
-Semaphore::Semaphore()
+Semaphore::Semaphore(int value)
 {
+  if (value < 0) {
+    OZ_ERROR("oz::Semaphore: Initial counter value must be >= 0");
+  }
+
   descriptor_ = new(malloc(sizeof(Descriptor))) Descriptor;
   if (descriptor_ == nullptr) {
     OZ_ERROR("oz::Semaphore: Descriptor initialisation failed");
   }
+
+  descriptor_->counter.value = value;
 }
 
 Semaphore::~Semaphore()
@@ -55,45 +62,87 @@ Semaphore::~Semaphore()
 
 int Semaphore::counter() const
 {
-  return descriptor_->counter;
+  return descriptor_->counter.load<ATOMIC_RELAXED>();
 }
 
-void Semaphore::post(int increment) const
+bool Semaphore::post(int increment) const
 {
   OZ_ASSERT(increment > 0);
 
+  bool isSuccessful = false;
+
   pthread_mutex_lock(&descriptor_->mutex);
-  descriptor_->counter += increment;
+
+  if (descriptor_->counter.value != INT_MAX) {
+    descriptor_->counter.value += increment;
+    isSuccessful = true;
+  }
+
   pthread_mutex_unlock(&descriptor_->mutex);
 
-  if (increment == 1) {
-    pthread_cond_signal(&descriptor_->cond);
+  if (isSuccessful) {
+    if (increment == 1) {
+      pthread_cond_signal(&descriptor_->cond);
+    }
+    else {
+      pthread_cond_broadcast(&descriptor_->cond);
+    }
   }
-  else {
-    pthread_cond_broadcast(&descriptor_->cond);
-  }
+  return isSuccessful;
 }
 
-void Semaphore::wait() const
+void Semaphore::wait(int decrement) const
+{
+  OZ_ASSERT(decrement > 0);
+
+  pthread_mutex_lock(&descriptor_->mutex);
+
+  while (descriptor_->counter.value < decrement) {
+    pthread_cond_wait(&descriptor_->cond, &descriptor_->mutex);
+  }
+  descriptor_->counter.value -= decrement;
+
+  pthread_mutex_unlock(&descriptor_->mutex);
+}
+
+void Semaphore::waitAll() const
 {
   pthread_mutex_lock(&descriptor_->mutex);
 
-  while (descriptor_->counter == 0) {
+  while (descriptor_->counter.value != 0) {
     pthread_cond_wait(&descriptor_->cond, &descriptor_->mutex);
   }
-  --descriptor_->counter;
+  descriptor_->counter.value = 0;
 
   pthread_mutex_unlock(&descriptor_->mutex);
 }
 
-bool Semaphore::tryWait() const
+bool Semaphore::tryWait(int decrement) const
+{
+  OZ_ASSERT(decrement > 0);
+
+  bool hasSucceeded = false;
+
+  pthread_mutex_lock(&descriptor_->mutex);
+
+  if (descriptor_->counter.value < decrement) {
+    descriptor_->counter.value -= decrement;
+    hasSucceeded = true;
+  }
+
+  pthread_mutex_unlock(&descriptor_->mutex);
+
+  return hasSucceeded;
+}
+
+bool Semaphore::tryWaitAll() const
 {
   bool hasSucceeded = false;
 
   pthread_mutex_lock(&descriptor_->mutex);
 
-  if (descriptor_->counter != 0) {
-    --descriptor_->counter;
+  if (descriptor_->counter.value != 0) {
+    descriptor_->counter.value = 0;
     hasSucceeded = true;
   }
 
