@@ -7,10 +7,12 @@ add_library(ozCore
   Alloc.hh
   Arrays.hh
   Atomic.hh
+  Barrier.hh
   Bitset.hh
   CallOnce.hh
   Chain.hh
   common.hh
+  CondVar.hh
   DChain.hh
   Duration.hh
   Endian.hh
@@ -38,6 +40,7 @@ add_library(ozCore
   Pool.hh
   Profiler.hh
   Quat.hh
+  RWLock.hh
   SBitset.hh
   Semaphore.hh
   Set.hh
@@ -54,7 +57,9 @@ add_library(ozCore
   Vec3.hh
   Vec4.hh
   Alloc.cc
+  Barrier.cc
   Bitset.cc
+  CondVar.cc
   Duration.cc
   EnumMap.cc
   File.cc
@@ -73,6 +78,7 @@ add_library(ozCore
   Pool.cc
   Profiler.cc
   Quat.cc
+  RWLock.cc
   Semaphore.cc
   SharedLib.cc
   StackTrace.cc

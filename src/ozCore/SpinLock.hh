@@ -36,7 +36,7 @@ namespace oz
 /**
  * Spin lock.
  *
- * @sa `oz::Atomic`, `oz::Mutex`, `oz::LockGuard`, `oz::Semaphore`, `oz::CallOnce`, `oz::Thread`
+ * @sa `oz::Mutex`, `oz::RWLock`
  */
 class SpinLock
 {
@@ -91,17 +91,6 @@ public:
   void unlock()
   {
     isLocked_.clear<ATOMIC_RELEASE>();
-  }
-
-  /**
-   * Wrap a (lambda) function with the spin lock.
-   */
-  template <typename Function>
-  void operator<<(Function function)
-  {
-    lock();
-    function();
-    unlock();
   }
 
 };

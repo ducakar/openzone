@@ -37,6 +37,8 @@ namespace oz
  * %Time interval.
  *
  * The time interval is internally stored in nanoseconds (64-bit signed integer).
+ *
+ * @sa `oz::Instant`
  */
 class Duration
 {

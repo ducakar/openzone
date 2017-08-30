@@ -109,8 +109,8 @@ struct Wave
 
 #endif
 
-static SpinLock              bellLock;
-static pthread_t             bellThread;
+static pthread_mutex_t       bellMutex     = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t        bellCond      = PTHREAD_COND_INITIALIZER;
 static bool                  hasBellThread = false;
 static System::CrashHandler* crashHandler  = nullptr;
 static int                   initFlags     = 0;
@@ -294,6 +294,11 @@ static void* bellMain(void*)
 
   pthread_cond_destroy(&info.finishCond);
   pthread_mutex_destroy(&info.finishMutex);
+
+  pthread_mutex_lock(&bellMutex);
+  hasBellThread = false;
+  pthread_cond_signal(&bellCond);
+  pthread_mutex_unlock(&bellMutex);
   return nullptr;
 }
 
@@ -334,6 +339,10 @@ static void* bellMain(void*)
   genBellSamples(wave->samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
   PlaySound(reinterpret_cast<LPCSTR>(wave), nullptr, SND_MEMORY | SND_SYNC);
 
+  pthread_mutex_lock(&bellMutex);
+  hasBellThread = false;
+  pthread_cond_signal(&bellCond);
+  pthread_mutex_unlock(&bellMutex);
   return nullptr;
 }
 
@@ -371,6 +380,10 @@ static void* bellMain(void*)
     snd_pcm_close(alsa);
   }
 
+  pthread_mutex_lock(&bellMutex);
+  hasBellThread = false;
+  pthread_cond_signal(&bellCond);
+  pthread_mutex_unlock(&bellMutex);
   return nullptr;
 }
 
@@ -384,14 +397,11 @@ static void waitBell()
   }
 #endif
 
-  bellLock.lock();
-
-  if (hasBellThread) {
-    pthread_join(bellThread, nullptr);
-    hasBellThread = false;
+  pthread_mutex_lock(&bellMutex);
+  while (hasBellThread) {
+    pthread_cond_wait(&bellCond, &bellMutex);
   }
-
-  bellLock.unlock();
+  pthread_mutex_unlock(&bellMutex);
 }
 
 static void abort(bool doHalt)
@@ -434,14 +444,15 @@ void System::trap()
 
 void System::bell()
 {
-  if (bellLock.tryLock()) {
-    if (hasBellThread) {
-      pthread_join(bellThread, nullptr);
+  if (pthread_mutex_trylock(&bellMutex) == 0) {
+    if (!hasBellThread) {
+      pthread_t      bellThread;
+      pthread_attr_t bellThreadAttr;
+
+      pthread_attr_setdetachstate(&bellThreadAttr, PTHREAD_CREATE_DETACHED);
+      hasBellThread = pthread_create(&bellThread, nullptr, bellMain, nullptr) == 0;
     }
-
-    hasBellThread = pthread_create(&bellThread, nullptr, bellMain, nullptr) == 0;
-
-    bellLock.unlock();
+    pthread_mutex_unlock(&bellMutex);
   }
 }
 

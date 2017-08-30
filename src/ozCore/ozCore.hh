@@ -101,10 +101,12 @@
  * Threads.
  */
 #include "Atomic.hh"
+#include "LockGuard.hh"
 #include "SpinLock.hh"
 #include "Mutex.hh"
-#include "LockGuard.hh"
+#include "RWLock.hh"
 #include "Semaphore.hh"
+#include "Barrier.hh"
 #include "CallOnce.hh"
 #include "Thread.hh"
 #include "StackTrace.hh"

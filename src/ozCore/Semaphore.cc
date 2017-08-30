@@ -65,7 +65,7 @@ int Semaphore::counter() const
   return descriptor_->counter.load<ATOMIC_RELAXED>();
 }
 
-bool Semaphore::post(int increment) const
+bool Semaphore::post(int increment)
 {
   OZ_ASSERT(increment > 0);
 
@@ -91,7 +91,7 @@ bool Semaphore::post(int increment) const
   return isSuccessful;
 }
 
-void Semaphore::wait(int decrement) const
+void Semaphore::wait(int decrement)
 {
   OZ_ASSERT(decrement > 0);
 
@@ -105,7 +105,7 @@ void Semaphore::wait(int decrement) const
   pthread_mutex_unlock(&descriptor_->mutex);
 }
 
-void Semaphore::waitAll() const
+void Semaphore::waitAll()
 {
   pthread_mutex_lock(&descriptor_->mutex);
 
@@ -117,7 +117,7 @@ void Semaphore::waitAll() const
   pthread_mutex_unlock(&descriptor_->mutex);
 }
 
-bool Semaphore::tryWait(int decrement) const
+bool Semaphore::tryWait(int decrement)
 {
   OZ_ASSERT(decrement > 0);
 
@@ -135,7 +135,7 @@ bool Semaphore::tryWait(int decrement) const
   return hasSucceeded;
 }
 
-bool Semaphore::tryWaitAll() const
+bool Semaphore::tryWaitAll()
 {
   bool hasSucceeded = false;
 

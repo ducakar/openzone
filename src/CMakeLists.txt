@@ -1,7 +1,7 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-add_pch(pch pch.hh)
+add_pch(pch pch.hh pch.cc)
 
 add_subdirectory(ozCore)
 add_subdirectory(ozEngine)

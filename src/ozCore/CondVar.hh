@@ -21,80 +21,70 @@
  */
 
 /**
- * @file ozCore/Mutex.hh
+ * @file ozCore/CondVar.hh
  *
- * `Mutex` class.
+ * `CondVar` class.
  */
 
 #pragma once
 
-#include "common.hh"
+#include "Mutex.hh"
 
 namespace oz
 {
 
 /**
- * %Mutex.
- *
- * @sa `oz::SpinLock`, `oz::RWLock`
+ * Condition variable.
  */
-class Mutex
+class CondVar
 {
-  friend class CondVar;
-
 private:
 
   struct Descriptor;
 
-  Descriptor* descriptor_ = nullptr; ///< Internal mutex descriptor.
+  Descriptor* descriptor_ = nullptr; ///< Internal semaphore descriptor.
 
 public:
 
   /**
-   * Create and initialise mutex.
+   * Create and initialise condition variable.
    */
-  Mutex();
+  CondVar();
 
   /**
-   * Destroy mutex.
+   * Destroy condition variable.
    */
-  ~Mutex();
-
-  /**
-   * Copying or moving is not possible.
-   */
-  Mutex(const Mutex&) = delete;
+  ~CondVar();
 
   /**
    * Copying or moving is not possible.
    */
-  Mutex& operator=(const Mutex&) = delete;
+  CondVar(const CondVar&) = delete;
 
   /**
-   * Wait until lock is obtained.
-   *
-   * @note
-   * Locking a mutex that is already locked by the current thread results in undefined behaviour.
+   * Copying or moving is not possible.
    */
-  void lock();
+  CondVar& operator=(const CondVar&) = delete;
 
   /**
-   * Lock if not already locked.
-   *
-   * @note
-   * Locking a mutex that is already locked by the current thread results in undefined behaviour.
-   *
-   * @return True on success.
+   * Signal a single thread waiting on this condition variable.
    */
-  bool tryLock();
+  void signal();
 
   /**
-   * Unlock.
-   *
-   * @note
-   * Unlocking an unlocked mutex results in undefined behaviour.
+   * Signal all threads waiting on this condition variable.
    */
-  void unlock();
+  void broadcast();
+
+  /**
+   * Wait on the condition variable.
+   *
+   * This function atomically blocks the current thread and releases the mutex. Upon a recieved
+   * signal is the mutex is acquired again by the current thread and this function unblocks.
+   *
+   * @note Spurious wakeups are possible.
+   */
+  void wait(Mutex& mutex);
 
 };
 

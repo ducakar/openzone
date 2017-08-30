@@ -48,8 +48,6 @@ enum MemoryOrder
  * Wrapper class for atomic operations on an integral variable.
  *
  * This class is meant as a light-weight replacement for `std::atomic` and `std::atomic_flag`.
- *
- * @sa `oz::SpinLock`, `oz::Mutex`, `oz::Semaphore`, `oz::CallOnce`, `oz::Thread`
  */
 template <typename Type>
 class Atomic

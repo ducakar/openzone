@@ -21,9 +21,9 @@
  */
 
 /**
- * @file ozCore/Mutex.hh
+ * @file ozCore/Barrier.hh
  *
- * `Mutex` class.
+ * `Barrier` class.
  */
 
 #pragma once
@@ -34,67 +34,48 @@ namespace oz
 {
 
 /**
- * %Mutex.
+ * %Barrier.
  *
- * @sa `oz::SpinLock`, `oz::RWLock`
+ * Object for synchronising a given number of threads at a barrier. Calling `wait()` blocks the
+ * thread until the number of waiting threads reaches the number givent in initialisation.
  */
-class Mutex
+class Barrier
 {
-  friend class CondVar;
-
 private:
 
   struct Descriptor;
 
-  Descriptor* descriptor_ = nullptr; ///< Internal mutex descriptor.
+  Descriptor* descriptor_ = nullptr; ///< Internal semaphore descriptor.
 
 public:
 
   /**
-   * Create and initialise mutex.
+   * Create and initialise barrier.
    */
-  Mutex();
+  Barrier(int count);
 
   /**
-   * Destroy mutex.
+   * Destroy barrier.
    */
-  ~Mutex();
-
-  /**
-   * Copying or moving is not possible.
-   */
-  Mutex(const Mutex&) = delete;
+  ~Barrier();
 
   /**
    * Copying or moving is not possible.
    */
-  Mutex& operator=(const Mutex&) = delete;
+  Barrier(const Barrier&) = delete;
 
   /**
-   * Wait until lock is obtained.
-   *
-   * @note
-   * Locking a mutex that is already locked by the current thread results in undefined behaviour.
+   * Copying or moving is not possible.
    */
-  void lock();
+  Barrier& operator=(const Barrier&) = delete;
 
   /**
-   * Lock if not already locked.
+   * Synchronise at barrier.
    *
-   * @note
-   * Locking a mutex that is already locked by the current thread results in undefined behaviour.
-   *
-   * @return True on success.
+   * Block until the number of waiting threads is reached. The barrier is reset to its initial state
+   * upon unblocking.
    */
-  bool tryLock();
-
-  /**
-   * Unlock.
-   *
-   * @note
-   * Unlocking an unlocked mutex results in undefined behaviour.
-   */
-  void unlock();
+  void wait();
 
 };
 

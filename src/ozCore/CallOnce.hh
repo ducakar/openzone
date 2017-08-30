@@ -28,22 +28,21 @@
 
 #pragma once
 
-#include "SpinLock.hh"
+#include "Atomic.hh"
 #include "LockGuard.hh"
+#include "Mutex.hh"
 
 namespace oz
 {
 
 /**
  * Call a function only once, even if called from several threads.
- *
- * @sa `oz::Atomic`, `oz::SpinLock`, `oz::Mutex`, `oz::Semaphore`, `oz::Thread`
  */
 class CallOnce
 {
 private:
 
-  SpinLock     lock_;                ///< The lock wrapping the call.
+  Mutex        lock_;                ///< The lock wrapping the call.
   Atomic<bool> wasCalled_ = {false}; ///< Flipped to true when the function finishes.
 
 public:
@@ -73,7 +72,7 @@ public:
   void operator<<(Function function)
   {
     if (!wasCalled_.load<ATOMIC_ACQUIRE>()) {
-      LockGuard<SpinLock> guard(lock_);
+      LockGuard<Mutex> guard(lock_);
 
       if (!wasCalled_.load<ATOMIC_RELAXED>()) {
         function();

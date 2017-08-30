@@ -9,6 +9,8 @@
 #
 # where:  - `pch` is PCH target name.
 #         - `stable.h` is a header that should be precompiled.
+#         - `stable.c` is a dummy module that contains only an include directive for `stable.h`.
+#           It is required for dependency resolution and trigger recompilation of PCH.
 #
 # Notes:  - Only works for GCC and LLVM/Clang.
 #         - Compiler flags are retrieved from `CMAKE_CXX_FLAGS`, `CMAKE_CXX_FLAGS_<BUILDTYPE>` and
@@ -18,7 +20,7 @@
 # Author: Davorin Učakar <davorin.ucakar@gmail.com>
 #
 
-macro(add_pch pchTarget header)
+macro(add_pch pchTarget header module)
   # Extract CMAKE_CXX_FLAGS and CMAKE_CXX_FLAGS_XXX for the current configuration.
   string(TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" buildTypeFlags)
   set(flags "-x c++-header ${CMAKE_CXX_FLAGS} ${${buildTypeFlags}}")
@@ -38,12 +40,17 @@ macro(add_pch pchTarget header)
     list(APPEND flags "-D${define}")
   endforeach()
 
+  # Helper target to generate dependencies and trigger recompilation of the precompiled header when
+  # neccessary.
+  add_library(${pchTarget}_trigger STATIC "${header}" "${module}")
+
   set(inputHeader  "${CMAKE_CURRENT_SOURCE_DIR}/${header}")
   set(outputHeader "${CMAKE_CURRENT_BINARY_DIR}/${header}")
 
   # Build PCH and copy original header to the build folder since we include PCH indirectly.
   add_custom_command(
     OUTPUT  "${outputHeader}.gch"
+    DEPENDS ${pchTarget}_trigger
     COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${inputHeader}" "${outputHeader}"
     COMMAND "${CMAKE_COMMAND}" -E remove -f "${outputHeader}.gch"
     COMMAND "${CMAKE_CXX_COMPILER}" ${flags} -o "${outputHeader}.gch" "${inputHeader}")

@@ -39,6 +39,8 @@ namespace oz
  *
  * The time is internally stored as nanoseconds (64-bit signed integer) from the UNIX epoch
  * (1970-01-01 00:00:00 UTC).
+ *
+ * @sa `oz::Duration`
  */
 class Instant : private Duration
 {

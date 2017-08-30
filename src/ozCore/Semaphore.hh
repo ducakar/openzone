@@ -40,8 +40,6 @@ namespace oz
  * that zero the counter so it can also be used as a binary semaphore.
  *
  * The couter is clamped to [0, INT_MAX].
- *
- * @sa `oz::Atomic`, `oz::SpinLock`, `oz::Mutex`, `oz::CallOnce`, `oz::Thread`
  */
 class Semaphore
 {
@@ -86,31 +84,31 @@ public:
    *
    * @return Counter has been successfully increased.
    */
-  bool post(int increment = 1) const;
+  bool post(int increment = 1);
 
   /**
    * Wait until counter becomes positive. Then atomically decrement it and resume.
    */
-  void wait(int decrement = 1) const;
+  void wait(int decrement = 1);
 
   /**
    * Wait until counter becomes positive. Then atomically zero it and resume.
    */
-  void waitAll() const;
+  void waitAll();
 
   /**
    * Atomically check if counter is positive and decrement it if it is.
    *
    * @return True iff counter was decremented.
    */
-  bool tryWait(int decrement = 1) const;
+  bool tryWait(int decrement = 1);
 
   /**
    * Atomically check if counter is positive and zero it if it is.
    *
    * @return True iff counter was zeroed.
    */
-  bool tryWaitAll() const;
+  bool tryWaitAll();
 
 };
 
