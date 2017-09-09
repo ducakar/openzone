@@ -101,7 +101,7 @@ elseif(NACL)
 elseif(WIN32)
   target_link_libraries(ozCore -lwinmm)
 else()
-  target_link_libraries(ozCore ${ALSA_LIBRARIES} -ldl -lpthread)
+  target_link_libraries(ozCore -ldl -lpthread)
 endif()
 
 set_target_properties(ozCore PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0)

@@ -83,7 +83,7 @@ void EditStage::auxRun()
 {
   auxSemaphore.wait();
 
-  while (isAuxAlive.load<ATOMIC_RELAXED>()) {
+  while (isAuxAlive.load<RELAXED>()) {
     /*
      * PHASE 2
      *
@@ -243,7 +243,7 @@ void EditStage::load()
   loader.syncUpdate();
   loader.load();
 
-  isAuxAlive.store<ATOMIC_RELAXED>(true);
+  isAuxAlive.store<RELAXED>(true);
 
   mainSemaphore.post();
 
@@ -269,7 +269,7 @@ void EditStage::unload()
 
   render.update(Render::UI_BIT);
 
-  isAuxAlive.store<ATOMIC_RELAXED>(false);
+  isAuxAlive.store<RELAXED>(false);
 
   auxSemaphore.post();
   mainSemaphore.wait();

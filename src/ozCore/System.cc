@@ -23,6 +23,7 @@
 #include "System.hh"
 
 #include "SpinLock.hh"
+#include "SharedLib.hh"
 #include "Log.hh"
 #include "Pepper.hh"
 
@@ -52,7 +53,7 @@
 # include <windows.h>
 # include <mmsystem.h>
 #else
-# include <alsa/asoundlib.h>
+# include <pulse/simple.h>
 # include <pthread.h>
 #endif
 
@@ -61,7 +62,7 @@ namespace oz
 
 static const float BELL_TIME       = 0.30f;
 static const float BELL_FREQUENCY  = 1000.0f;
-static const int   BELL_RATE       = 48000;
+static const int   BELL_RATE       = 44100;
 static const int   BELL_SAMPLES    = int(BELL_TIME * float(BELL_RATE));
 static const int   INITIALISED_BIT = 0x80;
 
@@ -72,46 +73,9 @@ enum BellState
   FINISHED
 };
 
-#if defined(__native_client__)
-
-struct SampleInfo
-{
-  PP_AudioSampleRate rate;
-  int                nFrameSamples;
-  int                nSamples;
-  int                offset;
-  pthread_mutex_t    finishMutex   = PTHREAD_MUTEX_INITIALIZER;
-  pthread_cond_t     finishCond    = PTHREAD_COND_INITIALIZER;
-  bool               isFinished    = false;
-};
-
-#elif defined(_WIN32)
-
-struct Wave
-{
-  char  chunkId[4];
-  int   chunkSize;
-  char  format[4];
-
-  char  subchunk1Id[4];
-  int   subchunk1Size;
-  short audioFormat;
-  short nChannels;
-  int   sampleRate;
-  int   byteRate;
-  short blockAlign;
-  short bitsPerSample;
-
-  char  subchunk2Id[4];
-  int   subchunk2Size;
-  short samples[BELL_SAMPLES * 2];
-};
-
-#endif
-
 static pthread_mutex_t       bellMutex     = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t        bellCond      = PTHREAD_COND_INITIALIZER;
-static bool                  hasBellThread = false;
+static Atomic<bool>          hasBellThread = {false};
 static System::CrashHandler* crashHandler  = nullptr;
 static int                   initFlags     = 0;
 
@@ -164,22 +128,23 @@ static void catchSignals()
 #endif
 }
 
-static void genBellSamples(short* samples, int nSamples_, int rate, int begin, int end)
+// Buffer should contain space for (nSamples * 2) 16-bit samples.
+static void generateBellSamples(short* buffer, int nSamples, int rate, int fromSample, int toSample)
 {
-  float nSamples = float(nSamples_);
+  float length = float(nSamples);
   float quotient = BELL_FREQUENCY / float(rate) * Math::TAU;
 
-  for (; begin < end; ++begin) {
-    float i = float(begin);
+  for (; fromSample < toSample; ++fromSample) {
+    float i = float(fromSample);
 
-    float amplitude = 0.8f * Math::fastSqrt(max<float>(0.0f, (nSamples - i) / nSamples));
+    float amplitude = 0.8f * Math::fastSqrt(max<float>(0.0f, (length - i) / length));
     float theta     = i * quotient;
     float value     = amplitude * Math::sin(theta);
     short sample    = short(Math::lround(value * SHRT_MAX));
 
-    samples[0] = sample;
-    samples[1] = sample;
-    samples   += 2;
+    buffer[0] = sample;
+    buffer[1] = sample;
+    buffer   += 2;
   }
 }
 
@@ -187,6 +152,8 @@ static void genBellSamples(short* samples, int nSamples_, int rate, int begin, i
 
 static void* bellMain(void*)
 {
+  pthread_mutex_lock(&bellMutex);
+
   static_cast<void>(genBellSamples);
 
   SLObjectItf engine;
@@ -224,7 +191,7 @@ static void* bellMain(void*)
   int    size     = BELL_SAMPLES * 2 * sizeof(short);
   short* samples  = static_cast<short*>(alloca(size));
 
-  genBellSamples(samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
+  generateBellSamples(samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
   (*iBufferQueue)->Enqueue(iBufferQueue, samples, size);
   (*iPlay)->SetPlayState(iPlay, SL_PLAYSTATE_PLAYING);
 
@@ -240,6 +207,9 @@ static void* bellMain(void*)
   (*outputMix)->Destroy(outputMix);
   (*engine)->Destroy(engine);
 
+  hasBellThread.store<RELEASE>(false);
+  pthread_cond_signal(&bellCond);
+  pthread_mutex_unlock(&bellMutex);
   return nullptr;
 }
 
@@ -251,6 +221,39 @@ static void* bellMain(void*)
 }
 
 #elif defined(__native_client__)
+
+struct SampleInfo
+{
+  PP_AudioSampleRate rate;
+  int                nFrameSamples;
+  int                nSamples;
+  int                offset;
+  pthread_mutex_t    finishMutex   = PTHREAD_MUTEX_INITIALIZER;
+  pthread_cond_t     finishCond    = PTHREAD_COND_INITIALIZER;
+  bool               isFinished    = false;
+};
+
+#elif defined(_WIN32)
+
+struct Wave
+{
+  char  chunkId[4];
+  int   chunkSize;
+  char  format[4];
+
+  char  subchunk1Id[4];
+  int   subchunk1Size;
+  short audioFormat;
+  short nChannels;
+  int   sampleRate;
+  int   byteRate;
+  short blockAlign;
+  short bitsPerSample;
+
+  char  subchunk2Id[4];
+  int   subchunk2Size;
+  short samples[BELL_SAMPLES * 2];
+};
 
 static void bellCallback(void* buffer, uint, void* info_)
 {
@@ -264,14 +267,16 @@ static void bellCallback(void* buffer, uint, void* info_)
     pthread_cond_signal(&info.finishCond);
   }
   else {
-    genBellSamples(samples, info->nSamples, info->rate, info->offset,
-                   info->offset + info->nFrameSamples);
+    generateBellSamples(samples, info->nSamples, info->rate, info->offset,
+                        info->offset + info->nFrameSamples);
     info->offset += info->nFrameSamples;
   }
 }
 
 static void* bellMain(void*)
 {
+  pthread_mutex_lock(&bellMutex);
+
   pp::InstanceHandle ppInstance(PSGetInstanceId());
   PP_AudioSampleRate rate = pp::AudioConfig::RecommendSampleRate(ppInstance);
 
@@ -295,8 +300,7 @@ static void* bellMain(void*)
   pthread_cond_destroy(&info.finishCond);
   pthread_mutex_destroy(&info.finishMutex);
 
-  pthread_mutex_lock(&bellMutex);
-  hasBellThread = false;
+  hasBellThread.store<RELEASE>(false);
   pthread_cond_signal(&bellCond);
   pthread_mutex_unlock(&bellMutex);
   return nullptr;
@@ -306,6 +310,8 @@ static void* bellMain(void*)
 
 static void* bellMain(void*)
 {
+  pthread_mutex_lock(&bellMutex);
+
   Wave* wave = static_cast<Wave*>(alloca(sizeof(Wave)));
 
   wave->chunkId[0]     = 'R';
@@ -336,11 +342,10 @@ static void* bellMain(void*)
   wave->subchunk2Id[3] = 'a';
   wave->subchunk2Size  = sizeof(wave->samples);
 
-  genBellSamples(wave->samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
+  generateBellSamples(wave->samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
   PlaySound(reinterpret_cast<LPCSTR>(wave), nullptr, SND_MEMORY | SND_SYNC);
 
-  pthread_mutex_lock(&bellMutex);
-  hasBellThread = false;
+  hasBellThread.store<RELEASE>(false);
   pthread_cond_signal(&bellCond);
   pthread_mutex_unlock(&bellMutex);
   return nullptr;
@@ -348,40 +353,61 @@ static void* bellMain(void*)
 
 #else
 
+enum PulseStatus
+{
+  NOT_INITIALISED,
+  INITIALISED,
+  INITIALISATION_FAILED
+};
+
+static PulseStatus pulseStatus = NOT_INITIALISED;
+
+static OZ_DL_DEFINE(pa_simple_new);
+static OZ_DL_DEFINE(pa_simple_free);
+static OZ_DL_DEFINE(pa_simple_write);
+static OZ_DL_DEFINE(pa_simple_drain);
+
+static void initialisePulse()
+{
+  SharedLib libPulseSimple("libpulse-simple.so.0");
+
+  if (libPulseSimple.isOpened()) {
+    OZ_DL_LOAD(libPulseSimple, pa_simple_new);
+    OZ_DL_LOAD(libPulseSimple, pa_simple_free);
+    OZ_DL_LOAD(libPulseSimple, pa_simple_write);
+    OZ_DL_LOAD(libPulseSimple, pa_simple_drain);
+
+    pulseStatus = INITIALISED;
+  }
+  else {
+    pulseStatus = INITIALISATION_FAILED;
+  }
+}
+
 static void* bellMain(void*)
 {
-  snd_pcm_t* alsa;
+  pthread_mutex_lock(&bellMutex);
 
-  if (snd_pcm_open(&alsa, "default", SND_PCM_STREAM_PLAYBACK, 0) == 0) {
-    snd_pcm_hw_params_t* params;
-    snd_pcm_hw_params_alloca(&params);
-    snd_pcm_hw_params_any(alsa, params);
-
-    uint rate = BELL_RATE;
-
-    if (snd_pcm_hw_params_set_access(alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED) == 0 &&
-        snd_pcm_hw_params_set_format(alsa, params, SND_PCM_FORMAT_S16) == 0 &&
-        snd_pcm_hw_params_set_channels(alsa, params, 2) == 0 &&
-        snd_pcm_hw_params_set_rate_resample(alsa, params, 0) == 0 &&
-        snd_pcm_hw_params_set_rate_near(alsa, params, &rate, nullptr) == 0 &&
-        snd_pcm_hw_params(alsa, params) == 0 &&
-        snd_pcm_prepare(alsa) == 0)
-    {
-
-      int    nSamples = min<int>(int(BELL_TIME * float(rate)), 2 * BELL_SAMPLES);
-      int    size     = nSamples * 2 * sizeof(short);
-      short* samples  = static_cast<short*>(alloca(size));
-
-      genBellSamples(samples, nSamples, rate, 0, nSamples);
-      snd_pcm_writei(alsa, samples, snd_pcm_uframes_t(nSamples));
-      snd_pcm_drain(alsa);
-    }
-
-    snd_pcm_close(alsa);
+  if (pulseStatus == NOT_INITIALISED) {
+    initialisePulse();
   }
 
-  pthread_mutex_lock(&bellMutex);
-  hasBellThread = false;
+  if (pulseStatus == INITIALISED) {
+    pa_sample_spec sampleSpec = {PA_SAMPLE_S16NE, BELL_RATE, 2};
+    pa_simple*     pa         = pa_simple_new(nullptr, "liboz", PA_STREAM_PLAYBACK, nullptr, "bell",
+                                              &sampleSpec, nullptr,  nullptr, nullptr);
+
+    if (pa != nullptr) {
+      List<short> samples(BELL_SAMPLES * 2);
+      generateBellSamples(samples.begin(), BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
+
+      pa_simple_write(pa, samples.begin(), size_t(samples.size()) * sizeof(short), nullptr);
+      pa_simple_drain(pa, nullptr);
+      pa_simple_free(pa);
+    }
+  }
+
+  hasBellThread.store<RELEASE>(false);
   pthread_cond_signal(&bellCond);
   pthread_mutex_unlock(&bellMutex);
   return nullptr;
@@ -398,7 +424,7 @@ static void waitBell()
 #endif
 
   pthread_mutex_lock(&bellMutex);
-  while (hasBellThread) {
+  while (hasBellThread.load<RELAXED>()) {
     pthread_cond_wait(&bellCond, &bellMutex);
   }
   pthread_mutex_unlock(&bellMutex);
@@ -444,15 +470,19 @@ void System::trap()
 
 void System::bell()
 {
-  if (pthread_mutex_trylock(&bellMutex) == 0) {
-    if (!hasBellThread) {
-      pthread_t      bellThread;
-      pthread_attr_t bellThreadAttr;
+  if (!hasBellThread.load<ACQUIRE>()) {
+    if (pthread_mutex_trylock(&bellMutex) == 0) {
+      if (!hasBellThread.load<RELAXED>()) {
+        pthread_t      bellThread;
+        pthread_attr_t bellThreadAttr;
 
-      pthread_attr_setdetachstate(&bellThreadAttr, PTHREAD_CREATE_DETACHED);
-      hasBellThread = pthread_create(&bellThread, nullptr, bellMain, nullptr) == 0;
+        pthread_attr_setdetachstate(&bellThreadAttr, PTHREAD_CREATE_DETACHED);
+        if (pthread_create(&bellThread, nullptr, bellMain, nullptr) == 0) {
+          hasBellThread.store<RELEASE>(true);
+        }
+      }
+      pthread_mutex_unlock(&bellMutex);
     }
-    pthread_mutex_unlock(&bellMutex);
   }
 }
 

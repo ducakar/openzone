@@ -71,12 +71,12 @@ public:
   template <typename Function>
   void operator<<(Function function)
   {
-    if (!wasCalled_.load<ATOMIC_ACQUIRE>()) {
+    if (!wasCalled_.load<ACQUIRE>()) {
       LockGuard<Mutex> guard(lock_);
 
-      if (!wasCalled_.load<ATOMIC_RELAXED>()) {
+      if (!wasCalled_.load<RELAXED>()) {
         function();
-        wasCalled_.store<ATOMIC_RELEASE>(true);
+        wasCalled_.store<RELEASE>(true);
       }
     }
   }

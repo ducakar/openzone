@@ -122,7 +122,7 @@ void Audio::playContSound(int sound, float volume, const Object* parent) const
 bool Audio::playSpeak(const char* text, float volume, const Object* parent) const
 {
   const Dynamic* dynParent = static_cast<const Dynamic*>(parent);
-  int            owner = context.speakSource.owner.load<ATOMIC_RELAXED>();
+  int            owner = context.speakSource.owner.load<RELAXED>();
   uint           srcId;
 
   if (owner == -1) {

@@ -113,7 +113,7 @@ void GameStage::auxRun()
 {
   auxSemaphore.wait();
 
-  while (isAuxAlive.load<ATOMIC_RELAXED>()) {
+  while (isAuxAlive.load<RELAXED>()) {
     /*
      * PHASE 2
      *
@@ -341,7 +341,7 @@ void GameStage::load()
   loader.syncUpdate();
   loader.load();
 
-  isAuxAlive.store<ATOMIC_RELAXED>(true);
+  isAuxAlive.store<RELAXED>(true);
 
   mainSemaphore.post();
 
@@ -374,7 +374,7 @@ void GameStage::unload()
 
   loader.unload();
 
-  isAuxAlive.store<ATOMIC_RELAXED>(false);
+  isAuxAlive.store<RELAXED>(false);
 
   auxSemaphore.post();
   mainSemaphore.wait();

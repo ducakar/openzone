@@ -66,7 +66,7 @@ public:
    */
   void lock()
   {
-    while (isLocked_.testAndSet<ATOMIC_ACQUIRE>()) {
+    while (isLocked_.testAndSet<ACQUIRE>()) {
 #if defined(__ARM_ACLE__)
       __builtin_arm_yield();
 #elif defined(__i386__) || defined(__x86_64__)
@@ -82,7 +82,7 @@ public:
    */
   bool tryLock()
   {
-    return !isLocked_.testAndSet<ATOMIC_ACQUIRE>();
+    return !isLocked_.testAndSet<ACQUIRE>();
   }
 
   /**
@@ -90,7 +90,7 @@ public:
    */
   void unlock()
   {
-    isLocked_.clear<ATOMIC_RELEASE>();
+    isLocked_.clear<RELEASE>();
   }
 
 };

@@ -23,7 +23,7 @@ GCC >= 5 and LLVM/Clang >= 3.4 are the only supported compilers.
 
 Development packages of the following libraries are required to build OpenZone from source:
 
-- ALSA (Linux only)
+- libpulse (Linux only)
 - libpng
 - libvorbis
 - Lua or LuaJIT

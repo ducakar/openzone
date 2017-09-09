@@ -46,11 +46,11 @@ void Sound::musicRun()
 {
   streamedTrack = -1;
 
-  while (isMusicAlive.load<ATOMIC_RELAXED>()) {
+  while (isMusicAlive.load<RELAXED>()) {
     musicMainSemaphore.post();
     musicAuxSemaphore.wait();
 
-    int oldSelectedTrack = selectedTrack.exchange<ATOMIC_RELAXED>(-1);
+    int oldSelectedTrack = selectedTrack.exchange<RELAXED>(-1);
     if (oldSelectedTrack != -1) {
       if (streamedTrack >= 0) {
         musicDecoder = AL::Decoder();
@@ -64,7 +64,7 @@ void Sound::musicRun()
     }
 
     if (streamedTrack >= 0) {
-      hasStreamedBytes.store<ATOMIC_RELEASE>(musicDecoder.decode());
+      hasStreamedBytes.store<RELEASE>(musicDecoder.decode());
     }
   }
 }
@@ -109,7 +109,7 @@ void Sound::updateMusic()
     return;
   }
 
-  if (selectedTrack.load<ATOMIC_RELAXED>() != -1) {
+  if (selectedTrack.load<RELAXED>() != -1) {
     musicBuffersQueued = 0;
 
     alSourceStop(musicSource);
@@ -134,7 +134,7 @@ void Sound::updateMusic()
     alGetSourcei(musicSource, AL_BUFFERS_PROCESSED, &nProcessed);
 
     if (nProcessed != 0) {
-      if (hasStreamedBytes.load<ATOMIC_ACQUIRE>()) {
+      if (hasStreamedBytes.load<ACQUIRE>()) {
         hasLoaded = true;
 
         uint buffer;
@@ -151,7 +151,7 @@ void Sound::updateMusic()
       }
     }
     // If beginning of a track.
-    else if (musicBuffersQueued != 2 && hasStreamedBytes.load<ATOMIC_ACQUIRE>()) {
+    else if (musicBuffersQueued != 2 && hasStreamedBytes.load<ACQUIRE>()) {
       hasLoaded = true;
 
       int i = musicBuffersQueued;
@@ -186,7 +186,7 @@ void Sound::soundRun()
 {
   soundAuxSemaphore.wait();
 
-  while (isSoundAlive.load<ATOMIC_RELAXED>()) {
+  while (isSoundAlive.load<RELAXED>()) {
     Instant currentInstant = Instant::now();
     Instant beginInstant = currentInstant;
 
@@ -251,12 +251,12 @@ void Sound::playMusic(int track)
 {
   OZ_ASSERT(track >= 0);
 
-  selectedTrack.store<ATOMIC_RELAXED>(track);
+  selectedTrack.store<RELAXED>(track);
 }
 
 void Sound::stopMusic()
 {
-  selectedTrack.store<ATOMIC_RELAXED>(-2);
+  selectedTrack.store<RELAXED>(-2);
 }
 
 void Sound::resume() const
@@ -374,7 +374,7 @@ void Sound::init()
   Log::println("}");
   Log::verboseMode = false;
 
-  selectedTrack.store<ATOMIC_RELAXED>(-1);
+  selectedTrack.store<RELAXED>(-1);
   streamedTrack = -1;
 
   alGenBuffers(2, musicBufferIds);
@@ -396,8 +396,8 @@ void Sound::init()
     espeak_SetSynthCallback(reinterpret_cast<t_espeak_callback*>(&Context::speakCallback));
   }
 
-  isMusicAlive.store<ATOMIC_RELAXED>(true);
-  isSoundAlive.store<ATOMIC_RELAXED>(true);
+  isMusicAlive.store<RELAXED>(true);
+  isSoundAlive.store<RELAXED>(true);
 
   musicThread = Thread("music", musicMain);
   soundThread = Thread("sound", soundMain);
@@ -416,8 +416,8 @@ void Sound::destroy()
     espeak_Terminate();
   }
 
-  isSoundAlive.store<ATOMIC_RELAXED>(false);
-  isMusicAlive.store<ATOMIC_RELAXED>(false);
+  isSoundAlive.store<RELAXED>(false);
+  isMusicAlive.store<RELAXED>(false);
 
   soundAuxSemaphore.post();
   musicAuxSemaphore.post();
@@ -428,7 +428,7 @@ void Sound::destroy()
   alDeleteSources(1, &musicSource);
   alDeleteBuffers(2, musicBufferIds);
 
-  selectedTrack.store<ATOMIC_RELAXED>(-1);
+  selectedTrack.store<RELAXED>(-1);
   streamedTrack = -1;
 
   OZ_AL_CHECK_ERROR();

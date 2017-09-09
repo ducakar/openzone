@@ -62,7 +62,7 @@ Semaphore::~Semaphore()
 
 int Semaphore::counter() const
 {
-  return descriptor_->counter.load<ATOMIC_RELAXED>();
+  return descriptor_->counter.load<RELAXED>();
 }
 
 bool Semaphore::post(int increment)

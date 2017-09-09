@@ -31,7 +31,7 @@
     * new Mat3 class for 3x3 matrices
     * SIMD support for linear algebra classes
     * new SpinLock and CallOnce classes added for threading
-    * ALSA and OpenSL (Android) back-ends for System::bell(), PulseAudio back-end removed
+    * OpenSL (Android) back-end for System::bell()
     * linear algebra classes added as primitives to streams, Log and Json
     * InputStream, OutputStream and BufferStream merged into Stream
     * Buffer extends List<char>, supports zlib compression

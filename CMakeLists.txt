@@ -75,7 +75,7 @@ elseif(NACL)
 elseif(WIN32)
   set(ENV{PKG_CONFIG_PATH} ${CMAKE_FIND_ROOT_PATH}/lib/pkgconfig)
 else()
-  find_package(ALSA REQUIRED)
+  pkg_check_modules(PULSE_SIMPLE REQUIRED libpulse-simple)
 endif()
 
 find_package(ZLIB REQUIRED)

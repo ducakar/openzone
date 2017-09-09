@@ -36,12 +36,11 @@ namespace oz
  */
 enum MemoryOrder
 {
-  ATOMIC_RELAXED = __ATOMIC_RELAXED,
-  ATOMIC_CONSUME = __ATOMIC_CONSUME,
-  ATOMIC_ACQUIRE = __ATOMIC_ACQUIRE,
-  ATOMIC_RELEASE = __ATOMIC_RELEASE,
-  ATOMIC_ACQ_REL = __ATOMIC_ACQ_REL,
-  ATOMIC_SEQ_CST = __ATOMIC_SEQ_CST
+  RELAXED = __ATOMIC_RELAXED,
+  ACQUIRE = __ATOMIC_ACQUIRE,
+  RELEASE = __ATOMIC_RELEASE,
+  ACQ_REL = __ATOMIC_ACQ_REL,
+  SEQ_CST = __ATOMIC_SEQ_CST
 };
 
 /**
@@ -87,9 +86,9 @@ public:
   template <MemoryOrder MEMORY_ORDER>
   void clear()
   {
-    static_assert(MEMORY_ORDER == ATOMIC_RELAXED ||
-                  MEMORY_ORDER == ATOMIC_RELEASE ||
-                  MEMORY_ORDER == ATOMIC_SEQ_CST,
+    static_assert(MEMORY_ORDER == RELAXED ||
+                  MEMORY_ORDER == RELEASE ||
+                  MEMORY_ORDER == SEQ_CST,
                   "Unsupported memory order");
 
     __atomic_clear(&value, MEMORY_ORDER);
@@ -104,10 +103,9 @@ public:
   template <MemoryOrder MEMORY_ORDER>
   Type load() const
   {
-    static_assert(MEMORY_ORDER == ATOMIC_RELAXED ||
-                  MEMORY_ORDER == ATOMIC_CONSUME ||
-                  MEMORY_ORDER == ATOMIC_ACQUIRE ||
-                  MEMORY_ORDER == ATOMIC_SEQ_CST,
+    static_assert(MEMORY_ORDER == RELAXED ||
+                  MEMORY_ORDER == ACQUIRE ||
+                  MEMORY_ORDER == SEQ_CST,
                   "Unsupported memory order");
 
     return __atomic_load_n(&value, MEMORY_ORDER);
@@ -122,9 +120,9 @@ public:
   template <MemoryOrder MEMORY_ORDER>
   void store(Type desired)
   {
-    static_assert(MEMORY_ORDER == ATOMIC_RELAXED ||
-                  MEMORY_ORDER == ATOMIC_RELEASE ||
-                  MEMORY_ORDER == ATOMIC_SEQ_CST,
+    static_assert(MEMORY_ORDER == RELAXED ||
+                  MEMORY_ORDER == RELEASE ||
+                  MEMORY_ORDER == SEQ_CST,
                   "Unsupported memory order");
 
     __atomic_store_n(&value, desired, MEMORY_ORDER);
@@ -138,11 +136,11 @@ public:
   template <MemoryOrder MEMORY_ORDER>
   Type exchange(Type desired)
   {
-    static_assert(MEMORY_ORDER == ATOMIC_RELAXED ||
-                  MEMORY_ORDER == ATOMIC_ACQUIRE ||
-                  MEMORY_ORDER == ATOMIC_RELEASE ||
-                  MEMORY_ORDER == ATOMIC_ACQ_REL ||
-                  MEMORY_ORDER == ATOMIC_SEQ_CST,
+    static_assert(MEMORY_ORDER == RELAXED ||
+                  MEMORY_ORDER == ACQUIRE ||
+                  MEMORY_ORDER == RELEASE ||
+                  MEMORY_ORDER == ACQ_REL ||
+                  MEMORY_ORDER == SEQ_CST,
                   "Unsupported memory order");
 
     return __atomic_exchange_n(&value, desired, MEMORY_ORDER);

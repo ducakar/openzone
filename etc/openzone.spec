@@ -12,7 +12,7 @@ Source0:        https://github.com/downloads/ducakar/openzone/%{name}-src-%{vers
 Source1:        https://github.com/downloads/ducakar/openzone/%{name}-data-%{version}.tar.xz
 
 BuildRequires:  cmake
-BuildRequires:  alsa-lib-devel
+BuildRequires:  pulseaudio-lib-devel
 BuildRequires:  zlib-devel
 BuildRequires:  physfs-devel
 BuildRequires:  lua-devel
