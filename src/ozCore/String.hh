@@ -36,17 +36,15 @@ namespace oz
 /**
  * String.
  *
- * Class has static storage of `BUFFER_SIZE` bytes, if the string is larger it is stored in a
+ * Class has static storage of `STATIC_SIZE` bytes, if the string is larger it is stored in a
  * dynamically allocated storage. To deallocate storage just assign an empty string.
  */
 class String
 {
-private:
-
-  /// Size of static buffer for short strin optimisation.
-  static const int BUFFER_SIZE = 32 - sizeof(int);
-
 public:
+
+  /// Size of static buffer for short string optimisation.
+  static const int STATIC_SIZE = 32 - sizeof(int);
 
   /// Empty string. Useful when a function needs to return a reference to an empty string.
   static const String EMPTY;
@@ -65,11 +63,11 @@ public:
 
 private:
 
-  int     size_                  = 0;       ///< Length in bytes (without the final null char).
+  int     size_                    = 0;       ///< Length in bytes (without the final null char).
   union
   {
-    char* data_                  = nullptr; ///< Pointer to the current buffer (iff not static).
-    char  baseData_[BUFFER_SIZE];           ///< Static buffer.
+    char* data_                    = nullptr; ///< Pointer to the current buffer (iff not static).
+    char  staticData_[STATIC_SIZE];           ///< Static buffer.
   };
 
   /**
@@ -438,7 +436,7 @@ public:
   OZ_ALWAYS_INLINE
   const char* begin() const
   {
-    return size_ < BUFFER_SIZE ? baseData_ : data_;
+    return size_ < STATIC_SIZE ? staticData_ : data_;
   }
 
   /**
@@ -447,7 +445,7 @@ public:
   OZ_ALWAYS_INLINE
   char* begin()
   {
-    return size_ < BUFFER_SIZE ? baseData_ : data_;
+    return size_ < STATIC_SIZE ? staticData_ : data_;
   }
 
   /**

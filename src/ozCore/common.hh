@@ -340,6 +340,16 @@ inline constexpr const Value& min(const Value& a, const Value& b)
 }
 
 /**
+ * Minimum of more than two arguments.
+ */
+template <typename Value, typename ...Args>
+OZ_ALWAYS_INLINE
+inline constexpr const Value& min(const Value& a, const Value& b, const Args&... args)
+{
+  return min<Args...>(min<Value>(a, b), args...);
+}
+
+/**
  * `a` if `a >= b`, `b` otherwise.
  */
 template <typename Value>
@@ -347,6 +357,15 @@ OZ_ALWAYS_INLINE
 inline constexpr const Value& max(const Value& a, const Value& b)
 {
   return a < b ? b : a;
+}
+/**
+ *Maxiimum of more than two arguments.
+ */
+template <typename Value, typename ...Args>
+OZ_ALWAYS_INLINE
+inline constexpr const Value& max(const Value& a, const Value& b, const Args&... args)
+{
+  return max<Args...>(max<Value>(a, b), args...);
 }
 
 /**

@@ -72,7 +72,7 @@ public:
    * This method always returns "main" for the main thread and "" for other threads that were not
    * started through this class.
    */
-  static const char* name();
+  static const String& name();
 
   /**
    * True iff called from the main thread.

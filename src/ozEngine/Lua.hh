@@ -244,7 +244,7 @@ public:
     /**
      * Read stack values starting with (1-based) index N into given variables.
      */
-    template <int N = 1, typename Head, typename... Tail>
+    template <int N = 1, typename Head, typename ...Tail>
     void to(Head& value, Tail&... tail) const
     {
       read(N, value);
@@ -329,7 +329,7 @@ public:
     /**
      * Push values onto the stack.
      */
-    template <typename Value, typename... Tail>
+    template <typename Value, typename ...Tail>
     void pushValue(const Value& value, const Tail&... tail) const
     {
       pushValue(value);
@@ -433,7 +433,7 @@ public:
     /**
      * Call the current field (must be a function).
      */
-    template <typename... Params>
+    template <typename ...Params>
     Result operator()(const Params&... params) const
     {
       push();

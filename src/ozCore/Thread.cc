@@ -41,8 +41,10 @@
 namespace oz
 {
 
-static const pthread_t          MAIN_THREAD = pthread_self();
-static thread_local const char* threadName  = "";
+static const String               UNKNOWN_NAME = "UNKNOWN";
+static const String               MAIN_NAME    = "MAIN";
+static const pthread_t            MAIN_THREAD  = pthread_self();
+static thread_local const String* threadName   = &UNKNOWN_NAME;
 
 struct Thread::Descriptor
 {
@@ -61,16 +63,11 @@ void* Thread::Descriptor::mainWrapper(void* handle)
   Descriptor* descriptor            = static_cast<Descriptor*>(handle);
   Main*       main                  = descriptor->main;
   void*       data                  = descriptor->data;
-  char        name[NAME_LENGTH + 1];
-
-  if (descriptor->name != nullptr) {
-    strncpy(name, descriptor->name, NAME_LENGTH);
-    name[NAME_LENGTH] = '\0';
-
-    threadName = name;
-  }
+  String      name                  = descriptor->name;
 
   descriptor->lock.unlock();
+
+  threadName = &name;
 
 #if defined(__ANDROID__)
 
@@ -119,9 +116,9 @@ void Thread::sleepUntil(Instant instant)
 # endif
 }
 
-const char* Thread::name()
+const String& Thread::name()
 {
-  return isMain() ? "MAIN" : threadName;
+  return isMain() ? MAIN_NAME : *threadName;
 }
 
 bool Thread::isMain()
@@ -144,9 +141,6 @@ Thread::Thread(const char* name, Main* main, void* data)
   if (pthread_create(&descriptor_->thread, nullptr, Descriptor::mainWrapper, descriptor_) != 0) {
     OZ_ERROR("oz::Thread: Thread creation failed");
   }
-
-  // Wait while the thread accesses name pointer and descriptor during its initialisation.
-  descriptor_->lock.lock();
 }
 
 Thread::~Thread()
@@ -183,6 +177,10 @@ void Thread::detach()
   }
 
   pthread_detach(descriptor_->thread);
+
+  // Wait while the thread accesses name pointer and descriptor during its initialisation. We need this to assure the
+  // descriptor is not freed while the new thread still accesses it.
+  descriptor_->lock.lock();
 
   free(descriptor_);
   descriptor_ = nullptr;

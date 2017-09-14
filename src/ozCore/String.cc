@@ -38,13 +38,13 @@ char* String::resize(int newSize, bool keepContents)
   OZ_ASSERT(size_ >= 0 && newSize >= 0);
   OZ_ASSERT(!keepContents || newSize > size_);
 
-  if (newSize < BUFFER_SIZE) {
-    if (size_ >= BUFFER_SIZE) {
+  if (newSize < STATIC_SIZE) {
+    if (size_ >= STATIC_SIZE) {
       delete[] data_ ;
     }
 
     size_ = newSize;
-    return baseData_;
+    return staticData_;
   }
 
   if (newSize != size_) {
@@ -54,7 +54,7 @@ char* String::resize(int newSize, bool keepContents)
     if (keepContents) {
       memcpy(newBuffer, oldBuffer, min<int>(size_, newSize) + 1);
     }
-    if (size_ >= BUFFER_SIZE) {
+    if (size_ >= STATIC_SIZE) {
       delete[] data_;
     }
 
@@ -278,19 +278,19 @@ String::String(bool b)
 
 String::String(int i, const char* format)
 {
-  size_ = snprintf(baseData_, BUFFER_SIZE, format, i);
+  size_ = snprintf(staticData_, STATIC_SIZE, format, i);
 }
 
 String::String(double d, const char* format)
 {
-  size_ = snprintf(baseData_, BUFFER_SIZE, format, d);
+  size_ = snprintf(staticData_, STATIC_SIZE, format, d);
 }
 
 #pragma GCC diagnostic pop
 
 String::~String()
 {
-  if (size_ >= BUFFER_SIZE) {
+  if (size_ >= STATIC_SIZE) {
     delete[] data_;
   }
 }
@@ -303,8 +303,8 @@ String::String(String&& other) noexcept
 {
   memcpy(this, &other, sizeof(String));
 
-  other.size_         = 0;
-  other.baseData_[0] = '\0';
+  other.size_          = 0;
+  other.staticData_[0] = '\0';
 }
 
 String& String::operator=(const String& other)
@@ -318,14 +318,14 @@ String& String::operator=(const String& other)
 String& String::operator=(String&& other) noexcept
 {
   if (&other != this) {
-    if (size_ >= BUFFER_SIZE) {
+    if (size_ >= STATIC_SIZE) {
       delete[] data_;
     }
 
     memcpy(this, &other, sizeof(String));
 
-    other.size_         = 0;
-    other.baseData_[0] = '\0';
+    other.size_          = 0;
+    other.staticData_[0] = '\0';
   }
   return *this;
 }

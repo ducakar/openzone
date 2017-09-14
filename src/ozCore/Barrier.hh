@@ -45,12 +45,12 @@ private:
 
   struct Descriptor;
 
-  Descriptor* descriptor_ = nullptr; ///< Internal semaphore descriptor.
+  Descriptor* descriptor_ = nullptr; ///< Internal barrier descriptor.
 
 public:
 
   /**
-   * Create and initialise barrier.
+   * Create a barrier for synchonising a given number of threads.
    */
   Barrier(int count);
 
