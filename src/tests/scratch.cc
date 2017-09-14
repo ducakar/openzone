@@ -19,10 +19,157 @@
 
 #include <ozCore/ozCore.hh>
 
+namespace oz
+{
+namespace detail
+{
+
+template <typename Head, typename ...Tail>
+union VarImpl
+{
+  char             head[sizeof(Head)];
+  VarImpl<Tail...> tail;
+};
+
+template <typename Head>
+union VarImpl<Head>
+{
+  char head[sizeof(Head)];
+};
+
+template <typename Elem, typename Head, typename ...Tail>
+struct VarAccessor
+{
+  static constexpr const ubyte TYPE_INDEX = 1 + VarAccessor<Elem, Tail...>::TYPE_INDEX;
+
+  static const Elem& as(const VarImpl<Head, Tail...>& var)
+  {
+    return VarAccessor<Elem, Tail...>::as(var.tail);
+  }
+
+  static Elem& as(VarImpl<Head, Tail...>& var)
+  {
+    return VarAccessor<Elem, Tail...>::as(var.tail);
+  }
+};
+
+template <typename Head, typename ...Tail>
+struct VarAccessor<Head, Head, Tail...>
+{
+  static const ubyte TYPE_INDEX = 0;
+
+  static const Head& as(const VarImpl<Head, Tail...>& var)
+  {
+    return *reinterpret_cast<const Head*>(var.head);
+  }
+
+  static Head& as(VarImpl<Head, Tail...>& var)
+  {
+    return *reinterpret_cast<Head*>(var.head);
+  }
+};
+
+}
+
+template <typename Head, typename ...Tail>
+class Var;
+
+template <typename Head, typename ...Tail>
+class Var
+{
+private:
+
+  detail::VarImpl<Head, Tail...> data_;
+  ubyte                          index_;
+
+public:
+
+  Var() = default;
+
+  template <typename Elem>
+  Var(Elem&& e)
+    : data_{}, index_(0)
+  {
+    ::new(this) Elem(static_cast<Elem&&>(e));
+  }
+
+  template <typename Elem>
+  Elem& operator=(Elem&& e)
+  {
+    as<Elem>() = static_cast<Elem&&>(e);
+  }
+
+  template <typename Elem>
+  int index() const
+  {
+    return detail::VarAccessor<Elem, Head, Tail...>::TYPE_INDEX;
+  }
+
+  template <typename Elem>
+  const Elem& as() const
+  {
+    return detail::VarAccessor<Elem, Head, Tail...>::as(data_);
+  }
+
+  template <typename Elem>
+  Elem& as()
+  {
+    return detail::VarAccessor<Elem, Head, Tail...>::as(data_);
+  }
+};
+
+}
+
 using namespace oz;
+
+struct Foo
+{
+  Foo()
+  {
+    Log() << "Foo()";
+  }
+
+  ~Foo()
+  {
+    Log() << "~Foo()";
+  }
+
+  Foo(const Foo&)
+  {
+    Log() << "Foo(const Foo&)";
+  }
+
+  Foo(Foo&&)
+  {
+    Log() << "Foo(Foo&&)";
+  }
+
+  Foo& operator=(const Foo&)
+  {
+    Log() << "operator=(const Foo&)";
+    return *this;
+  }
+
+  Foo& operator=(Foo&&)
+  {
+    Log() << "operator=(Foo&&)";
+    return *this;
+  }
+
+  char data[50];
+};
+
+struct Bar
+{
+};
+
+static Var<int, char> v(42);
+static auto i = v.as<int>();
 
 int main()
 {
   System::init();
+  Log() << v.index<int>();
+  Log() << v.index<char>();
   return 0;
 }
