@@ -318,7 +318,7 @@ public:
   /**
    * Move constructor, moves storage.
    */
-  HashSet(HashSet&& other) noexcept
+  HashSet(HashSet&& other)
     : pool_(static_cast<Pool<Entry>&&>(other.pool_)), data_(other.data_), capacity_(other.capacity_)
   {
     other.data_     = nullptr;
@@ -344,7 +344,7 @@ public:
   /**
    * Move operator, moves storage.
    */
-  HashSet& operator=(HashSet&& other) noexcept
+  HashSet& operator=(HashSet&& other)
   {
     if (&other != this) {
       clear();

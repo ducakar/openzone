@@ -67,14 +67,14 @@ Font::~Font()
   close();
 }
 
-Font::Font(Font&& f) noexcept
+Font::Font(Font&& f)
   : handle(f.handle), fontHeight(f.fontHeight), fileBuffer(static_cast<Stream&&>(f.fileBuffer))
 {
   f.handle     = nullptr;
   f.fontHeight = 0;
 }
 
-Font& Font::operator=(Font&& f) noexcept
+Font& Font::operator=(Font&& f)
 {
   if (&f != this) {
     close();

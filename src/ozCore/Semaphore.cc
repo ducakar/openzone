@@ -73,7 +73,7 @@ bool Semaphore::post(int increment)
 
   pthread_mutex_lock(&descriptor_->mutex);
 
-  if (descriptor_->counter.value != INT_MAX) {
+  if (descriptor_->counter.value + increment > 0) {
     descriptor_->counter.value += increment;
     isSuccessful = true;
   }

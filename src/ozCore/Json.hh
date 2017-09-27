@@ -261,7 +261,7 @@ public:
   /**
    * Move constructor.
    */
-  Json(Json&& other) noexcept;
+  Json(Json&& other);
 
   /**
    * Copy operator.
@@ -271,7 +271,7 @@ public:
   /**
    * Move operator.
    */
-  Json& operator=(Json&& other) noexcept;
+  Json& operator=(Json&& other);
 
   /**
    * Equality.

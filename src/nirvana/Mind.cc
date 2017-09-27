@@ -55,7 +55,7 @@ Mind::~Mind()
   }
 }
 
-Mind::Mind(Mind&& m) noexcept
+Mind::Mind(Mind&& m)
   : flags(m.flags), side(m.side), bot(m.bot)
 {
   m.flags = 0;
@@ -63,7 +63,7 @@ Mind::Mind(Mind&& m) noexcept
   m.bot   = -1;
 }
 
-Mind& Mind::operator=(Mind&& m) noexcept
+Mind& Mind::operator=(Mind&& m)
 {
   if (&m != this) {
     flags = m.flags;

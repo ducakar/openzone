@@ -64,7 +64,7 @@ Text::~Text()
   clear();
 }
 
-Text::Text(Text&& l) noexcept
+Text::Text(Text&& l)
   : x(l.x), y(l.y), width(l.width), align(l.align), font(l.font), lastHash(l.lastHash),
     texX(l.texX), texY(l.texY), texWidth(l.texWidth), texHeight(l.texHeight), texId(l.texId)
 {
@@ -81,7 +81,7 @@ Text::Text(Text&& l) noexcept
   l.texId     = 0;
 }
 
-Text& Text::operator=(Text&& l) noexcept
+Text& Text::operator=(Text&& l)
 {
   if (&l != this) {
     clear();

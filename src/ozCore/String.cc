@@ -299,7 +299,7 @@ String::String(const String& other)
   : String(other.begin(), other.size_)
 {}
 
-String::String(String&& other) noexcept
+String::String(String&& other)
 {
   memcpy(this, &other, sizeof(String));
 
@@ -315,7 +315,7 @@ String& String::operator=(const String& other)
   return *this;
 }
 
-String& String::operator=(String&& other) noexcept
+String& String::operator=(String&& other)
 {
   if (&other != this) {
     if (size_ >= STATIC_SIZE) {

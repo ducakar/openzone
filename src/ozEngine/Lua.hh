@@ -125,12 +125,12 @@ public:
     /**
      * Move constructor.
      */
-    Result(Result&& other) noexcept;
+    Result(Result&& other);
 
     /**
      * Move operator.
      */
-    Result& operator=(Result&& other) noexcept;
+    Result& operator=(Result&& other);
 
     /**
      * Return the first value on the stack as a bool.
@@ -562,12 +562,12 @@ public:
   /**
    * Move constructor.
    */
-  Lua(Lua&& other) noexcept;
+  Lua(Lua&& other);
 
   /**
    * Move operator.
    */
-  Lua& operator=(Lua&& other) noexcept;
+  Lua& operator=(Lua&& other);
 
   /**
    * Execute a chunk of code.

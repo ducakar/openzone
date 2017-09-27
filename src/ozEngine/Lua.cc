@@ -76,13 +76,13 @@ Lua::Result::~Result()
   }
 }
 
-Lua::Result::Result(Result&& other) noexcept
+Lua::Result::Result(Result&& other)
   : l_(other.l_)
 {
   other.l_ = nullptr;
 }
 
-Lua::Result& Lua::Result::operator=(Lua::Result&& other) noexcept
+Lua::Result& Lua::Result::operator=(Lua::Result&& other)
 {
   if (&other != this) {
     l_ = other.l_;
@@ -524,13 +524,13 @@ Lua::~Lua()
   destroy();
 }
 
-Lua::Lua(Lua&& other) noexcept
+Lua::Lua(Lua&& other)
   : l_(other.l_)
 {
   other.l_ = nullptr;
 }
 
-Lua& Lua::operator=(Lua&& other) noexcept
+Lua& Lua::operator=(Lua&& other)
 {
   if (&other != this) {
     l_ = other.l_;

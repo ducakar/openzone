@@ -323,7 +323,7 @@ public:
   /**
    * Move constructor.
    */
-  String(String&& other) noexcept;
+  String(String&& other);
 
   /**
    * Copy operator.
@@ -335,7 +335,7 @@ public:
   /**
    * Move operator.
    */
-  String& operator=(String&& other) noexcept;
+  String& operator=(String&& other);
 
   /**
    * Replace current string with a given C string (nullptr is permitted, equals "").

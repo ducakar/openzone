@@ -100,12 +100,12 @@ public:
   /**
    * Move constructor.
    */
-  SharedLib(SharedLib&& l) noexcept;
+  SharedLib(SharedLib&& l);
 
   /**
    * Move operator.
    */
-  SharedLib& operator=(SharedLib&& l) noexcept;
+  SharedLib& operator=(SharedLib&& l);
 
   /**
    * True iff successfully opened.

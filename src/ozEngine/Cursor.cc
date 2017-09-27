@@ -149,7 +149,7 @@ Cursor::~Cursor()
   destroy();
 }
 
-Cursor::Cursor(Cursor&& other) noexcept
+Cursor::Cursor(Cursor&& other)
   : mode_(other.mode_), frame_(other.frame_), lastFrame_(-1), frameDuration_(other.frameDuration_),
     images_(static_cast<List<Image>&&>(other.images_))
 {
@@ -159,7 +159,7 @@ Cursor::Cursor(Cursor&& other) noexcept
   other.frameDuration_ = Duration::ZERO;
 }
 
-Cursor& Cursor::operator=(Cursor&& other) noexcept
+Cursor& Cursor::operator=(Cursor&& other)
 {
   if (&other != this) {
     destroy();

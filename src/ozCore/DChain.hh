@@ -118,7 +118,7 @@ public:
   /**
    * Move constructor, rebinds elements to the new chain.
    */
-  DChain(DChain&& other) noexcept
+  DChain(DChain&& other)
     : Chain<Elem, INDEX>(static_cast<DChain&&>(other)), last_(other.last_)
   {
     other.last_ = nullptr;
@@ -127,7 +127,7 @@ public:
   /**
    * Move operator, rebinds elements to the destination chain.
    */
-  DChain& operator=(DChain&& other) noexcept
+  DChain& operator=(DChain&& other)
   {
     if (&other != this) {
       first_ = other.first_;

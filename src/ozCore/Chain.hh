@@ -169,7 +169,7 @@ public:
   /**
    * Move constructor, rebinds elements to the new chain.
    */
-  Chain(Chain&& other) noexcept
+  Chain(Chain&& other)
     : first_(other.first_)
   {
     other.first_ = nullptr;
@@ -178,7 +178,7 @@ public:
   /**
    * Move operator, rebinds elements to the destination chain.
    */
-  Chain& operator=(Chain&& other) noexcept
+  Chain& operator=(Chain&& other)
   {
     if (&other != this) {
       first_ = other.first_;

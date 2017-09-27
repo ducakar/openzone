@@ -251,7 +251,7 @@ File::File(const String& path)
   : String(path)
 {}
 
-File::File(String&& path) noexcept
+File::File(String&& path)
   : String(static_cast<String&&>(path))
 {}
 
@@ -260,7 +260,7 @@ File& File::operator=(const String& path)
   return static_cast<File&>(String::operator=(path));
 }
 
-File& File::operator=(String&& path) noexcept
+File& File::operator=(String&& path)
 {
   return static_cast<File&>(String::operator=(static_cast<String&&>(path)));
 }

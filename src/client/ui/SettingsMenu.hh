@@ -70,7 +70,7 @@ protected:
 public:
 
   SettingsMenu();
-  ~SettingsMenu();
+  ~SettingsMenu() override;
 
 };
 

@@ -65,7 +65,7 @@ struct Foo : oz::DChainNode<Foo>
     OZ_CHECK(allowCopy);
   }
 
-  Foo(Foo&& f) noexcept
+  Foo(Foo&& f)
     : value(f.value)
   {
     OZ_CHECK(allowMove);
@@ -87,7 +87,7 @@ struct Foo : oz::DChainNode<Foo>
     return *this;
   }
 
-  Foo& operator=(Foo&& f) noexcept
+  Foo& operator=(Foo&& f)
   {
     OZ_CHECK(allowMove);
 

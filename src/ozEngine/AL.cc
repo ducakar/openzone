@@ -371,7 +371,7 @@ AL::Decoder::~Decoder()
   delete stream_;
 }
 
-AL::Decoder::Decoder(Decoder&& other) noexcept
+AL::Decoder::Decoder(Decoder&& other)
   : samples_(other.samples_), size_(other.size_), capacity_(other.capacity_),
     format_(other.format_), rate_(other.rate_), stream_(other.stream_)
 {
@@ -383,7 +383,7 @@ AL::Decoder::Decoder(Decoder&& other) noexcept
   other.stream_   = nullptr;
 }
 
-AL::Decoder& AL::Decoder::operator=(AL::Decoder&& other) noexcept
+AL::Decoder& AL::Decoder::operator=(AL::Decoder&& other)
 {
   if (&other != this) {
     delete[] samples_;

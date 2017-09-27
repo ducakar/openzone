@@ -116,12 +116,12 @@ public:
   /**
    * Move constructor.
    */
-  Cursor(Cursor&& other) noexcept;
+  Cursor(Cursor&& other);
 
   /**
    * Move operator.
    */
-  Cursor& operator=(Cursor&& other) noexcept;
+  Cursor& operator=(Cursor&& other);
 
   /**
    * True iff loaded.
