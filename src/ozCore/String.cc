@@ -343,6 +343,14 @@ String String::format(const char* s, ...)
   return String(localBuffer, length);
 }
 
+String String::vformat(const char* s, va_list ap)
+{
+  char localBuffer[LOCAL_BUFFER_SIZE];
+  int  length = vsnprintf(localBuffer, LOCAL_BUFFER_SIZE, s, ap);
+
+  return String(localBuffer, length);
+}
+
 String String::si(double e, const char* format)
 {
   char prefixes[] = "m kMG";

@@ -382,9 +382,10 @@ void GameStage::unload()
 
   ulong64  ticks                 = timer.ticks - startTicks;
   Duration soundMicros           = sound.effectsDuration + sound.musicDuration;
-  Duration renderMicros          = render.prepareDuration + render.caelumDuration + render.terraDuration +
-                                   render.meshesDuration + render.miscDuration +
-                                   render.postprocessDuration + render.uiDuration + render.swapDuration;
+  Duration renderMicros          = render.prepareDuration + render.caelumDuration +
+                                   render.terraDuration + render.meshesDuration +
+                                   render.miscDuration + render.postprocessDuration +
+                                   render.uiDuration + render.swapDuration;
   float    sleepTime             = sleepDuration.t();
   float    uiTime                = uiDuration.t();
   float    loaderTime            = loaderDuration.t();

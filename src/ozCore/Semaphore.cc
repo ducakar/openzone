@@ -33,15 +33,19 @@ namespace oz
 
 struct Semaphore::Descriptor
 {
-  pthread_mutex_t mutex   = PTHREAD_MUTEX_INITIALIZER;
-  pthread_cond_t  cond    = PTHREAD_COND_INITIALIZER;
-  Atomic<int>     counter;
+  pthread_mutex_t mutex    = PTHREAD_MUTEX_INITIALIZER;
+  pthread_cond_t  cond     = PTHREAD_COND_INITIALIZER;
+  Atomic<uint>    value;
+  uint            maxValue;
 };
 
-Semaphore::Semaphore(int value)
+Semaphore::Semaphore(int initialValue, int maxValue)
 {
-  if (value < 0) {
-    OZ_ERROR("oz::Semaphore: Initial counter value must be >= 0");
+  if (initialValue < 0) {
+    OZ_ERROR("oz::Semaphore: Initial value value must be >= 0");
+  }
+  if (maxValue <= 0) {
+    OZ_ERROR("oz::Semaphore: Maximum value must be > 0");
   }
 
   descriptor_ = new(malloc(sizeof(Descriptor))) Descriptor;
@@ -49,7 +53,8 @@ Semaphore::Semaphore(int value)
     OZ_ERROR("oz::Semaphore: Descriptor initialisation failed");
   }
 
-  descriptor_->counter.value = value;
+  descriptor_->value.value = initialValue;
+  descriptor_->maxValue    = maxValue;
 }
 
 Semaphore::~Semaphore()
@@ -62,7 +67,7 @@ Semaphore::~Semaphore()
 
 int Semaphore::counter() const
 {
-  return descriptor_->counter.load<RELAXED>();
+  return descriptor_->value.load<RELAXED>();
 }
 
 bool Semaphore::post(int increment)
@@ -73,8 +78,8 @@ bool Semaphore::post(int increment)
 
   pthread_mutex_lock(&descriptor_->mutex);
 
-  if (descriptor_->counter.value + increment > 0) {
-    descriptor_->counter.value += increment;
+  if (descriptor_->value.value + uint(increment) <= descriptor_->maxValue) {
+    descriptor_->value.value += increment;
     isSuccessful = true;
   }
 
@@ -97,10 +102,10 @@ void Semaphore::wait(int decrement)
 
   pthread_mutex_lock(&descriptor_->mutex);
 
-  while (descriptor_->counter.value < decrement) {
+  while (descriptor_->value.value < uint(decrement)) {
     pthread_cond_wait(&descriptor_->cond, &descriptor_->mutex);
   }
-  descriptor_->counter.value -= decrement;
+  descriptor_->value.value -= decrement;
 
   pthread_mutex_unlock(&descriptor_->mutex);
 }
@@ -109,10 +114,10 @@ void Semaphore::waitAll()
 {
   pthread_mutex_lock(&descriptor_->mutex);
 
-  while (descriptor_->counter.value != 0) {
+  while (descriptor_->value.value != 0) {
     pthread_cond_wait(&descriptor_->cond, &descriptor_->mutex);
   }
-  descriptor_->counter.value = 0;
+  descriptor_->value.value = 0;
 
   pthread_mutex_unlock(&descriptor_->mutex);
 }
@@ -125,8 +130,8 @@ bool Semaphore::tryWait(int decrement)
 
   pthread_mutex_lock(&descriptor_->mutex);
 
-  if (descriptor_->counter.value < decrement) {
-    descriptor_->counter.value -= decrement;
+  if (descriptor_->value.value < uint(decrement)) {
+    descriptor_->value.value -= decrement;
     hasSucceeded = true;
   }
 
@@ -141,8 +146,8 @@ bool Semaphore::tryWaitAll()
 
   pthread_mutex_lock(&descriptor_->mutex);
 
-  if (descriptor_->counter.value != 0) {
-    descriptor_->counter.value = 0;
+  if (descriptor_->value.value != 0) {
+    descriptor_->value.value = 0;
     hasSucceeded = true;
   }
 

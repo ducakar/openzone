@@ -39,7 +39,7 @@ namespace oz
  * Besides the ordinary semaphore functions it also provides `waitAll()` and `tryWaitAll()` methods
  * that zero the counter so it can also be used as a binary semaphore.
  *
- * The couter is clamped to [0, INT_MAX].
+ * The couter is clamped to [0, maxValue].
  */
 class Semaphore
 {
@@ -54,7 +54,7 @@ public:
   /**
    * Create and initialise semaphore.
    */
-  Semaphore(int value = 0);
+  Semaphore(int initialValue = 0, int maxValue = INT_MAX);
 
   /**
    * Destroy semaphore.
@@ -80,7 +80,7 @@ public:
    * Atomically increment counter and signal waiting threads.
    *
    * If counter needs to be increased past `INT_MAX` this method fails with counter remaining intact
-   * and no signals are sent to waiting threads.
+   * and no signals are sent to the waiting threads.
    *
    * @return Counter has been successfully increased.
    */

@@ -126,21 +126,23 @@ bool Thread::isMain()
   return pthread_equal(pthread_self(), MAIN_THREAD);
 }
 
-Thread::Thread(const char* name, Main* main, void* data)
+Thread::Descriptor* Thread::start(const char* name, Main* main, void* data)
 {
-  descriptor_ = new(malloc(sizeof(Descriptor))) Descriptor;
-  if (descriptor_ == nullptr) {
+  Descriptor* descriptor = new(malloc(sizeof(Descriptor))) Descriptor;
+  if (descriptor == nullptr) {
     OZ_ERROR("oz::Thread: Descriptor allocation failed");
   }
 
-  descriptor_->name = name;
-  descriptor_->main = main;
-  descriptor_->data = data;
-  descriptor_->lock.lock();
+  descriptor->name = name;
+  descriptor->main = main;
+  descriptor->data = data;
+  descriptor->lock.lock();
 
-  if (pthread_create(&descriptor_->thread, nullptr, Descriptor::mainWrapper, descriptor_) != 0) {
+  if (pthread_create(&descriptor->thread, nullptr, Descriptor::mainWrapper, descriptor) != 0) {
     OZ_ERROR("oz::Thread: Thread creation failed");
   }
+
+  return descriptor;
 }
 
 Thread::~Thread()

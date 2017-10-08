@@ -355,6 +355,12 @@ public:
   static String format(const char* s, ...);
 
   /**
+   * Create a string in vsprintf-like way.
+   */
+  OZ_PRINTF_FORMAT(1, 0)
+  static String vformat(const char* s, va_list ap);
+
+  /**
    * Generate a string representing the number and optionally add a SI unit prefix.
    *
    * It adds a space after the number and, when neccessary, it multiplies the number with an
