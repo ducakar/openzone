@@ -28,7 +28,7 @@
 #include <cstring>
 
 #define OZ_PARSE_ERROR(charBias, message) \
-  OZ_ERROR("oz::Json: " message " at %s:%d:%d", path, line, column + (charBias));
+  OZ_ERROR("oz::Json: " message " at %s:%d:%d", path_, line_, column_ + (charBias));
 
 static_assert(sizeof(double) >= sizeof(void*),
               "Pointer must fit into double for internal oz::Json union to work properly");
@@ -53,7 +53,7 @@ struct ObjectData
   Map<String, Json> map;
 };
 
-struct Json::Parser
+class Json::Parser
 {
 private:
 
@@ -64,34 +64,38 @@ private:
     MULTILINE_COMMENT
   };
 
-  Stream*     is;
-  String      lastComment;
-  const char* path;
-  int         line;
-  int         column;
-  int         oldLine;
-  int         oldColumn;
+  Stream*     is_;
+  const char* path_;
+  String      lastComment_;
+  int         line_        = 1;
+  int         column_      = 0;
+  int         oldLine_     = 1;
+  int         oldColumn_   = 0;
 
-public:
+private:
+
+  explicit Parser(Stream* is, const char* path)
+    : is_(is), path_(path)
+  {}
 
   OZ_INTERNAL
   char readChar()
   {
-    if (is->available() == 0) {
+    if (is_->available() == 0) {
       OZ_PARSE_ERROR(0, "Unexpected end of file");
     }
 
-    oldLine   = line;
-    oldColumn = column;
+    oldLine_   = line_;
+    oldColumn_ = column_;
 
-    char ch = is->readChar();
+    char ch = is_->readChar();
 
     if (ch == '\n') {
-      ++line;
-      column = 0;
+      ++line_;
+      column_ = 0;
     }
     else {
-      ++column;
+      ++column_;
     }
     return ch;
   }
@@ -99,57 +103,13 @@ public:
   OZ_INTERNAL
   void backChar()
   {
-    OZ_ASSERT(line != oldLine || column != oldColumn);
+    OZ_ASSERT(line_ != oldLine_ || column_ != oldColumn_);
 
-    is->seek(is->tell() - 1);
+    is_->seek(is_->tell() - 1);
 
-    line   = oldLine;
-    column = oldColumn;
+    line_   = oldLine_;
+    column_ = oldColumn_;
   }
-
-  OZ_INTERNAL
-  static void setAccessed(Json* value)
-  {
-    value->wasAccessed_ = true;
-
-    switch (value->type_) {
-      default: {
-        break;
-      }
-      case ARRAY: {
-        List<Json>& list = static_cast<ArrayData*>(value->data_)->list;
-
-        for (Json& i : list) {
-          setAccessed(&i);
-        }
-        break;
-      }
-      case OBJECT: {
-        Map<String, Json>& map = static_cast<ObjectData*>(value->data_)->map;
-
-        for (auto& i : map) {
-          setAccessed(&i.value);
-        }
-        break;
-      }
-    }
-  }
-
-  OZ_INTERNAL
-  static Json parse(Stream* is, const char* path)
-  {
-    Parser parser(is, path);
-
-    Json root = parser.parseValue();
-
-    parser.finish();
-    return root;
-  }
-
-  OZ_INTERNAL
-  explicit Parser(Stream* is_, const char* path_)
-    : is(is_), path(path_), line(1), column(0), oldLine(1), oldColumn(0)
-  {}
 
   OZ_INTERNAL
   char skipBlanks()
@@ -199,7 +159,7 @@ public:
       }
 
       if (!commentBuffer.isEmpty()) {
-        lastComment = String::trim(commentBuffer.begin());
+        lastComment_ = String::trim(commentBuffer.begin());
       }
       return ch2;
     }
@@ -254,7 +214,7 @@ public:
 
       chars.add(ch);
     }
-    while (is->available() != 0);
+    while (is_->available() != 0);
 
     if (ch != '"') {
       OZ_PARSE_ERROR(0, "End of file while looking for end of string (Is ending \" missing?)");
@@ -262,74 +222,6 @@ public:
     chars.add('\0');
 
     return String(chars.begin(), chars.size() - 1);
-  }
-
-  OZ_INTERNAL
-  Json parseValue()
-  {
-    char ch = skipBlanks();
-
-    switch (ch) {
-      case 'n': {
-        if (is->available() < 3 || readChar() != 'u' || readChar() != 'l' || readChar() != 'l') {
-          OZ_PARSE_ERROR(-3, "Unknown value type");
-        }
-
-        return Json().copyComment(lastComment);
-      }
-      case 'f': {
-        if (is->available() < 4 || readChar() != 'a' || readChar() != 'l' || readChar() != 's' ||
-            readChar() != 'e')
-        {
-          OZ_PARSE_ERROR(-4, "Unknown value type");
-        }
-
-        return Json(false).copyComment(lastComment);
-      }
-      case 't': {
-        if (is->available() < 4 || readChar() != 'r' || readChar() != 'u' || readChar() != 'e') {
-          OZ_PARSE_ERROR(-3, "Unknown value type");
-        }
-
-        return Json(true).copyComment(lastComment);
-      }
-      default: { // Number.
-        SList<char, 32> chars;
-        chars.add(ch);
-
-        while (is->available() != 0) {
-          ch = readChar();
-
-          if (String::isBlank(ch) || ch == ',' || ch == '}' || ch == ']') {
-            backChar();
-            break;
-          }
-          if (chars.size() >= 31) {
-            OZ_PARSE_ERROR(-chars.size(), "Too long number");
-          }
-          chars.add(ch);
-        }
-        chars.add('\0');
-
-        const char* end;
-        double number = String::parseDouble(chars.begin(), &end);
-
-        if (end == chars.begin()) {
-          OZ_PARSE_ERROR(-chars.size(), "Unknown value type");
-        }
-
-        return Json(number).copyComment(lastComment);
-      }
-      case '"': {
-        return Json(parseString()).copyComment(lastComment);
-      }
-      case '{': {
-        return parseObject().copyComment(static_cast<String&&>(lastComment));
-      }
-      case '[': {
-        return parseArray().copyComment(static_cast<String&&>(lastComment));
-      }
-    }
   }
 
   OZ_INTERNAL
@@ -346,7 +238,7 @@ public:
     while (ch != ']') {
       list.add(parseValue());
 
-      lastComment = "";
+      lastComment_ = "";
       ch = skipBlanks();
 
       if (ch != ',' && ch != ']') {
@@ -383,7 +275,7 @@ public:
 
       map.add(static_cast<String&&>(key), parseValue());
 
-      lastComment = "";
+      lastComment_ = "";
       ch = skipBlanks();
 
       if (ch != ',' && ch != '}') {
@@ -395,9 +287,77 @@ public:
   }
 
   OZ_INTERNAL
+  Json parseValue()
+  {
+    char ch = skipBlanks();
+
+    switch (ch) {
+      case 'n': {
+        if (is_->available() < 3 || readChar() != 'u' || readChar() != 'l' || readChar() != 'l') {
+          OZ_PARSE_ERROR(-3, "Unknown value type");
+        }
+
+        return Json().copyComment(lastComment_);
+      }
+      case 'f': {
+        if (is_->available() < 4 || readChar() != 'a' || readChar() != 'l' || readChar() != 's' ||
+            readChar() != 'e')
+        {
+          OZ_PARSE_ERROR(-4, "Unknown value type");
+        }
+
+        return Json(false).copyComment(lastComment_);
+      }
+      case 't': {
+        if (is_->available() < 4 || readChar() != 'r' || readChar() != 'u' || readChar() != 'e') {
+          OZ_PARSE_ERROR(-3, "Unknown value type");
+        }
+
+        return Json(true).copyComment(lastComment_);
+      }
+      default: { // Number.
+        SList<char, 32> chars;
+        chars.add(ch);
+
+        while (is_->available() != 0) {
+          ch = readChar();
+
+          if (String::isBlank(ch) || ch == ',' || ch == '}' || ch == ']') {
+            backChar();
+            break;
+          }
+          if (chars.size() >= 31) {
+            OZ_PARSE_ERROR(-chars.size(), "Too long number");
+          }
+          chars.add(ch);
+        }
+        chars.add('\0');
+
+        const char* end;
+        double number = String::parseDouble(chars.begin(), &end);
+
+        if (end == chars.begin()) {
+          OZ_PARSE_ERROR(-chars.size(), "Unknown value type");
+        }
+
+        return Json(number).copyComment(lastComment_);
+      }
+      case '"': {
+        return Json(parseString()).copyComment(lastComment_);
+      }
+      case '{': {
+        return parseObject().copyComment(static_cast<String&&>(lastComment_));
+      }
+      case '[': {
+        return parseArray().copyComment(static_cast<String&&>(lastComment_));
+      }
+    }
+  }
+
+  OZ_INTERNAL
   void finish()
   {
-    while (is->available() != 0) {
+    while (is_->available() != 0) {
       char ch = readChar();
 
       if (!String::isBlank(ch)) {
@@ -405,71 +365,201 @@ public:
       }
     }
   }
+
+public:
+
+  OZ_INTERNAL
+  static Json parse(Stream* is, const char* path)
+  {
+    Parser parser(is, path);
+
+    Json root = parser.parseValue();
+
+    parser.finish();
+    return root;
+  }
+
 };
 
-struct Json::Formatter
+class Json::Formatter
 {
-  Stream*       os;
-  const Format* format;
-  int           lineEndLength;
-  int           indentLevel;
+private:
+
+  Stream*       os_;
+  const Format* format_;
+  int           indentLevel_ = 0;
+
+private:
+
+  OZ_INTERNAL
+  explicit Formatter(Stream* os, const Format* format)
+    : os_(os), format_(format)
+  {}
 
   OZ_INTERNAL
   int writeString(const String& string)
   {
     int length = string.length() + 2;
 
-    os->writeChar('"');
+    os_->writeChar('"');
 
     for (int i = 0; i < string.length(); ++i) {
       char ch = string[i];
 
       switch (ch) {
         case '\\': {
-          os->write("\\\\", 2);
+          os_->write("\\\\", 2);
           ++length;
           break;
         }
         case '"': {
-          os->write("\\\"", 2);
+          os_->write("\\\"", 2);
           ++length;
           break;
         }
         case '\b': {
-          os->write("\\b", 2);
+          os_->write("\\b", 2);
           ++length;
           break;
         }
         case '\f': {
-          os->write("\\f", 2);
+          os_->write("\\f", 2);
           ++length;
           break;
         }
         case '\n': {
-          os->write("\\n", 2);
+          os_->write("\\n", 2);
           ++length;
           break;
         }
         case '\r': {
-          os->write("\\r", 2);
+          os_->write("\\r", 2);
           ++length;
           break;
         }
         case '\t': {
-          os->write("\\t", 2);
+          os_->write("\\t", 2);
           ++length;
           break;
         }
         default: {
-          os->writeChar(ch);
+          os_->writeChar(ch);
           break;
         }
       }
     }
 
-    os->writeChar('"');
+    os_->writeChar('"');
 
     return length;
+  }
+
+  OZ_INTERNAL
+  void writeArray(const Json& value)
+  {
+    const List<Json>& list = static_cast<const ArrayData*>(value.data_)->list;
+
+    if (list.isEmpty()) {
+      os_->write("[]", 2);
+      return;
+    }
+
+    os_->writeChar('[');
+    os_->writeString(format_->lineEnd);
+
+    ++indentLevel_;
+
+    for (int i = 0; i < list.size(); ++i) {
+      if (i != 0) {
+        os_->writeChar(',');
+        os_->writeString(format_->lineEnd);
+      }
+
+      for (int j = 0; j < indentLevel_; ++j) {
+        os_->write("  ", 2);
+      }
+
+      writeValue(list[i]);
+    }
+
+    os_->writeString(format_->lineEnd);
+
+    --indentLevel_;
+    for (int j = 0; j < indentLevel_; ++j) {
+      os_->write("  ", 2);
+    }
+
+    os_->writeChar(']');
+  }
+
+  OZ_INTERNAL
+  void writeObject(const Json& value)
+  {
+    const Map<String, Json>& map = static_cast<const ObjectData*>(value.data_)->map;
+
+    if (map.isEmpty()) {
+      os_->write("{}", 2);
+      return;
+    }
+
+    os_->writeChar('{');
+    os_->writeString(format_->lineEnd);
+
+    ++indentLevel_;
+
+    for (int i = 0; i < map.size(); ++i) {
+      if (i != 0) {
+        os_->writeChar(',');
+        os_->writeString(format_->lineEnd);
+      }
+
+      for (int j = 0; j < indentLevel_; ++j) {
+        os_->write("  ", 2);
+      }
+
+      const String& entryKey   = map[i].key;
+      const Json&   entryValue = map[i].value;
+
+      if (entryValue.comment_ != nullptr) {
+        os_->write("// ", 3);
+        os_->write(entryValue.comment_, String::length(entryValue.comment_));
+        os_->writeChar('\n');
+
+        for (int j = 0; j < indentLevel_; ++j) {
+          os_->write("  ", 2);
+        }
+      }
+
+      int keyLength = writeString(entryKey);
+      os_->writeChar(':');
+
+      if (entryValue.type_ == ARRAY || entryValue.type_ == OBJECT) {
+        os_->writeString(format_->lineEnd);
+
+        for (int j = 0; j < indentLevel_; ++j) {
+          os_->write("  ", 2);
+        }
+      }
+      else {
+        int column = indentLevel_ * 2 + keyLength + 1;
+
+        // Align to 24-th column.
+        for (int j = column; j < format_->alignmentColumn; ++j) {
+          os_->writeChar(' ');
+        }
+      }
+
+      writeValue(entryValue);
+    }
+
+    os_->writeString(format_->lineEnd);
+
+    --indentLevel_;
+    for (int j = 0; j < indentLevel_; ++j) {
+      os_->write("  ", 2);
+    }
+
+    os_->writeChar('}');
   }
 
   OZ_INTERNAL
@@ -477,21 +567,21 @@ struct Json::Formatter
   {
     switch (value.type_) {
       case NIL: {
-        os->write("null", 4);
+        os_->write("null", 4);
         break;
       }
       case BOOLEAN: {
         if (value.boolean_) {
-          os->write("true", 4);
+          os_->write("true", 4);
         }
         else {
-          os->write("false", 5);
+          os_->write("false", 5);
         }
         break;
       }
       case NUMBER: {
-        String s = String(value.number_, format->numberFormat);
-        os->write(s, s.length());
+        String s = String(value.number_, format_->numberFormat);
+        os_->write(s, s.length());
         break;
       }
       case STRING: {
@@ -511,113 +601,17 @@ struct Json::Formatter
     }
   }
 
-  OZ_INTERNAL
-  void writeArray(const Json& value)
-  {
-    const List<Json>& list = static_cast<const ArrayData*>(value.data_)->list;
-
-    if (list.isEmpty()) {
-      os->write("[]", 2);
-      return;
-    }
-
-    os->writeChar('[');
-    os->write(format->lineEnd, lineEndLength);
-
-    ++indentLevel;
-
-    for (int i = 0; i < list.size(); ++i) {
-      if (i != 0) {
-        os->writeChar(',');
-        os->write(format->lineEnd, lineEndLength);
-      }
-
-      for (int j = 0; j < indentLevel; ++j) {
-        os->write("  ", 2);
-      }
-
-      writeValue(list[i]);
-    }
-
-    os->write(format->lineEnd, lineEndLength);
-
-    --indentLevel;
-    for (int j = 0; j < indentLevel; ++j) {
-      os->write("  ", 2);
-    }
-
-    os->writeChar(']');
-  }
+public:
 
   OZ_INTERNAL
-  void writeObject(const Json& value)
+  static void write(const Json& value, Stream* os, const Format* format)
   {
-    const Map<String, Json>& map = static_cast<const ObjectData*>(value.data_)->map;
+    Formatter formatter(os, format);
 
-    if (map.isEmpty()) {
-      os->write("{}", 2);
-      return;
-    }
-
-    os->writeChar('{');
-    os->write(format->lineEnd, lineEndLength);
-
-    ++indentLevel;
-
-    for (int i = 0; i < map.size(); ++i) {
-      if (i != 0) {
-        os->writeChar(',');
-        os->write(format->lineEnd, lineEndLength);
-      }
-
-      for (int j = 0; j < indentLevel; ++j) {
-        os->write("  ", 2);
-      }
-
-      const String& entryKey   = map[i].key;
-      const Json&   entryValue = map[i].value;
-
-      if (entryValue.comment_ != nullptr) {
-        os->write("// ", 3);
-        os->write(entryValue.comment_, String::length(entryValue.comment_));
-        os->writeChar('\n');
-
-        for (int j = 0; j < indentLevel; ++j) {
-          os->write("  ", 2);
-        }
-      }
-
-      int keyLength = writeString(entryKey);
-      os->writeChar(':');
-
-      if (entryValue.type_ == ARRAY || entryValue.type_ == OBJECT) {
-        os->write(format->lineEnd, lineEndLength);
-
-        for (int j = 0; j < indentLevel; ++j) {
-          os->write("  ", 2);
-        }
-      }
-      else {
-        int column = indentLevel * 2 + keyLength + 1;
-
-        // Align to 24-th column.
-        for (int j = column; j < format->alignmentColumn; ++j) {
-          os->writeChar(' ');
-        }
-      }
-
-      writeValue(entryValue);
-    }
-
-    os->write(format->lineEnd, lineEndLength);
-
-    --indentLevel;
-    for (int j = 0; j < indentLevel; ++j) {
-      os->write("  ", 2);
-    }
-
-    os->writeChar('}');
+    formatter.writeValue(value);
+    os->writeString(format->lineEnd);
   }
+
 };
 
 static char* cloneString(const char* s)
@@ -1324,7 +1318,6 @@ String Json::toString() const
 String Json::toFormattedString(const Format& format) const
 {
   Stream    os(0);
-  Formatter formatter = {&os, &format, String::length(format.lineEnd), 0};
 
   if (comment_ != nullptr) {
     os.write("// ", 3);
@@ -1332,8 +1325,7 @@ String Json::toFormattedString(const Format& format) const
     os.writeChar('\n');
   }
 
-  formatter.writeValue(*this);
-  os.write(format.lineEnd, formatter.lineEndLength);
+  Formatter::write(*this, &os, &format);
 
   return String(os.begin(), os.tell());
 }
@@ -1352,7 +1344,6 @@ bool Json::load(const File& file)
 bool Json::save(const File& file, const Format& format) const
 {
   Stream os(0);
-  Formatter formatter = {&os, &format, String::length(format.lineEnd), 0};
 
   if (comment_ != nullptr) {
     os.write("// ", 3);
@@ -1360,8 +1351,7 @@ bool Json::save(const File& file, const Format& format) const
     os.writeChar('\n');
   }
 
-  formatter.writeValue(*this);
-  os.write(format.lineEnd, formatter.lineEndLength);
+  Formatter::write(*this, &os, &format);
 
   return file.write(os);
 }
