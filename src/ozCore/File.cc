@@ -51,8 +51,8 @@ struct Stat
   };
 
   Type   type = MISSING;
-  long64 size = -1;
-  long64 time = 0;
+  int64 size = -1;
+  int64 time = 0;
 
   OZ_INTERNAL
   explicit Stat(const char* path)
@@ -80,12 +80,12 @@ struct Stat
       if (::stat(path, &statInfo) == 0) {
         if (S_ISDIR(statInfo.st_mode)) {
           type = DIRECTORY;
-          time = max<long64>(statInfo.st_ctime, statInfo.st_mtime);
+          time = max<int64>(statInfo.st_ctime, statInfo.st_mtime);
         }
         else if (S_ISREG(statInfo.st_mode)) {
           type = FILE;
           size = statInfo.st_size;
-          time = max<long64>(statInfo.st_ctime, statInfo.st_mtime);
+          time = max<int64>(statInfo.st_ctime, statInfo.st_mtime);
         }
       }
     }
@@ -276,12 +276,12 @@ bool File::isDirectory() const
   return Stat(begin()).type == Stat::DIRECTORY;
 }
 
-long64 File::size() const
+int64 File::size() const
 {
   return Stat(begin()).size;
 }
 
-long64 File::time() const
+int64 File::time() const
 {
   return Stat(begin()).time;
 }
@@ -442,7 +442,7 @@ File& File::operator/=(const char* pathElem)
   return *this;
 }
 
-bool File::read(char* buffer, long64* size) const
+bool File::read(char* buffer, int64* size) const
 {
   if (isVirtual()) {
     PHYSFS_File* file = PHYSFS_openRead(begin() + 1);
@@ -481,9 +481,9 @@ bool File::read(char* buffer, long64* size) const
 
 Stream File::read(Endian::Order order) const
 {
-  long64 size = Stat(begin()).size;
+  int64 size = Stat(begin()).size;
 
-  if (ulong64(size) > INT_MAX) {
+  if (uint64(size) > INT_MAX) {
     OZ_ERROR("oz::File: Cannot read file larger than INT_MAX to a stream");
   }
 
@@ -495,7 +495,7 @@ Stream File::read(Endian::Order order) const
   return is;
 }
 
-bool File::write(const char* buffer, long64 size) const
+bool File::write(const char* buffer, int64 size) const
 {
   if (isVirtual()) {
     PHYSFS_File* file = PHYSFS_openWrite(begin() + 1);

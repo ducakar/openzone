@@ -25,7 +25,7 @@
 namespace oz
 {
 
-static HashMap<String, ulong64> profileTimes;
+static HashMap<String, uint64> profileTimes;
 
 Profiler::CIterator Profiler::citerator()
 {
@@ -34,7 +34,7 @@ Profiler::CIterator Profiler::citerator()
 
 void Profiler::add(const char* key, uint micros)
 {
-  ulong64* time = profileTimes.find(key);
+  uint64* time = profileTimes.find(key);
 
   if (time == nullptr) {
     profileTimes.add(key, micros);

@@ -64,7 +64,7 @@ static void* allocate(AllocMode mode, size_t size)
 
   if (ptr == nullptr) {
     OZ_ERROR("oz::Alloc: Out of memory while trying to allocate an %s of %llu B",
-             ALLOC_MODE_NAMES[mode], ulong64(size));
+             ALLOC_MODE_NAMES[mode], uint64(size));
   }
 
 #ifdef OZ_ALLOCATOR

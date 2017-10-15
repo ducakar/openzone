@@ -48,7 +48,7 @@ private:
   static const int UNIT_BITS = sizeof(size_t) * 8;
 
   /// Number of bits per the platfrom-independent unit.
-  static const int PORT_BITS = sizeof(ulong64) * 8;
+  static const int PORT_BITS = sizeof(uint64) * 8;
 
 private:
 

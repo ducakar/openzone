@@ -38,7 +38,7 @@ private:
   // 2.5 min.
   static const uint AUTOSAVE_INTERVAL;
 
-  ulong64      startTicks;
+  uint64      startTicks;
   Duration     sleepDuration;
   Duration     loadingDuration;
   Duration     uiDuration;

@@ -121,7 +121,7 @@ public:
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static constexpr long64 bswap(long64 l)
+  static constexpr int64 bswap(int64 l)
   {
     return __builtin_bswap64(l);
   }
@@ -130,7 +130,7 @@ public:
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static constexpr ulong64 bswap(ulong64 l)
+  static constexpr uint64 bswap(uint64 l)
   {
     return __builtin_bswap64(l);
   }

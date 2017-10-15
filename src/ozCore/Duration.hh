@@ -51,7 +51,7 @@ public:
 
 private:
 
-  long64 ns_ = 0; ///< Nanoseconds.
+  int64 ns_ = 0; ///< Nanoseconds.
 
 public:
 
@@ -63,7 +63,7 @@ public:
   /**
    * Create duration for a given number of nanoseconds.
    */
-  explicit constexpr Duration(long64 ns)
+  explicit constexpr Duration(int64 ns)
     : ns_(ns)
   {}
 
@@ -126,7 +126,7 @@ public:
   /**
    * Length in seconds (integer part).
    */
-  constexpr long64 s() const
+  constexpr int64 s() const
   {
     return ns_ / 1000000000;
   }
@@ -134,7 +134,7 @@ public:
   /**
    * Length in milliseconds (integer part).
    */
-  constexpr long64 ms() const
+  constexpr int64 ms() const
   {
     return ns_ / 1000000;
   }
@@ -142,7 +142,7 @@ public:
   /**
    * Length in microseconds (integer part).
    */
-  constexpr long64 us() const
+  constexpr int64 us() const
   {
     return ns_ / 1000;
   }
@@ -150,7 +150,7 @@ public:
   /**
    * Length in nanoseconds.
    */
-  constexpr long64 ns() const
+  constexpr int64 ns() const
   {
     return ns_;
   }
@@ -190,34 +190,34 @@ public:
   /**
    * Product of a duration and a scalar.
    */
-  template <typename Scalar = long64>
+  template <typename Scalar = int64>
   constexpr Duration operator*(Scalar s) const
   {
-    return Duration(long64(ns_ * s));
+    return Duration(int64(ns_ * s));
   }
 
   /**
    * Product of a scalar and a duration.
    */
-  template <typename Scalar = long64>
+  template <typename Scalar = int64>
   friend constexpr Duration operator*(Scalar s, const Duration& d)
   {
-    return Duration(long64(s * d.ns_));
+    return Duration(int64(s * d.ns_));
   }
 
   /**
    * Duration divided by a scalar.
    */
-  template <typename Scalar = long64>
+  template <typename Scalar = int64>
   constexpr Duration operator/(Scalar s) const
   {
-    return Duration(long64(ns_ / s));
+    return Duration(int64(ns_ / s));
   }
 
   /**
    * Divide the duration by anoter duration.
    */
-  constexpr long64 operator/(const Duration& d) const
+  constexpr int64 operator/(const Duration& d) const
   {
     return ns_ / d.ns_;
   }
@@ -251,20 +251,20 @@ public:
   /**
    * Multiply the duration by a scalar.
    */
-  template <typename Scalar = long64>
+  template <typename Scalar = int64>
   constexpr Duration& operator*=(Scalar s)
   {
-    ns_ = long64(ns_ * s);
+    ns_ = int64(ns_ * s);
     return *this;
   }
 
   /**
    * Divide the duration by a scalar.
    */
-  template <typename Scalar = long64>
+  template <typename Scalar = int64>
   constexpr Duration& operator/=(Scalar s)
   {
-    ns_ = long64(ns_ / s);
+    ns_ = int64(ns_ / s);
     return *this;
   }
 
@@ -275,7 +275,7 @@ public:
  */
 inline constexpr Duration operator""_s(unsigned long long value)
 {
-  return Duration(long64(value * 1000000000));
+  return Duration(int64(value * 1000000000));
 }
 
 /**
@@ -283,7 +283,7 @@ inline constexpr Duration operator""_s(unsigned long long value)
  */
 inline constexpr Duration operator""_s(long double value)
 {
-  return Duration(long64(value * 1000000000.0l));
+  return Duration(int64(value * 1000000000.0l));
 }
 
 /**
@@ -291,7 +291,7 @@ inline constexpr Duration operator""_s(long double value)
  */
 inline constexpr Duration operator""_ms(unsigned long long value)
 {
-  return Duration(long64(value * 1000000));
+  return Duration(int64(value * 1000000));
 }
 
 /**
@@ -299,7 +299,7 @@ inline constexpr Duration operator""_ms(unsigned long long value)
  */
 inline constexpr Duration operator""_ms(long double value)
 {
-  return Duration(long64(value * 1000000.0l));
+  return Duration(int64(value * 1000000.0l));
 }
 
 /**
@@ -307,7 +307,7 @@ inline constexpr Duration operator""_ms(long double value)
  */
 inline constexpr Duration operator""_us(unsigned long long value)
 {
-  return Duration(long64(value * 1000));
+  return Duration(int64(value * 1000));
 }
 
 /**
@@ -315,7 +315,7 @@ inline constexpr Duration operator""_us(unsigned long long value)
  */
 inline constexpr Duration operator""_us(long double value)
 {
-  return Duration(long64(value * 1000.0l));
+  return Duration(int64(value * 1000.0l));
 }
 
 /**
@@ -323,7 +323,7 @@ inline constexpr Duration operator""_us(long double value)
  */
 inline constexpr Duration operator""_ns(unsigned long long value)
 {
-  return Duration(long64(value));
+  return Duration(int64(value));
 }
 
 /**
@@ -331,7 +331,7 @@ inline constexpr Duration operator""_ns(unsigned long long value)
  */
 inline constexpr Duration operator""_ns(long double value)
 {
-  return Duration(long64(value));
+  return Duration(int64(value));
 }
 
 }

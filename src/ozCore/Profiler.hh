@@ -63,7 +63,7 @@ public:
   /**
    * Constant iterator for accumulated times.
    */
-  typedef HashMap<String, ulong64>::CIterator CIterator;
+  typedef HashMap<String, uint64>::CIterator CIterator;
 
 public:
 

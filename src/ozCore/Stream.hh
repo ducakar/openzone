@@ -386,22 +386,22 @@ public:
   /**
    * Read 64-bit integer.
    */
-  long64 readLong64();
+  int64 readLong64();
 
   /**
    * Write 64-bit integer.
    */
-  void writeLong64(long64 l);
+  void writeLong64(int64 l);
 
   /**
    * Read unsigned 64-bit integer.
    */
-  ulong64 readULong64();
+  uint64 readULong64();
 
   /**
    * Write unsigned 64-bit integer.
    */
-  void writeULong64(ulong64 l);
+  void writeULong64(uint64 l);
 
   /**
    * Read float.
@@ -485,7 +485,7 @@ public:
 #if __SIZEOF_SIZE_T__ == 4
       writeUInt(uint(unit));
 #else
-      writeULong64(ulong64(unit));
+      writeULong64(uint64(unit));
 #endif
     }
   }

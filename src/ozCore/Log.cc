@@ -353,7 +353,7 @@ const Log& Log::operator<<(ulong l) const
   return *this;
 }
 
-const Log& Log::operator<<(long64 l) const
+const Log& Log::operator<<(int64 l) const
 {
 #ifdef _WIN32
   printRaw("%ld", long(l));
@@ -363,7 +363,7 @@ const Log& Log::operator<<(long64 l) const
   return *this;
 }
 
-const Log& Log::operator<<(ulong64 l) const
+const Log& Log::operator<<(uint64 l) const
 {
 #ifdef _WIN32
   printRaw("%lu", ulong(l));

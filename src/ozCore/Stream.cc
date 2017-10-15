@@ -333,32 +333,32 @@ void Stream::writeUInt(uint i)
   write(value.data, sizeof(value.data));
 }
 
-long64 Stream::readLong64()
+int64 Stream::readLong64()
 {
-  Endian::ToValue<long64> value;
+  Endian::ToValue<int64> value;
   read(value.data, sizeof(value.data));
 
   return order_ == Endian::NATIVE ? value.value : Endian::bswap(value.value);
 }
 
-void Stream::writeLong64(long64 l)
+void Stream::writeLong64(int64 l)
 {
-  Endian::ToBytes<long64> value = {order_ == Endian::NATIVE ? l : Endian::bswap(l)};
+  Endian::ToBytes<int64> value = {order_ == Endian::NATIVE ? l : Endian::bswap(l)};
 
   write(value.data, sizeof(value.data));
 }
 
-ulong64 Stream::readULong64()
+uint64 Stream::readULong64()
 {
-  Endian::ToValue<ulong64> value;
+  Endian::ToValue<uint64> value;
   read(value.data, sizeof(value.data));
 
   return order_ == Endian::NATIVE ? value.value : Endian::bswap(value.value);
 }
 
-void Stream::writeULong64(ulong64 l)
+void Stream::writeULong64(uint64 l)
 {
-  Endian::ToBytes<ulong64> value = {order_ == Endian::NATIVE ? l : Endian::bswap(l)};
+  Endian::ToBytes<uint64> value = {order_ == Endian::NATIVE ? l : Endian::bswap(l)};
 
   write(value.data, sizeof(value.data));
 }

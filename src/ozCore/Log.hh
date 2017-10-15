@@ -239,12 +239,12 @@ public:
   /**
    * Same as `printRaw("%lld", l)`.
    */
-  const Log& operator<<(long64 l) const;
+  const Log& operator<<(int64 l) const;
 
   /**
    * Same as `printRaw("%llud", l)`.
    */
-  const Log& operator<<(ulong64 l) const;
+  const Log& operator<<(uint64 l) const;
 
   /**
    * Same as `printRaw("%g", f)`.

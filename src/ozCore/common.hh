@@ -155,17 +155,17 @@ typedef unsigned long ulong;
 /**
  * Signed 64-bit integer.
  */
-typedef long long long64;
+typedef long long int64;
 
 /**
  * Unsigned 64-bit integer.
  */
-typedef unsigned long long ulong64;
+typedef unsigned long long uint64;
 
 static_assert(sizeof(char  ) == 1, "sizeof(char) should be 1"  );
 static_assert(sizeof(short ) == 2, "sizeof(short) should be 2" );
 static_assert(sizeof(int   ) == 4, "sizeof(int) should be 4"   );
-static_assert(sizeof(long64) == 8, "sizeof(long64) should be 8");
+static_assert(sizeof(int64 ) == 8, "sizeof(int64) should be 8" );
 static_assert(sizeof(float ) == 4, "sizeof(float) should be 4" );
 static_assert(sizeof(double) == 8, "sizeof(double) should be 8");
 

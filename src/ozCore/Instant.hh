@@ -67,7 +67,7 @@ public:
   /**
    * Create instant for a given nanosecond offset from the epoch.
    */
-  explicit Instant(long64 ns)
+  explicit Instant(int64 ns)
     : Duration(ns)
   {}
 

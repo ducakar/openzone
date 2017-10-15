@@ -56,12 +56,12 @@ public:
    * Epoch may differ among platforms (e.g. it is 1970-01-01 0:00:00 on Linux and 1601-01-01 0:00:00
    * on Windows).
    */
-  static long64 epoch();
+  static int64 epoch();
 
   /**
    * Get seconds from epoch for the broken-down time representation.
    */
-  long64 toEpoch() const;
+  int64 toEpoch() const;
 
   /**
    * Return broken-down local time representing the current time.
@@ -71,7 +71,7 @@ public:
   /**
    * Return broken-down local time representing the time given as seconds from epoch.
    */
-  static Time local(long64 epoch);
+  static Time local(int64 epoch);
 
   /**
    * Convert to ISO date/time string "yyyy-mm-dd hh:mm:ss".

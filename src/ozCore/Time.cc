@@ -27,12 +27,12 @@
 namespace oz
 {
 
-long64 Time::epoch()
+int64 Time::epoch()
 {
   return ::time(nullptr);
 }
 
-long64 Time::toEpoch() const
+int64 Time::toEpoch() const
 {
   struct tm timeStruct;
 
@@ -52,7 +52,7 @@ Time Time::local()
   return local(epoch());
 }
 
-Time Time::local(long64 epoch)
+Time Time::local(int64 epoch)
 {
   time_t ctime = time_t(epoch);
   struct tm timeStruct;
