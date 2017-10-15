@@ -24,7 +24,6 @@
 
 #include "System.hh"
 
-#include <cstdlib>
 #include <pthread.h>
 
 namespace oz
@@ -36,18 +35,13 @@ struct Mutex::Descriptor
 };
 
 Mutex::Mutex()
-{
-  descriptor_ = new(malloc(sizeof(Descriptor))) Descriptor;
-  if (descriptor_ == nullptr) {
-    OZ_ERROR("oz::Mutex: Descriptor initialisation failed");
-  }
-}
+  : descriptor_(new Descriptor)
+{}
 
 Mutex::~Mutex()
 {
   pthread_mutex_destroy(&descriptor_->mutex);
-
-  free(descriptor_);
+  delete descriptor_;
 }
 
 void Mutex::lock()

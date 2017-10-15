@@ -25,7 +25,6 @@
 #include "System.hh"
 #include "Atomic.hh"
 
-#include <cstdlib>
 #include <pthread.h>
 
 namespace oz
@@ -40,17 +39,13 @@ struct Semaphore::Descriptor
 };
 
 Semaphore::Semaphore(int initialValue, int maxValue)
+  : descriptor_(new Descriptor)
 {
   if (initialValue < 0) {
     OZ_ERROR("oz::Semaphore: Initial value value must be >= 0");
   }
   if (maxValue <= 0) {
     OZ_ERROR("oz::Semaphore: Maximum value must be > 0");
-  }
-
-  descriptor_ = new(malloc(sizeof(Descriptor))) Descriptor;
-  if (descriptor_ == nullptr) {
-    OZ_ERROR("oz::Semaphore: Descriptor initialisation failed");
   }
 
   descriptor_->value.value = initialValue;
@@ -61,8 +56,7 @@ Semaphore::~Semaphore()
 {
   pthread_cond_destroy(&descriptor_->cond);
   pthread_mutex_destroy(&descriptor_->mutex);
-
-  free(descriptor_);
+  delete descriptor_;
 }
 
 int Semaphore::counter() const

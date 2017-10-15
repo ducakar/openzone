@@ -94,5 +94,11 @@ using namespace oz;
 int main()
 {
   System::init();
+  auto json = Json{
+    Json
+    {"drekec", "pekec"},
+    {"1", "2"}
+  };
+  json.save("/home/davorin/out.txt");
   return 0;
 }

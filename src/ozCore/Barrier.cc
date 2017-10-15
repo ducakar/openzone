@@ -24,7 +24,6 @@
 
 #include "System.hh"
 
-#include <cstdlib>
 #include <pthread.h>
 
 namespace oz
@@ -36,14 +35,10 @@ struct Barrier::Descriptor
 };
 
 Barrier::Barrier(int count)
+  : descriptor_(new Descriptor)
 {
   if (count <= 0) {
     OZ_ERROR("oz::Barrier: Count must be > 0");
-  }
-
-  descriptor_ = new(malloc(sizeof(Descriptor))) Descriptor;
-  if (descriptor_ == nullptr) {
-    OZ_ERROR("oz::Barrier: Descriptor initialisation failed");
   }
 
   pthread_barrier_init(&descriptor_->barrier, nullptr, count);
@@ -52,8 +47,7 @@ Barrier::Barrier(int count)
 Barrier::~Barrier()
 {
   pthread_barrier_destroy(&descriptor_->barrier);
-
-  free(descriptor_);
+  delete descriptor_;
 }
 
 void Barrier::wait()

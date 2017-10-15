@@ -24,7 +24,6 @@
 
 #include "System.hh"
 
-#include <cstdlib>
 #include <pthread.h>
 
 namespace oz
@@ -66,19 +65,13 @@ void RWLock::WriteLock::unlock()
 }
 
 RWLock::RWLock()
-  : read(*this), write(*this)
-{
-  descriptor_ = new(malloc(sizeof(Descriptor))) Descriptor;
-  if (descriptor_ == nullptr) {
-    OZ_ERROR("oz::SharedMutex: Descriptor initialisation failed");
-  }
-}
+  : read(*this), write(*this), descriptor_(new Descriptor)
+{}
 
 RWLock::~RWLock()
 {
   pthread_rwlock_destroy(&descriptor_->rwlock);
-
-  free(descriptor_);
+  delete descriptor_;
 }
 
 }

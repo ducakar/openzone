@@ -45,7 +45,7 @@ private:
 
   struct Descriptor;
 
-  Descriptor* descriptor_ = nullptr; ///< Internal barrier descriptor.
+  Descriptor* descriptor_; ///< Internal barrier descriptor.
 
 public:
 

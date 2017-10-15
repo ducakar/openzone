@@ -141,7 +141,7 @@ private:
           continue;
         }
         else if (ch2 == '*') {
-          // Skip a multi-line comment.
+          // Skip and ignore a multi-line comment.
           ch2 = readChar();
 
           do {
@@ -225,9 +225,9 @@ private:
   }
 
   OZ_INTERNAL
-  Json parseArray()
+  Json parseArray(const char* comment)
   {
-    Json arrayValue(ARRAY);
+    Json arrayValue(ARRAY, comment);
     List<Json>& list = static_cast<ArrayData*>(arrayValue.data_)->list;
 
     char ch = skipBlanks();
@@ -250,9 +250,9 @@ private:
   }
 
   OZ_INTERNAL
-  Json parseObject()
+  Json parseObject(const char* comment)
   {
-    Json objectValue(OBJECT);
+    Json objectValue(OBJECT, comment);
     Map<String, Json>& map = static_cast<ObjectData*>(objectValue.data_)->map;
 
     char ch = skipBlanks();
@@ -297,7 +297,7 @@ private:
           OZ_PARSE_ERROR(-3, "Unknown value type");
         }
 
-        return Json().copyComment(lastComment_);
+        return Json(nullptr, lastComment_);
       }
       case 'f': {
         if (is_->available() < 4 || readChar() != 'a' || readChar() != 'l' || readChar() != 's' ||
@@ -306,14 +306,14 @@ private:
           OZ_PARSE_ERROR(-4, "Unknown value type");
         }
 
-        return Json(false).copyComment(lastComment_);
+        return Json(false, lastComment_);
       }
       case 't': {
         if (is_->available() < 4 || readChar() != 'r' || readChar() != 'u' || readChar() != 'e') {
           OZ_PARSE_ERROR(-3, "Unknown value type");
         }
 
-        return Json(true).copyComment(lastComment_);
+        return Json(true, lastComment_);
       }
       default: { // Number.
         SList<char, 32> chars;
@@ -340,16 +340,16 @@ private:
           OZ_PARSE_ERROR(-chars.size(), "Unknown value type");
         }
 
-        return Json(number).copyComment(lastComment_);
+        return Json(number, lastComment_);
       }
       case '"': {
-        return Json(parseString()).copyComment(lastComment_);
+        return Json(parseString(), lastComment_);
       }
       case '{': {
-        return parseObject().copyComment(static_cast<String&&>(lastComment_));
+        return parseObject(lastComment_);
       }
       case '[': {
-        return parseArray().copyComment(static_cast<String&&>(lastComment_));
+        return parseArray(lastComment_);
       }
     }
   }
@@ -464,15 +464,13 @@ private:
       return;
     }
 
-    os_->writeChar('[');
-    os_->writeString(format_->lineEnd);
+    os_->write("[\n", 2);
 
     ++indentLevel_;
 
     for (int i = 0; i < list.size(); ++i) {
       if (i != 0) {
-        os_->writeChar(',');
-        os_->writeString(format_->lineEnd);
+        os_->write(",\n", 2);
       }
 
       for (int j = 0; j < indentLevel_; ++j) {
@@ -482,7 +480,7 @@ private:
       writeValue(list[i]);
     }
 
-    os_->writeString(format_->lineEnd);
+    os_->writeLine();
 
     --indentLevel_;
     for (int j = 0; j < indentLevel_; ++j) {
@@ -502,15 +500,13 @@ private:
       return;
     }
 
-    os_->writeChar('{');
-    os_->writeString(format_->lineEnd);
+    os_->write("{\n", 2);
 
     ++indentLevel_;
 
     for (int i = 0; i < map.size(); ++i) {
       if (i != 0) {
-        os_->writeChar(',');
-        os_->writeString(format_->lineEnd);
+        os_->write(",\n", 2);
       }
 
       for (int j = 0; j < indentLevel_; ++j) {
@@ -520,10 +516,9 @@ private:
       const String& entryKey   = map[i].key;
       const Json&   entryValue = map[i].value;
 
-      if (entryValue.comment_ != nullptr) {
+      if (!entryValue.comment_.isEmpty()) {
         os_->write("// ", 3);
-        os_->write(entryValue.comment_, String::length(entryValue.comment_));
-        os_->writeChar('\n');
+        os_->writeLine(entryValue.comment_);
 
         for (int j = 0; j < indentLevel_; ++j) {
           os_->write("  ", 2);
@@ -534,7 +529,7 @@ private:
       os_->writeChar(':');
 
       if (entryValue.type_ == ARRAY || entryValue.type_ == OBJECT) {
-        os_->writeString(format_->lineEnd);
+        os_->writeLine();
 
         for (int j = 0; j < indentLevel_; ++j) {
           os_->write("  ", 2);
@@ -552,7 +547,7 @@ private:
       writeValue(entryValue);
     }
 
-    os_->writeString(format_->lineEnd);
+    os_->writeLine();
 
     --indentLevel_;
     for (int j = 0; j < indentLevel_; ++j) {
@@ -609,33 +604,15 @@ public:
     Formatter formatter(os, format);
 
     formatter.writeValue(value);
-    os->writeString(format->lineEnd);
+    os->writeLine();
   }
 
 };
 
-static char* cloneString(const char* s)
-{
-  if (s == nullptr) {
-    return nullptr;
-  }
-
-  size_t length = strlen(s);
-
-  if (length == 0) {
-    return nullptr;
-  }
-
-  char* clone = new char[length + 1];
-
-  memcpy(clone, s, length + 1);
-  return clone;
-}
-
-const Json::Format Json::DEFAULT_FORMAT = {2, 32, "%.9g", "\n"};
+const Json::Format Json::DEFAULT_FORMAT = {2, 32, "%.9g"};
 
 Json::Json(const float* vector, int count, const char* comment)
-  : data_(new ArrayData{List<Json>(count)}), comment_(cloneString(comment)), type_(ARRAY)
+  : data_(new ArrayData{List<Json>(count)}), comment_(comment), type_(ARRAY)
 {
   List<Json>& list = static_cast<ArrayData*>(data_)->list;
 
@@ -665,16 +642,9 @@ void Json::copyValue(const Json& other)
     }
   }
 
-  comment_     = cloneString(other.comment_);
+  comment_     = other.comment_;
   type_        = other.type_;
   wasAccessed_ = other.wasAccessed_;
-}
-
-Json& Json::copyComment(const char* comment)
-{
-  delete[] comment_;
-  comment_ = cloneString(comment);
-  return *this;
 }
 
 bool Json::getVector(float* vector, int count) const
@@ -695,8 +665,8 @@ bool Json::getVector(float* vector, int count) const
   return true;
 }
 
-Json::Json(Type type)
-  : type_(type)
+Json::Json(Type type, const char* comment)
+  : comment_(comment), type_(type)
 {
   switch (type) {
     default: {
@@ -718,11 +688,11 @@ Json::Json(Type type)
 }
 
 Json::Json(nullptr_t, const char* comment)
-  : comment_(cloneString(comment))
+  : comment_(comment)
 {}
 
 Json::Json(bool value, const char* comment)
-  : boolean_(value), comment_(cloneString(comment)), type_(BOOLEAN)
+  : boolean_(value), comment_(comment), type_(BOOLEAN)
 {}
 
 Json::Json(int value, const char* comment)
@@ -734,15 +704,15 @@ Json::Json(float value, const char* comment)
 {}
 
 Json::Json(double value, const char* comment)
-  : number_(value), comment_(cloneString(comment)), type_(NUMBER)
+  : number_(value), comment_(comment), type_(NUMBER)
 {}
 
 Json::Json(const String& value, const char* comment)
-  : data_(new StringData{value}), comment_(cloneString(comment)), type_(STRING)
+  : data_(new StringData{value}), comment_(comment), type_(STRING)
 {}
 
 Json::Json(const char* value, const char* comment)
-  : data_(new StringData{value}), comment_(cloneString(comment)), type_(STRING)
+  : data_(new StringData{value}), comment_(comment), type_(STRING)
 {}
 
 Json::Json(const Vec3& v, const char* comment)
@@ -774,7 +744,7 @@ Json::Json(const Mat4& m, const char* comment)
 {}
 
 Json::Json(InitialiserList<Json> l, const char* comment)
-  : data_(new ArrayData()), comment_(cloneString(comment)), type_(ARRAY)
+  : data_(new ArrayData()), comment_(comment), type_(ARRAY)
 {
   List<Json>& list = static_cast<ArrayData*>(data_)->list;
 
@@ -782,7 +752,7 @@ Json::Json(InitialiserList<Json> l, const char* comment)
 }
 
 Json::Json(InitialiserList<Pair> l, const char* comment)
-  : data_(new ObjectData()), comment_(cloneString(comment)), type_(OBJECT)
+  : data_(new ObjectData()), comment_(comment), type_(OBJECT)
 {
   Map<String, Json>& map = static_cast<ObjectData*>(data_)->map;
 
@@ -802,11 +772,10 @@ Json::Json(const Json& other)
 }
 
 Json::Json(Json&& other)
-  : number_(other.number_), comment_(other.comment_), type_(other.type_),
+  : number_(other.number_), comment_(static_cast<String&&>(other.comment_)), type_(other.type_),
     wasAccessed_(other.wasAccessed_)
 {
   other.number_      = 0.0;
-  other.comment_     = nullptr;
   other.type_        = NIL;
   other.wasAccessed_ = true;
 }
@@ -826,12 +795,11 @@ Json& Json::operator=(Json&& other)
     clear();
 
     number_      = other.number_;
-    comment_     = other.comment_;
+    comment_     = static_cast<String&&>(other.comment_);
     type_        = other.type_;
     wasAccessed_ = other.wasAccessed_;
 
     other.number_      = 0.0;
-    other.comment_     = nullptr;
     other.type_        = NIL;
     other.wasAccessed_ = true;
   }
@@ -1104,12 +1072,6 @@ Mat4 Json::get(const Mat4& defaultValue) const
   return getVector(m, 16) ? m : defaultValue;
 }
 
-void Json::setComment(const char* comment)
-{
-  delete[] comment;
-  comment = cloneString(comment);
-}
-
 Json& Json::add(const Json& json)
 {
   if (type_ != ARRAY) {
@@ -1249,10 +1211,8 @@ bool Json::clear(bool warnUnused)
     }
   }
 
-  delete[] comment_;
-
-  comment_     = nullptr;
-  type_   = NIL;
+  comment_     = String::EMPTY;
+  type_        = NIL;
   wasAccessed_ = true;
 
   return hasUnused;
@@ -1317,11 +1277,11 @@ String Json::toString() const
 
 String Json::toFormattedString(const Format& format) const
 {
-  Stream    os(0);
+  Stream os(0);
 
-  if (comment_ != nullptr) {
+  if (!comment_.isEmpty()) {
     os.write("// ", 3);
-    os.write(comment_, String::length(comment_));
+    os.write(comment_.begin(), comment_.length());
     os.writeChar('\n');
   }
 
@@ -1345,9 +1305,9 @@ bool Json::save(const File& file, const Format& format) const
 {
   Stream os(0);
 
-  if (comment_ != nullptr) {
+  if (!comment_.isEmpty()) {
     os.write("// ", 3);
-    os.write(comment_, String::length(comment_));
+    os.write(comment_.begin(), comment_.length());
     os.writeChar('\n');
   }
 

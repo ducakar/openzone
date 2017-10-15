@@ -24,7 +24,6 @@
 
 #include "System.hh"
 
-#include <cstdlib>
 #include <pthread.h>
 
 namespace oz
@@ -41,16 +40,13 @@ struct CondVar::Descriptor
 };
 
 CondVar::CondVar()
-{
-  descriptor_ = new(malloc(sizeof(Descriptor))) Descriptor;
-  if (descriptor_ == nullptr) {
-    OZ_ERROR("oz::CondVar: Descriptor initialisation failed");
-  }
-}
+  : descriptor_(new Descriptor)
+{}
 
 CondVar::~CondVar()
 {
   pthread_cond_destroy(&descriptor_->cond);
+  delete descriptor_;
 }
 
 void CondVar::signal()

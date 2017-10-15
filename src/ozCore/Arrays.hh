@@ -399,12 +399,12 @@ public:
    * @note
    * `Elem` type must have `bool operator<(const Elem&, const Key&) const` defined.
    *
-   * If all elements are lesser return `count` and if all elements are greater return 0.
+   * If all elements are lesser return `size` and if all elements are greater return 0.
    *
    * @param array array of elements.
    * @param size number of elements.
    * @param key the key we are looking for.
-   * @return Index of the first element >= `key`, `count` otherwise.
+   * @return Index of the first element >= `key`, `size` otherwise.
    */
   template <typename Elem, typename Key, class LessFunc = Less<Elem>>
   static int bisection(const Elem* array, int size, const Key& key)
@@ -412,7 +412,7 @@ public:
     int a = -1;
     int b = size;
 
-    // The algorithm ensures that (a == -1 or array[a] <= key) and (b == count or key < array[b]),
+    // The algorithm ensures that (a == -1 or array[a] <= key) and (b == size or key < array[b]),
     // so the key may only lie on position a or nowhere.
     while (b - a > 1) {
       int c = (a + b) / 2;
@@ -430,23 +430,23 @@ public:
   /**
    * Reallocate an array to a different size, moving its elements.
    *
-   * Allocate a new zero-initialised array of `newCount` elements, move first `min(count, newCount)`
+   * Allocate a new zero-initialised array of `newSize` elements, move first `min(size, newSize)`
    * elements of the source array to the newly created one and free the source array. Similar to
-   * `realloc()`, the given array is deleted and `nullptr` is returned if `newCount` is 0.
+   * `realloc()`, the given array is deleted and `nullptr` is returned if `newSize` is 0.
    *
    * @return Newly allocated array.
    */
   template <typename Elem>
-  static Elem* reallocate(Elem* array, int size, int newCount)
+  static Elem* reallocate(Elem* array, int size, int newSize)
   {
     Elem* newArray = nullptr;
 
-    if (newCount != 0) {
-      newArray = new Elem[newCount] {};
-      move<Elem>(array, min<int>(size, newCount), newArray);
+    if (newSize != 0) {
+      newArray = new Elem[newSize] {};
+      move<Elem>(array, min<int>(size, newSize), newArray);
     }
-    delete[] array;
 
+    delete[] array;
     return newArray;
   }
 

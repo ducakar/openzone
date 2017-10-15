@@ -487,6 +487,11 @@ String Stream::readLine()
   return String(begin, length);
 }
 
+void Stream::writeLine()
+{
+  write("\n", 1);
+}
+
 void Stream::writeLine(const String& s)
 {
   write(s, s.length() + 1);

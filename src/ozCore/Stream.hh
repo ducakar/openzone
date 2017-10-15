@@ -446,6 +446,11 @@ public:
   String readLine();
 
   /**
+   * Write UNIX newline.
+   */
+  void writeLine();
+
+  /**
    * Write a line replacing terminating null byte with UNIX newline.
    */
   void writeLine(const String& s);

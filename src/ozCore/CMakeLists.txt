@@ -9,6 +9,7 @@ add_library(ozCore
   Atomic.hh
   Barrier.hh
   Bitset.hh
+  Box.hh
   CallOnce.hh
   Chain.hh
   common.hh

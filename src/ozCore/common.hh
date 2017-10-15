@@ -259,7 +259,7 @@ public:
   }
 
   /**
-   * Access to the current element's member.
+   * Pointer to the current element's member.
    */
   OZ_ALWAYS_INLINE
   Elem* operator->() const

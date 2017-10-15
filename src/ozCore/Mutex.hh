@@ -46,7 +46,7 @@ private:
 
   struct Descriptor;
 
-  Descriptor* descriptor_ = nullptr; ///< Internal mutex descriptor.
+  Descriptor* descriptor_; ///< Internal mutex descriptor.
 
 public:
 

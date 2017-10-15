@@ -68,7 +68,6 @@ public:
     int    indentSpaces;    ///< Number of spaces used for indentitation.
     int    alignmentColumn; ///< Value alignment column.
     String numberFormat;    ///< `printf()`-like number format.
-    String lineEnd;         ///< EOL character sequence.
   };
 
   /// Default format (2 space indent, alignment on 32nd column, 9 significant digits, "\\n" EOL).
@@ -108,13 +107,13 @@ private:
 
   union
   {
-    bool       boolean_;               ///< Boolean value storage.
-    double     number_      = 0.0;     ///< Number value storage.
-    void*      data_;                  ///< Pointer to other, complex, value storage.
+    bool       boolean_;             ///< Boolean value storage.
+    double     number_      = 0.0;   ///< Number value storage.
+    void*      data_;                ///< Pointer to other, complex, value storage.
   };
-  char*        comment_     = nullptr; ///< Comment (dynamically allocated).
-  Type         type_        = NIL;     ///< Value type, `Json::Type`.
-  mutable bool wasAccessed_ = false;   ///< For warnings about unused variables.
+  String       comment_;             ///< Comment.
+  Type         type_        = NIL;   ///< Value type, `Json::Type`.
+  mutable bool wasAccessed_ = false; ///< For warnings about unused variables.
 
 private:
 
@@ -129,12 +128,6 @@ private:
    */
   OZ_INTERNAL
   void copyValue(const Json& other);
-
-  /**
-   * Helper function for setting a comment to avoid code duplication.
-   */
-  OZ_INTERNAL
-  Json& copyComment(const char* comment);
 
   /**
    * Helper function for `get()` for reading vectors, quaternions, matrices etc.
@@ -155,77 +148,77 @@ public:
    * Default value is false for a boolean, 0.0 for a number, "" for a string or an empty container
    * for an array or an object.
    */
-  Json(Type type);
+  Json(Type type, const char* comment = "");
 
   /**
    * Create null value.
    */
-  Json(nullptr_t, const char* comment = nullptr);
+  Json(nullptr_t, const char* comment = "");
 
   /**
    * Create a boolean value.
    */
-  Json(bool value, const char* comment = nullptr);
+  Json(bool value, const char* comment = "");
 
   /**
    * Create a number value for an integer.
    */
-  Json(int value, const char* comment = nullptr);
+  Json(int value, const char* comment = "");
 
   /**
    * Create a number value for a float.
    */
-  Json(float value, const char* comment = nullptr);
+  Json(float value, const char* comment = "");
 
   /**
    * Create a number value for a double.
    */
-  Json(double value, const char* comment = nullptr);
+  Json(double value, const char* comment = "");
 
   /**
    * Create a string value for a given string.
    */
-  Json(const String& value, const char* comment = nullptr);
+  Json(const String& value, const char* comment = "");
 
   /**
    * Create a string value for a given string.
    */
-  Json(const char* value, const char* comment = nullptr);
+  Json(const char* value, const char* comment = "");
 
   /**
    * Create an array of 3 numbers representing `Vec3` components.
    */
-  Json(const Vec3& v, const char* comment = nullptr);
+  Json(const Vec3& v, const char* comment = "");
 
   /**
    * Create an array of 4 numbers representing `Point` components.
    */
-  Json(const Point& p, const char* comment = nullptr);
+  Json(const Point& p, const char* comment = "");
 
   /**
    * Create an array of 4 numbers representing `Plane` components.
    */
-  Json(const Plane& p, const char* comment = nullptr);
+  Json(const Plane& p, const char* comment = "");
 
   /**
    * Create an array of 4 numbers representing `Vec4` components.
    */
-  Json(const Vec4& v, const char* comment = nullptr);
+  Json(const Vec4& v, const char* comment = "");
 
   /**
    * Create an array of 4 numbers representing `Quat` components.
    */
-  Json(const Quat& q, const char* comment = nullptr);
+  Json(const Quat& q, const char* comment = "");
 
   /**
    * Create an array of 9 numbers representing `Mat3` components.
    */
-  Json(const Mat3& m, const char* comment = nullptr);
+  Json(const Mat3& m, const char* comment = "");
 
   /**
    * Create an array of 16 numbers representing `Mat4` components.
    */
-  Json(const Mat4& m, const char* comment = nullptr);
+  Json(const Mat4& m, const char* comment = "");
 
   /**
    * Create an array from initialiser list of JSON values.
@@ -236,7 +229,7 @@ public:
    * Json array = {Json {0, 1}, {1, 2}, {2, 0}};
    * @endcode
    */
-  Json(InitialiserList<Json> il, const char* comment = nullptr);
+  Json(InitialiserList<Json> il, const char* comment = "");
 
   /**
    * Create an object from initialiser list of string-JSON pairs.
@@ -246,7 +239,7 @@ public:
    * Json object = {Json::Pair {"key1", 1}, {"key2", 2}, {"key3", 3}};
    * @endcode
    */
-  Json(InitialiserList<Pair> il, const char* comment = nullptr);
+  Json(InitialiserList<Pair> il, const char* comment = "");
 
   /**
    * Destructor.
@@ -469,15 +462,10 @@ public:
    * Get comment assigned to this value.
    */
   OZ_ALWAYS_INLINE
-  const char* comment() const
+  const String& comment() const
   {
     return comment_;
   }
-
-  /**
-   * Assign a new comment to this value. Null or empty string clears it.
-   */
-  void setComment(const char* comment_);
 
   /**
    * Append a value to array (copy).

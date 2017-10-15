@@ -26,7 +26,6 @@
 #include "Java.hh"
 #include "Pepper.hh"
 
-#include <cstdlib>
 #include <cstring>
 
 #if defined(__ANDROID__)
@@ -60,10 +59,10 @@ struct Thread::Descriptor
 
 void* Thread::Descriptor::mainWrapper(void* handle)
 {
-  Descriptor* descriptor            = static_cast<Descriptor*>(handle);
-  Main*       main                  = descriptor->main;
-  void*       data                  = descriptor->data;
-  String      name                  = descriptor->name;
+  Descriptor* descriptor = static_cast<Descriptor*>(handle);
+  Main*       main       = descriptor->main;
+  void*       data       = descriptor->data;
+  String      name       = descriptor->name;
 
   descriptor->lock.unlock();
 
@@ -128,10 +127,7 @@ bool Thread::isMain()
 
 Thread::Descriptor* Thread::start(const char* name, Main* main, void* data)
 {
-  Descriptor* descriptor = new(malloc(sizeof(Descriptor))) Descriptor;
-  if (descriptor == nullptr) {
-    OZ_ERROR("oz::Thread: Descriptor allocation failed");
-  }
+  Descriptor* descriptor = new Descriptor;
 
   descriptor->name = name;
   descriptor->main = main;
@@ -178,13 +174,15 @@ void Thread::detach()
     OZ_ERROR("oz::Thread: Detaching invalid thread");
   }
 
-  pthread_detach(descriptor_->thread);
+  if (pthread_detach(descriptor_->thread) != 0) {
+    OZ_ERROR("oz::Thread: Detach failed");
+  }
 
-  // Wait while the thread accesses name pointer and descriptor during its initialisation. We need this to assure the
-  // descriptor is not freed while the new thread still accesses it.
+  // Wait while the thread accesses name pointer and descriptor during its initialisation. We need
+  // this to assure the descriptor is not freed while the new thread still accesses it.
   descriptor_->lock.lock();
 
-  free(descriptor_);
+  delete descriptor_;
   descriptor_ = nullptr;
 }
 
@@ -198,7 +196,7 @@ void Thread::join()
     OZ_ERROR("oz::Thread: Join failed");
   }
 
-  free(descriptor_);
+  delete descriptor_;
   descriptor_ = nullptr;
 }
 
