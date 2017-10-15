@@ -79,8 +79,7 @@ else()
 endif()
 
 find_package(ZLIB REQUIRED)
-find_package(PhysFS REQUIRED)
-mark_as_advanced(PHYSFS_INCLUDE_DIR PHYSFS_LIBRARY)
+pkg_check_modules(PHYSFS REQUIRED physfs)
 
 if(OZ_LUAJIT)
   pkg_check_modules(LUAJIT REQUIRED luajit)

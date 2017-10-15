@@ -93,7 +93,7 @@ add_library(ozCore
 #END SOURCES
 )
 
-target_link_libraries(ozCore ${PHYSFS_LIBRARY} ${ZLIB_LIBRARY})
+target_link_libraries(ozCore ${PHYSFS_LIBRARIES} ${ZLIB_LIBRARY})
 if(ANDROID)
   target_link_libraries(ozCore -lOpenSLES -ldl -llog ${PLATFORM_STL_LIBRARY})
 elseif(EMSCRIPTEN)

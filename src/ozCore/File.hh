@@ -157,7 +157,7 @@ public:
   /**
    * File size in bytes.
    */
-  int size() const;
+  long64 size() const;
 
   /**
    * File modification or creation time (which is newer).
@@ -267,7 +267,7 @@ public:
    *
    * @return true iff read operation succeeded (it is not necessary the whole file was read).
    */
-  bool read(char* data_, int* length) const;
+  bool read(char* data_, long64* length) const;
 
   /**
    * Create a buffered stream that contains file contents.
@@ -279,7 +279,7 @@ public:
   /**
    * Write buffer contents to the file.
    */
-  bool write(const char* data_, int length) const;
+  bool write(const char* data_, long64 length) const;
 
   /**
    * Write contents of a stream, equivalent to `write(is.begin(), is.tell())`.

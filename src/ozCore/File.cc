@@ -51,30 +51,26 @@ struct Stat
   };
 
   Type   type = MISSING;
-  int    size = -1;
+  long64 size = -1;
   long64 time = 0;
 
   OZ_INTERNAL
   explicit Stat(const char* path)
   {
     if (path[0] == '@') {
+      PHYSFS_Stat statInfo;
+
       ++path;
 
-      if (PHYSFS_exists(path)) {
-        if (PHYSFS_isDirectory(path)) {
+      if (PHYSFS_stat(path, &statInfo) != 0) {
+        if (statInfo.filetype == PHYSFS_FILETYPE_DIRECTORY) {
           type = DIRECTORY;
-          time = PHYSFS_getLastModTime(path);
+          time = statInfo.modtime;
         }
         else {
-          PHYSFS_File* file = PHYSFS_openRead(path);
-
-          if (file != nullptr) {
-            type = FILE;
-            size = int(PHYSFS_fileLength(file));
-            time = PHYSFS_getLastModTime(path);
-
-            PHYSFS_close(file);
-          }
+          type = FILE;
+          size = statInfo.filesize;
+          time = statInfo.modtime;
         }
       }
     }
@@ -88,7 +84,7 @@ struct Stat
         }
         else if (S_ISREG(statInfo.st_mode)) {
           type = FILE;
-          size = int(statInfo.st_size);
+          size = statInfo.st_size;
           time = max<long64>(statInfo.st_ctime, statInfo.st_mtime);
         }
       }
@@ -280,7 +276,7 @@ bool File::isDirectory() const
   return Stat(begin()).type == Stat::DIRECTORY;
 }
 
-int File::size() const
+long64 File::size() const
 {
   return Stat(begin()).size;
 }
@@ -446,7 +442,7 @@ File& File::operator/=(const char* pathElem)
   return *this;
 }
 
-bool File::read(char* buffer, int* size) const
+bool File::read(char* buffer, long64* size) const
 {
   if (isVirtual()) {
     PHYSFS_File* file = PHYSFS_openRead(begin() + 1);
@@ -455,7 +451,7 @@ bool File::read(char* buffer, int* size) const
       return false;
     }
 
-    int result = int(PHYSFS_read(file, buffer, 1, *size));
+    int result = int(PHYSFS_readBytes(file, buffer, *size));
     PHYSFS_close(file);
 
     *size = result;
@@ -485,8 +481,13 @@ bool File::read(char* buffer, int* size) const
 
 Stream File::read(Endian::Order order) const
 {
-  int size = Stat(begin()).size;
-  Stream is(size < 0 ? 0 : size, order);
+  long64 size = Stat(begin()).size;
+
+  if (ulong64(size) > INT_MAX) {
+    OZ_ERROR("oz::File: Cannot read file larger than INT_MAX to a stream");
+  }
+
+  Stream is(size < 0 ? 0 : int(size), order);
 
   if (size == 0 || !read(is.begin(), &size)) {
     is.free();
@@ -494,7 +495,7 @@ Stream File::read(Endian::Order order) const
   return is;
 }
 
-bool File::write(const char* buffer, int size) const
+bool File::write(const char* buffer, long64 size) const
 {
   if (isVirtual()) {
     PHYSFS_File* file = PHYSFS_openWrite(begin() + 1);
@@ -502,7 +503,7 @@ bool File::write(const char* buffer, int size) const
       return false;
     }
 
-    int result = int(PHYSFS_write(file, buffer, 1, size));
+    int result = int(PHYSFS_writeBytes(file, buffer, size));
     PHYSFS_close(file);
 
     return result == size;
@@ -717,7 +718,8 @@ void File::init()
   initSpecialFiles();
 
   if (PHYSFS_init(EXECUTABLE) == 0) {
-    OZ_ERROR("oz::File: PhysicsFS initialisation failed: %s", PHYSFS_getLastError());
+    OZ_ERROR("oz::File: PhysicsFS initialisation failed: %s",
+             PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
   }
 }
 
