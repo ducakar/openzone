@@ -26,9 +26,7 @@
 #include <matrix/Vehicle.hh>
 #include <client/common.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class MD2
@@ -107,5 +105,4 @@ public:
 
 };
 
-}
 }

@@ -25,9 +25,7 @@
 
 #include <builder/common.hh>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 struct MD3Tag;
@@ -156,5 +154,4 @@ public:
 
 extern MD3 md3;
 
-}
 }

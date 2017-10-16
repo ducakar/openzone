@@ -25,9 +25,7 @@
 
 #include <client/Proxy.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class StrategicProxy : public Proxy
@@ -75,5 +73,4 @@ public:
 
 };
 
-}
 }

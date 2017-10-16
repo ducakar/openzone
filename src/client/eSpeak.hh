@@ -27,9 +27,7 @@
 
 #include <espeak/speak_lib.h>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 extern OZ_DL_DECLARE(espeak_Initialize      );
@@ -39,5 +37,4 @@ extern OZ_DL_DECLARE(espeak_SetVoiceByName  );
 extern OZ_DL_DECLARE(espeak_SetSynthCallback);
 extern OZ_DL_DECLARE(espeak_Synth           );
 
-}
 }

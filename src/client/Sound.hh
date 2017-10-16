@@ -28,9 +28,7 @@
 #include <physfs.h>
 #include <AL/alc.h>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class Sound
@@ -112,5 +110,4 @@ public:
 
 extern Sound sound;
 
-}
 }

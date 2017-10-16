@@ -27,9 +27,7 @@
 
 #include <builder/Compiler.hh>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 /**
@@ -319,5 +317,4 @@ public:
 
 extern BSP bsp;
 
-}
 }

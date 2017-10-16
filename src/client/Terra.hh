@@ -25,9 +25,7 @@
 
 #include <client/Model.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class Terra
@@ -80,5 +78,4 @@ public:
 
 extern Terra terra;
 
-}
 }

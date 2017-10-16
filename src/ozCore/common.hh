@@ -179,8 +179,11 @@ namespace detail
  * Base class for iterators.
  *
  * It should only be used as a base class. The following functions have to be implemented:
- * - default constructor that creates an invalid iterator and
- * - `Iterator& operator++()`.
+ * - a default constructor that creates an invalid iterator,
+ * - `Iterator& operator++()`,
+ * - `Iterator begin() const` and either
+ * - `Iterator end() const` or
+ * - `nullptr_t end() const`.
  */
 template <typename Elem>
 class IteratorBase
@@ -229,6 +232,24 @@ public:
   bool operator!=(const IteratorBase& other) const
   {
     return elem_ != other.elem_;
+  }
+
+  /**
+   * True iff iterator is pointing to null.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator==(nullptr_t) const
+  {
+    return elem_ == nullptr;
+  }
+
+  /**
+   * False iff iterator is pointing to null.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator!=(nullptr_t) const
+  {
+    return elem_ != nullptr;
   }
 
   /**

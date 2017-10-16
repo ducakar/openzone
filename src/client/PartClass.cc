@@ -21,9 +21,7 @@
 
 #include <client/Context.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 bool PartClass::isLoaded() const
@@ -58,5 +56,4 @@ void PartClass::unload()
   }
 }
 
-}
 }

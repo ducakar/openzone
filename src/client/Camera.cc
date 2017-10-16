@@ -23,9 +23,7 @@
 #include <client/ui/Area.hh>
 #include <client/ui/UI.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 const float  Camera::ROT_LIMIT          = Math::TAU / 2.0f;
@@ -366,5 +364,4 @@ void Camera::destroy()
 
 Camera camera;
 
-}
 }

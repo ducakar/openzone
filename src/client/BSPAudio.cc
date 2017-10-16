@@ -22,9 +22,7 @@
 #include <client/Context.hh>
 #include <client/Camera.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 void BSPAudio::playDemolish(const Struct* str, int sound) const
@@ -193,5 +191,4 @@ void BSPAudio::play(const Struct* str) const
   }
 }
 
-}
 }

@@ -24,11 +24,7 @@
 #include <client/Context.hh>
 #include <client/ui/Style.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 void CheckBox::onVisibilityChange(bool)
@@ -100,6 +96,4 @@ void CheckBox::setLabel(const char* text)
   label.setText("%s", text);
 }
 
-}
-}
 }

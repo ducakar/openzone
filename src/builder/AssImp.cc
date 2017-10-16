@@ -26,9 +26,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 struct Anim
@@ -304,5 +302,4 @@ void AssImp::build(const File& path)
 
 AssImp assImp;
 
-}
 }

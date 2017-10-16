@@ -19,9 +19,7 @@
 
 #include <client/Stage.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 Stage* Stage::nextStage = nullptr;
@@ -29,5 +27,4 @@ Stage* Stage::nextStage = nullptr;
 Stage::~Stage()
 {}
 
-}
 }

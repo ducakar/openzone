@@ -21,9 +21,7 @@
 
 #include <builder/Context.hh>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 const char* const UI::ICON_NAMES[] = {
@@ -109,5 +107,4 @@ void UI::buildIcons()
   Log::println("}");
 }
 
-}
 }

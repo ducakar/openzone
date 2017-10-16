@@ -19,12 +19,9 @@
 
 #include <builder/common.hh>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 Json builderConfig;
 
-}
 }

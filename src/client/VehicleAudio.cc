@@ -22,9 +22,7 @@
 #include <client/Camera.hh>
 #include <client/Context.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 Pool<VehicleAudio> VehicleAudio::pool(256);
@@ -87,5 +85,4 @@ void VehicleAudio::play(const Object* playAt)
   }
 }
 
-}
 }

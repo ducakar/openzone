@@ -29,9 +29,7 @@
 #include <client/ui/MusicPlayer.hh>
 #include <client/ui/UI.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 const float UnitProxy::CAMERA_Z_SMOOTHING       = 0.40f;
@@ -648,5 +646,4 @@ Json UnitProxy::write() const
   return json;
 }
 
-}
 }

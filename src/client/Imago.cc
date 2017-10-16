@@ -19,13 +19,10 @@
 
 #include <client/Imago.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 Imago::~Imago()
 {}
 
-}
 }

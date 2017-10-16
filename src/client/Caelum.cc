@@ -22,9 +22,7 @@
 #include <client/Shader.hh>
 #include <client/Shape.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 const char* const Caelum::SKYBOX_FACES[]        = {"+x", "-x", "+y", "-y", "+z", "-z"};
@@ -210,5 +208,4 @@ void Caelum::unload()
 
 Caelum caelum;
 
-}
 }

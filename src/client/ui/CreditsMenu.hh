@@ -26,11 +26,7 @@
 #include <client/ui/Text.hh>
 #include <client/ui/Area.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 class CreditsMenu : public Area
@@ -58,6 +54,4 @@ public:
 
 };
 
-}
-}
 }

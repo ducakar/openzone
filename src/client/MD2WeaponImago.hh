@@ -26,9 +26,7 @@
 #include <client/Imago.hh>
 #include <client/Model.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class MD2WeaponImago : public Imago
@@ -54,5 +52,4 @@ public:
   OZ_STATIC_POOL_ALLOC(pool)
 };
 
-}
 }

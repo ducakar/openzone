@@ -23,9 +23,7 @@
 
 #include <FreeImage.h>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 void Terra::load()
@@ -360,5 +358,4 @@ void Terra::build(const char* name_)
 
 Terra terra;
 
-}
 }

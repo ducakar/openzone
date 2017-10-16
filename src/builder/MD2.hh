@@ -26,9 +26,7 @@
 #include <builder/common.hh>
 #include <client/Model.hh>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 class MD2
@@ -95,5 +93,4 @@ public:
 
 extern MD2 md2;
 
-}
 }

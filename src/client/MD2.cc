@@ -19,9 +19,7 @@
 
 #include <client/MD2.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 const MD2::AnimInfo MD2::ANIM_LIST[] =
@@ -265,5 +263,4 @@ void MD2::AnimState::advance()
   OZ_ASSERT(0.0f <= frameRatio && frameRatio < 1.0f);
 }
 
-}
 }

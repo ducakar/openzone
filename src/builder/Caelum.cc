@@ -23,9 +23,7 @@
 
 #include <builder/Context.hh>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 void Caelum::build(const char* name)
@@ -62,5 +60,4 @@ void Caelum::build(const char* name)
 
 Caelum caelum;
 
-}
 }

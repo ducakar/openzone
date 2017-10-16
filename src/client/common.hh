@@ -39,9 +39,7 @@
 #define OZ_CONF_INC(root, name, value, description) \
   root.include(name, oz::Json(value, OZ_GETTEXT(description)))
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 struct TexCoord
@@ -105,5 +103,4 @@ extern const Json::Format CONFIG_FORMAT;
 extern Collider collider;
 extern Json     appConfig;
 
-}
 }

@@ -22,9 +22,7 @@
 #include <client/Camera.hh>
 #include <client/Context.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 const float Audio::ROLLOFF_FACTOR       = 0.50f;
@@ -231,5 +229,4 @@ Audio::~Audio()
   OZ_AL_CHECK_ERROR();
 }
 
-}
 }

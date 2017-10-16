@@ -27,9 +27,7 @@
 
 #include <SDL2/SDL.h>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 class Builder
@@ -60,5 +58,4 @@ public:
 
 extern Builder builder;
 
-}
 }

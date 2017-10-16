@@ -26,11 +26,7 @@
 #include <client/ui/Area.hh>
 #include <client/ui/Text.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 class CheckBox : public Area
@@ -61,6 +57,4 @@ public:
 
 };
 
-}
-}
 }

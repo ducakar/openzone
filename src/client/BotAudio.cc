@@ -22,9 +22,7 @@
 #include <client/Context.hh>
 #include <client/Camera.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 const float BotAudio::FOOTSTEP_DISTANCE_SQ = 32.0f*32.0f;
@@ -124,5 +122,4 @@ void BotAudio::play(const Object* playAt)
 //  }
 }
 
-}
 }

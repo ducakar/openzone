@@ -22,9 +22,7 @@
 #include <client/Context.hh>
 #include <builder/Compiler.hh>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 void MD3::readAnimData()
@@ -399,5 +397,4 @@ void MD3::build(const File& path)
 
 MD3 md3;
 
-}
 }

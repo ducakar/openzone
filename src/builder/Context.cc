@@ -28,9 +28,7 @@
 #include <client/BotAudio.hh>
 #include <client/VehicleAudio.hh>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 const char* const IMAGE_EXTENSIONS[] = {
@@ -239,5 +237,4 @@ void Context::destroy()
 
 Context context;
 
-}
 }

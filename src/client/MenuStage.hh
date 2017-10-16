@@ -27,9 +27,7 @@
 
 #include <client/ui/MainMenu.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class MenuStage : public Stage
@@ -56,5 +54,4 @@ public:
 
 extern MenuStage menuStage;
 
-}
 }

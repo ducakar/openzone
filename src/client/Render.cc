@@ -27,9 +27,7 @@
 #include <client/Context.hh>
 #include <client/ui/UI.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 const float Render::WIDE_CULL_FACTOR       = 6.0f;
@@ -845,5 +843,4 @@ void Render::destroy()
 
 Render render;
 
-}
 }

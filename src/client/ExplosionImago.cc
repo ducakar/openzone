@@ -21,9 +21,7 @@
 
 #include <client/Context.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 int ExplosionImago::modelId;
@@ -67,5 +65,4 @@ void ExplosionImago::draw(const Imago*)
   tf.colour.w.w = 1.0f;
 }
 
-}
 }

@@ -21,9 +21,7 @@
 
 #include <client/Context.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 Pool<BasicAudio> BasicAudio::pool(2048);
@@ -99,5 +97,4 @@ void BasicAudio::play(const Object* playAt)
   }
 }
 
-}
 }

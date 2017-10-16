@@ -24,11 +24,7 @@
 #include <client/Context.hh>
 #include <client/ui/Style.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 void Button::onVisibilityChange(bool)
@@ -99,6 +95,4 @@ void Button::setCallback(Callback* callback_)
   callback = callback_;
 }
 
-}
-}
 }

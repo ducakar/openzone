@@ -39,11 +39,7 @@
 # include <unistd.h>
 #endif
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 static void loadAutosaved(Button*)
@@ -178,6 +174,4 @@ MainMenu::MainMenu()
   add(quitButton,     -20,  60);
 }
 
-}
-}
 }

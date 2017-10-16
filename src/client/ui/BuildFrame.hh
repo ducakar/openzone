@@ -27,11 +27,7 @@
 #include <client/ui/ModelField.hh>
 #include <client/ui/Frame.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 class BuildFrame : public Frame
@@ -85,6 +81,4 @@ public:
 
 };
 
-}
-}
 }

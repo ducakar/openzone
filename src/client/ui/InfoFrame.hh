@@ -23,16 +23,10 @@
 
 #pragma once
 
+#include <nirvana/Device.hh>
 #include <client/ui/Frame.hh>
 
-namespace oz
-{
-
-class Device;
-
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 class InfoFrame : public Frame
@@ -58,6 +52,4 @@ public:
 
 };
 
-}
-}
 }

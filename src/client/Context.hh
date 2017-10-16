@@ -31,9 +31,7 @@
 #include <client/FragPool.hh>
 #include <client/PartGen.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class Context
@@ -227,5 +225,4 @@ public:
 
 extern Context context;
 
-}
 }

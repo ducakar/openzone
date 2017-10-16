@@ -21,11 +21,7 @@
 
 #include <client/Shape.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 Bar::Bar(const Style::Bar* style_)
@@ -75,6 +71,4 @@ void Bar::drawAbs(int barX, int barY, int barWidth, int barHeight, float ratio) 
   shape.rect(barX, barY, barWidth, barHeight);
 }
 
-}
-}
 }

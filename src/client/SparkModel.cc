@@ -21,9 +21,7 @@
 
 #include <client/Frustum.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 // void ParticleGen::createSpark(int i)
@@ -100,5 +98,4 @@ namespace client
 //   }
 // }
 
-}
 }

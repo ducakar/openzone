@@ -23,9 +23,7 @@
 #include <client/Context.hh>
 #include <builder/Compiler.hh>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 const Vec3 MD2::NORMALS[] =
@@ -412,5 +410,4 @@ void MD2::build(const File& path)
 
 MD2 md2;
 
-}
 }

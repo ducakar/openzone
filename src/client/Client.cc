@@ -43,9 +43,7 @@
 
 #undef main
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 #ifdef __native_client__
@@ -734,5 +732,4 @@ void Client::shutdown()
 
 Client client;
 
-}
 }

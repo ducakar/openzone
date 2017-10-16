@@ -25,9 +25,7 @@
 
 #include <client/common.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class Loader
@@ -114,5 +112,4 @@ public:
 
 extern Loader loader;
 
-}
 }

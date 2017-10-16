@@ -27,9 +27,7 @@
 #define OZ_REGISTER_ATTRIBUTE(location, name) \
   glBindAttribLocation(programs[id].program, location, name)
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 static const int LOG_BUFFER_SIZE = 8192;
@@ -460,5 +458,4 @@ void Shader::destroy()
 
 Shader shader;
 
-}
 }

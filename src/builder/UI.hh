@@ -25,9 +25,7 @@
 
 #include <builder/common.hh>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 class UI
@@ -42,5 +40,4 @@ public:
 
 };
 
-}
 }

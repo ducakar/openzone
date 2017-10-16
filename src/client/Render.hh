@@ -25,9 +25,7 @@
 
 #include <client/common.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 namespace ui
@@ -149,5 +147,4 @@ public:
 
 extern Render render;
 
-}
 }

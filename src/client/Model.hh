@@ -26,9 +26,7 @@
 #include <client/Shader.hh>
 #include <client/MD2.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 struct Vertex
@@ -273,5 +271,4 @@ public:
 
 };
 
-}
 }

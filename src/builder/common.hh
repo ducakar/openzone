@@ -26,12 +26,9 @@
 #include <client/common.hh>
 #include <ozFactory/ozFactory.hh>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 extern Json builderConfig;
 
-}
 }

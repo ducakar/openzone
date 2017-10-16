@@ -27,11 +27,7 @@
 #include <client/ui/Button.hh>
 #include <client/ui/UI.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 void SettingsMenu::back(Button* sender)
@@ -178,6 +174,4 @@ SettingsMenu::SettingsMenu()
   debug->enable(false);
 }
 
-}
-}
 }

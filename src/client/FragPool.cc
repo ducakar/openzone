@@ -23,9 +23,7 @@
 #include <client/Context.hh>
 #include <client/Model.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 const float FragPool::FRAG_RADIUS = 1.0f;
@@ -66,5 +64,4 @@ void FragPool::draw(const Frag* frag)
   }
 }
 
-}
 }

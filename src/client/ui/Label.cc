@@ -19,11 +19,7 @@
 
 #include <client/ui/Label.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 void Label::onDraw()
@@ -68,6 +64,4 @@ void Label::clear()
   text.clear();
 }
 
-}
-}
 }

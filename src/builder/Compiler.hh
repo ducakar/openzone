@@ -27,9 +27,7 @@
 
 #include <client/Model.hh>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 using client::TexCoord;
@@ -127,5 +125,4 @@ public:
 
 extern Compiler compiler;
 
-}
 }

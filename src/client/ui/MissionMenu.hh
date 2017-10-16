@@ -25,11 +25,7 @@
 
 #include <client/ui/Button.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 class MissionMenu;
@@ -98,6 +94,4 @@ public:
 
 };
 
-}
-}
 }

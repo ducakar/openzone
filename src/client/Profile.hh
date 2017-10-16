@@ -27,9 +27,7 @@
 
 #include <matrix/BotClass.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class Profile
@@ -54,5 +52,4 @@ public:
 
 extern Profile profile;
 
-}
 }

@@ -25,9 +25,7 @@
 
 #include <builder/common.hh>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 class Caelum
@@ -40,5 +38,4 @@ public:
 
 extern Caelum caelum;
 
-}
 }

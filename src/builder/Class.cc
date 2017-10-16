@@ -21,9 +21,7 @@
 
 #include <builder/Context.hh>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 void Class::scanObjClass(const char* className)
@@ -61,5 +59,4 @@ void Class::scanFragPool(const char* poolName)
 
 Class clazz;
 
-}
 }

@@ -28,11 +28,7 @@
 #include <client/ui/StrategicArea.hh>
 #include <client/ui/UI.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 void EditFrame::itemCallback(ModelField* sender, bool isClicked)
@@ -195,6 +191,4 @@ EditFrame::EditFrame()
   }
 }
 
-}
-}
 }

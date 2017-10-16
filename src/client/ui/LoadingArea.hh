@@ -26,11 +26,7 @@
 #include <client/ui/Area.hh>
 #include <client/ui/Text.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 class LoadingArea : public Area
@@ -50,6 +46,4 @@ public:
 
 };
 
-}
-}
 }

@@ -25,11 +25,7 @@
 
 #include <client/common.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 class Mouse
@@ -79,6 +75,4 @@ public:
 
 extern Mouse mouse;
 
-}
-}
 }

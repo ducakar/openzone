@@ -25,11 +25,7 @@
 
 #include <client/common.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 class Style
@@ -147,6 +143,4 @@ public:
 
 extern Style style;
 
-}
-}
 }

@@ -27,9 +27,7 @@
 #include <client/Proxy.hh>
 #include <client/ui/EditFrame.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class EditStage : public Stage
@@ -72,5 +70,4 @@ public:
 
 extern EditStage editStage;
 
-}
 }

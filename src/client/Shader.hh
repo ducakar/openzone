@@ -27,9 +27,7 @@
 
 #include <client/common.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 struct Uniform
@@ -215,5 +213,4 @@ public:
 
 extern Shader shader;
 
-}
 }

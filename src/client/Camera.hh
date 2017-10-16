@@ -29,9 +29,7 @@
 #include <client/UnitProxy.hh>
 #include <client/CinematicProxy.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class Camera
@@ -254,5 +252,4 @@ public:
 
 extern Camera camera;
 
-}
 }

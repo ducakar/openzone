@@ -26,9 +26,7 @@
 #include <cwchar>
 #include <cwctype>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 void Profile::save()
@@ -150,5 +148,4 @@ void Profile::destroy()
 
 Profile profile;
 
-}
 }

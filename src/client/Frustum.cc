@@ -21,9 +21,7 @@
 
 #include <client/Camera.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 void Frustum::getExtrems(Span& span, const Point& p)
@@ -66,5 +64,4 @@ void Frustum::update()
 
 Frustum frustum;
 
-}
 }

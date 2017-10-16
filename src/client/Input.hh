@@ -27,9 +27,7 @@
 
 union SDL_Event;
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class Input
@@ -185,5 +183,4 @@ public:
 
 extern Input input;
 
-}
 }

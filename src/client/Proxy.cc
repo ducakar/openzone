@@ -19,13 +19,10 @@
 
 #include <client/Proxy.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 Proxy::~Proxy()
 {}
 
-}
 }

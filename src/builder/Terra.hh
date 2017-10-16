@@ -26,9 +26,7 @@
 #include <builder/common.hh>
 #include <client/Terra.hh>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 class Terra
@@ -71,5 +69,4 @@ public:
 
 extern Terra terra;
 
-}
 }

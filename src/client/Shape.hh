@@ -25,9 +25,7 @@
 
 #include <client/common.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class Shape
@@ -74,5 +72,4 @@ public:
 
 extern Shape shape;
 
-}
 }

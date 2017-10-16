@@ -22,9 +22,7 @@
 #include <client/Context.hh>
 #include <client/Camera.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 const float MD2Imago::TURN_SMOOTHING_COEF = 0.25f;
@@ -145,5 +143,4 @@ void MD2Imago::draw(const Imago* parent)
   }
 }
 
-}
 }

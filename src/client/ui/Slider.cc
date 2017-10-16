@@ -25,11 +25,7 @@
 #include <client/ui/Style.hh>
 #include <client/ui/Mouse.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 void Slider::onVisibilityChange(bool)
@@ -101,6 +97,4 @@ Slider::Slider(float min, float max, float step, float value_, int width, int he
     minValue(min), maxValue(max), valueStep(step), value(value_)
 {}
 
-}
-}
 }

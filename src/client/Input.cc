@@ -21,9 +21,7 @@
 
 #include <SDL2/SDL.h>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 static const char* const KEY_NAMES[] = {
@@ -549,5 +547,4 @@ void Input::destroy()
 
 Input input;
 
-}
 }

@@ -21,9 +21,7 @@
 
 //#include <SDL_net.h>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 //static TCPsocket socket;
@@ -69,5 +67,4 @@ void Network::destroy()
 
 Network network;
 
-}
 }

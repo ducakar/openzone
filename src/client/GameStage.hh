@@ -26,9 +26,7 @@
 #include <client/Stage.hh>
 #include <client/Proxy.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class GameStage : public Stage
@@ -93,5 +91,4 @@ public:
 
 extern GameStage gameStage;
 
-}
 }

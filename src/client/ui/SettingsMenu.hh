@@ -27,11 +27,7 @@
 #include <client/ui/CheckBox.hh>
 #include <client/ui/Slider.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 class SettingsMenu : public Area
@@ -74,6 +70,4 @@ public:
 
 };
 
-}
-}
 }

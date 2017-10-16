@@ -25,9 +25,7 @@
 
 #include <client/common.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class Caelum
@@ -86,5 +84,4 @@ public:
 
 extern Caelum caelum;
 
-}
 }

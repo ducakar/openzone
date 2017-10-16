@@ -25,9 +25,7 @@
 
 #include <SDL2/SDL.h>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 const float Sound::SOUND_DISTANCE = 192.0f;
@@ -472,5 +470,4 @@ void Sound::initLibs()
 
 Sound sound;
 
-}
 }

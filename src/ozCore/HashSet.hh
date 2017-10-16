@@ -159,9 +159,9 @@ protected:
      * STL-style end iterator.
      */
     OZ_ALWAYS_INLINE
-    HashIterator end() const
+    nullptr_t end() const
     {
-      return HashIterator();
+      return nullptr;
     }
 
   };
@@ -441,18 +441,18 @@ public:
    * STL-style constant end iterator.
    */
   OZ_ALWAYS_INLINE
-  CIterator end() const
+  nullptr_t end() const
   {
-    return CIterator();
+    return nullptr;
   }
 
   /**
    * STL-style end iterator.
    */
   OZ_ALWAYS_INLINE
-  Iterator end()
+  nullptr_t end()
   {
-    return Iterator();
+    return nullptr;
   }
 
   /**

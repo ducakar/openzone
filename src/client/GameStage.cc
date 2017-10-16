@@ -36,9 +36,7 @@
 #include <client/ui/LoadingArea.hh>
 #include <client/ui/UI.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 const uint GameStage::AUTOSAVE_INTERVAL = 150 * Timer::TICKS_PER_SEC;
@@ -524,5 +522,4 @@ void GameStage::destroy()
 
 GameStage gameStage;
 
-}
 }

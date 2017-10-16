@@ -30,11 +30,7 @@
 #include <client/ui/StrategicArea.hh>
 #include <client/ui/UI.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 const Mat4 BuildFrame::OVERLAY_GREEN  = Mat4(0.0f, 1.0f, 0.0f, 0.0f,
@@ -375,6 +371,4 @@ BuildFrame::~BuildFrame()
   delete[] models;
 }
 
-}
-}
 }

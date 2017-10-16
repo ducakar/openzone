@@ -19,13 +19,7 @@
 
 #include <client/ui/TalkFrame.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
-}
-}
 }

@@ -34,9 +34,7 @@
 #include <client/ui/StrategicArea.hh>
 #include <client/ui/UI.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 void EditStage::read()
@@ -325,5 +323,4 @@ void EditStage::destroy()
 
 EditStage editStage;
 
-}
 }

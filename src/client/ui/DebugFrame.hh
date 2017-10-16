@@ -25,11 +25,7 @@
 
 #include <client/ui/Frame.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 class DebugFrame : public Frame
@@ -54,6 +50,4 @@ public:
 
 };
 
-}
-}
 }

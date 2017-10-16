@@ -26,9 +26,7 @@
 #include <client/Proxy.hh>
 #include <client/ui/CinematicText.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class CinematicProxy : public Proxy
@@ -91,5 +89,4 @@ public:
 
 };
 
-}
 }

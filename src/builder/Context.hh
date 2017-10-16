@@ -25,9 +25,7 @@
 
 #include <builder/common.hh>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 class Context
@@ -53,5 +51,4 @@ public:
 
 extern Context context;
 
-}
 }

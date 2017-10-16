@@ -23,11 +23,7 @@
 #include <client/Camera.hh>
 #include <client/ui/Style.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 void LoadingArea::onRealign()
@@ -53,6 +49,4 @@ LoadingArea::LoadingArea()
   flags |= PINNED_BIT;
 }
 
-}
-}
 }

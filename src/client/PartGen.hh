@@ -25,9 +25,7 @@
 
 #include <client/PartClass.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class PartGen : public ChainNode<PartGen>
@@ -66,5 +64,4 @@ public:
 
 };
 
-}
 }

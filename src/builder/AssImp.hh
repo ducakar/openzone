@@ -26,9 +26,7 @@
 #include <builder/common.hh>
 #include <client/Model.hh>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 class AssImp
@@ -41,5 +39,4 @@ public:
 
 extern AssImp assImp;
 
-}
 }

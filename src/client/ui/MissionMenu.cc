@@ -27,11 +27,7 @@
 #include <client/ui/Mouse.hh>
 #include <client/ui/Style.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 static void back(Button* sender)
@@ -217,6 +213,4 @@ MissionMenu::MissionMenu()
   }
 }
 
-}
-}
 }

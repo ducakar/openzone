@@ -26,9 +26,7 @@
 #include <client/ui/BuildFrame.hh>
 #include <client/ui/UI.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 const float StrategicProxy::MIN_HEIGHT      = 2.00f;
@@ -263,5 +261,4 @@ Json StrategicProxy::write() const
   return json;
 }
 
-}
 }

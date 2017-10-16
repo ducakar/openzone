@@ -23,9 +23,7 @@
 
 using oz::client::Animation;
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 struct Node;
@@ -942,5 +940,4 @@ void Compiler::destroy()
 
 Compiler compiler;
 
-}
 }

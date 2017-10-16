@@ -21,9 +21,7 @@
 
 #include <client/Context.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 BSPImago::BSPImago(const BSP* bsp)
@@ -100,5 +98,4 @@ void BSPImago::load()
   model.load();
 }
 
-}
 }

@@ -35,11 +35,7 @@
 #include <client/ui/BuildFrame.hh>
 #include <client/ui/DebugFrame.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 UI::UI()
@@ -245,6 +241,4 @@ void UI::destroy()
 
 UI ui;
 
-}
-}
 }

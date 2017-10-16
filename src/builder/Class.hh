@@ -25,9 +25,7 @@
 
 #include <builder/common.hh>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 class Class
@@ -41,5 +39,4 @@ public:
 
 extern Class clazz;
 
-}
 }

@@ -21,9 +21,7 @@
 
 #include <client/Shader.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 const Shape::Vertex Shape::VERTICES[] = {
@@ -386,5 +384,4 @@ void Shape::destroy()
 
 Shape shape;
 
-}
 }

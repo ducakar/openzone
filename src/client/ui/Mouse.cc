@@ -24,11 +24,7 @@
 #include <client/Camera.hh>
 #include <client/Input.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 const char* const Mouse::NAMES[] = {
@@ -155,6 +151,4 @@ void Mouse::destroy()
 
 Mouse mouse;
 
-}
-}
 }

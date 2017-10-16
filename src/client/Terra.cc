@@ -23,9 +23,7 @@
 #include <client/Camera.hh>
 #include <client/Context.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 const float Terra::WAVE_BIAS_INC = 1.5f;
@@ -291,5 +289,4 @@ void Terra::unload()
 
 Terra terra;
 
-}
 }

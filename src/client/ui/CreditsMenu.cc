@@ -26,11 +26,7 @@
 #include <client/ui/Style.hh>
 #include <client/ui/Button.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 static void back(Button* sender)
@@ -202,6 +198,4 @@ CreditsMenu::CreditsMenu()
   lines.add("zlib");
 }
 
-}
-}
 }

@@ -50,9 +50,7 @@
     } \
   }
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 struct Context::TextureResource::PreloadData
@@ -860,5 +858,4 @@ void Context::destroy()
 
 Context context;
 
-}
 }

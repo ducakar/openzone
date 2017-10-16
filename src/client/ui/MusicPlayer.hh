@@ -26,11 +26,7 @@
 #include <client/ui/Frame.hh>
 #include <client/ui/Button.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 class MusicPlayer : public Frame
@@ -63,6 +59,4 @@ public:
 
 };
 
-}
-}
 }

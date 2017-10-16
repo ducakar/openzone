@@ -24,9 +24,7 @@
 #include <client/Terra.hh>
 #include <client/Caelum.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 void Loader::preloadMain(void*)
@@ -384,5 +382,4 @@ void Loader::destroy()
 
 Loader loader;
 
-}
 }

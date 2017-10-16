@@ -22,9 +22,7 @@
 #include <client/Context.hh>
 #include <client/MD2Imago.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 Pool<MD2WeaponImago> MD2WeaponImago::pool(256);
@@ -65,5 +63,4 @@ void MD2WeaponImago::draw(const Imago* parent)
   }
 }
 
-}
 }

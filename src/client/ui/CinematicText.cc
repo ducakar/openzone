@@ -22,11 +22,7 @@
 #include <client/ui/Style.hh>
 #include <client/Camera.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 void CinematicText::onRealign()
@@ -54,6 +50,4 @@ void CinematicText::set(const char* text)
   text_.setText("%s", text);
 }
 
-}
-}
 }

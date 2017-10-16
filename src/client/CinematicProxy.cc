@@ -27,9 +27,7 @@
 #include <client/ui/MusicPlayer.hh>
 #include <client/ui/UI.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 void CinematicProxy::executeSequence(const File& file, const Lingua* missionLingua)
@@ -324,5 +322,4 @@ Json CinematicProxy::write() const
   return Json::NIL;
 }
 
-}
 }

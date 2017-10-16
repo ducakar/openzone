@@ -19,9 +19,7 @@
 
 #include <client/eSpeak.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 OZ_DL_DEFINE(espeak_Initialize      );
@@ -31,5 +29,4 @@ OZ_DL_DEFINE(espeak_SetVoiceByName  );
 OZ_DL_DEFINE(espeak_SetSynthCallback);
 OZ_DL_DEFINE(espeak_Synth           );
 
-}
 }

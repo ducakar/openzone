@@ -32,9 +32,7 @@
 
 #include <unistd.h>
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 static bool skipReferences = false;
@@ -541,7 +539,7 @@ void Builder::packArchive(const char* name, bool useCompression, bool use7zip)
     OZ_ERROR(use7zip ? "Packing 7zip archive failed" : "Packing ZIP archive failed");
   }
 
-  int size = archive.size();
+  int64 size = archive.size();
   if (size >= 0) {
     Log::println();
     Log::println("Archive size: %.2f MiB = %.2f MB",
@@ -843,5 +841,4 @@ int Builder::main(int argc, char** argv)
 
 Builder builder;
 
-}
 }

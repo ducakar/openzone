@@ -25,11 +25,7 @@
 
 #include <client/ui/Area.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 class ModelField : public Area
@@ -81,6 +77,4 @@ public:
 
 };
 
-}
-}
 }

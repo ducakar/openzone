@@ -23,9 +23,7 @@
 #include <client/Context.hh>
 #include <client/Camera.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 void Vertex::setFormat()
@@ -705,5 +703,4 @@ void Model::unload()
   OZ_GL_CHECK_ERROR();
 }
 
-}
 }

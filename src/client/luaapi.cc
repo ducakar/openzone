@@ -21,9 +21,7 @@
 
 #include <client/Camera.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 void importClientConstants(lua_State* l);
@@ -36,5 +34,4 @@ void importClientConstants(lua_State* l)
   registerLuaConstant(l, "OZ_CAMERA_CINEMATIC", Camera::CINEMATIC);
 }
 
-}
 }

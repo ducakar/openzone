@@ -25,9 +25,7 @@
 
 #include <client/Proxy.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class UnitProxy : public Proxy
@@ -89,5 +87,4 @@ public:
 
 };
 
-}
 }

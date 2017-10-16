@@ -21,11 +21,7 @@
 
 #include <client/ui/Mouse.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 Area::Area(int width_, int height_)
@@ -263,6 +259,4 @@ void Area::sink()
   }
 }
 
-}
-}
 }

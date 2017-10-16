@@ -23,11 +23,7 @@
 #include <client/Camera.hh>
 #include <client/ui/Style.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 const Device* const* InfoFrame::updateReferences()
@@ -89,6 +85,4 @@ InfoFrame::InfoFrame()
   flags |= PINNED_BIT;
 }
 
-}
-}
 }

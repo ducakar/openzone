@@ -25,9 +25,7 @@
 
 #include <client/BasicAudio.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class BotAudio : public BasicAudio
@@ -53,5 +51,4 @@ public:
   OZ_STATIC_POOL_ALLOC(pool)
 };
 
-}
 }

@@ -24,9 +24,7 @@
 #define OZ_MODEL_FLAG(flagBit, flagName, defValue) \
   model.flags |= flagBit & -entityConfig[flagName].get(defValue)
 
-namespace oz
-{
-namespace builder
+namespace oz::builder
 {
 
 const float BSP::DEFAULT_SCALE      = 0.01f;
@@ -1257,5 +1255,4 @@ void BSP::build(const char* name_)
 
 BSP bsp;
 
-}
 }

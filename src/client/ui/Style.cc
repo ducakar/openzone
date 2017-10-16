@@ -61,11 +61,7 @@
     } \
   }
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 struct FontInfo
@@ -255,6 +251,4 @@ void Style::destroy()
 
 Style style;
 
-}
-}
 }

@@ -24,9 +24,7 @@
 #include <client/Shape.hh>
 #include <client/Camera.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 struct PartGen::Part
@@ -70,5 +68,4 @@ void PartGen::update()
   }
 }
 
-}
 }

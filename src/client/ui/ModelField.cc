@@ -24,11 +24,7 @@
 #include <client/Context.hh>
 #include <client/ui/Style.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 const float ModelField::DEFAULT_ROTATION   = 3.0f * Math::TAU / 8.0f;
@@ -189,6 +185,4 @@ void ModelField::setClickMask(int mask)
   clickMask = mask;
 }
 
-}
-}
 }

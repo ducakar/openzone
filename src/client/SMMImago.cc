@@ -21,9 +21,7 @@
 
 #include <client/Context.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 Pool<SMMImago> SMMImago::pool(4096);
@@ -54,5 +52,4 @@ void SMMImago::draw(const Imago*)
   model->schedule(0, Model::SCENE_QUEUE);
 }
 
-}
 }

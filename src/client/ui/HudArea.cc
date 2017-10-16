@@ -24,11 +24,7 @@
 #include <client/Shape.hh>
 #include <client/Camera.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 const float HudArea::VEHICLE_DIM      = VEHICLE_SIZE / 2.0f;
@@ -322,6 +318,4 @@ HudArea::HudArea()
   add(vehicleModel, style.vehicleField.x, style.vehicleField.y);
 }
 
-}
-}
 }

@@ -22,9 +22,7 @@
 #include <matrix/Vehicle.hh>
 #include <client/Context.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 Pool<SMMVehicleImago> SMMVehicleImago::pool(64);
@@ -71,5 +69,4 @@ void SMMVehicleImago::draw(const Imago*)
   model->schedule(0, Model::SCENE_QUEUE);
 }
 
-}
 }

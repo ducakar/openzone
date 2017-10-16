@@ -22,9 +22,7 @@
 #include <matrix/Matrix.hh>
 #include <client/luaapi.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 static LuaClient& lua = luaClient;
@@ -699,5 +697,4 @@ void LuaClient::destroy()
 
 LuaClient luaClient;
 
-}
 }

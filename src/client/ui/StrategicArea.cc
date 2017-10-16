@@ -25,11 +25,7 @@
 #include <client/ui/Mouse.hh>
 #include <client/ui/Bar.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 const float StrategicArea::TAG_REACH_DIST     = 100.0f;
@@ -476,6 +472,4 @@ void StrategicArea::clearOverlay()
   overlaySender   = nullptr;
 }
 
-}
-}
 }

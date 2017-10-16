@@ -25,9 +25,7 @@
 #include <client/Input.hh>
 #include <client/ui/UI.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 bool MenuStage::update()
@@ -96,5 +94,4 @@ void MenuStage::destroy()
 
 MenuStage menuStage;
 
-}
 }

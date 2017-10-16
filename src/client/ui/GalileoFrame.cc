@@ -27,11 +27,7 @@
 #include <client/ui/Style.hh>
 #include <client/ui/Mouse.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 void GalileoFrame::onRealign()
@@ -182,6 +178,4 @@ void GalileoFrame::setMaximised(bool doMaximise)
   }
 }
 
-}
-}
 }

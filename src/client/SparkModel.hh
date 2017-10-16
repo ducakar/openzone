@@ -25,9 +25,7 @@
 
 #include <client/Imago.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class ParticleGen
@@ -51,5 +49,4 @@ public:
 
 };
 
-}
 }

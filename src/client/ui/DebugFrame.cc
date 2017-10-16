@@ -22,11 +22,7 @@
 #include <client/Camera.hh>
 #include <client/ui/Style.hh>
 
-namespace oz
-{
-namespace client
-{
-namespace ui
+namespace oz::client::ui
 {
 
 void DebugFrame::onDraw()
@@ -108,6 +104,4 @@ DebugFrame::DebugFrame()
   tagFlags      = Text(5, 5 + height * 0, 0, ALIGN_NONE, &style.monoFont, "");
 }
 
-}
-}
 }

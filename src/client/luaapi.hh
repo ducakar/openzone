@@ -34,9 +34,7 @@
 #include <client/ui/BuildFrame.hh>
 #include <client/ui/UI.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 struct ClientLuaState
@@ -376,5 +374,4 @@ static int ozUIBuildFrame(lua_State* l)
  */
 void importClientConstants(lua_State* l);
 
-}
 }

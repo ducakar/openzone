@@ -27,9 +27,7 @@
 
 #include <client/common.hh>
 
-namespace oz
-{
-namespace client
+namespace oz::client
 {
 
 class LuaClient : public Lua
@@ -55,5 +53,4 @@ public:
 
 extern LuaClient luaClient;
 
-}
 }
