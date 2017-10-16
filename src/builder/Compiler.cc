@@ -108,9 +108,16 @@ struct Mesh
   List<ushort> indices;
 };
 
-struct Light : client::Light
+struct Light
 {
-  Node* node;
+  Node*               node;
+  client::Light::Type type;
+
+  Point               pos;
+  Vec3                dir;
+  Vec3                colour;
+  float               attenuation[3];
+  float               coneCoeff[2];
 };
 
 struct Node
@@ -243,11 +250,11 @@ void Compiler::beginModel()
   nodes.trim();
   root.children.free();
 
-  bounds.mins          = Point(+Math::INF, +Math::INF, +Math::INF);
-  bounds.maxs          = Point(-Math::INF, -Math::INF, -Math::INF);
+  bounds.mins = Point(+Math::INF, +Math::INF, +Math::INF);
+  bounds.maxs = Point(-Math::INF, -Math::INF, -Math::INF);
 
-  currentMesh.flags           = Model::SOLID_BIT;
-  currentMesh.texture         = "";
+  currentMesh.flags   = Model::SOLID_BIT;
+  currentMesh.texture = "";
 
   currentLlight.pos            = Point::ORIGIN;
   currentLlight.dir            = Vec3::ZERO;
@@ -257,18 +264,18 @@ void Compiler::beginModel()
   currentLlight.attenuation[0] = 0.0f;
   currentLlight.attenuation[1] = 0.0f;
   currentLlight.attenuation[2] = 0.0f;
-  currentLlight.type           = Light::POINT;
+  currentLlight.type           = client::Light::POINT;
 
-  root                 = Node("");
-  currentNode                 = &root;
+  root        = Node("");
+  currentNode = &root;
 
-  environment          = MODEL;
-  caps                 = 0;
-  mode                 = TRIANGLES;
-  shaderName           = "mesh";
-  vertNum              = 0;
-  nFrames              = 0;
-  nFramePositions      = 0;
+  environment     = MODEL;
+  caps            = 0;
+  mode            = TRIANGLES;
+  shaderName      = "mesh";
+  vertNum         = 0;
+  nFrames         = 0;
+  nFramePositions = 0;
 }
 
 void Compiler::endModel()
@@ -556,7 +563,7 @@ void Compiler::animVertex(int i)
   vertex(float(i), 0.0f, 0.0f);
 }
 
-void Compiler::beginLight(Light::Type type)
+void Compiler::beginLight(client::Light::Type type)
 {
   OZ_ASSERT(environment == MODEL);
   environment = LIGHT;

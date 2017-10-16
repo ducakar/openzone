@@ -145,15 +145,19 @@ private:
   template <typename Elem, class LessFunc = Less<Elem>>
   static void quicksort(Elem* first, Elem* last)
   {
-    // 8-14 seem as optimal thresholds for switching to selection sort.
-    if (last - first > 11) {
+    // 8 seem as the optimal thresholds for switching to selection sort (Core i5 4460).
+    if (last - first > 8) {
       // Quicksort (the last element is the pivot).
-      Elem* top    = first;
-      Elem* bottom = last - 1;
+      Elem* top        = first;
+      Elem* bottom     = last - 1;
+      Elem* pivot      = first + (last - first) / 2;
+      Elem  pivotValue = *pivot;
+
+      swap(*pivot, *last);
 
       do {
-        for (; !LessFunc()(*last, *top) && top <= bottom; ++top);
-        for (; LessFunc()(*last, *bottom) && top < bottom; --bottom);
+        for (; !LessFunc()(pivotValue, *top) && top <= bottom; ++top);
+        for (; LessFunc()(pivotValue, *bottom) && top < bottom; --bottom);
 
         if (top >= bottom) {
           break;

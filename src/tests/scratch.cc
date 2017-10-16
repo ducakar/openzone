@@ -21,84 +21,143 @@
 
 using namespace oz;
 
-//struct Error
-//{
-//  String message;
+#define OZ_DECLARE_CREATE_ERROR(name)                    \
+  OZ_PRINTF_FORMAT(1, 2)                                 \
+  static Box<Error> name(const char* message = "", ...); \
 
-//  Error() = default;
+#define OZ_IMPLEMENT_CREATE_ERROR(name, type)      \
+  Box<Error> Error::name(const char* message, ...) \
+  {                                                \
+    va_list ap;                                    \
+    va_start(ap, message);                         \
+    Error* error = new Error(type, message, ap);   \
+    va_end(ap);                                    \
+    return error;                                  \
+  }
 
-//  explicit Error(const String& message)
-//    : message(message)
-//  {}
+struct Error
+{
+  enum Type
+  {
+    LOGIC,    ///< General logic error.
+    LIMIT,    ///< Out of implementation-defined limits.
+    CAST,     ///< Invalid cast.
+    ARGUMENT, ///< Invalid argument value.
+    RANGE,    ///< Index out of bounds.
 
-//  explicit Error(String&& message)
-//    : message(static_cast<String&&>(message))
-//  {}
+    RUNTIME,  ///< General runtime error.
+    SYSTEM,   ///< System error (general error reported by OS API).
+    ALLOC,    ///< Memory allocation error.
+    OVERFLOW, ///< Overflow in computation.
+    IO,       ///< General I/O error.
+    FILE,     ///< Filesystem operation error.
+    NETWORK   ///< Network I/O error.
+  };
 
-//  OZ_PRINTF_FORMAT(2, 3)
-//  explicit Error(const char* message, ...)
-//  {
-//    va_list ap;
-//    va_start(ap, message);
+  Type   type_;
+  String message_;
 
-//    message = String::vformat(message, ap);
+  OZ_PRINTF_FORMAT(3, 4)
+  explicit Error(Type type, const char* message, ...)
+    : type_(type)
+  {
+    va_list ap;
+    va_start(ap, message);
 
-//    va_end(ap);
-//  }
-//};
+    message_ = String::vformat(message, ap);
 
-//template <typename Type>
-//struct Result
-//{
-//  Type       result;
-//  Box<Error> error;
+    va_end(ap);
+  }
 
-//  Result(Type value)
-//    : result(value)
-//  {}
+  OZ_PRINTF_FORMAT(3, 0)
+  explicit Error(Type type, const char* message, va_list ap)
+    : type_(type), message_(String::vformat(message, ap))
+  {}
 
-//  Result(Box<Error>&& value)
-//    : error(static_cast<Box<Error>&&>(value))
-//  {}
+  Type type() const noexcept
+  {
+    return type_;
+  }
 
-//  OZ_PRINTF_FORMAT(1, 2)
-//  static Result Error(const char* message, ...)
-//  {
-//    va_list ap;
-//    va_start(ap, message);
+  const String& message() const noexcept
+  {
+    return message_;
+  }
 
-//    ::Error* error = new ::Error(String::format(message, ap));
+  OZ_DECLARE_CREATE_ERROR(logic)
+  OZ_DECLARE_CREATE_ERROR(limit)
+  OZ_DECLARE_CREATE_ERROR(cast)
+  OZ_DECLARE_CREATE_ERROR(argument)
+  OZ_DECLARE_CREATE_ERROR(range)
 
-//    va_end(ap);
+  OZ_DECLARE_CREATE_ERROR(runtime)
+  OZ_DECLARE_CREATE_ERROR(system)
+  OZ_DECLARE_CREATE_ERROR(alloc)
+  OZ_DECLARE_CREATE_ERROR(overflow)
+  OZ_DECLARE_CREATE_ERROR(io)
+  OZ_DECLARE_CREATE_ERROR(file)
+  OZ_DECLARE_CREATE_ERROR(network)
+};
 
-//    return Result(error);
-//  }
+OZ_IMPLEMENT_CREATE_ERROR(logic, LOGIC)
+OZ_IMPLEMENT_CREATE_ERROR(limit, LIMIT)
+OZ_IMPLEMENT_CREATE_ERROR(cast, CAST)
+OZ_IMPLEMENT_CREATE_ERROR(argument, ARGUMENT)
+OZ_IMPLEMENT_CREATE_ERROR(range, RANGE)
 
-//  const Type& unwrap() const
-//  {
-//    if (error != nullptr) {
-//      OZ_ERROR(error->message);
-//    }
-//    return result;
-//  }
+OZ_IMPLEMENT_CREATE_ERROR(runtime, RUNTIME)
+OZ_IMPLEMENT_CREATE_ERROR(system, SYSTEM)
+OZ_IMPLEMENT_CREATE_ERROR(alloc, ALLOC)
+OZ_IMPLEMENT_CREATE_ERROR(overflow, OVERFLOW)
+OZ_IMPLEMENT_CREATE_ERROR(io, IO)
+OZ_IMPLEMENT_CREATE_ERROR(file, FILE)
+OZ_IMPLEMENT_CREATE_ERROR(network, NETWORK)
 
-//  Type& unwrap()
-//  {
-//    if (error != nullptr) {
-//      OZ_ERROR(error->message);
-//    }
-//    return result;
-//  }
-//};
+template <typename Type>
+struct Result
+{
+  Type       result;
+  Box<Error> error;
+
+  Result(Type value)
+    : result(value)
+  {}
+
+  Result(Box<Error>&& value)
+    : error(static_cast<Box<Error>&&>(value))
+  {}
+
+  const Type& unwrap() const
+  {
+    if (error != nullptr) {
+      OZ_ERROR("%s", error->message().c());
+    }
+    return result;
+  }
+
+  Type& unwrap()
+  {
+    if (error != nullptr) {
+      OZ_ERROR("%s", error->message().c());
+    }
+    return result;
+  }
+};
+
+static Result<String> read(const File& file)
+{
+  Stream is = file.read();
+  if (is.available() == 0) {
+    return Error::io("Read failed");
+  }
+  else {
+    return String(is.begin(), is.available());
+  }
+}
 
 int main()
 {
   System::init();
-  auto json = Json{
-    Json
-    {"drekec", "pekec"},
-    {"1", "2"}
-  };
-  json.save("/home/davorin/out.txt");
+  Log() << read("/home/davorin/.bashrc").unwrap();
   return 0;
 }

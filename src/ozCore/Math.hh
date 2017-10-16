@@ -182,11 +182,7 @@ public:
   OZ_ALWAYS_INLINE
   static float exp10(float x)
   {
-#ifdef OZ_CLANG
     return __builtin_expf(__builtin_logf(10.0f) * x);
-#else
-    return __builtin_exp10f(x);
-#endif
   }
 
   /**

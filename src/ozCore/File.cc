@@ -481,13 +481,17 @@ bool File::read(char* buffer, int64* size) const
 
 Stream File::read(Endian::Order order) const
 {
-  int64 size = Stat(begin()).size;
+  Stat   stat = Stat(begin());
+  int64  size = stat.size;
+  Stream is(size < 0 ? 0 : int(size), order);
+
+  if (stat.type == Stat::MISSING) {
+    return is;
+  }
 
   if (uint64(size) > INT_MAX) {
     OZ_ERROR("oz::File: Cannot read file larger than INT_MAX to a stream");
   }
-
-  Stream is(size < 0 ? 0 : int(size), order);
 
   if (size == 0 || !read(is.begin(), &size)) {
     is.free();

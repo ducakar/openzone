@@ -41,20 +41,6 @@
  * Compiler and platform-specific macros
  */
 
-#if defined(__clang__)
-# define OZ_CLANG (__clang_major__ * 100 + __clang_minor__)
-# if OZ_CLANG < 304
-#  error GCC >= 5 and LLVM/Clang >= 3.4 are the only supported compilers.
-# endif
-#elif defined(__GNUC__)
-# define OZ_GCC (__GNUC__ * 100 + __GNUC_MINOR__)
-# if OZ_GCC < 500
-#  error GCC >= 5 and LLVM/Clang >= 3.4 are the only supported compilers.
-# endif
-#else
-# error GCC >= 5 and LLVM/Clang >= 3.4 are the only supported compilers.
-#endif
-
 #ifdef _WIN32
 // Don't import all crap from Windows headers.
 # define WIN32_LEAN_AND_MEAN

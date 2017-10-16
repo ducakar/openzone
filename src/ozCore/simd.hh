@@ -86,7 +86,7 @@ inline uint4 vFill(uint x)
  * @def vShuffle
  * Shuffle elements of a single vector.
  */
-#ifdef OZ_CLANG
+#ifdef __clang__
 # define vShuffle(a, i, j, k, l) __builtin_shufflevector(a, a, i, j, k, l)
 #else
 # define vShuffle(a, i, j, k, l) __builtin_shuffle(a, uint4{i, j, k, l})

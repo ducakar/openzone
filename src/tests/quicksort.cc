@@ -121,7 +121,7 @@ inline void arSort(Type* first, Type* last)
 }
 
 template <typename Type>
-static void oaSort(Type* array, int begin, int end)
+inline void oaSort(Type* array, int begin, int end)
 {
   int first = begin;
   int last = end - 1;
@@ -166,27 +166,24 @@ static void oaSort(Type* array, int begin, int end)
 int main()
 {
   System::init();
+  Math::seed(42);
 
-  int array[MAX];
-
-  srand(32);
+  SList<int, MAX> list(MAX);
 
   Instant t0 = Instant::now();
-  for (int i = 0; i < TESTS; ++i) {
-    for (int j = 0; j < MAX; ++j) {
-      array[j] = rand() % MAX;
-    }
-    //sort(array, 0, MAX);
-    //quickSort(array, MAX);
-    //arSort(array, array + MAX - 1);
-    Arrays::sort(array, MAX);
-    //aSort<int, 100>(array, MAX);
-  }
-  printf("%d ms\n", int((Instant::now() - t0).ms()));
-//   for (int i = 0; i < MAX; ++i) {
-//     printf("%d ", array[i]);
-//   }
 
+  for (int i = 0; i < TESTS; ++i) {
+    for (int& j : list) {
+      j = Math::rand(MAX);
+    }
+
+    Arrays::sort(list.begin(), MAX);
+    //aSort<int, 100>(list.begin(), MAX);
+    //arSort(list.begin(), list.begin() + MAX - 1);
+    //oaSort<int>(list.begin(), 0, MAX);
+  }
+
+  Log() << (Instant::now() - t0).ms() << " ms";
   Log::printMemoryLeaks();
   return 0;
 }

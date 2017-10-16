@@ -93,7 +93,7 @@ else()
   include_directories(SYSTEM ${LUA_INCLUDE_DIRS})
 endif()
 
-if (EMSCRIPTEN)
+if(EMSCRIPTEN)
   pkg_check_modules(SDL REQUIRED sdl)
   set(SDL_TTF_LIBRARIES "")
 else()

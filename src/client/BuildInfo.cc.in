@@ -27,7 +27,7 @@ const char* const BuildInfo::HOST        = "@OZ_HOSTNAME@ @CMAKE_HOST_SYSTEM@";
 const char* const BuildInfo::HOST_ARCH   = "@CMAKE_HOST_SYSTEM_NAME@-@CMAKE_HOST_SYSTEM_PROCESSOR@";
 const char* const BuildInfo::TARGET_ARCH = "@OZ_PLATFORM_NAME@";
 const char* const BuildInfo::BUILD_TYPE  = "@CMAKE_BUILD_TYPE@";
-#ifdef OZ_CLANG
+#ifdef __clang__
 const char* const BuildInfo::COMPILER    = "LLVM/Clang " __clang_version__;
 #else
 const char* const BuildInfo::COMPILER    = "GCC " __VERSION__;
