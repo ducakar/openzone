@@ -114,18 +114,18 @@ public:
   /**
    * Move constructor, moves storage.
    */
-  PoolAlloc(PoolAlloc&& other);
+  PoolAlloc(PoolAlloc&& other) noexcept;
 
   /**
    * Move operator, moves storage.
    */
-  PoolAlloc& operator=(PoolAlloc&& other);
+  PoolAlloc& operator=(PoolAlloc&& other) noexcept;
 
   /**
    * Number of used slots in the pool.
    */
   OZ_ALWAYS_INLINE
-  int size() const
+  int size() const noexcept
   {
     return size_;
   }
@@ -134,7 +134,7 @@ public:
    * True iff no slots are used.
    */
   OZ_ALWAYS_INLINE
-  bool isEmpty() const
+  bool isEmpty() const noexcept
   {
     return size_ == 0;
   }
@@ -143,7 +143,7 @@ public:
    * Number of allocated slots.
    */
   OZ_ALWAYS_INLINE
-  int capacity() const
+  int capacity() const noexcept
   {
     return capacity_;
   }

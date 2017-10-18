@@ -28,8 +28,8 @@ void test_arrays()
 {
   Log() << "+ arrays";
 
-  Arrays::CIterator<Foo> ici;
-  Arrays::Iterator<Foo>  ii;
+  Arrays::CRangeType<Foo> ici;
+  Arrays::RangeType<Foo>  ii;
 
   Foo a[4] = {1, 2, 3, 2};
   Foo b[4];
@@ -58,7 +58,7 @@ void test_arrays()
   Arrays::copy(b, 4, a);
   Arrays::copy(b, 0, a);
   OZ_CHECK(Arrays::equals(a, 4, b));
-  OZ_CHECK(iEquals(citerator(a), citerator(b)));
+  OZ_CHECK(iEquals(crange(a), crange(b)));
 
   Arrays::copyBackward(a, 4, b);
   Arrays::copyBackward(a, 0, b);
@@ -96,7 +96,7 @@ void test_arrays()
   OZ_CHECK_CONTENTS(a, 2, 3, 2, 1);
 
   Foo** c = new Foo*[5]();
-  for (Foo*& i : iterator(c, 5)) {
+  for (Foo*& i : range(c, 5)) {
     i = new Foo();
   }
   Arrays::free(c, 5);

@@ -61,9 +61,18 @@ public:
    * Apply a memory barrier.
    */
   template <MemoryOrder MEMORY_ORDER>
-  static void threadFence()
+  static void threadFence() noexcept
   {
     __atomic_thread_fence(MEMORY_ORDER);
+  }
+
+  /**
+   * Compiler-only memory barrier.
+   */
+  template <MemoryOrder MEMORY_ORDER>
+  static void signalFence() noexcept
+  {
+    __atomic_signal_fence(MEMORY_ORDER);
   }
 
   /**
@@ -72,7 +81,7 @@ public:
    * Same as `std::atomic_flag::test_and_set()`. Only works for bool type.
    */
   template <MemoryOrder MEMORY_ORDER>
-  bool testAndSet()
+  bool testAndSet() noexcept
   {
     return __atomic_test_and_set(&value, MEMORY_ORDER);
   }
@@ -84,7 +93,7 @@ public:
    * `ATOMIC_RELEASE` and `ATOMIC_SEQ_CST` memory orders are allowed.
    */
   template <MemoryOrder MEMORY_ORDER>
-  void clear()
+  void clear() noexcept
   {
     static_assert(MEMORY_ORDER == RELAXED ||
                   MEMORY_ORDER == RELEASE ||
@@ -101,7 +110,7 @@ public:
    * `ATOMIC_SEQ_CST` memory orders are allowed.
    */
   template <MemoryOrder MEMORY_ORDER>
-  Type load() const
+  Type load() const noexcept
   {
     static_assert(MEMORY_ORDER == RELAXED ||
                   MEMORY_ORDER == ACQUIRE ||
@@ -118,7 +127,7 @@ public:
    * memory orders are allowed.
    */
   template <MemoryOrder MEMORY_ORDER>
-  void store(Type desired)
+  void store(Type desired) noexcept
   {
     static_assert(MEMORY_ORDER == RELAXED ||
                   MEMORY_ORDER == RELEASE ||
@@ -134,7 +143,7 @@ public:
    * Same as `std::atomic::exchange()`.
    */
   template <MemoryOrder MEMORY_ORDER>
-  Type exchange(Type desired)
+  Type exchange(Type desired) noexcept
   {
     static_assert(MEMORY_ORDER == RELAXED ||
                   MEMORY_ORDER == ACQUIRE ||
@@ -152,7 +161,7 @@ public:
    * Same as `std::atomic::fetch_and()`.
    */
   template <MemoryOrder MEMORY_ORDER>
-  Type fetchAnd(Type arg)
+  Type fetchAnd(Type arg) noexcept
   {
     return __atomic_fetch_and(&value, arg, MEMORY_ORDER);
   }
@@ -163,7 +172,7 @@ public:
    * Same as `std::atomic::fetch_or()`.
    */
   template <MemoryOrder MEMORY_ORDER>
-  Type fetchOr(Type arg)
+  Type fetchOr(Type arg) noexcept
   {
     return __atomic_fetch_or(&value, arg, MEMORY_ORDER);
   }
@@ -174,7 +183,7 @@ public:
    * Same as `std::atomic::fetch_xor()`.
    */
   template <MemoryOrder MEMORY_ORDER>
-  Type fetchXor(Type arg)
+  Type fetchXor(Type arg) noexcept
   {
     return __atomic_fetch_xor(&value, arg, MEMORY_ORDER);
   }
@@ -185,7 +194,7 @@ public:
    * Same as `std::atomic::fetch_add()`.
    */
   template <MemoryOrder MEMORY_ORDER>
-  Type fetchAdd(Type arg)
+  Type fetchAdd(Type arg) noexcept
   {
     return __atomic_fetch_add(&value, arg, MEMORY_ORDER);
   }
@@ -196,7 +205,7 @@ public:
    * Same as `std::atomic::fetch_add()`.
    */
   template <MemoryOrder MEMORY_ORDER>
-  Type fetchSub(Type arg)
+  Type fetchSub(Type arg) noexcept
   {
     return __atomic_fetch_sub(&value, arg, MEMORY_ORDER);
   }

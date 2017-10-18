@@ -29,19 +29,22 @@
 
 #define OZ_CHECK_CONTENTS(container, ...) \
   { \
-    auto i = citerator(container); \
-    typedef decltype(i) CIterator; \
-    CIterator::ElemType array[] = {__VA_ARGS__}; \
-    OZ_CHECK(iEquals(i, citerator(array))); \
+    auto i = crange(container); \
+    typedef decltype(i) CRange; \
+    CRange::Elem array[] = {__VA_ARGS__}; \
+    OZ_CHECK(iEquals(i, crange(array))); \
   }
 
-template <class CIteratorA, class CIteratorB>
-inline bool iEquals(CIteratorA iterA, CIteratorB iterB)
+template <class CRangeA, class CRangeB>
+inline bool iEquals(CRangeA rangeA, CRangeB rangeB)
 {
-  OZ_ASSERT(static_cast<void*>(&iterA) != static_cast<void*>(&iterB));
+  auto& iterA = rangeA.begin();
+  auto& endA  = rangeA.end();
+  auto& iterB = rangeB.begin();
+  auto& endB  = rangeB.end();
 
-  for (; iterA.isValid() && iterB.isValid() && *iterA == *iterB; ++iterA, ++iterB);
-  return !iterA.isValid() && !iterB.isValid();
+  for (; iterA != endA && iterB != endB && *iterA == *iterB; ++iterA, ++iterB);
+  return iterA == endA && iterB == endB;
 }
 
 extern bool hasPassed;

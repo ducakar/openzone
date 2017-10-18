@@ -94,12 +94,12 @@ public:
     /**
      * Move constructor.
      */
-    Decoder(Decoder&& other);
+    Decoder(Decoder&& other) noexcept;
 
     /**
      * Move operator.
      */
-    Decoder& operator=(Decoder&& other);
+    Decoder& operator=(Decoder&& other) noexcept;
 
     /**
      * True iff a stream is opened.

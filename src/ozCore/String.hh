@@ -52,14 +52,14 @@ public:
 public:
 
   /**
-   * %Iterator with constant access to characters.
+   * %Range with constant access to characters.
    */
-  typedef Arrays::CIterator<const char> CIterator;
+  typedef Arrays::CRangeType<const char> CRange;
 
   /**
-   * %Iterator with non-constant access to characters.
+   * %Range with non-constant access to characters.
    */
-  typedef Arrays::Iterator<char> Iterator;
+  typedef Arrays::RangeType<char> Range;
 
 private:
 
@@ -323,7 +323,7 @@ public:
   /**
    * Move constructor.
    */
-  String(String&& other);
+  String(String&& other) noexcept;
 
   /**
    * Copy operator.
@@ -335,7 +335,7 @@ public:
   /**
    * Move operator.
    */
-  String& operator=(String&& other);
+  String& operator=(String&& other) noexcept;
 
   /**
    * Replace current string with a given C string (nullptr is permitted, equals "").
@@ -417,30 +417,10 @@ public:
   }
 
   /**
-   * %Iterator with constant access, initially points to the first character.
-   */
-  OZ_ALWAYS_INLINE
-  CIterator citerator() const
-  {
-    const char* buffer = begin();
-    return CIterator(buffer, buffer + size_);
-  }
-
-  /**
-   * %Iterator with non-constant access, initially points to the first character.
-   */
-  OZ_ALWAYS_INLINE
-  Iterator iterator()
-  {
-    char* buffer = begin();
-    return Iterator(buffer, buffer + size_);
-  }
-
-  /**
    * STL-style constant begin iterator.
    */
   OZ_ALWAYS_INLINE
-  const char* begin() const
+  const char* begin() const noexcept
   {
     return size_ < STATIC_SIZE ? staticData_ : data_;
   }
@@ -449,7 +429,7 @@ public:
    * STL-style begin iterator.
    */
   OZ_ALWAYS_INLINE
-  char* begin()
+  char* begin() noexcept
   {
     return size_ < STATIC_SIZE ? staticData_ : data_;
   }
@@ -458,7 +438,7 @@ public:
    * STL-style constant end iterator.
    */
   OZ_ALWAYS_INLINE
-  const char* end() const
+  const char* end() const noexcept
   {
     return begin() + size_;
   }
@@ -467,7 +447,7 @@ public:
    * STL-style end iterator.
    */
   OZ_ALWAYS_INLINE
-  char* end()
+  char* end() noexcept
   {
     return begin() + size_;
   }
@@ -510,7 +490,7 @@ public:
    * Length.
    */
   OZ_ALWAYS_INLINE
-  int length() const
+  int length() const noexcept
   {
     return size_;
   }
@@ -519,7 +499,7 @@ public:
    * True iff the string is empty.
    */
   OZ_ALWAYS_INLINE
-  bool isEmpty() const
+  bool isEmpty() const noexcept
   {
     return size_ == 0;
   }

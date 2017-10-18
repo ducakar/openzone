@@ -24,6 +24,7 @@ add_library(ozCore
   HashSet.hh
   Heap.hh
   Instant.hh
+  IteratorBase.hh
   Java.hh
   Json.hh
   List.hh
@@ -41,6 +42,7 @@ add_library(ozCore
   Pool.hh
   Profiler.hh
   Quat.hh
+  Range.hh
   RWLock.hh
   SBitset.hh
   Semaphore.hh

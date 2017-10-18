@@ -132,7 +132,7 @@ Object::Object(const ObjectClass* clazz_, int index_, const Json& json)
   resistance = clazz_->resistance;
   clazz      = clazz_;
 
-  for (const Json& flagJson : json["flags"].arrayCIter()) {
+  for (const Json& flagJson : json["flags"].arrayCRange()) {
     OZ_FLAG_READ(DYNAMIC_BIT,      "dynamic"  );
     OZ_FLAG_READ(WEAPON_BIT,       "weapon"   );
     OZ_FLAG_READ(BOT_BIT,          "bot"      );

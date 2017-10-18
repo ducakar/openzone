@@ -32,6 +32,8 @@
  * Base definitions and templates.
  */
 #include "common.hh"
+#include "IteratorBase.hh"
+#include "Range.hh"
 
 /*
  * System.

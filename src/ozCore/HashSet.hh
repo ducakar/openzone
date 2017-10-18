@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "Range.hh"
 #include "System.hh"
 #include "Pool.hh"
 
@@ -82,12 +83,12 @@ protected:
     /**
      * Create an invalid iterator.
      */
-    HashIterator() = default;
+    HashIterator() noexcept = default;
 
     /**
      * Create hashtable iterator, initially pointing to the first hashtable element.
      */
-    explicit HashIterator(const HashSet& table)
+    explicit HashIterator(const HashSet& table) noexcept
       : detail::IteratorBase<EntryType>(nullptr), table_(&table), index_(0)
     {
       while (elem_ == nullptr && index_ < table_->capacity_) {
@@ -100,7 +101,7 @@ protected:
      * Pointer to the current element.
      */
     OZ_ALWAYS_INLINE
-    operator ElemType*() const
+    operator ElemType*() const noexcept
     {
       return &elem_->elem;
     }
@@ -109,7 +110,7 @@ protected:
      * Reference to the current element.
      */
     OZ_ALWAYS_INLINE
-    ElemType& operator*() const
+    ElemType& operator*() const noexcept
     {
       return elem_->elem;
     }
@@ -118,7 +119,7 @@ protected:
      * Access to the current element's member.
      */
     OZ_ALWAYS_INLINE
-    ElemType* operator->() const
+    ElemType* operator->() const noexcept
     {
       return &elem_->elem;
     }
@@ -126,7 +127,7 @@ protected:
     /**
      * Advance to the next element.
      */
-    HashIterator& operator++()
+    HashIterator& operator++() noexcept
     {
       OZ_ASSERT(elem_ != nullptr);
 
@@ -146,37 +147,19 @@ protected:
       return *this;
     }
 
-    /**
-     * STL-style begin iterator.
-     */
-    OZ_ALWAYS_INLINE
-    HashIterator begin() const
-    {
-      return *this;
-    }
-
-    /**
-     * STL-style end iterator.
-     */
-    OZ_ALWAYS_INLINE
-    nullptr_t end() const
-    {
-      return nullptr;
-    }
-
   };
 
 public:
 
   /**
-   * %Iterator with constant access to elements.
+   * %Range with constant access to elements.
    */
-  typedef HashIterator<const Entry, const Elem> CIterator;
+  typedef Range<HashIterator<const Entry, const Elem>, nullptr_t, const Elem> CRangeType;
 
   /**
-   * %Iterator with non-constant access to elements.
+   * %Range with non-constant access to elements.
    */
-  typedef HashIterator<Entry, Elem> Iterator;
+  typedef Range<HashIterator<Entry, Elem>, nullptr_t, Elem> RangeType;
 
 protected:
 
@@ -318,7 +301,7 @@ public:
   /**
    * Move constructor, moves storage.
    */
-  HashSet(HashSet&& other)
+  HashSet(HashSet&& other) noexcept
     : pool_(static_cast<Pool<Entry>&&>(other.pool_)), data_(other.data_), capacity_(other.capacity_)
   {
     other.data_     = nullptr;
@@ -344,7 +327,7 @@ public:
   /**
    * Move operator, moves storage.
    */
-  HashSet& operator=(HashSet&& other)
+  HashSet& operator=(HashSet&& other) noexcept
   {
     if (&other != this) {
       clear();
@@ -394,54 +377,46 @@ public:
   }
 
   /**
-   * False iff contained elements are equal.
-   */
-  bool operator!=(const HashSet& other) const
-  {
-    return !operator==(other);
-  }
-
-  /**
-   * %Iterator with constant access, initially points to the first element.
+   * STL-style constant begin iterator.
    */
   OZ_ALWAYS_INLINE
-  CIterator citerator() const
+  typename CRangeType::Begin cbegin() const noexcept
   {
-    return CIterator(*this);
-  }
-
-  /**
-   * %Iterator with non-constant access, initially points to the first element.
-   */
-  OZ_ALWAYS_INLINE
-  Iterator iterator()
-  {
-    return Iterator(*this);
+    return HashIterator<const Entry, const Elem>(*this);
   }
 
   /**
    * STL-style constant begin iterator.
    */
   OZ_ALWAYS_INLINE
-  CIterator begin() const
+  typename CRangeType::Begin begin() const noexcept
   {
-    return CIterator(*this);
+    return HashIterator<const Entry, const Elem>(*this);
   }
 
   /**
    * STL-style begin iterator.
    */
   OZ_ALWAYS_INLINE
-  Iterator begin()
+  typename RangeType::Begin begin() noexcept
   {
-    return Iterator(*this);
+    return HashIterator<Entry, Elem>(*this);
   }
 
   /**
    * STL-style constant end iterator.
    */
   OZ_ALWAYS_INLINE
-  nullptr_t end() const
+  typename CRangeType::End cend() const noexcept
+  {
+    return nullptr;
+  }
+
+  /**
+   * STL-style constant end iterator.
+   */
+  OZ_ALWAYS_INLINE
+  typename CRangeType::End end() const noexcept
   {
     return nullptr;
   }
@@ -450,7 +425,7 @@ public:
    * STL-style end iterator.
    */
   OZ_ALWAYS_INLINE
-  nullptr_t end()
+  typename RangeType::End end() noexcept
   {
     return nullptr;
   }
@@ -459,7 +434,7 @@ public:
    * Number of elements.
    */
   OZ_ALWAYS_INLINE
-  int size() const
+  int size() const noexcept
   {
     return pool_.size();
   }
@@ -468,7 +443,7 @@ public:
    * True iff empty.
    */
   OZ_ALWAYS_INLINE
-  bool isEmpty() const
+  bool isEmpty() const noexcept
   {
     return pool_.isEmpty();
   }
@@ -477,7 +452,7 @@ public:
    * Length of bucket array.
    */
   OZ_ALWAYS_INLINE
-  int capacity() const
+  int capacity() const noexcept
   {
     return capacity_;
   }
@@ -486,7 +461,7 @@ public:
    * Size of memory pool for elements.
    */
   OZ_ALWAYS_INLINE
-  int poolCapacity() const
+  int poolCapacity() const noexcept
   {
     return pool_.capacity();
   }

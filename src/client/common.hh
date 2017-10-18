@@ -64,12 +64,6 @@ struct TexCoord
   }
 
   OZ_ALWAYS_INLINE
-  bool operator!=(const TexCoord& tc) const
-  {
-    return !operator==(tc);
-  }
-
-  OZ_ALWAYS_INLINE
   operator const float*() const
   {
     return &u;

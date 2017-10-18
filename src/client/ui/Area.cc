@@ -54,7 +54,7 @@ bool Area::passMouseEvents()
     }
   }
 
-  for (auto i = children.iterator(); i.isValid();) {
+  for (auto i = children.begin(); i != nullptr;) {
     Area* child = i;
     ++i;
 
@@ -74,7 +74,7 @@ bool Area::passMouseEvents()
 
 bool Area::passKeyEvents()
 {
-  for (auto i = children.iterator(); i.isValid();) {
+  for (auto i = children.begin(); i != nullptr;) {
     Area* child = i;
     ++i;
 

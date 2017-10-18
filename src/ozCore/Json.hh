@@ -79,24 +79,24 @@ public:
   typedef Map<const char*, Json>::Pair Pair;
 
   /**
-   * %Iterator for JSON arrays with constant access to elements.
+   * %Range for JSON arrays with constant access to elements.
    */
-  typedef List<const Json>::CIterator ArrayCIterator;
+  typedef List<const Json>::CRangeType ArrayCRange;
 
   /**
-   * %Iterator for JSON arrays with non-constant access to elements.
+   * %Range for JSON arrays with non-constant access to elements.
    */
-  typedef List<Json>::Iterator ArrayIterator;
+  typedef List<Json>::RangeType ArrayRange;
 
   /**
-   * %Iterator for JSON objects with constant access to elements.
+   * %Range for JSON objects with constant access to elements.
    */
-  typedef Map<String, Json>::CIterator ObjectCIterator;
+  typedef Map<String, Json>::CRangeType ObjectCRange;
 
   /**
-   * %Iterator for JSON objects with non-constant access to elements.
+   * %Range for JSON objects with non-constant access to elements.
    */
-  typedef Map<String, Json>::Iterator ObjectIterator;
+  typedef Map<String, Json>::RangeType ObjectRange;
 
 private:
 
@@ -254,7 +254,7 @@ public:
   /**
    * Move constructor.
    */
-  Json(Json&& other);
+  Json(Json&& other) noexcept;
 
   /**
    * Copy operator.
@@ -264,7 +264,7 @@ public:
   /**
    * Move operator.
    */
-  Json& operator=(Json&& other);
+  Json& operator=(Json&& other) noexcept;
 
   /**
    * Equality.
@@ -272,37 +272,32 @@ public:
   bool operator==(const Json& other) const;
 
   /**
-   * Inequality.
+   * JSON array range with constant access.
+   *
+   * An empty range is returned if the JSON element is not an array.
    */
-  bool operator!=(const Json& other) const;
+  ArrayCRange arrayCRange() const noexcept;
 
   /**
-   * JSON array iterator with constant access.
+   * JSON array range with non-constant access.
    *
-   * An invalid iterator is returned if the JSON element is not an array.
+   * An empty range is returned if the JSON element is not an array.
    */
-  ArrayCIterator arrayCIter() const;
+  ArrayRange arrayRange() noexcept;
 
   /**
-   * JSON array iterator with non-constant access.
+   * JSON object range with constant access.
    *
-   * An invalid iterator is returned if the JSON element is not an array.
+   * An empty range is returned if the JSON element is not an object.
    */
-  ArrayIterator arrayIter();
+  ObjectCRange objectCRange() const noexcept;
 
   /**
-   * JSON object iterator with constant access.
+   * JSON object range with non-constant access.
    *
-   * An invalid iterator is returned if the JSON element is not an object.
+   * An empty range is returned if the JSON element is not an object.
    */
-  ObjectCIterator objectCIter() const;
-
-  /**
-   * JSON object iterator with non-constant access.
-   *
-   * An invalid iterator is returned if the JSON element is not an object.
-   */
-  ObjectIterator objectIter();
+  ObjectRange objectRange() noexcept;
 
   /**
    * Type of value.
@@ -325,12 +320,12 @@ public:
   /**
    * Number of entries if an array or an object, -1 otherwise.
    */
-  int size() const;
+  int size() const noexcept;
 
   /**
    * True iff `length() <= 0`.
    */
-  bool isEmpty() const
+  bool isEmpty() const noexcept
   {
     return size() <= 0;
   }
@@ -440,7 +435,7 @@ public:
   template <typename Type>
   int getArray(Type* array, int count, const Type& defaultValue) const
   {
-    ArrayCIterator iter = arrayCIter();
+    ArrayCRange::Begin iter = arrayCRange().begin();
     count = min<int>(count, size());
 
     for (int i = 0; i < count; ++i, ++iter) {

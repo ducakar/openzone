@@ -76,13 +76,13 @@ Lua::Result::~Result()
   }
 }
 
-Lua::Result::Result(Result&& other)
+Lua::Result::Result(Result&& other) noexcept
   : l_(other.l_)
 {
   other.l_ = nullptr;
 }
 
-Lua::Result& Lua::Result::operator=(Lua::Result&& other)
+Lua::Result& Lua::Result::operator=(Lua::Result&& other) noexcept
 {
   if (&other != this) {
     l_ = other.l_;
@@ -524,13 +524,13 @@ Lua::~Lua()
   destroy();
 }
 
-Lua::Lua(Lua&& other)
+Lua::Lua(Lua&& other) noexcept
   : l_(other.l_)
 {
   other.l_ = nullptr;
 }
 
-Lua& Lua::operator=(Lua&& other)
+Lua& Lua::operator=(Lua&& other) noexcept
 {
   if (&other != this) {
     l_ = other.l_;
@@ -571,7 +571,7 @@ void Lua::readValue(lua_State* l, Stream* is)
       break;
     }
     case 'i': {
-      lua_pushinteger(l, lua_Integer(is->readLong64()));
+      lua_pushinteger(l, lua_Integer(is->readInt64()));
       break;
     }
     case 'n': {
@@ -623,7 +623,7 @@ void Lua::readValue(lua_State* l, const Json& json)
       lua_newtable(l);
 
       int index = 0;
-      for (const Json& i : json.arrayCIter()) {
+      for (const Json& i : json.arrayCRange()) {
         readValue(l, i);
 
         lua_rawseti(l, -2, index);
@@ -634,7 +634,7 @@ void Lua::readValue(lua_State* l, const Json& json)
     case Json::OBJECT: {
       lua_newtable(l);
 
-      for (const auto& i : json.objectCIter()) {
+      for (const auto& i : json.objectCRange()) {
         lua_pushstring(l, i.key);
         readValue(l, i.value);
 
@@ -662,7 +662,7 @@ void Lua::writeValue(lua_State* l, Stream* os)
 #if LUA_VERSION_NUM >= 503
       if (lua_isinteger(l, -1)) {
         os->writeChar('i');
-        os->writeLong64(lua_tointeger(l, -1));
+        os->writeInt64(lua_tointeger(l, -1));
         break;
       }
 #endif

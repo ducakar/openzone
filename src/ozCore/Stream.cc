@@ -95,7 +95,7 @@ Stream::~Stream()
   free();
 }
 
-Stream::Stream(Stream&& other)
+Stream::Stream(Stream&& other) noexcept
   : pos_(other.pos_), begin_(other.begin_), end_(other.end_), flags_(other.flags_),
     order_(other.order_)
 {
@@ -106,7 +106,7 @@ Stream::Stream(Stream&& other)
   other.order_ = Endian::NATIVE;
 }
 
-Stream& Stream::operator=(Stream&& other)
+Stream& Stream::operator=(Stream&& other) noexcept
 {
   if (&other != this) {
     free();
@@ -333,7 +333,7 @@ void Stream::writeUInt(uint i)
   write(value.data, sizeof(value.data));
 }
 
-int64 Stream::readLong64()
+int64 Stream::readInt64()
 {
   Endian::ToValue<int64> value;
   read(value.data, sizeof(value.data));
@@ -341,14 +341,14 @@ int64 Stream::readLong64()
   return order_ == Endian::NATIVE ? value.value : Endian::bswap(value.value);
 }
 
-void Stream::writeLong64(int64 l)
+void Stream::writeInt64(int64 l)
 {
   Endian::ToBytes<int64> value = {order_ == Endian::NATIVE ? l : Endian::bswap(l)};
 
   write(value.data, sizeof(value.data));
 }
 
-uint64 Stream::readULong64()
+uint64 Stream::readUInt64()
 {
   Endian::ToValue<uint64> value;
   read(value.data, sizeof(value.data));
@@ -356,7 +356,7 @@ uint64 Stream::readULong64()
   return order_ == Endian::NATIVE ? value.value : Endian::bswap(value.value);
 }
 
-void Stream::writeULong64(uint64 l)
+void Stream::writeUInt64(uint64 l)
 {
   Endian::ToBytes<uint64> value = {order_ == Endian::NATIVE ? l : Endian::bswap(l)};
 

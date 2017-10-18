@@ -84,7 +84,7 @@ public:
    * Number of messages it contains.
    */
   OZ_ALWAYS_INLINE
-  int size() const
+  int size() const noexcept
   {
     return messages_.size();
   }
@@ -93,7 +93,7 @@ public:
    * True iff it contains no messages.
    */
   OZ_ALWAYS_INLINE
-  bool isEmpty() const
+  bool isEmpty() const noexcept
   {
     return messages_.isEmpty();
   }

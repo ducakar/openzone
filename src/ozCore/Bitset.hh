@@ -82,15 +82,10 @@ public:
   bool operator==(const Bitset& other) const;
 
   /**
-   * True iff different size or any respective bits differ.
-   */
-  bool operator!=(const Bitset& other) const;
-
-  /**
    * Constant pointer to the first unit.
    */
   OZ_ALWAYS_INLINE
-  const size_t* begin() const
+  const size_t* begin() const noexcept
   {
     return data_.begin();
   }
@@ -99,7 +94,7 @@ public:
    * Pointer to the first unit.
    */
   OZ_ALWAYS_INLINE
-  size_t* begin()
+  size_t* begin() noexcept
   {
     return data_.begin();
   }
@@ -108,7 +103,7 @@ public:
    * Constant pointer past the last unit.
    */
   OZ_ALWAYS_INLINE
-  const size_t* end() const
+  const size_t* end() const noexcept
   {
     return data_.end();
   }
@@ -117,7 +112,7 @@ public:
    * Pointer past the last unit.
    */
   OZ_ALWAYS_INLINE
-  size_t* end()
+  size_t* end() noexcept
   {
     return data_.end();
   }
@@ -126,7 +121,7 @@ public:
    * Size in bits.
    */
   OZ_ALWAYS_INLINE
-  int size() const
+  int size() const noexcept
   {
     return data_.size() * UNIT_BITS;
   }
@@ -135,7 +130,7 @@ public:
    * True iff empty.
    */
   OZ_ALWAYS_INLINE
-  bool isEmpty() const
+  bool isEmpty() const noexcept
   {
     return data_.isEmpty();
   }

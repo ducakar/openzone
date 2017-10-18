@@ -76,43 +76,11 @@ public:
   }
 
   /**
-   * True iff not qually long.
-   */
-  constexpr bool operator!=(const Duration& other) const
-  {
-    return !operator==(other);
-  }
-
-  /**
    * True iff shorter.
    */
   constexpr bool operator<(const Duration& other) const
   {
     return ns_ < other.ns_;
-  }
-
-  /**
-   * True iff equally long or shorted.
-   */
-  constexpr bool operator<=(const Duration& other) const
-  {
-    return ns_ <= other.ns_;
-  }
-
-  /**
-   * True iff longer.
-   */
-  constexpr bool operator>(const Duration& other) const
-  {
-    return !operator<=(other);
-  }
-
-  /**
-   * True iff equally long or longer.
-   */
-  constexpr bool operator>=(const Duration& other) const
-  {
-    return !operator<(other);
   }
 
   /**

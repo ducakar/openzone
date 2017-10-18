@@ -99,7 +99,7 @@ void UI::buildIcons()
 
   const Json& sounds = style["sounds"];
 
-  for (const auto& sound : sounds.objectCIter()) {
+  for (const auto& sound : sounds.objectCRange()) {
     context.usedSounds.add(sound.value.get("?"), "UI style");
   }
 

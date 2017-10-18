@@ -771,7 +771,7 @@ Json::Json(const Json& other)
   copyValue(other);
 }
 
-Json::Json(Json&& other)
+Json::Json(Json&& other) noexcept
   : number_(other.number_), comment_(static_cast<String&&>(other.comment_)), type_(other.type_),
     wasAccessed_(other.wasAccessed_)
 {
@@ -789,7 +789,7 @@ Json& Json::operator=(const Json& other)
   return *this;
 }
 
-Json& Json::operator=(Json&& other)
+Json& Json::operator=(Json&& other) noexcept
 {
   if (&other != this) {
     clear();
@@ -843,68 +843,63 @@ bool Json::operator==(const Json& other) const
   }
 }
 
-bool Json::operator!=(const Json& other) const
-{
-  return !operator==(other);
-}
-
-Json::ArrayCIterator Json::arrayCIter() const
+Json::ArrayCRange Json::arrayCRange() const noexcept
 {
   if (type_ == ARRAY) {
     const List<Json>& list = static_cast<const ArrayData*>(data_)->list;
 
     wasAccessed_ = true;
-    return list.citerator();
+    return Json::ArrayCRange(list.cbegin(), list.cend());
   }
   else {
     wasAccessed_ |= type_ == NIL;
-    return ArrayCIterator();
+    return Json::ArrayCRange();
   }
 }
 
-Json::ArrayIterator Json::arrayIter()
+Json::ArrayRange Json::arrayRange() noexcept
 {
   if (type_ == ARRAY) {
     List<Json>& list = static_cast<ArrayData*>(data_)->list;
 
     wasAccessed_ = true;
-    return list.iterator();
+    return Json::ArrayRange(list.begin(), list.end());
   }
   else {
     wasAccessed_ |= type_ == NIL;
-    return ArrayIterator();
+    return Json::ArrayRange();
   }
 }
 
-Json::ObjectCIterator Json::objectCIter() const
+Json::ObjectCRange Json::objectCRange() const noexcept
 {
   if (type_ == OBJECT) {
     const Map<String, Json>& map = static_cast<const ObjectData*>(data_)->map;
 
     wasAccessed_ = true;
-    return map.citerator();
+    return Json::ObjectCRange(map.cbegin(), map.cend());
   }
   else {
     wasAccessed_ |= type_ == NIL;
-    return ObjectCIterator();
+    return Json::ObjectCRange();
   }
 }
 
-Json::ObjectIterator Json::objectIter()
+Json::ObjectRange Json::objectRange() noexcept
 {
   if (type_ == OBJECT) {
     Map<String, Json>& map = static_cast<ObjectData*>(data_)->map;
 
     wasAccessed_ = true;
-    return map.iterator();
+    return Json::ObjectRange(map.begin(), map.end());
   }
   else {
     wasAccessed_ |= type_ == NIL;
-    return ObjectIterator();
+    return Json::ObjectRange();
   }
 }
 
-int Json::size() const
+int Json::size() const noexcept
 {
   switch (type_) {
     default: {

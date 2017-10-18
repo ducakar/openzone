@@ -107,6 +107,11 @@ namespace oz
 {
 
 /**
+ * Internal helpers.
+ */
+namespace detail {}
+
+/**
  * Null pointer type.
  */
 typedef std::nullptr_t nullptr_t;
@@ -170,161 +175,39 @@ static_assert(sizeof(float ) == 4, "sizeof(float) should be 4" );
 static_assert(sizeof(double) == 8, "sizeof(double) should be 8");
 
 /**
- * Internal helpers.
+ * operator!= expressed in terms of operator==.
  */
-namespace detail
+template <typename Type>
+inline constexpr bool operator!=(const Type& a, const Type& b)
 {
-
-/**
- * Base class for iterators.
- *
- * It should only be used as a base class. The following functions have to be implemented:
- * - a default constructor that creates an invalid iterator,
- * - `Iterator& operator++()`,
- * - `Iterator begin() const` and either
- * - `Iterator end() const` or
- * - `nullptr_t end() const`.
- */
-template <typename Elem>
-class IteratorBase
-{
-public:
-
-  /**
-   * Element type.
-   */
-  typedef Elem ElemType;
-
-protected:
-
-  Elem* elem_ = nullptr; ///< The element the iterator is currently pointing at.
-
-protected:
-
-  /**
-   * Create an invalid iterator.
-   */
-  IteratorBase() = default;
-
-  /**
-   * Create an iterator pointing to a given element.
-   */
-  OZ_ALWAYS_INLINE
-  explicit IteratorBase(Elem* first)
-    : elem_(first)
-  {}
-
-public:
-
-  /**
-   * True iff iterators point to the same element.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator==(const IteratorBase& other) const
-  {
-    return elem_ == other.elem_;
-  }
-
-  /**
-   * False iff iterators point to the same element.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator!=(const IteratorBase& other) const
-  {
-    return elem_ != other.elem_;
-  }
-
-  /**
-   * True iff iterator is pointing to null.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator==(nullptr_t) const
-  {
-    return elem_ == nullptr;
-  }
-
-  /**
-   * False iff iterator is pointing to null.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator!=(nullptr_t) const
-  {
-    return elem_ != nullptr;
-  }
-
-  /**
-   * True as long as iterator has not passed all elements.
-   */
-  OZ_ALWAYS_INLINE
-  bool isValid() const
-  {
-    return elem_ != nullptr;
-  }
-
-  /**
-   * Pointer to the current element.
-   */
-  OZ_ALWAYS_INLINE
-  operator Elem*() const
-  {
-    return elem_;
-  }
-
-  /**
-   * Reference to the current element.
-   */
-  OZ_ALWAYS_INLINE
-  Elem& operator*() const
-  {
-    return *elem_;
-  }
-
-  /**
-   * Pointer to the current element's member.
-   */
-  OZ_ALWAYS_INLINE
-  Elem* operator->() const
-  {
-    return elem_;
-  }
-
-  /**
-   * Advance to the next element; should be implemented in derived classes.
-   */
-  IteratorBase& operator++() = delete;
-
-  /**
-   * STL-style begin iterator; should be implemented in derived classes.
-   */
-  IteratorBase begin() const = delete;
-
-  /**
-   * STL-style end iterator; should be implemented in derived classes.
-   */
-  IteratorBase end() const = delete;
-
-};
-
+  return !(a == b);
 }
 
 /**
- * Iterator with constant element access for a container (same as `container.citerator()`).
+ * operator<= expressed in terms of operator<.
  */
-template <class Container>
-OZ_ALWAYS_INLINE
-inline typename Container::CIterator citerator(const Container& container)
+template <typename Type>
+inline constexpr bool operator<=(const Type& a, const Type& b)
 {
-  return container.citerator();
+  return !(b < a);
 }
 
 /**
- * Iterator with non-constant element access for a container (same as `container.iterator()`).
+ * operator> expressed in terms of operator<.
  */
-template <class Container>
-OZ_ALWAYS_INLINE
-inline typename Container::Iterator iterator(Container& container)
+template <typename Type>
+inline constexpr bool operator>(const Type& a, const Type& b)
 {
-  return container.iterator();
+  return b < a;
+}
+
+/**
+ * operator>= expressed in terms of operator<.
+ */
+template <typename Type>
+inline constexpr bool operator>=(const Type& a, const Type& b)
+{
+  return !(a < b);
 }
 
 /**
@@ -332,7 +215,7 @@ inline typename Container::Iterator iterator(Container& container)
  */
 template <typename Value>
 OZ_ALWAYS_INLINE
-inline void swap(Value& a, Value& b)
+inline void swap(Value& a, Value& b) noexcept
 {
   Value t(static_cast<Value&&>(a));
 
@@ -380,7 +263,7 @@ inline constexpr const Value& max(const Value& a, const Value& b)
   return a < b ? b : a;
 }
 /**
- *Maxiimum of more than two arguments.
+ * Maximum of more than two arguments.
  */
 template <typename Value, typename ...Args>
 OZ_ALWAYS_INLINE

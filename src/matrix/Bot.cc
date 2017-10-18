@@ -1147,7 +1147,7 @@ Bot::Bot(const BotClass* clazz_, int index, const Json& json)
   name       = json["name"].get("");
   mind       = json["mind"].get("");
 
-  for (const Json& stateJson : json["state"].arrayCIter()) {
+  for (const Json& stateJson : json["state"].arrayCRange()) {
     OZ_STATE_READ(DEAD_BIT,         "dead"        );
     OZ_STATE_READ(INCARNATABLE_BIT, "incarnatable");
     OZ_STATE_READ(CROUCHING_BIT,    "crouching"   );

@@ -117,14 +117,6 @@ public:
   }
 
   /**
-   * Inequality.
-   */
-  bool operator!=(const Mat4& m) const
-  {
-    return !operator==(m);
-  }
-
-  /**
    * Constant pointer to the members.
    */
   OZ_ALWAYS_INLINE

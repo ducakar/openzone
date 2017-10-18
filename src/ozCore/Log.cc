@@ -232,7 +232,7 @@ bool Log::printMemoryLeaks()
 {
   bool hasOutput = false;
 
-  for (const auto& ci : Alloc::objectCIter()) {
+  for (const auto& ci : Alloc::objectCRange()) {
     println("Leaked object at %p of size %lu B allocated",
             static_cast<const void*>(&ci), ulong(ci.size));
     indent();
@@ -242,7 +242,7 @@ bool Log::printMemoryLeaks()
     hasOutput = true;
   }
 
-  for (const auto& ci : Alloc::arrayCIter()) {
+  for (const auto& ci : Alloc::arrayCRange()) {
     println("Leaked array at %p of size %lu B allocated",
             static_cast<const void*>(&ci), ulong(ci.size));
     indent();
@@ -257,11 +257,13 @@ bool Log::printMemoryLeaks()
 
 void Log::printProfilerStatistics()
 {
-  if (Profiler::citerator().isValid()) {
+  auto range = Profiler::crange();
+
+  if (range.begin() != range.end()) {
     println("Profiler statistics {");
     indent();
 
-    for (const auto& i : Profiler::citerator()) {
+    for (const auto& i : range) {
       println("%.6f s\t %s", double(i.value) / 1e6, i.key.c());
     }
 

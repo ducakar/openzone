@@ -70,7 +70,7 @@ public:
   /**
    * %Iterator over memory chunks allocated via overloaded `new` operators.
    */
-  typedef typename Chain<ChunkInfo>::CIterator CIterator;
+  typedef typename Chain<ChunkInfo>::CRangeType CRange;
 
 public:
 
@@ -91,14 +91,14 @@ public:
   Alloc() = delete;
 
   /**
-   * Create iterator for iterating over allocated objects.
+   * Create begin iterator for iterating over allocated objects.
    */
-  static CIterator objectCIter();
+  static CRange objectCRange() noexcept;
 
   /**
-   * Create iterator for iterating over allocated arrays.
+   * Create begin iterator for iterating over allocated arrays.
    */
-  static CIterator arrayCIter();
+  static CRange arrayCRange() noexcept;
 
   /**
    * Align to the previous boundary.

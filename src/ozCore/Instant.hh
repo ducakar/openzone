@@ -80,43 +80,11 @@ public:
   }
 
   /**
-   * True iff not qually long.
-   */
-  constexpr bool operator!=(const Instant& other) const
-  {
-    return Duration::operator!=(other);
-  }
-
-  /**
    * True iff shorter.
    */
   constexpr bool operator<(const Instant& other) const
   {
     return Duration::operator<(other);
-  }
-
-  /**
-   * True iff equally long or shorted.
-   */
-  constexpr bool operator<=(const Instant& other) const
-  {
-    return Duration::operator<=(other);
-  }
-
-  /**
-   * True iff longer.
-   */
-  constexpr bool operator>(const Instant& other) const
-  {
-    return Duration::operator>(other);
-  }
-
-  /**
-   * True iff equally long or longer.
-   */
-  constexpr bool operator>=(const Instant& other) const
-  {
-    return Duration::operator>=(other);
   }
 
   /**

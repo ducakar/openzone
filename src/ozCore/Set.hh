@@ -52,8 +52,8 @@ class Set : protected List<Elem>
 {
 public:
 
-  using typename List<Elem>::CIterator;
-  using typename List<Elem>::Iterator;
+  using typename List<Elem>::CRangeType;
+  using typename List<Elem>::RangeType;
 
 protected:
 
@@ -88,9 +88,9 @@ protected:
 
 public:
 
-  using List<Elem>::citerator;
-  using List<Elem>::iterator;
+  using List<Elem>::cbegin;
   using List<Elem>::begin;
+  using List<Elem>::cend;
   using List<Elem>::end;
   using List<Elem>::size;
   using List<Elem>::isEmpty;
@@ -158,14 +158,6 @@ public:
   bool operator==(const Set& other) const
   {
     return List<Elem>::operator==(other);
-  }
-
-  /**
-   * False iff respective elements are equal.
-   */
-  bool operator!=(const Set& other) const
-  {
-    return List<Elem>::operator!=(other);
   }
 
   /**

@@ -263,15 +263,6 @@ public:
   }
 
   /**
-   * Inequality.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator!=(const VectorBase3& v) const
-  {
-    return !operator==(v);
-  }
-
-  /**
    * Constant float pointer to the members.
    */
   OZ_ALWAYS_INLINE
@@ -362,15 +353,6 @@ public:
 #else
     return x == v.x && y == v.y && z == v.z && w == v.w;
 #endif
-  }
-
-  /**
-   * Inequality.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator!=(const VectorBase4& v) const
-  {
-    return !operator==(v);
   }
 
 };

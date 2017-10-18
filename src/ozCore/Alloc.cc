@@ -146,14 +146,14 @@ size_t Alloc::sumAmount = 0;
 int    Alloc::maxCount  = 0;
 size_t Alloc::maxAmount = 0;
 
-Alloc::CIterator Alloc::objectCIter()
+Alloc::CRange Alloc::objectCRange() noexcept
 {
-  return chunkInfos[OBJECT].citerator();
+  return CRange(chunkInfos[OBJECT].cbegin(), nullptr);
 }
 
-Alloc::CIterator Alloc::arrayCIter()
+Alloc::CRange Alloc::arrayCRange() noexcept
 {
-  return chunkInfos[ARRAY].citerator();
+  return CRange(chunkInfos[ARRAY].cbegin(), nullptr);
 }
 
 }

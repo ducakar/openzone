@@ -747,7 +747,7 @@ void Context::unload()
     removeSource(sources.first(), nullptr);
     OZ_AL_CHECK_ERROR();
   }
-  for (auto i = contSources.iterator(); i.isValid();) {
+  for (auto i = contSources.begin(); i != nullptr;) {
     auto src = i;
     ++i;
 

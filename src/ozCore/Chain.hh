@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "Range.hh"
 #include "System.hh"
 
 namespace oz
@@ -101,13 +102,13 @@ protected:
     /**
      * Create an invalid iterator.
      */
-    ChainIterator() = default;
+    ChainIterator() noexcept = default;
 
     /**
      * Create chain iterator, initially pointing to a given element.
      */
     OZ_ALWAYS_INLINE
-    explicit ChainIterator(const Chain& chain)
+    explicit ChainIterator(const Chain& chain) noexcept
       : detail::IteratorBase<ElemType>(chain.first_)
     {}
 
@@ -115,7 +116,7 @@ protected:
      * Advance to the next element.
      */
     OZ_ALWAYS_INLINE
-    ChainIterator& operator++()
+    ChainIterator& operator++() noexcept
     {
       OZ_ASSERT(elem_ != nullptr);
 
@@ -123,37 +124,19 @@ protected:
       return *this;
     }
 
-    /**
-     * STL-style begin iterator.
-     */
-    OZ_ALWAYS_INLINE
-    ChainIterator begin() const
-    {
-      return *this;
-    }
-
-    /**
-     * STL-style end iterator.
-     */
-    OZ_ALWAYS_INLINE
-    nullptr_t end() const
-    {
-      return nullptr;
-    }
-
   };
 
 public:
 
   /**
-   * %Iterator with constant access to elements.
+   * %Range with constant access to elements.
    */
-  typedef ChainIterator<const Elem> CIterator;
+  typedef Range<ChainIterator<const Elem>, nullptr_t, const Elem> CRangeType;
 
   /**
-   * %Iterator with non-constant access to elements.
+   * %Range with non-constant access to elements.
    */
-  typedef ChainIterator<Elem> Iterator;
+  typedef Range<ChainIterator<Elem>, nullptr_t, Elem> RangeType;
 
 protected:
 
@@ -169,7 +152,7 @@ public:
   /**
    * Move constructor, rebinds elements to the new chain.
    */
-  Chain(Chain&& other)
+  Chain(Chain&& other) noexcept
     : first_(other.first_)
   {
     other.first_ = nullptr;
@@ -178,7 +161,7 @@ public:
   /**
    * Move operator, rebinds elements to the destination chain.
    */
-  Chain& operator=(Chain&& other)
+  Chain& operator=(Chain&& other) noexcept
   {
     if (&other != this) {
       first_ = other.first_;
@@ -189,46 +172,46 @@ public:
   }
 
   /**
-   * %Iterator with constant access, initially points to the first element.
+   * STL-style constant begin iterator.
    */
   OZ_ALWAYS_INLINE
-  CIterator citerator() const
+  typename CRangeType::Begin cbegin() const noexcept
   {
-    return CIterator(*this);
-  }
-
-  /**
-   * %Iterator with non-constant access, initially points to the first element.
-   */
-  OZ_ALWAYS_INLINE
-  Iterator iterator()
-  {
-    return Iterator(*this);
+    return ChainIterator<const Elem>(*this);
   }
 
   /**
    * STL-style constant begin iterator.
    */
   OZ_ALWAYS_INLINE
-  CIterator begin() const
+  typename CRangeType::Begin begin() const noexcept
   {
-    return CIterator(*this);
+    return ChainIterator<const Elem>(*this);
   }
 
   /**
    * STL-style begin iterator.
    */
   OZ_ALWAYS_INLINE
-  Iterator begin()
+  typename RangeType::Begin begin() noexcept
   {
-    return Iterator(*this);
+    return ChainIterator<Elem>(*this);
   }
 
   /**
    * STL-style constant end iterator.
    */
   OZ_ALWAYS_INLINE
-  nullptr_t end() const
+  typename CRangeType::End cend() const noexcept
+  {
+    return nullptr;
+  }
+
+  /**
+   * STL-style constant end iterator.
+   */
+  OZ_ALWAYS_INLINE
+  typename CRangeType::End end() const noexcept
   {
     return nullptr;
   }
@@ -237,7 +220,7 @@ public:
    * STL-style end iterator.
    */
   OZ_ALWAYS_INLINE
-  nullptr_t end()
+  typename RangeType::End end() noexcept
   {
     return nullptr;
   }
@@ -245,7 +228,7 @@ public:
   /**
    * Iterate through the chain and count elements.
    */
-  int size() const
+  int size() const noexcept
   {
     int   i = 0;
     Elem* e = first_;
@@ -261,7 +244,7 @@ public:
    * True iff the chain has no elements.
    */
   OZ_ALWAYS_INLINE
-  bool isEmpty() const
+  bool isEmpty() const noexcept
   {
     return first_ == nullptr;
   }

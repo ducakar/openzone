@@ -53,14 +53,14 @@ class SList
 public:
 
   /**
-   * %Iterator with constant access to elements.
+   * %Range with constant access to elements.
    */
-  typedef Arrays::CIterator<Elem> CIterator;
+  typedef Arrays::CRangeType<Elem> CRangeType;
 
   /**
-   * %Iterator with non-constant access to elements.
+   * %Range with non-constant access to elements.
    */
-  typedef Arrays::Iterator<Elem> Iterator;
+  typedef Arrays::RangeType<Elem> RangeType;
 
 private:
 
@@ -119,36 +119,19 @@ public:
   }
 
   /**
-   * False iff respective elements are equal.
-   */
-  bool operator!=(const SList& other) const
-  {
-    return !operator==(other);
-  }
-
-  /**
-   * %Iterator with constant access, initially points to the first element.
+   * STL-style constant begin iterator.
    */
   OZ_ALWAYS_INLINE
-  CIterator citerator() const
+  typename CRangeType::Begin cbegin() const noexcept
   {
-    return CIterator(data_, data_ + size_);
-  }
-
-  /**
-   * %Iterator with non-constant access, initially points to the first element.
-   */
-  OZ_ALWAYS_INLINE
-  Iterator iterator()
-  {
-    return Iterator(data_, data_ + size_);
+    return data_;
   }
 
   /**
    * STL-style constant begin iterator.
    */
   OZ_ALWAYS_INLINE
-  const Elem* begin() const
+  typename CRangeType::Begin begin() const noexcept
   {
     return data_;
   }
@@ -157,7 +140,7 @@ public:
    * STL-style begin iterator.
    */
   OZ_ALWAYS_INLINE
-  Elem* begin()
+  typename RangeType::Begin begin() noexcept
   {
     return data_;
   }
@@ -166,7 +149,16 @@ public:
    * STL-style constant end iterator.
    */
   OZ_ALWAYS_INLINE
-  const Elem* end() const
+  typename CRangeType::End cend() const noexcept
+  {
+    return data_ + size_;
+  }
+
+  /**
+   * STL-style constant end iterator.
+   */
+  OZ_ALWAYS_INLINE
+  typename CRangeType::End end() const noexcept
   {
     return data_ + size_;
   }
@@ -175,7 +167,7 @@ public:
    * STL-style end iterator.
    */
   OZ_ALWAYS_INLINE
-  Elem* end()
+  typename RangeType::End end() noexcept
   {
     return data_ + size_;
   }
@@ -184,7 +176,7 @@ public:
    * Number of elements.
    */
   OZ_ALWAYS_INLINE
-  int size() const
+  int size() const noexcept
   {
     return size_;
   }
@@ -193,7 +185,7 @@ public:
    * True iff empty.
    */
   OZ_ALWAYS_INLINE
-  bool isEmpty() const
+  bool isEmpty() const noexcept
   {
     return size_ == 0;
   }
@@ -202,7 +194,7 @@ public:
    * Size of storage.
    */
   OZ_ALWAYS_INLINE
-  int capacity() const
+  int capacity() const noexcept
   {
     return CAPACITY;
   }

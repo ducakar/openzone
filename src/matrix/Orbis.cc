@@ -411,7 +411,7 @@ void Orbis::read(const Json& json)
   caelum.read(json["caelum"]);
   terra.read(json["terra"]);
 
-  for (const Json& strJson : json["structs"].arrayCIter()) {
+  for (const Json& strJson : json["structs"].arrayCRange()) {
     String name    = strJson["bsp"].get("");
     const BSP* bsp = liber.bsp(name);
 
@@ -423,7 +423,7 @@ void Orbis::read(const Json& json)
     }
   }
 
-  for (const Json& objJson : json["objects"].arrayCIter()) {
+  for (const Json& objJson : json["objects"].arrayCRange()) {
     String             name  = objJson["class"].get("");
     const ObjectClass* clazz = liber.objClass(name);
 
@@ -441,7 +441,7 @@ void Orbis::read(const Json& json)
       }
       objects[obj->index] = obj;
 
-      for (const Json& itemJson : objJson["items"].arrayCIter()) {
+      for (const Json& itemJson : objJson["items"].arrayCRange()) {
         String              itemName  = itemJson["class"].get("");
         const DynamicClass* itemClazz = static_cast<const DynamicClass*>(liber.objClass(itemName));
 

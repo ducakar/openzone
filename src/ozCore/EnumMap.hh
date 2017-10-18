@@ -75,7 +75,7 @@ public:
    * Number of enumerator values.
    */
   OZ_ALWAYS_INLINE
-  int size() const
+  int size() const noexcept
   {
     return entries_.size();
   }

@@ -366,7 +366,7 @@ ImageData::~ImageData()
   delete[] pixels;
 }
 
-ImageData::ImageData(ImageData&& other)
+ImageData::ImageData(ImageData&& other) noexcept
   : width(other.width), height(other.height), flags(other.flags), pixels(other.pixels)
 {
   other.width  = 0;
@@ -375,7 +375,7 @@ ImageData::ImageData(ImageData&& other)
   other.pixels = nullptr;
 }
 
-ImageData& ImageData::operator=(ImageData&& other)
+ImageData& ImageData::operator=(ImageData&& other) noexcept
 {
   if (&other != this) {
     delete[] pixels;

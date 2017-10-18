@@ -230,7 +230,7 @@ static void readNirvana(const File& dir)
   Json techConfig;
 
   if (techConfig.load(techFile)) {
-    for (const Json& node : techConfig.arrayCIter()) {
+    for (const Json& node : techConfig.arrayCRange()) {
       const char* technology  = node["technology"].get("");
       const char* title       = node["title"].get(technology);
       const char* description = node["description"].get("");
@@ -253,7 +253,7 @@ static void readNirvana(const File& dir)
 
     Json json(file);
 
-    for (const Json& state : json.arrayCIter()) {
+    for (const Json& state : json.arrayCRange()) {
       const String& onEnter  = state["onEnter"].get(String::EMPTY);
       const String& onUpdate = state["onUpdate"].get(String::EMPTY);
 
@@ -264,7 +264,7 @@ static void readNirvana(const File& dir)
         readLuaChunk(onUpdate.c(), onUpdate.length(), file);
       }
 
-      for (const Json& link : state["links"].arrayCIter()) {
+      for (const Json& link : state["links"].arrayCRange()) {
         const String& condition = link["if"].get(String::EMPTY);
 
         if (!condition.isEmpty()) {

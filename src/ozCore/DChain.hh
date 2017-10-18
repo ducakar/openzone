@@ -89,8 +89,8 @@ class DChain : private Chain<Elem, INDEX>
 {
 public:
 
-  using typename Chain<Elem, INDEX>::CIterator;
-  using typename Chain<Elem, INDEX>::Iterator;
+  using typename Chain<Elem, INDEX>::CRangeType;
+  using typename Chain<Elem, INDEX>::RangeType;
 
 private:
 
@@ -100,9 +100,9 @@ private:
 
 public:
 
-  using Chain<Elem, INDEX>::citerator;
-  using Chain<Elem, INDEX>::iterator;
+  using Chain<Elem, INDEX>::cbegin;
   using Chain<Elem, INDEX>::begin;
+  using Chain<Elem, INDEX>::cend;
   using Chain<Elem, INDEX>::end;
   using Chain<Elem, INDEX>::first;
   using Chain<Elem, INDEX>::size;
@@ -118,7 +118,7 @@ public:
   /**
    * Move constructor, rebinds elements to the new chain.
    */
-  DChain(DChain&& other)
+  DChain(DChain&& other) noexcept
     : Chain<Elem, INDEX>(static_cast<DChain&&>(other)), last_(other.last_)
   {
     other.last_ = nullptr;
@@ -127,7 +127,7 @@ public:
   /**
    * Move operator, rebinds elements to the destination chain.
    */
-  DChain& operator=(DChain&& other)
+  DChain& operator=(DChain&& other) noexcept
   {
     if (&other != this) {
       first_ = other.first_;

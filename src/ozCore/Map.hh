@@ -105,8 +105,8 @@ public:
    */
   typedef MapPair<Key, Value, LessFunc> Pair;
 
-  using typename Set<Pair>::CIterator;
-  using typename Set<Pair>::Iterator;
+  using typename Set<Pair>::CRangeType;
+  using typename Set<Pair>::RangeType;
 
 private:
 
@@ -145,9 +145,9 @@ private:
 
 public:
 
-  using Set<Pair>::citerator;
-  using Set<Pair>::iterator;
+  using Set<Pair>::cbegin;
   using Set<Pair>::begin;
+  using Set<Pair>::cend;
   using Set<Pair>::end;
   using Set<Pair>::size;
   using Set<Pair>::isEmpty;
@@ -213,14 +213,6 @@ public:
   bool operator==(const Map& other) const
   {
     return Set<Pair>::operator==(other);
-  }
-
-  /**
-   * False iff respective elements are equal.
-   */
-  bool operator!=(const Map& other) const
-  {
-    return Set<Pair>::operator!=(other);
   }
 
   /**

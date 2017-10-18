@@ -28,24 +28,24 @@ void test_iterables()
 {
   Log() << "+ iterables";
 
-  Chain<Foo>::CIterator        icl;
-  Chain<Foo>::Iterator         il;
-  DChain<Foo>::CIterator       icdl;
-  DChain<Foo>::Iterator        idl;
-  List<Foo>::CIterator         icv;
-  List<Foo>::Iterator          iv;
-  SList<Foo, 1>::CIterator     icsv;
-  SList<Foo, 1>::Iterator      isv;
-  Set<Foo>::CIterator          ics;
-  Set<Foo>::Iterator           is;
-  Map<Foo, Foo>::CIterator     icm;
-  Map<Foo, Foo>::Iterator      im;
-  HashSet<Foo>::CIterator      ichs;
-  HashSet<Foo>::Iterator       ihs;
-  HashMap<Foo, Foo>::CIterator ichm;
-  HashMap<Foo, Foo>::Iterator  ihtm;
+  Chain<Foo>::CRangeType        icl;
+  Chain<Foo>::RangeType         il;
+  DChain<Foo>::CRangeType       icdl;
+  DChain<Foo>::RangeType        idl;
+  List<Foo>::CRangeType         icv;
+  List<Foo>::RangeType          iv;
+  SList<Foo, 1>::CRangeType     icsv;
+  SList<Foo, 1>::RangeType      isv;
+  Set<Foo>::CRangeType          ics;
+  Set<Foo>::RangeType           is;
+  Map<Foo, Foo>::CRangeType     icm;
+  Map<Foo, Foo>::RangeType      im;
+  HashSet<Foo>::CRangeType      ichs;
+  HashSet<Foo>::RangeType       ihs;
+  HashMap<Foo, Foo>::CRangeType ichm;
+  HashMap<Foo, Foo>::RangeType  ihtm;
 
-  List<Foo*>::Iterator         invalid;
+  List<Foo*>::RangeType         invalid;
 
   DChain<Foo> l;
   List<Foo> v;
@@ -60,12 +60,12 @@ void test_iterables()
   v.add(0);
   v.add(0);
 
-  OZ_CHECK(!iEquals(l.citerator(), v.citerator()));
-  OZ_CHECK(!iEquals(v.citerator(), l.citerator()));
+  OZ_CHECK(!iEquals(crange(l), crange(v)));
+  OZ_CHECK(!iEquals(crange(v), crange(l)));
 
   l.free();
   v.clear();
   v.trim();
 
-  OZ_CHECK(iEquals(l.citerator(), v.citerator()));
+  OZ_CHECK(iEquals(crange(l), crange(v)));
 }

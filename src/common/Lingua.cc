@@ -43,7 +43,7 @@ String Lingua::detectLanguage(const char* fallback)
     Json langMap(file);
 
     if (!langMap.isNull()) {
-      for (const auto& langAlias : langMap.objectCIter()) {
+      for (const auto& langAlias : langMap.objectCRange()) {
         if (lang == langAlias.key) {
           lang = langAlias.value.get(lang);
           break;

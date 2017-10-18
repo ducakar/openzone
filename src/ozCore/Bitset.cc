@@ -45,11 +45,6 @@ bool Bitset::operator==(const Bitset& other) const
   return data_ == other.data_;
 }
 
-bool Bitset::operator!=(const Bitset& other) const
-{
-  return data_ != other.data_;
-}
-
 bool Bitset::isAllSet() const
 {
   for (int i = 0; i < data_.size(); ++i) {

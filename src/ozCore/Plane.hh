@@ -90,15 +90,6 @@ public:
   }
 
   /**
-   * Inequality.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator!=(const Plane& p) const
-  {
-    return !operator==(p);
-  }
-
-  /**
    * Constant float pointer to the members.
    */
   OZ_ALWAYS_INLINE

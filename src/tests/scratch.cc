@@ -159,5 +159,10 @@ int main()
 {
   System::init();
   Log() << read("/home/davorin/.bashrc").unwrap();
+
+  const int l[] = {1, 2, 3};
+  for (const int& i : crange(l)) {
+    Log() << i;
+  }
   return 0;
 }

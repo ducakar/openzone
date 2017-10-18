@@ -98,18 +98,18 @@ public:
   /**
    * Move construction, moves internal buffer.
    */
-  Stream(Stream&& other);
+  Stream(Stream&& other) noexcept;
 
   /**
    * Move operator, moves internal buffer.
    */
-  Stream& operator=(Stream&& other);
+  Stream& operator=(Stream&& other) noexcept;
 
   /**
    * Constant pointer to the beginning of the stream.
    */
   OZ_ALWAYS_INLINE
-  const char* begin() const
+  const char* begin() const noexcept
   {
     return begin_;
   }
@@ -118,7 +118,7 @@ public:
    * Pointer to the beginning of the stream.
    */
   OZ_ALWAYS_INLINE
-  char* begin()
+  char* begin() noexcept
   {
     return begin_;
   }
@@ -127,7 +127,7 @@ public:
    * Constant pointer to the end of the stream.
    */
   OZ_ALWAYS_INLINE
-  const char* end() const
+  const char* end() const noexcept
   {
     return end_;
   }
@@ -136,7 +136,7 @@ public:
    * Pointer to the end of the stream.
    */
   OZ_ALWAYS_INLINE
-  char* end()
+  char* end() noexcept
   {
     return end_;
   }
@@ -145,7 +145,7 @@ public:
    * Pointer to the current stream position.
    */
   OZ_ALWAYS_INLINE
-  const char* pos() const
+  const char* pos() const noexcept
   {
     return pos_;
   }
@@ -154,16 +154,27 @@ public:
    * Pointer to the current stream position.
    */
   OZ_ALWAYS_INLINE
-  char* pos()
+  char* pos() noexcept
   {
     return pos_;
+  }
+
+  /**
+   * Position offset from the beginning.
+   */
+  OZ_ALWAYS_INLINE
+  int size() const noexcept
+  {
+    OZ_ASSERT(pos_ <= end_);
+
+    return int(pos_ - begin_);
   }
 
   /**
    * Length of the stream.
    */
   OZ_ALWAYS_INLINE
-  int capacity() const
+  int capacity() const noexcept
   {
     OZ_ASSERT(pos_ <= end_);
 
@@ -174,7 +185,7 @@ public:
    * Number of bytes left before end of the stream is reached.
    */
   OZ_ALWAYS_INLINE
-  int available() const
+  int available() const noexcept
   {
     OZ_ASSERT(pos_ <= end_);
 
@@ -386,22 +397,22 @@ public:
   /**
    * Read 64-bit integer.
    */
-  int64 readLong64();
+  int64 readInt64();
 
   /**
    * Write 64-bit integer.
    */
-  void writeLong64(int64 l);
+  void writeInt64(int64 l);
 
   /**
    * Read unsigned 64-bit integer.
    */
-  uint64 readULong64();
+  uint64 readUInt64();
 
   /**
    * Write unsigned 64-bit integer.
    */
-  void writeULong64(uint64 l);
+  void writeUInt64(uint64 l);
 
   /**
    * Read float.
@@ -470,7 +481,7 @@ public:
 #if __SIZEOF_SIZE_T__ == 4
       unit = size_t(readUInt());
 #else
-      unit = size_t(readULong64());
+      unit = size_t(readUInt64());
 #endif
     }
   }
@@ -485,7 +496,7 @@ public:
 #if __SIZEOF_SIZE_T__ == 4
       writeUInt(uint(unit));
 #else
-      writeULong64(uint64(unit));
+      writeUInt64(uint64(unit));
 #endif
     }
   }

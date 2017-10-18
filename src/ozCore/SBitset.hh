@@ -93,18 +93,10 @@ public:
   }
 
   /**
-   * True any bit differ.
-   */
-  bool operator!=(const SBitset& other) const
-  {
-    return data_ != other.data_;
-  }
-
-  /**
    * Constant pointer to the first unit.
    */
   OZ_ALWAYS_INLINE
-  const size_t* begin() const
+  const size_t* begin() const noexcept
   {
     return data_.begin();
   }
@@ -113,7 +105,7 @@ public:
    * Pointer to the first unit.
    */
   OZ_ALWAYS_INLINE
-  size_t* begin()
+  size_t* begin() noexcept
   {
     return data_.begin();
   }
@@ -122,7 +114,7 @@ public:
    * Constant pointer past the last unit.
    */
   OZ_ALWAYS_INLINE
-  const size_t* end() const
+  const size_t* end() const noexcept
   {
     return data_.end();
   }
@@ -131,7 +123,7 @@ public:
    * Pointer past the last unit.
    */
   OZ_ALWAYS_INLINE
-  size_t* end()
+  size_t* end() noexcept
   {
     return data_.end();
   }
@@ -140,9 +132,18 @@ public:
    * Size in bits.
    */
   OZ_ALWAYS_INLINE
-  int size() const
+  int size() const noexcept
   {
     return SIZE * UNIT_BITS;
+  }
+
+  /**
+   * Always false.
+   */
+  OZ_ALWAYS_INLINE
+  bool isEmpty() const noexcept
+  {
+    return false;
   }
 
   /**

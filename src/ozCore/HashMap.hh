@@ -52,8 +52,8 @@ public:
    */
   typedef MapPair<Key, Value, Less<Key>> Pair;
 
-  using typename HashSet<Pair, HashFunc>::CIterator;
-  using typename HashSet<Pair, HashFunc>::Iterator;
+  using typename HashSet<Pair, HashFunc>::CRangeType;
+  using typename HashSet<Pair, HashFunc>::RangeType;
 
 private:
 
@@ -98,9 +98,9 @@ private:
 
 public:
 
-  using HashSet<Pair, HashFunc>::citerator;
-  using HashSet<Pair, HashFunc>::iterator;
+  using HashSet<Pair, HashFunc>::cbegin;
   using HashSet<Pair, HashFunc>::begin;
+  using HashSet<Pair, HashFunc>::cend;
   using HashSet<Pair, HashFunc>::end;
   using HashSet<Pair, HashFunc>::size;
   using HashSet<Pair, HashFunc>::isEmpty;
@@ -187,14 +187,6 @@ public:
       }
     }
     return true;
-  }
-
-  /**
-   * False iff contained elements are equal.
-   */
-  bool operator!=(const HashMap& other) const
-  {
-    return !operator==(other);
   }
 
   /**

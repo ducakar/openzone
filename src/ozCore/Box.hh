@@ -69,7 +69,7 @@ public:
    * Create a new owner, the source box is emptied.
    */
   OZ_ALWAYS_INLINE
-  constexpr Box(Box&& other)
+  constexpr Box(Box&& other) noexcept
     : data_(other.data_)
   {
     other.data_ = nullptr;
@@ -80,7 +80,7 @@ public:
    */
   template <typename Type_>
   OZ_ALWAYS_INLINE
-  constexpr Box(Box<Type_>&& other)
+  constexpr Box(Box<Type_>&& other) noexcept
     : data_(other.data_)
   {
     other.data_ = nullptr;
@@ -89,7 +89,7 @@ public:
   /**
    * Empty and take ownership, the source box is emptied.
    */
-  Box& operator=(Box&& other)
+  Box& operator=(Box&& other) noexcept
   {
     if (&other != this) {
       delete data_;
@@ -106,7 +106,7 @@ public:
    * Empty and take ownership, the source box is emptied.
    */
   template <typename Type_>
-  Box& operator=(Box<Type_>&& other)
+  Box& operator=(Box<Type_>&& other) noexcept
   {
     if (&other != this) {
       delete data_;
@@ -156,34 +156,6 @@ public:
   bool operator==(const Type* data) const
   {
     return data_ == data;
-  }
-
-  /**
-   * False iff pointing to the same memory location.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator!=(const Box& other) const
-  {
-    return !operator==(other);
-  }
-
-  /**
-   * False iff pointing to the same memory location.
-   */
-  template <typename Type_>
-  OZ_ALWAYS_INLINE
-  bool operator!=(const Box<Type_>& other) const
-  {
-    return !operator==(other);
-  }
-
-  /**
-   * False iff pointing to the same memory location.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator!=(const Type* data) const
-  {
-    return !operator==(data);
   }
 
   /**
@@ -280,7 +252,7 @@ public:
    * Create a new owner, the source box is emptied.
    */
   OZ_ALWAYS_INLINE
-  constexpr Box(Box&& other)
+  constexpr Box(Box&& other) noexcept
     : data_(other.data_)
   {
     other.data_ = nullptr;
@@ -291,7 +263,7 @@ public:
    */
   template <typename Type_>
   OZ_ALWAYS_INLINE
-  constexpr Box(Box<Type_>&& other)
+  constexpr Box(Box<Type_>&& other) noexcept
     : data_(other.data_)
   {
     other.data_ = nullptr;
@@ -300,7 +272,7 @@ public:
   /**
    * Empty and take ownership, the source box is emptied.
    */
-  Box& operator=(Box&& other)
+  Box& operator=(Box&& other) noexcept
   {
     if (&other != this) {
       delete data_;
@@ -317,7 +289,7 @@ public:
    * Empty and take ownership, the source box is emptied.
    */
   template <typename Type_>
-  Box& operator=(Box<Type_>&& other)
+  Box& operator=(Box<Type_>&& other) noexcept
   {
     if (&other != this) {
       delete data_;
@@ -367,34 +339,6 @@ public:
   bool operator==(const Type data[]) const
   {
     return data_ == data;
-  }
-
-  /**
-   * False iff pointing to the same memory location.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator!=(const Box& other) const
-  {
-    return !operator==(other);
-  }
-
-  /**
-   * False iff pointing to the same memory location.
-   */
-  template <typename Type_>
-  OZ_ALWAYS_INLINE
-  bool operator!=(const Box<Type_>& other) const
-  {
-    return !operator==(other);
-  }
-
-  /**
-   * False iff pointing to the same memory location.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator!=(const Type data[]) const
-  {
-    return !operator==(data);
   }
 
   /**

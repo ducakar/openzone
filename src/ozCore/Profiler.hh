@@ -63,14 +63,14 @@ public:
   /**
    * Constant iterator for accumulated times.
    */
-  typedef HashMap<String, uint64>::CIterator CIterator;
+  typedef HashMap<String, uint64>::CRangeType CRange;
 
 public:
 
   /**
    * Return constant iterator for accumulated times.
    */
-  static CIterator citerator();
+  static CRange crange() noexcept;
 
   /**
    * Add a time in microseconds to a named sum.

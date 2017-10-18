@@ -45,7 +45,7 @@ struct Foo
     Log() << "Foo(const Foo&) : " << number;
   }
 
-  Foo(Foo&& f)
+  Foo(Foo&& f) noexcept
     : number(f.number)
   {
     Log() << "Foo(Foo&&) : " << number;
@@ -58,7 +58,7 @@ struct Foo
     return *this;
   }
 
-  Foo& operator=(Foo&& f)
+  Foo& operator=(Foo&& f) noexcept
   {
     Log() << "Foo& operator=(Foo&&) : " << number << " := " << f.number;
     number = f.number;

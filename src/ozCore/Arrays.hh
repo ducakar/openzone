@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "Range.hh"
 #include "System.hh"
 
 namespace oz
@@ -38,94 +39,19 @@ namespace oz
  */
 class Arrays
 {
-private:
-
-  /**
-   * Array iterator.
-   *
-   * It should not be used directly but appropriate iterator types should be typedef'd to it.
-   */
-  template <typename Elem>
-  class ArrayIterator : public detail::IteratorBase<Elem>
-  {
-  protected:
-
-    using detail::IteratorBase<Elem>::elem_;
-
-    Elem* past_ = nullptr; ///< Pointer that points just past the last element.
-
-  public:
-
-    /**
-     * Create an invalid iterator.
-     */
-    ArrayIterator() = default;
-
-    /**
-     * Array iterator.
-     *
-     * @param first first array element.
-     * @param past successor of the last element.
-     */
-    OZ_ALWAYS_INLINE
-    explicit ArrayIterator(Elem* first, Elem* past)
-      : detail::IteratorBase<Elem>(first), past_(past)
-    {}
-
-    /**
-     * True as long as iterator has not passed all array elements.
-     */
-    OZ_ALWAYS_INLINE
-    bool isValid() const
-    {
-      return elem_ != past_;
-    }
-
-    /**
-     * Advance to the next element.
-     */
-    OZ_ALWAYS_INLINE
-    ArrayIterator& operator++()
-    {
-      OZ_ASSERT(elem_ != past_);
-
-      ++elem_;
-      return *this;
-    }
-
-    /**
-     * STL-style begin iterator.
-     */
-    OZ_ALWAYS_INLINE
-    Elem* begin() const
-    {
-      return elem_;
-    }
-
-    /**
-     * STL-style end iterator.
-     */
-    OZ_ALWAYS_INLINE
-    Elem* end() const
-    {
-      return past_;
-    }
-
-  };
-
 public:
 
   /**
-   * Array iterator with constant access to elements.
+   * Array range with constant access to elements.
    */
   template <typename Elem>
-  using CIterator = ArrayIterator<const Elem>;
+  using CRangeType = Range<const Elem*, const Elem*, const Elem>;
 
   /**
-   * Array iterator with non-constant access to elements.
+   * Array range with non-constant access to elements.
    */
   template <typename Elem>
-  using Iterator = ArrayIterator<Elem>;
+  using RangeType = Range<Elem*, Elem*, Elem>;
 
 private:
 
@@ -220,7 +146,7 @@ public:
    */
   template <typename Elem, int SIZE>
   OZ_ALWAYS_INLINE
-  static constexpr int size(const Elem (&)[SIZE])
+  static constexpr int size(const Elem (&)[SIZE]) noexcept
   {
     return SIZE;
   }
@@ -457,53 +383,57 @@ public:
 };
 
 /**
- * Create array iterator with constant element access.
- */
-template <typename Elem>
-OZ_ALWAYS_INLINE
-inline Arrays::CIterator<Elem> citerator(const Elem* array, int size)
-{
-  return Arrays::CIterator<Elem>(array, array + size);
-}
-
-/**
- * Create array iterator with non-constant element access.
- */
-template <typename Elem>
-OZ_ALWAYS_INLINE
-inline Arrays::Iterator<Elem> iterator(Elem* array, int size)
-{
-  return Arrays::Iterator<Elem>(array, array + size);
-}
-
-/**
- * Create static array iterator with element constant access.
+ * Range with constant access to static array elements.
  */
 template <typename Elem, int SIZE>
-OZ_ALWAYS_INLINE
-inline Arrays::CIterator<Elem> citerator(const Elem (& array)[SIZE])
+inline Arrays::CRangeType<Elem> crange(const Elem (& array)[SIZE]) noexcept
 {
-  return Arrays::CIterator<Elem>(array, array + SIZE);
+  return Arrays::CRangeType<Elem>(array, array + SIZE);
 }
 
 /**
- * Create static array iterator with non-constant element access.
+ * Range with constant access to constant static array elements.
  */
 template <typename Elem, int SIZE>
-OZ_ALWAYS_INLINE
-inline Arrays::Iterator<Elem> iterator(Elem (& array)[SIZE])
+inline Arrays::CRangeType<Elem> range(const Elem (& array)[SIZE]) noexcept
 {
-  return Arrays::Iterator<Elem>(array, array + SIZE);
+  return Arrays::CRangeType<Elem>(array, array + SIZE);
 }
 
 /**
- * Create initialiser list iterator with element constant access.
+ * Range with non-constant access to static array elements.
+ */
+template <typename Elem, int SIZE>
+inline Arrays::RangeType<Elem> range(Elem (& array)[SIZE]) noexcept
+{
+  return Arrays::RangeType<Elem>(array, array + SIZE);
+}
+
+/**
+ * Range with constant access to array elements.
  */
 template <typename Elem>
-OZ_ALWAYS_INLINE
-inline Arrays::CIterator<Elem> citerator(InitialiserList<Elem> li)
+inline Arrays::CRangeType<Elem> crange(const Elem* array, int size) noexcept
 {
-  return Arrays::CIterator<Elem>(li.begin(), li.begin() + li.size());
+  return Arrays::CRangeType<Elem>(array, array + size);
+}
+
+/**
+ * Range with constant access to constant array elements.
+ */
+template <typename Elem>
+inline Arrays::CRangeType<Elem> range(const Elem* array, int size) noexcept
+{
+  return Arrays::CRangeType<Elem>(array, array + size);
+}
+
+/**
+ * Range with non-constant access to array elements.
+ */
+template <typename Elem>
+inline Arrays::RangeType<Elem> range(Elem* array, int size) noexcept
+{
+  return Arrays::RangeType<Elem>(array, array + size);
 }
 
 }

@@ -37,7 +37,7 @@ void Loader::updateRender()
   OZ_GL_CHECK_ERROR();
 
   // Delete imagines of removed objects.
-  for (auto i = context.imagines.citerator(); i.isValid();) {
+  for (auto i = context.imagines.cbegin(); i != nullptr;) {
     auto imago = i;
     ++i;
 
@@ -51,7 +51,7 @@ void Loader::updateRender()
 
   // Remove unused imagines.
   if (tick % IMAGO_CLEAR_INTERVAL == IMAGO_CLEAR_LAG) {
-    for (auto i = context.imagines.citerator(); i.isValid();) {
+    for (auto i = context.imagines.cbegin(); i != nullptr;) {
       auto imago = i;
       ++i;
 
@@ -73,7 +73,7 @@ void Loader::updateSound()
   OZ_AL_CHECK_ERROR();
 
   // Remove audios of removed objects.
-  for (auto i = context.audios.citerator(); i.isValid();) {
+  for (auto i = context.audios.cbegin(); i != nullptr;) {
     auto audio = i;
     ++i;
 
@@ -87,7 +87,7 @@ void Loader::updateSound()
 
   // Remove unused object Audio objects.
   if (tick % AUDIO_CLEAR_INTERVAL == AUDIO_CLEAR_LAG) {
-    for (auto i = context.audios.citerator(); i.isValid();) {
+    for (auto i = context.audios.cbegin(); i != nullptr;) {
       auto audio = i;
       ++i;
 
@@ -123,7 +123,7 @@ void Loader::updateSound()
   }
 
   // Remove continuous sources that are not played any more.
-  for (auto i = context.contSources.iterator(); i.isValid();) {
+  for (auto i = context.contSources.begin(); i != nullptr;) {
     auto src = i;
     ++i;
 
