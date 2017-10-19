@@ -20,7 +20,7 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-#include "CondVar.hh"
+#include "Monitor.hh"
 
 #include "System.hh"
 
@@ -29,39 +29,51 @@
 namespace oz
 {
 
-struct Mutex::Descriptor
+struct Monitor::Descriptor
 {
   pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_cond_t  cond  = PTHREAD_COND_INITIALIZER;
 };
 
-struct CondVar::Descriptor
-{
-  pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
-};
-
-CondVar::CondVar()
+Monitor::Monitor()
   : descriptor_(new Descriptor)
 {}
 
-CondVar::~CondVar()
+Monitor::~Monitor()
 {
   pthread_cond_destroy(&descriptor_->cond);
+  pthread_mutex_destroy(&descriptor_->mutex);
   delete descriptor_;
 }
 
-void CondVar::signal()
+void Monitor::lock()
+{
+  pthread_mutex_lock(&descriptor_->mutex);
+}
+
+bool Monitor::tryLock()
+{
+  return pthread_mutex_trylock(&descriptor_->mutex) == 0;
+}
+
+void Monitor::unlock()
+{
+  pthread_mutex_unlock(&descriptor_->mutex);
+}
+
+void Monitor::signal()
 {
   pthread_cond_signal(&descriptor_->cond);
 }
 
-void CondVar::broadcast()
+void Monitor::broadcast()
 {
   pthread_cond_broadcast(&descriptor_->cond);
 }
 
-void CondVar::wait(Mutex& mutex)
+void Monitor::wait()
 {
-  pthread_cond_wait(&descriptor_->cond, &mutex.descriptor_->mutex);
+  pthread_cond_wait(&descriptor_->cond, &descriptor_->mutex);
 }
 
 }

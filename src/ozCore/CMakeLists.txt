@@ -13,7 +13,6 @@ add_library(ozCore
   CallOnce.hh
   Chain.hh
   common.hh
-  CondVar.hh
   DChain.hh
   Duration.hh
   Endian.hh
@@ -34,7 +33,7 @@ add_library(ozCore
   Mat3.hh
   Mat4.hh
   Math.hh
-  Mutex.hh
+  Monitor.hh
   ozCore.hh
   Pepper.hh
   Plane.hh
@@ -62,7 +61,6 @@ add_library(ozCore
   Alloc.cc
   Barrier.cc
   Bitset.cc
-  CondVar.cc
   Duration.cc
   EnumMap.cc
   File.cc
@@ -74,7 +72,7 @@ add_library(ozCore
   Mat3.cc
   Mat4.cc
   Math.cc
-  Mutex.cc
+  Monitor.cc
   Pepper.cc
   Plane.cc
   Point.cc

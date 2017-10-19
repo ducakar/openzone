@@ -30,7 +30,7 @@
 
 #include "Atomic.hh"
 #include "LockGuard.hh"
-#include "Mutex.hh"
+#include "Monitor.hh"
 
 namespace oz
 {
@@ -42,7 +42,7 @@ class CallOnce
 {
 private:
 
-  Mutex        lock_;                ///< The lock wrapping the call.
+  Monitor      lock_;                ///< The lock wrapping the call.
   Atomic<bool> wasCalled_ = {false}; ///< Flipped to true when the function finishes.
 
 public:
@@ -72,7 +72,7 @@ public:
   void operator<<(Function function)
   {
     if (!wasCalled_.load<ACQUIRE>()) {
-      LockGuard<Mutex> guard(lock_);
+      LockGuard<Monitor> guard(lock_);
 
       if (!wasCalled_.load<RELAXED>()) {
         function();

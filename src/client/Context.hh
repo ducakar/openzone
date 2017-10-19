@@ -99,7 +99,7 @@ private:
 
     Atomic<int>  owner;
     Atomic<bool> isAlive;              // Set to false to terminate source before it finishes.
-    Mutex        mutex;
+    Monitor      mutex;
     Thread       thread;
 
     String       text;

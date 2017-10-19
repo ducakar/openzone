@@ -36,7 +36,10 @@ namespace oz
 /**
  * Readers-writer lock / shared mutex.
  *
- * @sa `oz::SpinLock`, `oz::Mutex`
+ * @note No error checks are performed on the underlying pthreads API so any abuse of this class
+ * leads to undefined behaviour.
+ *
+ * @sa `oz::SpinLock`, `oz::Monitor`
  */
 class RWLock
 {

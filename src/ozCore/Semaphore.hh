@@ -40,6 +40,11 @@ namespace oz
  * that zero the counter so it can also be used as a binary semaphore.
  *
  * The couter is clamped to [0, maxValue].
+ *
+ * @note No error checks are performed on the underlying pthreads API so any abuse of this class
+ * leads to undefined behaviour.
+ *
+ * @sa `oz::Monitor`
  */
 class Semaphore
 {
