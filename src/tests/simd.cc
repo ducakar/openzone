@@ -78,7 +78,7 @@ int main()
     }
   }
 
-  Log() << "Vectors: " << (Instant::now() - t0).s();
+  Log() << "Vectors: " << (Instant::now() - t0).ms();
 
   t0 = Instant::now();
 
@@ -90,6 +90,6 @@ int main()
     }
   }
 
-  Log() << "Matrices: " << (Instant::now() - t0).s();
+  Log() << "Matrices: " << (Instant::now() - t0).ms();
   return 0;
 }

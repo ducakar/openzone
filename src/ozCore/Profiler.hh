@@ -29,6 +29,7 @@
 #pragma once
 
 #include "HashMap.hh"
+#include "String.hh"
 #include "Instant.hh"
 
 /**

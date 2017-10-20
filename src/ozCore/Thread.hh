@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "String.hh"
 #include "Instant.hh"
 
 namespace oz

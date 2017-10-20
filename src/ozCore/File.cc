@@ -50,7 +50,7 @@ struct Stat
     DIRECTORY
   };
 
-  Type   type = MISSING;
+  Type  type = MISSING;
   int64 size = -1;
   int64 time = 0;
 

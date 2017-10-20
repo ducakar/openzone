@@ -22,6 +22,8 @@
 
 /**
  * @file ozCore/Atomic.hh
+ *
+ * `Atomic` class template.
  */
 
 #pragma once

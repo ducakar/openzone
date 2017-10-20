@@ -45,6 +45,17 @@ class Duration
 public:
 
   /**
+   * `std::timespec`-compatible type.
+   *
+   * This struct is primarily for use with `clock_nanosleep()` and similar functions.
+   */
+  struct Timespec
+  {
+    int64 s;  ///< Seconds.
+    int   ns; ///< Nanoseconds in range 0...999999999.
+  };
+
+  /**
    * Zero time duration.
    */
   static const Duration ZERO;
@@ -58,18 +69,28 @@ public:
   /**
    * Create a zero duration.
    */
+  OZ_ALWAYS_INLINE
   constexpr Duration() = default;
 
   /**
    * Create duration for a given number of nanoseconds.
    */
+  OZ_ALWAYS_INLINE
   explicit constexpr Duration(int64 ns)
     : ns_(ns)
   {}
 
   /**
+   * Create duration from Timespec.
+   */
+  explicit constexpr Duration(Timespec ts)
+    : ns_(ts.s * 1000000000 + ts.ns)
+  {}
+
+  /**
    * True iff equally long (equal number of microseconds).
    */
+  OZ_ALWAYS_INLINE
   constexpr bool operator==(const Duration& other) const
   {
     return ns_ == other.ns_;
@@ -78,54 +99,72 @@ public:
   /**
    * True iff shorter.
    */
+  OZ_ALWAYS_INLINE
   constexpr bool operator<(const Duration& other) const
   {
     return ns_ < other.ns_;
   }
 
   /**
-   * Length in seconds.
-   */
-  constexpr float t() const
-  {
-    return float(ns_) / 1000000000.0f;
-  }
-
-  /**
-   * Length in seconds (integer part).
-   */
-  constexpr int64 s() const
-  {
-    return ns_ / 1000000000;
-  }
-
-  /**
-   * Length in milliseconds (integer part).
-   */
-  constexpr int64 ms() const
-  {
-    return ns_ / 1000000;
-  }
-
-  /**
-   * Length in microseconds (integer part).
-   */
-  constexpr int64 us() const
-  {
-    return ns_ / 1000;
-  }
-
-  /**
    * Length in nanoseconds.
    */
+  OZ_ALWAYS_INLINE
   constexpr int64 ns() const
   {
     return ns_;
   }
 
   /**
+   * Length in microseconds (integer part).
+   */
+  OZ_ALWAYS_INLINE
+  constexpr int64 us() const
+  {
+    return ns_ / 1000;
+  }
+
+  /**
+   * Length in milliseconds (integer part).
+   */
+  OZ_ALWAYS_INLINE
+  constexpr int64 ms() const
+  {
+    return ns_ / 1000000;
+  }
+
+  /**
+   * Length in seconds (integer part).
+   */
+  OZ_ALWAYS_INLINE
+  constexpr int64 s() const
+  {
+    return ns_ / 1000000000;
+  }
+
+  /**
+   * Length in seconds.
+   */
+  OZ_ALWAYS_INLINE
+  constexpr float t() const
+  {
+    return float(ns_) / 1000000000.0f;
+  }
+
+  /**
+   * Convert to Timespec.
+   */
+  constexpr Timespec timespec() const
+  {
+    int64 ns = ns_ % 1000000000 + 1000000000;
+    int64 s  = ns_ / 1000000000 - 1;
+
+    return Timespec{s + ns / 1000000000, int(ns_ % 1000000000)};
+  }
+
+  /**
    * Original duration.
    */
+  OZ_ALWAYS_INLINE
   constexpr Duration operator+() const
   {
     return *this;
@@ -134,6 +173,7 @@ public:
   /**
    * Negated duration.
    */
+  OZ_ALWAYS_INLINE
   constexpr Duration operator-() const
   {
     return Duration(-ns_);
@@ -142,6 +182,7 @@ public:
   /**
    * Sum of durations.
    */
+  OZ_ALWAYS_INLINE
   constexpr Duration operator+(const Duration& d) const
   {
     return Duration(ns_ + d.ns_);
@@ -150,6 +191,7 @@ public:
   /**
    * Difference of durations.
    */
+  OZ_ALWAYS_INLINE
   constexpr Duration operator-(const Duration& d) const
   {
     return Duration(ns_ - d.ns_);
@@ -159,6 +201,7 @@ public:
    * Product of a duration and a scalar.
    */
   template <typename Scalar = int64>
+  OZ_ALWAYS_INLINE
   constexpr Duration operator*(Scalar s) const
   {
     return Duration(int64(ns_ * s));
@@ -168,6 +211,7 @@ public:
    * Product of a scalar and a duration.
    */
   template <typename Scalar = int64>
+  OZ_ALWAYS_INLINE
   friend constexpr Duration operator*(Scalar s, const Duration& d)
   {
     return Duration(int64(s * d.ns_));
@@ -177,6 +221,7 @@ public:
    * Duration divided by a scalar.
    */
   template <typename Scalar = int64>
+  OZ_ALWAYS_INLINE
   constexpr Duration operator/(Scalar s) const
   {
     return Duration(int64(ns_ / s));
@@ -185,6 +230,7 @@ public:
   /**
    * Divide the duration by anoter duration.
    */
+  OZ_ALWAYS_INLINE
   constexpr int64 operator/(const Duration& d) const
   {
     return ns_ / d.ns_;
@@ -193,6 +239,7 @@ public:
   /**
    * Remainder of division by anoter duration.
    */
+  OZ_ALWAYS_INLINE
   constexpr Duration operator%(const Duration& d) const
   {
     return Duration(ns_ % d.ns_);
@@ -201,6 +248,7 @@ public:
   /**
    * Add a duration.
    */
+  OZ_ALWAYS_INLINE
   constexpr Duration& operator+=(const Duration& d)
   {
     ns_ += d.ns_;
@@ -210,6 +258,7 @@ public:
   /**
    * Subtract a duration.
    */
+  OZ_ALWAYS_INLINE
   constexpr Duration& operator-=(const Duration& d)
   {
     ns_ -= d.ns_;
@@ -220,6 +269,7 @@ public:
    * Multiply the duration by a scalar.
    */
   template <typename Scalar = int64>
+  OZ_ALWAYS_INLINE
   constexpr Duration& operator*=(Scalar s)
   {
     ns_ = int64(ns_ * s);
@@ -230,6 +280,7 @@ public:
    * Divide the duration by a scalar.
    */
   template <typename Scalar = int64>
+  OZ_ALWAYS_INLINE
   constexpr Duration& operator/=(Scalar s)
   {
     ns_ = int64(ns_ / s);
@@ -241,6 +292,7 @@ public:
 /**
  * Create a duration for a given number of seconds.
  */
+OZ_ALWAYS_INLINE
 inline constexpr Duration operator""_s(unsigned long long value)
 {
   return Duration(int64(value * 1000000000));
@@ -249,14 +301,16 @@ inline constexpr Duration operator""_s(unsigned long long value)
 /**
  * Create a duration for a given number of seconds.
  */
+OZ_ALWAYS_INLINE
 inline constexpr Duration operator""_s(long double value)
 {
-  return Duration(int64(value * 1000000000.0l));
+  return Duration(int64(value * 1000000000));
 }
 
 /**
  * Create a duration for a given number of milliseconds.
  */
+OZ_ALWAYS_INLINE
 inline constexpr Duration operator""_ms(unsigned long long value)
 {
   return Duration(int64(value * 1000000));
@@ -265,14 +319,16 @@ inline constexpr Duration operator""_ms(unsigned long long value)
 /**
  * Create a duration for a given number of milliseconds.
  */
+OZ_ALWAYS_INLINE
 inline constexpr Duration operator""_ms(long double value)
 {
-  return Duration(int64(value * 1000000.0l));
+  return Duration(int64(value * 1000000));
 }
 
 /**
  * Create a duration for a given number of microseconds.
  */
+OZ_ALWAYS_INLINE
 inline constexpr Duration operator""_us(unsigned long long value)
 {
   return Duration(int64(value * 1000));
@@ -281,14 +337,16 @@ inline constexpr Duration operator""_us(unsigned long long value)
 /**
  * Create a duration for a given number of microseconds.
  */
+OZ_ALWAYS_INLINE
 inline constexpr Duration operator""_us(long double value)
 {
-  return Duration(int64(value * 1000.0l));
+  return Duration(int64(value * 1000));
 }
 
 /**
  * Create a duration for a given number of nanoseconds.
  */
+OZ_ALWAYS_INLINE
 inline constexpr Duration operator""_ns(unsigned long long value)
 {
   return Duration(int64(value));
@@ -297,6 +355,7 @@ inline constexpr Duration operator""_ns(unsigned long long value)
 /**
  * Create a duration for a given number of nanoseconds.
  */
+OZ_ALWAYS_INLINE
 inline constexpr Duration operator""_ns(long double value)
 {
   return Duration(int64(value));

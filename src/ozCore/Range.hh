@@ -33,6 +33,9 @@
 namespace oz
 {
 
+/**
+ * Container for begin-end iterator pair.
+ */
 template <typename BeginIterator, typename EndIterator, typename ElemType>
 class Range
 {
@@ -55,22 +58,34 @@ public:
 
 private:
 
-  BeginIterator begin_; ///< Begin iterator.
-  EndIterator   end_;   ///< End iterator.
+  BeginIterator begin_ = {}; ///< Begin iterator.
+  EndIterator   end_   = {}; ///< End iterator.
 
 public:
 
+  /**
+   * Create empty range with both iterators invalid.
+   */
   Range() noexcept = default;
 
+  /**
+   * Create range for given iterators.
+   */
   explicit Range(BeginIterator begin, EndIterator end) noexcept
     : begin_(begin), end_(end)
   {}
 
+  /**
+   * Begin iterator.
+   */
   BeginIterator& begin() noexcept
   {
     return begin_;
   }
 
+  /**
+   * End iterator.
+   */
   EndIterator& end() noexcept
   {
     return end_;

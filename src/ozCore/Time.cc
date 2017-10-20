@@ -47,6 +47,27 @@ int64 Time::toEpoch() const
   return mktime(&timeStruct);
 }
 
+Time Time::utc()
+{
+  return local(epoch());
+}
+
+Time Time::utc(int64 epoch)
+{
+  time_t ctime = time_t(epoch);
+  struct tm timeStruct;
+#ifdef _WIN32
+  gmtime_s(&timeStruct, &ctime);
+#else
+  gmtime_r(&ctime, &timeStruct);
+#endif
+
+  return {
+    1900 + timeStruct.tm_year, 1 + timeStruct.tm_mon, timeStruct.tm_mday,
+    timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec
+  };
+}
+
 Time Time::local()
 {
   return local(epoch());

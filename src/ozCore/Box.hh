@@ -22,6 +22,8 @@
 
 /**
  * @file ozCore/Box.hh
+ *
+ * `Box` class template.
  */
 
 #pragma once
@@ -39,7 +41,7 @@ class Box
 {
 private:
 
-  Type* data_ = nullptr;
+  Type* data_ = nullptr; ///< Wrapped pointer.
 
 public:
 
@@ -222,7 +224,7 @@ class Box<Type[]>
 {
 private:
 
-  Type* data_ = nullptr;
+  Type* data_ = nullptr; ///< Wrapped pointer.
 
 public:
 

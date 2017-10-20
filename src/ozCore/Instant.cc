@@ -32,8 +32,6 @@ Instant Instant::now()
   struct timespec ts;
   clock_gettime(CLOCK_MONOTONIC, &ts);
 
-  // This is continuous if tv_sec wraps around at its maximum value since (time_t range) * 1000000
-  // is a multiple of uint range.
   return Instant(ts.tv_sec * 1000000000 + ts.tv_nsec);
 }
 

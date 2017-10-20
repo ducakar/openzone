@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "String.hh"
 #include "Duration.hh"
 
 namespace oz
@@ -53,27 +52,39 @@ public:
 
 public:
 
-  using Duration::t;
-  using Duration::s;
-  using Duration::ms;
-  using Duration::us;
+  using Duration::Timespec;
   using Duration::ns;
+  using Duration::us;
+  using Duration::ms;
+  using Duration::s;
+  using Duration::t;
+  using Duration::timespec;
 
   /**
    * Epoch.
    */
-  Instant() = default;
+  OZ_ALWAYS_INLINE
+  constexpr Instant() = default;
 
   /**
    * Create instant for a given nanosecond offset from the epoch.
    */
-  explicit Instant(int64 ns)
+  OZ_ALWAYS_INLINE
+  explicit constexpr Instant(int64 ns)
     : Duration(ns)
+  {}
+
+  /**
+   * Create instant from Timespec.
+   */
+  explicit constexpr Instant(Timespec ts)
+    : Duration(ts)
   {}
 
   /**
    * True iff equally long (equal number of microseconds).
    */
+  OZ_ALWAYS_INLINE
   constexpr bool operator==(const Instant& other) const
   {
     return Duration::operator==(other);
@@ -82,6 +93,7 @@ public:
   /**
    * True iff shorter.
    */
+  OZ_ALWAYS_INLINE
   constexpr bool operator<(const Instant& other) const
   {
     return Duration::operator<(other);
@@ -90,6 +102,7 @@ public:
   /**
    * Sum of the instant and a durations.
    */
+  OZ_ALWAYS_INLINE
   constexpr Instant operator+(const Duration& d) const
   {
     return static_cast<Instant&&>(Duration::operator+(d));
@@ -98,6 +111,7 @@ public:
   /**
    * Difference of the instant and a durations.
    */
+  OZ_ALWAYS_INLINE
   constexpr Instant operator-(const Duration& d) const
   {
     return static_cast<Instant&&>(Duration::operator-(d));
@@ -106,6 +120,7 @@ public:
   /**
    * Difference of instants.
    */
+  OZ_ALWAYS_INLINE
   constexpr Duration operator-(const Instant& d) const
   {
     return Duration::operator-(d);
@@ -114,6 +129,7 @@ public:
   /**
    * Add a duration.
    */
+  OZ_ALWAYS_INLINE
   constexpr Instant& operator+=(const Duration& d)
   {
     return static_cast<Instant&>(Duration::operator+=(d));
@@ -122,6 +138,7 @@ public:
   /**
    * Subtract a duration.
    */
+  OZ_ALWAYS_INLINE
   constexpr Instant& operator-=(const Duration& d)
   {
     return static_cast<Instant&>(Duration::operator-=(d));

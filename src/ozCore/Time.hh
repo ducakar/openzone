@@ -64,6 +64,16 @@ public:
   int64 toEpoch() const;
 
   /**
+   * Return broken-down UTC time representing the current time.
+   */
+  static Time utc();
+
+  /**
+   * Return broken-down UTC time representing the time given as seconds from epoch.
+   */
+  static Time utc(int64 epoch);
+
+  /**
    * Return broken-down local time representing the current time.
    */
   static Time local();

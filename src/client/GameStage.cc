@@ -378,7 +378,7 @@ void GameStage::unload()
   mainSemaphore.wait();
   auxThread.join();
 
-  uint64  ticks                 = timer.ticks - startTicks;
+  uint64   ticks                 = timer.ticks - startTicks;
   Duration soundMicros           = sound.effectsDuration + sound.musicDuration;
   Duration renderMicros          = render.prepareDuration + render.caelumDuration +
                                    render.terraDuration + render.meshesDuration +
@@ -406,7 +406,7 @@ void GameStage::unload()
   float    runTime               = timer.runDuration.t();
   float    gameTime              = timer.time.t();
   float    droppedTime           = (timer.runDuration - timer.time).t();
-  uint64  nFrameDrops           = ticks - timer.nFrames;
+  uint64   nFrameDrops           = ticks - timer.nFrames;
   float    frameDropRate         = float(ticks - timer.nFrames) / float(ticks);
 
   if (stateFile.isEmpty()) {

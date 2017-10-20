@@ -28,24 +28,39 @@ void test_iterables()
 {
   Log() << "+ iterables";
 
-  Chain<Foo>::CRangeType        icl;
-  Chain<Foo>::RangeType         il;
-  DChain<Foo>::CRangeType       icdl;
-  DChain<Foo>::RangeType        idl;
-  List<Foo>::CRangeType         icv;
-  List<Foo>::RangeType          iv;
-  SList<Foo, 1>::CRangeType     icsv;
-  SList<Foo, 1>::RangeType      isv;
-  Set<Foo>::CRangeType          ics;
-  Set<Foo>::RangeType           is;
-  Map<Foo, Foo>::CRangeType     icm;
-  Map<Foo, Foo>::RangeType      im;
-  HashSet<Foo>::CRangeType      ichs;
-  HashSet<Foo>::RangeType       ihs;
-  HashMap<Foo, Foo>::CRangeType ichm;
-  HashMap<Foo, Foo>::RangeType  ihtm;
+  Chain<Foo>::CRangeType        rcc;
+  Chain<Foo>::RangeType         rc;
+  DChain<Foo>::CRangeType       rdcc;
+  DChain<Foo>::RangeType        rdc;
+  List<Foo>::CRangeType         rcl;
+  List<Foo>::RangeType          rl;
+  SList<Foo, 1>::CRangeType     rcsl;
+  SList<Foo, 1>::RangeType      rsl;
+  Set<Foo>::CRangeType          rcs;
+  Set<Foo>::RangeType           rs;
+  Map<Foo, Foo>::CRangeType     rcm;
+  Map<Foo, Foo>::RangeType      rm;
+  HashSet<Foo>::CRangeType      rchs;
+  HashSet<Foo>::RangeType       rhs;
+  HashMap<Foo, Foo>::CRangeType rchm;
+  HashMap<Foo, Foo>::RangeType  rhm;
 
-  List<Foo*>::RangeType         invalid;
+  static_cast<void>(rcc);
+  static_cast<void>(rc);
+  static_cast<void>(rdcc);
+  static_cast<void>(rdc);
+  static_cast<void>(rcl);
+  static_cast<void>(rl);
+  static_cast<void>(rcsl);
+  static_cast<void>(rsl);
+  static_cast<void>(rcs);
+  static_cast<void>(rs);
+  static_cast<void>(rcm);
+  static_cast<void>(rm);
+  static_cast<void>(rchs);
+  static_cast<void>(rhs);
+  static_cast<void>(rchm);
+  static_cast<void>(rhm);
 
   DChain<Foo> l;
   List<Foo> v;

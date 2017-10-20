@@ -48,11 +48,11 @@ public:
 
   Duration runDuration;       ///< Run time (game time plus dropped time).
 
-  int64   ticks         = 0; ///< Ticks from the start of the game.
+  int64    ticks         = 0; ///< Ticks from the start of the game.
   Duration time;              ///< %Time from the start of the game.
 
-  int64   nFrames       = 0; ///< Number of rendered frames from the start of the game.
-  int64   frameTicks    = 0; ///< Ticks from the last rendered frame.
+  int64    nFrames       = 0; ///< Number of rendered frames from the start of the game.
+  int64    frameTicks    = 0; ///< Ticks from the last rendered frame.
   Duration frameDuration;     ///< Time from the last rendered frame.
   float    frameTime;         ///< Time in seconds from the last rendered frame.
 

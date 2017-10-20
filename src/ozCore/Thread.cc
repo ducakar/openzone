@@ -97,7 +97,8 @@ void* Thread::Descriptor::mainWrapper(void* handle)
 
 void Thread::sleepFor(Duration duration)
 {
-  struct timespec ts = {time_t(duration.s()), long(duration.ns() % 1000000000)};
+  auto [s, ns] = duration.timespec();
+  struct timespec ts = {time_t(s), ns};
 # ifdef __native_client__
   nanosleep(&ts, nullptr);
 # else
@@ -107,7 +108,8 @@ void Thread::sleepFor(Duration duration)
 
 void Thread::sleepUntil(Instant instant)
 {
-  struct timespec ts = {time_t(instant.s()), long(instant.ns() % 1000000000)};
+  auto [s, ns] = instant.timespec();
+  struct timespec ts = {time_t(s), ns};
 # ifdef __native_client__
   nanosleep(&ts, nullptr);
 # else
