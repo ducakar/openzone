@@ -34,7 +34,7 @@ class Terra
 private:
 
   // Some "shortcuts".
-  typedef oz::Terra::Quad Quad;
+  using Quad = oz::Terra::Quad;
 
   static const int DIM        = oz::Terra::DIM;
   static const int VERTS      = oz::Terra::VERTS;

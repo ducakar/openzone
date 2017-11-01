@@ -55,7 +55,7 @@ bool Area::passMouseEvents()
   }
 
   for (auto i = children.begin(); i != nullptr;) {
-    Area* child = i;
+    Area* child = &*i;
     ++i;
 
     if (child->x <= mouse.x && mouse.x < child->x + child->width &&
@@ -75,7 +75,7 @@ bool Area::passMouseEvents()
 bool Area::passKeyEvents()
 {
   for (auto i = children.begin(); i != nullptr;) {
-    Area* child = i;
+    Area* child = &*i;
     ++i;
 
     if (child->isVisible()) {

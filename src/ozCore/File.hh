@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "Opt.hh"
 #include "Stream.hh"
 
 namespace oz
@@ -274,7 +275,7 @@ public:
    *
    * An invalid (empty) stream is returned on error.
    */
-  Stream read(Endian::Order order = Endian::NATIVE) const;
+  Opt<Stream> read(Endian::Order order = Endian::NATIVE) const;
 
   /**
    * Write buffer contents to the file.

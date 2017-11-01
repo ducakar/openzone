@@ -170,13 +170,9 @@ void Terra::load()
 
   const String& name = liber.terrae[id].name;
 
-  File file = "@terra/" + name + ".ozcTerra";
-  File map  = "@terra/" + name + ".dds";
-
-  Stream is = file.read(Endian::LITTLE);
-  if (is.available() == 0) {
-    OZ_ERROR("Terra file '%s' read failed", file.c());
-  }
+  File   file = "@terra/" + name + ".ozcTerra";
+  File   map  = "@terra/" + name + ".dds";
+  Stream is   = file.read(Endian::LITTLE).OZ_UNWRAP("Terra file '%s' read failed", file.c());
 
   glGenBuffers(TILES * TILES, &vbos[0][0]);
   glGenBuffers(1, &ibo);

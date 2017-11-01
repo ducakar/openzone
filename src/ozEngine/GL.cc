@@ -318,8 +318,8 @@ int GL::textureDataFromStream(Stream* is, int bias)
 
 int GL::textureDataFromFile(const File& file, int bias)
 {
-  Stream is = file.read(Endian::LITTLE);
-  return textureDataFromStream(&is, bias);
+  Opt<Stream> optIs = file.read(Endian::LITTLE);
+  return optIs ? textureDataFromStream(&*optIs, bias) : 0;
 }
 
 void GL::textureDataIdenticon(int hash, int size, const Vec4& backgroundColour)

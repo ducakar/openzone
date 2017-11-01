@@ -50,11 +50,7 @@ void MD3::buildMesh(const char* name, int meshFrame)
 
   File file = String::format("%s/%s.md3", dir.c(), name);
 
-  Stream is = file.read(Endian::LITTLE);
-
-  if (is.available() == 0) {
-    OZ_ERROR("Cannot read MD3 model part file '%s'", file.c());
-  }
+  Stream is = file.read(Endian::LITTLE).OZ_UNWRAP("Cannot read MD3 model part file '%s'", file.c());
 
   MD3Header header;
 

@@ -1005,10 +1005,20 @@ double Json::get(double defaultValue) const
   return number_;
 }
 
-const String& Json::get(const String& defaultValue) const
+String Json::get(const String& defaultValue) const
 {
   if (type_ != STRING) {
     return defaultValue;
+  }
+
+  wasAccessed_ = true;
+  return static_cast<const StringData*>(data_)->value;
+}
+
+String Json::get(String&& defaultValue) const
+{
+  if (type_ != STRING) {
+    return static_cast<String&&>(defaultValue);
   }
 
   wasAccessed_ = true;
@@ -1287,12 +1297,12 @@ String Json::toFormattedString(const Format& format) const
 
 bool Json::load(const File& file)
 {
-  Stream is = file.read();
-  if (is.available() == 0) {
+  Opt<Stream> is = file.read();
+  if (!is) {
     return false;
   }
 
-  *this = Parser::parse(&is, file);
+  *this = Parser::parse(&*is, file);
   return true;
 }
 

@@ -36,8 +36,8 @@ public:
 
   static const int ACTIVE_BIT = 0x00000001;
 
-  typedef Task* CreateFunc(const Task* parent);
-  typedef Task* ReadFunc(Stream* is, const Task* parent);
+  using CreateFunc = Task* (const Task* parent);
+  using ReadFunc = Task* (Stream* is, const Task* parent);
 
   int         flags;
 

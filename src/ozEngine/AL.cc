@@ -71,61 +71,72 @@ static ov_callbacks VORBIS_CALLBACKS = {vorbisRead, vorbisSeek, nullptr, vorbisT
  * Class members.
  */
 
-struct AL::Decoder::StreamBase
+class AL::Decoder::StreamBase
 {
-  Stream is;
+protected:
+
+  Stream is_;
+
+public:
 
   OZ_INTERNAL
   virtual ~StreamBase();
 
   OZ_INTERNAL
   virtual bool decode(AL::Decoder* decoder) = 0;
+
 };
 
 AL::Decoder::StreamBase::~StreamBase()
 {}
 
-struct AL::Decoder::WaveStream : AL::Decoder::StreamBase
+class AL::Decoder::WaveStream : public AL::Decoder::StreamBase
 {
-  int sampleSize;
+private:
+
+  int sampleSize_;
+
+public:
 
   OZ_INTERNAL
   explicit WaveStream(AL::Decoder* decoder, const File& file)
   {
-    is = file.read(Endian::LITTLE);
+    is_ = file.read(Endian::LITTLE)
+          .OZ_UNWRAP("oz::AL::Decoder: Failed to open WAVE file `%s'", file.c());
 
-    if (is.available() < 44) {
-      OZ_ERROR("oz::AL::Decoder: Failed to open WAVE file `%s'", file.c());
+    if (is_.available() < 44) {
+      OZ_ERROR("oz::AL::Decoder: Invalid WAVE header in `%s'", file.c());
     }
 
-    is.seek(22);
+    is_.seek(22);
 
-    int nChannels = is.readShort();
-    int rate      = is.readInt();
+    int nChannels = is_.readShort();
+    int rate      = is_.readInt();
 
-    is.seek(34);
+    is_.seek(34);
 
-    sampleSize = is.readShort() / 8;
+    sampleSize_ = is_.readShort() / 8;
 
-    while (is.available() != 0 && !String::beginsWith(is.readSkip(4), "data")) {
-      is.readSkip(is.readInt());
+    while (is_.available() != 0 && !String::beginsWith(is_.readSkip(4), "data")) {
+      is_.readSkip(is_.readInt());
     }
 
-    int size = is.readInt();
+    int size = is_.readInt();
 
-    if ((nChannels != 1 && nChannels != 2) || (sampleSize != 1 && sampleSize != 2)) {
+    if ((nChannels != 1 && nChannels != 2) || (sampleSize_ != 1 && sampleSize_ != 2)) {
       OZ_ERROR("oz::AL::Decoder: Only mono and stereo, 8-bit and 16-bit WAVE PCM supported `%s'",
                file.c());
     }
 
     decoder->format_   = nChannels == 2 ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_MONO_FLOAT32;
     decoder->rate_     = rate;
-    decoder->capacity_ = size / sampleSize;
+    decoder->capacity_ = size / sampleSize_;
     decoder->samples_  = new float[decoder->capacity_];
   }
 
   OZ_INTERNAL
   bool decode(AL::Decoder* decoder) override;
+
 };
 
 bool AL::Decoder::WaveStream::decode(AL::Decoder* decoder)
@@ -138,8 +149,8 @@ bool AL::Decoder::WaveStream::decode(AL::Decoder* decoder)
   float* end        = decoder->samples_ + decoder->capacity_;
   float* alignedEnd = begin + Alloc::alignDown<ptrdiff_t>(end - begin, 4);
 
-  if (sampleSize == 1) {
-    const ubyte* samples = reinterpret_cast<const ubyte*>(is.pos());
+  if (sampleSize_ == 1) {
+    const ubyte* samples = reinterpret_cast<const ubyte*>(is_.pos());
 
     while (begin != alignedEnd) {
       begin[0] = float(samples[0] - 128) / 128.0f;
@@ -155,7 +166,7 @@ bool AL::Decoder::WaveStream::decode(AL::Decoder* decoder)
     }
   }
   else {
-    const short* samples = reinterpret_cast<const short*>(is.pos());
+    const short* samples = reinterpret_cast<const short*>(is_.pos());
 
     while (begin != alignedEnd) {
 #if OZ_BYTE_ORDER == 4321
@@ -186,29 +197,30 @@ bool AL::Decoder::WaveStream::decode(AL::Decoder* decoder)
   return true;
 }
 
-struct AL::Decoder::OpusStream : AL::Decoder::StreamBase
+class AL::Decoder::OpusStream : public AL::Decoder::StreamBase
 {
+private:
+
   OZ_INTERNAL
   static const int FRAME_SIZE = 120 * 48;
 
-  OggOpusFile* opFile = nullptr;
+  OggOpusFile* opFile_ = nullptr;
+
+public:
 
   OZ_INTERNAL
   explicit OpusStream(AL::Decoder* decoder, const File& file, bool isStreaming)
   {
-    is = file.read();
-    if (is.available() == 0) {
-      OZ_ERROR("oz::AL::Decoder: Failed to open Opus file `%s'", file.c());
-    }
+    is_ = file.read().OZ_UNWRAP("oz::AL::Decoder: Failed to open Opus file `%s'", file.c());
 
     int error;
-    opFile = op_open_memory(reinterpret_cast<const ubyte*>(is.begin()), is.available(), &error);
+    opFile_ = op_open_memory(reinterpret_cast<const ubyte*>(is_.begin()), is_.available(), &error);
     if (error != 0) {
       OZ_ERROR("oz::AL::Decoder: Invalid Opus file `%s'", file.c());
     }
 
-    int nChannels = op_channel_count(opFile, -1);
-    int nSamples  = int(op_pcm_total(opFile, -1));
+    int nChannels = op_channel_count(opFile_, -1);
+    int nSamples  = int(op_pcm_total(opFile_, -1));
 
     if (nChannels != 1 && nChannels != 2) {
       OZ_ERROR("oz::AL::Decoder: Only mono and stereo Opus supported `%s'", file.c());
@@ -225,14 +237,15 @@ struct AL::Decoder::OpusStream : AL::Decoder::StreamBase
 
   OZ_INTERNAL
   bool decode(AL::Decoder* decoder) override;
+
 };
 
 const int AL::Decoder::OpusStream::FRAME_SIZE;
 
 AL::Decoder::OpusStream::~OpusStream()
 {
-  if (opFile != nullptr) {
-    op_free(opFile);
+  if (opFile_ != nullptr) {
+    op_free(opFile_);
   }
 }
 
@@ -244,11 +257,11 @@ bool AL::Decoder::OpusStream::decode(AL::Decoder* decoder)
     int result;
 
     if (decoder->format_ == AL_FORMAT_STEREO_FLOAT32) {
-      result = op_read_float_stereo(opFile, decoder->samples_ + decoder->size_,
+      result = op_read_float_stereo(opFile_, decoder->samples_ + decoder->size_,
                                     decoder->capacity_ - decoder->size_) * 2;
     }
     else {
-      result = op_read_float(opFile, decoder->samples_ + decoder->size_,
+      result = op_read_float(opFile_, decoder->samples_ + decoder->size_,
                              decoder->capacity_ - decoder->size_, nullptr);
     }
 
@@ -263,29 +276,30 @@ bool AL::Decoder::OpusStream::decode(AL::Decoder* decoder)
   return true;
 }
 
-struct AL::Decoder::VorbisStream : AL::Decoder::StreamBase
+class AL::Decoder::VorbisStream : public AL::Decoder::StreamBase
 {
-  OggVorbis_File ovFile;
+private:
+
+  OggVorbis_File ovFile_;
+
+public:
 
   OZ_INTERNAL
   explicit VorbisStream(AL::Decoder* decoder, const File& file, bool isStreaming)
   {
-    is = file.read();
-    if (is.available() == 0) {
-      OZ_ERROR("oz::AL::Decoder: Failed to open Vorbis file `%s'", file.c());
-    }
+    is_ = file.read().OZ_UNWRAP("oz::AL::Decoder: Failed to open Vorbis file `%s'", file.c());
 
-    int error = ov_open_callbacks(&is, &ovFile, nullptr, 0, VORBIS_CALLBACKS);
+    int error = ov_open_callbacks(&is_, &ovFile_, nullptr, 0, VORBIS_CALLBACKS);
     if (error != 0) {
       OZ_ERROR("oz::AL::Decoder: Invalid Vorbis file `%s'", file.c());
     }
 
-    vorbis_info* ovInfo = ov_info(&ovFile, -1);
+    vorbis_info* ovInfo = ov_info(&ovFile_, -1);
 
     int nChannels = ovInfo->channels;
     int rate      = int(ovInfo->rate);
     int frameSize = 120 * rate / 1000;
-    int nSamples  = int(ov_pcm_total(&ovFile, -1));
+    int nSamples  = int(ov_pcm_total(&ovFile_, -1));
 
     if (nChannels != 1 && nChannels != 2) {
       OZ_ERROR("oz::AL::Decoder: Only mono and stereo Vorbis supported `%s'", file.c());
@@ -302,11 +316,12 @@ struct AL::Decoder::VorbisStream : AL::Decoder::StreamBase
 
   OZ_INTERNAL
   bool decode(AL::Decoder* decoder) override;
+
 };
 
 AL::Decoder::VorbisStream::~VorbisStream()
 {
-  ov_clear(&ovFile);
+  ov_clear(&ovFile_);
 }
 
 bool AL::Decoder::VorbisStream::decode(AL::Decoder* decoder)
@@ -318,7 +333,7 @@ bool AL::Decoder::VorbisStream::decode(AL::Decoder* decoder)
   do {
     float** samples;
     int     section;
-    long    result = ov_read_float(&ovFile, &samples,
+    long    result = ov_read_float(&ovFile_, &samples,
                                    (decoder->capacity_ - decoder->size_) >> stereo, &section);
     if (result <= 0) {
       return decoder->size_ != 0;

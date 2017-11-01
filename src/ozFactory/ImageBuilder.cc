@@ -92,19 +92,24 @@ static FIBITMAP* createBitmap(const ImageData& image)
   return dib;
 }
 
-static FIBITMAP* loadBitmap(const File& file)
+static Opt<FIBITMAP*> loadBitmap(const File& file)
 {
-  Stream            is        = file.read();
-  ubyte*            dataBegin = reinterpret_cast<ubyte*>(is.begin());
-  FIMEMORY*         memoryIO  = FreeImage_OpenMemory(dataBegin, is.capacity());
-  FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory(memoryIO, is.capacity());
+  Opt<Stream> is = file.read();
+
+  if (!is) {
+    return Void();
+  }
+
+  ubyte*            dataBegin = reinterpret_cast<ubyte*>(is->begin());
+  FIMEMORY*         memoryIO  = FreeImage_OpenMemory(dataBegin, is->capacity());
+  FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory(memoryIO, is->capacity());
   FIBITMAP*         dib       = FreeImage_LoadFromMemory(format < 0 ? FIF_TARGA : format, memoryIO);
 
   FreeImage_CloseMemory(memoryIO);
 
   if (dib == nullptr) {
     snprintf(errorBuffer, ERROR_LENGTH, "Failed to read '%s'.", file.c());
-    return nullptr;
+    return Void();
   }
 
   FIBITMAP* oldDib = dib;
@@ -402,10 +407,15 @@ bool ImageBuilder::isImage(const File& file)
 {
   errorBuffer[0] = '\0';
 
-  Stream            is        = file.read();
-  ubyte*            dataBegin = reinterpret_cast<ubyte*>(const_cast<char*>(is.begin()));
-  FIMEMORY*         memoryIO  = FreeImage_OpenMemory(dataBegin, is.capacity());
-  FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory(memoryIO, is.capacity());
+  Opt<Stream> is = file.read();
+
+  if (!is) {
+    return false;
+  }
+
+  ubyte*            dataBegin = reinterpret_cast<ubyte*>(const_cast<char*>(is->begin()));
+  FIMEMORY*         memoryIO  = FreeImage_OpenMemory(dataBegin, is->capacity());
+  FREE_IMAGE_FORMAT format    = FreeImage_GetFileTypeFromMemory(memoryIO, is->capacity());
 
   FreeImage_CloseMemory(memoryIO);
   return format != FIF_UNKNOWN;
@@ -415,18 +425,18 @@ ImageData ImageBuilder::loadImage(const File& file)
 {
   errorBuffer[0] = '\0';
 
-  ImageData image;
+  ImageData      image;
+  Opt<FIBITMAP*> dib   = loadBitmap(file);
 
-  FIBITMAP* dib = loadBitmap(file);
-  if (dib == nullptr) {
+  if (!dib) {
     return image;
   }
 
-  image = ImageData(FreeImage_GetWidth(dib), FreeImage_GetHeight(dib));
+  image = ImageData(FreeImage_GetWidth(*dib), FreeImage_GetHeight(*dib));
 
   // Copy and convert BGRA -> RGBA.
   int    size   = image.width * image.height * 4;
-  ubyte* pixels = FreeImage_GetBits(dib);
+  ubyte* pixels = FreeImage_GetBits(*dib);
 
   for (int i = 0; i < size; i += 4) {
     image.pixels[i + 0] = char(pixels[i + 2]);
@@ -435,11 +445,11 @@ ImageData ImageBuilder::loadImage(const File& file)
     image.pixels[i + 3] = char(pixels[i + 3]);
   }
 
-  if (FreeImage_IsTransparent(dib)) {
+  if (FreeImage_IsTransparent(*dib)) {
     image.flags |= ImageData::ALPHA_BIT;
   }
 
-  FreeImage_Unload(dib);
+  FreeImage_Unload(*dib);
   return image;
 }
 

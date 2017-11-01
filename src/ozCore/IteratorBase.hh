@@ -46,7 +46,7 @@ public:
   /**
    * Element type.
    */
-  typedef ElemType Elem;
+  using Elem = ElemType;
 
 protected:
 
@@ -57,6 +57,7 @@ protected:
   /**
    * Create an invalid iterator.
    */
+  OZ_ALWAYS_INLINE
   IteratorBase() noexcept = default;
 
   /**
@@ -88,10 +89,10 @@ public:
   }
 
   /**
-   * Pointer to the current element.
+   * Pointer to the current element's member.
    */
   OZ_ALWAYS_INLINE
-  operator ElemType*() const noexcept
+  ElemType* operator->() const noexcept
   {
     return elem_;
   }
@@ -103,15 +104,6 @@ public:
   ElemType& operator*() const noexcept
   {
     return *elem_;
-  }
-
-  /**
-   * Pointer to the current element's member.
-   */
-  OZ_ALWAYS_INLINE
-  ElemType* operator->() const noexcept
-  {
-    return elem_;
   }
 
   /**

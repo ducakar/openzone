@@ -59,10 +59,10 @@ public:
   {
   private:
 
-    struct StreamBase;
-    struct WaveStream;
-    struct OpusStream;
-    struct VorbisStream;
+    class StreamBase;
+    class WaveStream;
+    class OpusStream;
+    class VorbisStream;
 
     float*      samples_;  ///< Samples buffer.
     int         size_;     ///< Number of samples written in buffer (total sum per all channels).

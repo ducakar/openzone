@@ -487,12 +487,18 @@ void System::bell()
 }
 
 void System::error(const char* function, const char* file, int line, int nSkippedFrames,
-                   const char* msg, ...)
+                   const char* message, ...)
+{
+  va_list ap;
+  va_start(ap, message);
+
+  verror(function, file, line, nSkippedFrames + 1, message, ap);
+}
+
+void System::verror(const char* function, const char* file, int line, int nSkippedFrames,
+                    const char* message, va_list ap)
 {
   trap();
-
-  va_list ap;
-  va_start(ap, msg);
 
 #ifdef __ANDROID__
   __android_log_vprint(ANDROID_LOG_FATAL, "oz", msg, ap);
@@ -502,10 +508,8 @@ void System::error(const char* function, const char* file, int line, int nSkippe
   Log::verboseMode = false;
 
   Log::putsRaw("\n\n");
-  Log::vprintRaw(msg, ap);
+  Log::vprintRaw(message, ap);
   Log::printRaw("\n  at %s\n  in %s:%d\n", function, file, line);
-
-  va_end(ap);
 
   Log::printTrace(StackTrace::current(nSkippedFrames + 1));
   Log::println();

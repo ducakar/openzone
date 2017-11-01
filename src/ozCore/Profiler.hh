@@ -64,7 +64,7 @@ public:
   /**
    * Constant iterator for accumulated times.
    */
-  typedef HashMap<String, uint64>::CRangeType CRange;
+  using CRange = HashMap<String, uint64>::CRangeType;
 
 public:
 

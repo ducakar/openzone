@@ -52,12 +52,12 @@ public:
   /**
    * %Range with constant access to elements.
    */
-  typedef Arrays::CRangeType<Elem> CRangeType;
+  using CRangeType = Arrays::CRangeType<Elem>;
 
   /**
    * %Range with non-constant access to elements.
    */
-  typedef Arrays::RangeType<Elem> RangeType;
+  using RangeType = Arrays::RangeType<Elem>;
 
 protected:
 

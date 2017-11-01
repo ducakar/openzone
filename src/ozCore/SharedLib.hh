@@ -74,7 +74,7 @@ public:
   /**
    * Generic function type to avoid casts between pointer-to-function and pointer-to-object.
    */
-  typedef void Function();
+  using Function = void ();
 
 private:
 

@@ -32,6 +32,10 @@
  * Base definitions and templates.
  */
 #include "common.hh"
+
+/*
+ * Iterators.
+ */
 #include "IteratorBase.hh"
 #include "Range.hh"
 
@@ -39,6 +43,11 @@
  * System.
  */
 #include "System.hh"
+
+/*
+ * Optional value.
+ */
+#include "Opt.hh"
 
 /*
  * Array utilities.

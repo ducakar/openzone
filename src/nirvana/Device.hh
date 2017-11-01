@@ -35,7 +35,7 @@ public:
   static const int MEMO_BIT     = 0x0001;
   static const int COMPUTER_BIT = 0x0002;
 
-  typedef Device* CreateFunc(int id, Stream* is);
+  using CreateFunc = Device* (int id, Stream* is);
 
   int flags;
 

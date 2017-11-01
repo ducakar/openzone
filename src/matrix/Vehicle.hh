@@ -60,7 +60,7 @@ private:
   static const float EJECT_EPSILON;
   static const float EJECT_MOMENTUM;
 
-  typedef void (Vehicle::* Handler)();
+  using Handler = void (Vehicle::*)();
 
   static const Handler HANDLERS[];
 

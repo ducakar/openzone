@@ -54,12 +54,12 @@ public:
   /**
    * %Range with constant access to characters.
    */
-  typedef Arrays::CRangeType<const char> CRange;
+  using CRange = Arrays::CRangeType<const char>;
 
   /**
    * %Range with non-constant access to characters.
    */
-  typedef Arrays::RangeType<char> Range;
+  using Range = Arrays::RangeType<char>;
 
 private:
 

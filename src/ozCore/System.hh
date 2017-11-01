@@ -74,7 +74,7 @@ public:
 #endif
 
   /// Type for crash handler function passed to `System::init()`.
-  typedef void CrashHandler();
+  using CrashHandler = void ();
 
 public:
 
@@ -111,7 +111,15 @@ public:
   OZ_NORETURN
   OZ_PRINTF_FORMAT(5, 6)
   static void error(const char* function, const char* file, int line, int nSkippedFrames,
-                    const char* msg, ...);
+                    const char* message, ...);
+
+  /**
+   * Same as `error()` but with `va_list`.
+   */
+  OZ_NORETURN
+  OZ_PRINTF_FORMAT(5, 0)
+  static void verror(const char* function, const char* file, int line, int nSkippedFrames,
+                     const char* message, va_list ap);
 
   /**
    * Initialise `System`.

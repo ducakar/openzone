@@ -780,10 +780,10 @@ object:
 
 Lua::Result Lua::load(const File& file)
 {
-  Stream is = file.read();
+  Opt<Stream> is = file.read();
 
-  if (is.available() != 0) {
-    if (luaL_loadbufferx(l_, is.begin(), is.available(), file, "t") != 0 ||
+  if (is) {
+    if (luaL_loadbufferx(l_, is->begin(), is->available(), file, "t") != 0 ||
         lua_pcall(l_, 0, LUA_MULTRET, 0) != 0)
     {
       OZ_ERROR("oz::Lua: %s", lua_tostring(l_, -1));
@@ -800,12 +800,12 @@ void Lua::loadDir(const File& dir) const
       continue;
     }
 
-    Stream is = file.read();
-    if (is.available() == 0) {
+    Opt<Stream> is = file.read();
+    if (!is) {
       continue;
     }
 
-    if (luaL_loadbufferx(l_, is.begin(), is.available(), file, "t") != 0 ||
+    if (luaL_loadbufferx(l_, is->begin(), is->available(), file, "t") != 0 ||
         lua_pcall(l_, 0, LUA_MULTRET, 0) != 0)
     {
       OZ_ERROR("oz::Lua: %s", lua_tostring(l_, -1));

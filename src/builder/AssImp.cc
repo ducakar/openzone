@@ -118,11 +118,8 @@ void AssImp::build(const File& path)
     modelFile = path / "data.dae";
   }
 
-  Stream is = modelFile.read();
-
-  if (is.available() == 0) {
-    OZ_ERROR("Failed to read '%s' (.dae and .obj extensions probed)", path.c());
-  }
+  Stream is = modelFile.read()
+              .OZ_UNWRAP("Failed to read '%s' (.dae and .obj extensions probed)", path.c());
 
   scene = importer.ReadFile(modelFile.realPath(),
                             aiProcess_JoinIdenticalVertices |

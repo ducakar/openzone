@@ -47,18 +47,18 @@ namespace oz
  * SIMD vector of four floats.
  */
 #ifdef __ARM_NEON__
-typedef float32x4_t float4;
+using float4 = float32x4_t;
 #else
-typedef float __attribute__((vector_size(16))) float4;
+using float4 = float __attribute__((vector_size(16)));
 #endif
 
 /**
  * SIMD vector of four unsigned integers.
  */
 #ifdef __ARM_NEON__
-typedef uint32x4_t uint4;
+using uint4 = uint32x4_t;
 #else
-typedef uint __attribute__((vector_size(16))) uint4;
+using uint4 = uint __attribute__((vector_size(16)));
 #endif
 
 static_assert(sizeof(float4) >= sizeof(std::max_align_t),

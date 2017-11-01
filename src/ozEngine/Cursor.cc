@@ -40,12 +40,14 @@ const Cursor::Image* Cursor::lastImage = nullptr;
 Cursor::Cursor(const File& file, Mode mode, int size)
   : mode_(mode)
 {
-  Stream is = file.read(Endian::LITTLE);
-
   // Implementation is based on specifications from xcursor(3) manual.
-  if (is.available() == 0 || !String::beginsWith(is.begin(), "Xcur")) {
+  Opt<Stream> optIs = file.read(Endian::LITTLE);
+
+  if (!optIs || optIs->available() < 12 || !String::beginsWith(optIs->begin(), "Xcur")) {
     return;
   }
+
+  Stream& is = *optIs;
 
   is.seek(12);
 

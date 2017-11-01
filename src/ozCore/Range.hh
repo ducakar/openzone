@@ -44,33 +44,35 @@ public:
   /**
    * Begin iterator type.
    */
-  typedef BeginIterator Begin;
+  using Begin = BeginIterator;
 
   /**
    * End iterator type.
    */
-  typedef EndIterator End;
+  using End = EndIterator;
 
   /**
    * Element type.
    */
-  typedef ElemType Elem;
+  using Elem = ElemType;
 
 private:
 
-  BeginIterator begin_ = {}; ///< Begin iterator.
-  EndIterator   end_   = {}; ///< End iterator.
+  BeginIterator begin_ = BeginIterator(); ///< Begin iterator.
+  EndIterator   end_   = EndIterator();   ///< End iterator.
 
 public:
 
   /**
    * Create empty range with both iterators invalid.
    */
+  OZ_ALWAYS_INLINE
   Range() noexcept = default;
 
   /**
    * Create range for given iterators.
    */
+  OZ_ALWAYS_INLINE
   explicit Range(BeginIterator begin, EndIterator end) noexcept
     : begin_(begin), end_(end)
   {}
@@ -78,6 +80,7 @@ public:
   /**
    * Begin iterator.
    */
+  OZ_ALWAYS_INLINE
   BeginIterator& begin() noexcept
   {
     return begin_;
@@ -86,6 +89,7 @@ public:
   /**
    * End iterator.
    */
+  OZ_ALWAYS_INLINE
   EndIterator& end() noexcept
   {
     return end_;

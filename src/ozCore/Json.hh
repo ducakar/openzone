@@ -76,27 +76,27 @@ public:
   /**
    * Key-value type used in object initialiser lists.
    */
-  typedef Map<const char*, Json>::Pair Pair;
+  using Pair = Map<const char*, Json>::Pair;
 
   /**
    * %Range for JSON arrays with constant access to elements.
    */
-  typedef List<const Json>::CRangeType ArrayCRange;
+  using ArrayCRange = List<const Json>::CRangeType;
 
   /**
    * %Range for JSON arrays with non-constant access to elements.
    */
-  typedef List<Json>::RangeType ArrayRange;
+  using ArrayRange = List<Json>::RangeType;
 
   /**
    * %Range for JSON objects with constant access to elements.
    */
-  typedef Map<String, Json>::CRangeType ObjectCRange;
+  using ObjectCRange = Map<String, Json>::CRangeType;
 
   /**
    * %Range for JSON objects with non-constant access to elements.
    */
-  typedef Map<String, Json>::RangeType ObjectRange;
+  using ObjectRange = Map<String, Json>::RangeType;
 
 private:
 
@@ -373,14 +373,27 @@ public:
   /**
    * If a string return it, `defaultValue` otherwise.
    */
-  const String& get(const String& defaultValue) const;
+  String get(const String& defaultValue) const;
 
   /**
    * If a string return it, `defaultValue` otherwise.
    */
-  const File& get(const File& defaultValue) const
+  String get(String&& defaultValue) const;
+
+  /**
+   * If a string return it, `defaultValue` otherwise.
+   */
+  File get(const File& defaultValue) const
   {
-    return static_cast<const File&>(get(static_cast<const String&>(defaultValue)));
+    return static_cast<File&&>(get(static_cast<const String&>(defaultValue)));
+  }
+
+  /**
+   * If a string return it, `defaultValue` otherwise.
+   */
+  File get(File&& defaultValue) const
+  {
+    return static_cast<File&&>(get(static_cast<String&&>(defaultValue)));
   }
 
   /**

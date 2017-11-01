@@ -50,7 +50,7 @@ public:
   /**
    * Shortcut for key-value pair type.
    */
-  typedef MapPair<Key, Value, Less<Key>> Pair;
+  using Pair = MapPair<Key, Value, Less<Key>>;
 
   using typename HashSet<Pair, HashFunc>::CRangeType;
   using typename HashSet<Pair, HashFunc>::RangeType;

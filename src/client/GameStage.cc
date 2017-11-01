@@ -61,10 +61,9 @@ void GameStage::read()
 {
   Log::print("Loading state from '%s' ...", stateFile.c());
 
-  Stream is = stateFile.read().decompress();
-  if (is.available() == 0) {
-    OZ_ERROR("Reading saved state '%s' failed", stateFile.c());
-  }
+  Stream is = stateFile.read()
+              .OZ_UNWRAP("Reading saved state '%s' failed", stateFile.c())
+              .decompress();
 
   Log::printEnd(" OK");
 
@@ -440,15 +439,15 @@ void GameStage::unload()
 
   Log::println("Time statistics {");
   Log::indent();
-  Log::println("loading time          %8.2f s",    loadingTime                                );
-  Log::println("run time              %8.2f s",    runTime                                    );
-  Log::println("game time             %8.2f s",    gameTime                                   );
-  Log::println("dropped time          %8.2f s",    droppedTime                                );
-  Log::println("optimal tick/frame rate %6.2f Hz", 1.0f / Timer::TICK_TIME                    );
-  Log::println("tick rate in run time   %6.2f Hz", float(ticks) / runTime                     );
-  Log::println("frame rate in run time  %6.2f Hz", float(timer.nFrames) / runTime             );
-  Log::println("frame drop rate         %6.2f %%", frameDropRate * 100.0f                     );
-  Log::println("frame drops           %8lu",       ulong(nFrameDrops)                         );
+  Log::println("loading time          %8.2f s",    loadingTime);
+  Log::println("run time              %8.2f s",    runTime);
+  Log::println("game time             %8.2f s",    gameTime);
+  Log::println("dropped time          %8.2f s",    droppedTime);
+  Log::println("optimal tick/frame rate %6.2f Hz", 1.0f / Timer::TICK_TIME);
+  Log::println("tick rate in run time   %6.2f Hz", float(ticks) / runTime);
+  Log::println("frame rate in run time  %6.2f Hz", float(timer.nFrames) / runTime);
+  Log::println("frame drop rate         %6.2f %%", frameDropRate * 100.0f);
+  Log::println("frame drops           %8lu",       ulong(nFrameDrops));
   Log::println("Run time usage {");
   Log::indent();
   Log::println("Ph0  %6.2f %%  [M] sleep",            sleepTime             / runTime * 100.0f);

@@ -48,11 +48,7 @@ void Terra::load(int id_)
 
     Log::print("Loading terrain '%s' ...", name.c());
 
-    Stream is = file.read(Endian::LITTLE);
-
-    if (is.available() == 0) {
-      OZ_ERROR("Cannot read terra file '%s'", file.c());
-    }
+    Stream is = file.read(Endian::LITTLE).OZ_UNWRAP("Cannot read terra file '%s'", file.c());
 
     int max = is.readInt();
     if (max != VERTS) {

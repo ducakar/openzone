@@ -42,7 +42,7 @@ public:
 
 public:
 
-  typedef Audio* CreateFunc(const Object* object);
+  using CreateFunc = Audio* (const Object* object);
 
 protected:
 

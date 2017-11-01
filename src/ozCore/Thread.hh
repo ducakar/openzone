@@ -47,7 +47,7 @@ public:
 public:
 
   /// %Thread's main function type.
-  typedef void Main(void* data);
+  using Main = void (void* data);
 
 private:
 

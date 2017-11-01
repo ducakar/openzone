@@ -48,7 +48,7 @@ public:
   /**
    * Accessor for reader (shared) lock.
    */
-  class ReadLock
+  class Read
   {
     friend class RWLock;
 
@@ -61,19 +61,19 @@ public:
     /**
      * Create reader lock accessor for a given shared mutex.
      */
-    explicit ReadLock(RWLock& parent)
+    explicit Read(RWLock& parent)
       : parent_(parent)
     {}
 
     /**
      * No copying.
      */
-    ReadLock(const ReadLock&) = delete;
+    Read(const Read&) = delete;
 
     /**
      * No copying.
      */
-    ReadLock& operator=(const ReadLock&) = delete;
+    Read& operator=(const Read&) = delete;
 
   public:
 
@@ -108,7 +108,7 @@ public:
   /**
    * Accessor for writer (exclusive) lock.
    */
-  class WriteLock
+  class Write
   {
     friend class RWLock;
 
@@ -121,19 +121,19 @@ public:
     /**
      * Create writer lock accessor for a given shared mutex.
      */
-    explicit WriteLock(RWLock& parent)
+    explicit Write(RWLock& parent)
       : parent_(parent)
     {}
 
     /**
      * No copying.
      */
-    WriteLock(const WriteLock&) = delete;
+    Write(const Write&) = delete;
 
     /**
      * No copying.
      */
-    WriteLock& operator=(const WriteLock&) = delete;
+    Write& operator=(const Write&) = delete;
 
   public:
 
@@ -165,8 +165,8 @@ public:
 
   };
 
-  ReadLock  read;  ///< Accessor for reader lock.
-  WriteLock write; ///< Accessor for writer lock.
+  Read  read;  ///< Accessor for reader lock.
+  Write write; ///< Accessor for writer lock.
 
 private:
 

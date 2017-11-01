@@ -46,7 +46,7 @@ protected:
   /**
    * EnumMap value-name pair.
    */
-  typedef MapPair<int, const char*, Less<int>> Pair;
+  using Pair = MapPair<int, const char*, Less<int>>;
 
 private:
 

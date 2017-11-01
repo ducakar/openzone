@@ -50,7 +50,7 @@
  * @def OZ_ALWAYS_INLINE
  * Compiler-specific attribute that suggests function inlining even in debug mode.
  */
-#define OZ_ALWAYS_INLINE __attribute__((always_inline))
+#define OZ_ALWAYS_INLINE [[gnu::always_inline]]
 
 /**
  * @def OZ_BYTE_ORDER
@@ -65,7 +65,7 @@
 #ifdef _WIN32
 # define OZ_HIDDEN
 #else
-# define OZ_HIDDEN __attribute__((visibility("hidden")))
+# define OZ_HIDDEN [[gnu::visibility("hidden")]]
 #endif
 
 /**
@@ -75,30 +75,30 @@
 #ifdef _WIN32
 # define OZ_INTERNAL
 #else
-# define OZ_INTERNAL __attribute__((visibility("internal")))
+# define OZ_INTERNAL [[gnu::visibility("internal")]]
 #endif
 
 /**
  * @def OZ_NORETURN
  * Compiler-specific attribute that marks a function as no-return.
  */
-#define OZ_NORETURN __attribute__((noreturn))
+#define OZ_NORETURN [[noreturn]]
 
 /**
  * @def OZ_PRINTF_FORMAT
  * Compiler-specific attribute that specifies checking of printf-like arguments.
  */
 #ifdef _WIN32
-# define OZ_PRINTF_FORMAT(s, first) __attribute__((format(gnu_printf, s, first)))
+# define OZ_PRINTF_FORMAT(s, first) [[gnu::format(gnu_printf, s, first)]]
 #else
-# define OZ_PRINTF_FORMAT(s, first) __attribute__((format(printf, s, first)))
+# define OZ_PRINTF_FORMAT(s, first) [[gnu::format(printf, s, first)]]
 #endif
 
 /**
  * @def OZ_WEAK
  * Compiler-specific attribute specifying a weak symbol.
  */
-#define OZ_WEAK __attribute__((weak))
+#define OZ_WEAK [[gnu::weak]]
 
 /**
  * Top-level OpenZone namespace.
@@ -114,17 +114,17 @@ namespace detail {}
 /**
  * Null pointer type.
  */
-typedef std::nullptr_t nullptr_t;
+using std::nullptr_t;
 
 /**
  * Platform-dependent unsigned integer type for memory offsets and sizes.
  */
-typedef std::size_t size_t;
+using std::size_t;
 
 /**
  * Platform-dependent signed integer type for memory offsets and pointer differences.
  */
-typedef std::ptrdiff_t ptrdiff_t;
+using std::ptrdiff_t;
 
 /**
  * Initialiser list.
@@ -135,37 +135,61 @@ using InitialiserList = std::initializer_list<Elem>;
 /**
  * Signed byte.
  */
-typedef signed char byte;
+using byte = signed char;
 
 /**
  * Unsigned byte.
  */
-typedef unsigned char ubyte;
+using ubyte = unsigned char;
 
 /**
  * Unsigned short integer.
  */
-typedef unsigned short ushort;
+using ushort = unsigned short;
 
 /**
  * Unsigned integer.
  */
-typedef unsigned int uint;
+using uint = unsigned int;
 
 /**
  * Unsigned long integer.
  */
-typedef unsigned long ulong;
+using ulong = unsigned long;
 
 /**
  * Signed 64-bit integer.
  */
-typedef long long int64;
+using int64 = long long;
 
 /**
  * Unsigned 64-bit integer.
  */
-typedef unsigned long long uint64;
+using uint64 = unsigned long long;
+
+/**
+ * Unit type.
+ */
+struct Void
+{
+  /**
+   * All instances are identical.
+   */
+  OZ_ALWAYS_INLINE
+  constexpr bool operator==(const Void&) const
+  {
+    return true;
+  }
+
+  /**
+   * All instances are identical.
+   */
+  OZ_ALWAYS_INLINE
+  constexpr bool operator!=(const Void&) const
+  {
+    return false;
+  }
+};
 
 static_assert(sizeof(char  ) == 1, "sizeof(char) should be 1"  );
 static_assert(sizeof(short ) == 2, "sizeof(short) should be 2" );

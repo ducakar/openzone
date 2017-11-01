@@ -114,7 +114,7 @@ bool MissionMenu::onMouseEvent()
       scroll = max(scroll - 1, 0);
     }
 
-    for (auto i = children.begin(); i != children.last(); ++i) {
+    for (auto i = children.begin(); &*i != children.last(); ++i) {
       MissionButton* button = static_cast<MissionButton*>(&*i);
 
       button->setText(missions[scroll + button->index].title);

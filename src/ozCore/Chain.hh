@@ -102,6 +102,7 @@ protected:
     /**
      * Create an invalid iterator.
      */
+    OZ_ALWAYS_INLINE
     ChainIterator() noexcept = default;
 
     /**
@@ -131,12 +132,12 @@ public:
   /**
    * %Range with constant access to elements.
    */
-  typedef Range<ChainIterator<const Elem>, nullptr_t, const Elem> CRangeType;
+  using CRangeType = Range<ChainIterator<const Elem>, nullptr_t, const Elem>;
 
   /**
    * %Range with non-constant access to elements.
    */
-  typedef Range<ChainIterator<Elem>, nullptr_t, Elem> RangeType;
+  using RangeType = Range<ChainIterator<Elem>, nullptr_t, Elem>;
 
 protected:
 

@@ -33,7 +33,7 @@ class Button : public Area
 {
 public:
 
-  typedef void Callback(Button* sender);
+  using Callback = void (Button* sender);
 
 private:
 

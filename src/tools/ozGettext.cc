@@ -145,11 +145,7 @@ static void readLuaChunk(const char* begin, int size, const char* path)
 
 static void readLua(const File& file)
 {
-  if (!file.isFile()) {
-    OZ_ERROR("Failed to read '%s'", file.c());
-  }
-
-  Stream buffer = file.read();
+  Stream buffer = file.read().OZ_UNWRAP("Failed to read '%s'", file.c());
   readLuaChunk(buffer.begin(), buffer.available(), file);
 }
 
@@ -281,7 +277,7 @@ static void readCredits(const File& file)
     return;
   }
 
-  Stream is = file.read();
+  Stream is = file.read().unwrap();
   String contents;
 
   while (is.available() != 0) {

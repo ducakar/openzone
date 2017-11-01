@@ -52,7 +52,7 @@ public:
   static const int MUSIC_PLAYER_BIT = 0x08;
   static const int SUICIDE_BIT      = 0x10;
 
-  typedef ObjectClass* CreateFunc();
+  using CreateFunc = ObjectClass* ();
 
   String                   name;
   String                   title;

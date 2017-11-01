@@ -38,7 +38,7 @@ class Entity
 
 private:
 
-  typedef void (Entity::* Handler)();
+  using Handler = void (Entity::*)();
 
   static const Handler HANDLERS[];
 

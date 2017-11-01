@@ -41,7 +41,7 @@ static Atomic<bool> isDecoderAlive = {true};
 
 static void decoderMain(void*)
 {
-  Stream is = File("/home/davorin/Glasba/Whatever1.opus").read();
+  Stream is = File("/home/davorin/Glasba/Whatever1.opus").read().unwrap();
 
   ogg_sync_state sync;
   ogg_sync_init(&sync);

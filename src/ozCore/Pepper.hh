@@ -67,7 +67,7 @@ public:
   /**
    * PPAPI callback type.
    */
-  typedef void Callback(void*, int);
+  using Callback = void (void*, int);
 
 public:
 
@@ -134,7 +134,7 @@ private:
   /**
    * Callback type.
    */
-  typedef void Callback(void* data, int);
+  using Callback = void (void* data, int);
 
 private:
 

@@ -103,7 +103,7 @@ public:
   /**
    * Shortcut for key-value pair type.
    */
-  typedef MapPair<Key, Value, LessFunc> Pair;
+  using Pair = MapPair<Key, Value, LessFunc>;
 
   using typename Set<Pair>::CRangeType;
   using typename Set<Pair>::RangeType;

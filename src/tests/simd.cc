@@ -22,7 +22,7 @@
 
 #include <cstdio>
 
-typedef float __attribute__((vector_size(16))) float4;
+using float4 = float __attribute__((vector_size(16)));
 
 using namespace oz;
 

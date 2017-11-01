@@ -34,32 +34,32 @@ struct RWLock::Descriptor
   pthread_rwlock_t rwlock = PTHREAD_RWLOCK_INITIALIZER;
 };
 
-void RWLock::ReadLock::lock()
+void RWLock::Read::lock()
 {
   pthread_rwlock_rdlock(&parent_.descriptor_->rwlock);
 }
 
-bool RWLock::ReadLock::tryLock()
+bool RWLock::Read::tryLock()
 {
   return pthread_rwlock_tryrdlock(&parent_.descriptor_->rwlock) == 0;
 }
 
-void RWLock::ReadLock::unlock()
+void RWLock::Read::unlock()
 {
   pthread_rwlock_unlock(&parent_.descriptor_->rwlock);
 }
 
-void RWLock::WriteLock::lock()
+void RWLock::Write::lock()
 {
   pthread_rwlock_rdlock(&parent_.descriptor_->rwlock);
 }
 
-bool RWLock::WriteLock::tryLock()
+bool RWLock::Write::tryLock()
 {
   return pthread_rwlock_tryrdlock(&parent_.descriptor_->rwlock) == 0;
 }
 
-void RWLock::WriteLock::unlock()
+void RWLock::Write::unlock()
 {
   pthread_rwlock_unlock(&parent_.descriptor_->rwlock);
 }

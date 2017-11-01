@@ -70,7 +70,7 @@ public:
   /**
    * %Iterator over memory chunks allocated via overloaded `new` operators.
    */
-  typedef typename Chain<ChunkInfo>::CRangeType CRange;
+  using CRange = typename Chain<ChunkInfo>::CRangeType;
 
 public:
 

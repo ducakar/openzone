@@ -65,7 +65,7 @@ public:
   /**
    * Lua C API.
    */
-  typedef int Function(lua_State*);
+  using Function = int(lua_State*);
 
   /**
    * Wrapper class for reading stack values, e.g. values returnes by a function.

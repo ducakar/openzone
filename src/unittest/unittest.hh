@@ -30,7 +30,7 @@
 #define OZ_CHECK_CONTENTS(container, ...) \
   { \
     auto i = crange(container); \
-    typedef decltype(i) CRange; \
+    using CRange = decltype(i); \
     CRange::Elem array[] = {__VA_ARGS__}; \
     OZ_CHECK(iEquals(i, crange(array))); \
   }

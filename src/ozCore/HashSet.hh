@@ -83,6 +83,7 @@ protected:
     /**
      * Create an invalid iterator.
      */
+    OZ_ALWAYS_INLINE
     HashIterator() noexcept = default;
 
     /**
@@ -98,10 +99,10 @@ protected:
     }
 
     /**
-     * Pointer to the current element.
+     * Access to the current element's member.
      */
     OZ_ALWAYS_INLINE
-    operator ElemType*() const noexcept
+    ElemType* operator->() const noexcept
     {
       return &elem_->elem;
     }
@@ -113,15 +114,6 @@ protected:
     ElemType& operator*() const noexcept
     {
       return elem_->elem;
-    }
-
-    /**
-     * Access to the current element's member.
-     */
-    OZ_ALWAYS_INLINE
-    ElemType* operator->() const noexcept
-    {
-      return &elem_->elem;
     }
 
     /**
@@ -154,12 +146,12 @@ public:
   /**
    * %Range with constant access to elements.
    */
-  typedef Range<HashIterator<const Entry, const Elem>, nullptr_t, const Elem> CRangeType;
+  using CRangeType = Range<HashIterator<const Entry, const Elem>, nullptr_t, const Elem>;
 
   /**
    * %Range with non-constant access to elements.
    */
-  typedef Range<HashIterator<Entry, Elem>, nullptr_t, Elem> RangeType;
+  using RangeType = Range<HashIterator<Entry, Elem>, nullptr_t, Elem>;
 
 protected:
 

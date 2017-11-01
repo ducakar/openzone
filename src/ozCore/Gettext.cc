@@ -104,10 +104,12 @@ List<const char*> Gettext::catalogueDescriptions() const
 // .mo file layout can be found at http://www.gnu.org/software/gettext/manual/gettext.html#MO-Files.
 bool Gettext::import(const File& file)
 {
-  Stream is = file.read();
-  if (is.available() == 0) {
+  Opt<Stream> optIs = file.read();
+  if (!optIs) {
     return false;
   }
+
+  Stream& is = *optIs;
 
   // Header.
   uint magic = is.readUInt();

@@ -159,10 +159,13 @@ static void setSpecialDir(Map<String, File>* vars, int id, const char* name, con
 
 static void loadXDGSettings(Map<String, File>* vars, const File& file)
 {
-  Stream is = file.read();
+  Opt<Stream> is = file.read();
+  if (!is) {
+    return;
+  }
 
-  while (is.available() != 0) {
-    String line = is.readLine();
+  while (is->available() != 0) {
+    String line = is->readLine();
 
     if (line[0] == '#') {
       continue;
@@ -479,24 +482,23 @@ bool File::read(char* buffer, int64* size) const
   }
 }
 
-Stream File::read(Endian::Order order) const
+Opt<Stream> File::read(Endian::Order order) const
 {
-  Stat   stat = Stat(begin());
-  int64  size = stat.size;
-  Stream is(size < 0 ? 0 : int(size), order);
+  Opt<Stream> result;
+  Stat        stat   = Stat(begin());
+  int64       size   = stat.size;
 
-  if (stat.type == Stat::MISSING) {
-    return is;
-  }
+  if (stat.type == Stat::FILE) {
+    if (uint64(size) > INT_MAX) {
+      OZ_ERROR("oz::File: Cannot read file larger than INT_MAX to a stream");
+    }
 
-  if (uint64(size) > INT_MAX) {
-    OZ_ERROR("oz::File: Cannot read file larger than INT_MAX to a stream");
+    Stream is(int(size), order);
+    if (size == 0 || read(is.begin(), &size)) {
+      result = static_cast<Stream&&>(is);
+    }
   }
-
-  if (size == 0 || !read(is.begin(), &size)) {
-    is.free();
-  }
-  return is;
+  return static_cast<Opt<Stream>&&>(result);
 }
 
 bool File::write(const char* buffer, int64 size) const
@@ -536,13 +538,13 @@ bool File::write(const Stream& is) const
 
 bool File::copyTo(const File& dest) const
 {
-  Stream is = read();
-  if (is.available() == 0) {
+  Opt<Stream> is = read();
+  if (!is) {
     return false;
   }
 
   File destFile = Stat(dest).type == Stat::DIRECTORY ? dest / name() : dest;
-  return destFile.write(is.begin(), is.capacity());
+  return destFile.write(is->begin(), is->capacity());
 }
 
 bool File::copyTreeTo(const File& dest, const char* ext) const
