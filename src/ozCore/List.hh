@@ -149,7 +149,9 @@ public:
   List& operator=(const List& other)
   {
     if (&other != this) {
-      clear();
+      Arrays::clear<Elem>(data_ + other.size_, size_ - other.size_);
+      size_ = 0;
+
       addAll(other.data_, other.size_);
     }
     return *this;
@@ -181,9 +183,10 @@ public:
    */
   List& operator=(InitialiserList<Elem> il)
   {
-    clear();
-    addAll(il.begin(), int(il.size()));
+    Arrays::clear<Elem>(data_ + il.size(), size_ - il.size());
+    size_ = 0;
 
+    addAll(il.begin(), int(il.size()));
     return *this;
   }
 
@@ -381,27 +384,27 @@ public:
   /**
    * Add (copy) elements from a given array to the end.
    */
-  void addAll(const Elem* array, int arrayCount)
+  void addAll(const Elem* array, int arraySize)
   {
-    int newCount = size_ + arrayCount;
+    int newSize = size_ + arraySize;
 
-    ensureCapacity(newCount);
+    ensureCapacity(newSize);
 
-    Arrays::copy<Elem>(array, arrayCount, data_ + size_);
-    size_ = newCount;
+    Arrays::copy<Elem>(array, arraySize, data_ + size_);
+    size_ = newSize;
   }
 
   /**
    * Add (move) elements from a given array to the end.
    */
-  void takeAll(Elem* array, int arrayCount)
+  void takeAll(Elem* array, int arraySize)
   {
-    int newCount = size_ + arrayCount;
+    int newSize = size_ + arraySize;
 
-    ensureCapacity(newCount);
+    ensureCapacity(newSize);
 
-    Arrays::move<Elem>(array, arrayCount, data_ + size_);
-    size_ = newCount;
+    Arrays::move<Elem>(array, arraySize, data_ + size_);
+    size_ = newSize;
   }
 
   /**
@@ -594,20 +597,20 @@ public:
   /**
    * Resize the list (and optionally its capacity too) to the specified number of elements.
    */
-  void resize(int newCount, bool exactCapacity = false)
+  void resize(int newSize, bool exactCapacity = false)
   {
     if (exactCapacity) {
-      if (newCount != capacity_) {
-        data_     = Arrays::reallocate<Elem>(data_, size_, newCount);
-        capacity_ = newCount;
+      if (newSize != capacity_) {
+        data_     = Arrays::reallocate<Elem>(data_, size_, newSize);
+        capacity_ = newSize;
       }
     }
     else {
-      ensureCapacity(newCount);
-      Arrays::clear<Elem>(data_ + newCount, size_ - newCount);
+      ensureCapacity(newSize);
+      Arrays::clear<Elem>(data_ + newSize, size_ - newSize);
     }
 
-    size_ = newCount;
+    size_ = newSize;
   }
 
   /**

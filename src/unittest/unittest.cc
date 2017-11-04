@@ -46,7 +46,7 @@ int main()
 
   test_common();
   test_iterables();
-  test_arrays();
+  test_Arrays();
 
 #ifdef OZ_ALLOCATOR
   test_Alloc();

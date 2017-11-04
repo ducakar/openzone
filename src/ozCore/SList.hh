@@ -36,9 +36,6 @@ namespace oz
 /**
  * Array list with static storage (fixed capacity).
  *
- * Default copy/move constructors and operators are used, so the source list is not emptied after
- * move.
- *
  * In contrast with `std::vector` all allocated elements are constructed all the time. This yields
  * slightly better performance and simplifies implementation. When an element is removed its
  * destruction is still guaranteed.
@@ -48,7 +45,7 @@ namespace oz
 template <typename Elem, int CAPACITY>
 class SList
 {
-  static_assert(CAPACITY > 0, "oz::SList capacity must be at least 1");
+  static_assert(CAPACITY > 0, "oz::List: Capacity must > 0");
 
 public:
 
@@ -100,11 +97,52 @@ public:
   {}
 
   /**
+   * Copy constructor.
+   */
+  SList(const SList& other) = default;
+
+  /**
+   * Move constructor.
+   */
+  SList(SList&& other) noexcept
+    : size_(other.size_)
+  {
+    Arrays::move(other.data_, other.size_, data_);
+
+    other.size_ = 0;
+  }
+
+  /**
+   * Copy operator.
+   */
+  SList& operator=(const SList& other) = default;
+
+  /**
+   * Move operator, moves element storage.
+   */
+  SList& operator=(SList&& other) noexcept
+  {
+    if (&other != this) {
+      if (other.size_ < size_) {
+        Arrays::clear(data_ + other.size_, size_ - other.size_);
+      }
+      size_ = other.size_;
+      Arrays::move(other.data_, other.size_, data_);
+
+      other.size_ = 0;
+    }
+    return *this;
+  }
+
+  /**
    * Assign from an initialiser list.
    */
   SList& operator=(InitialiserList<Elem> il)
   {
-    clear();
+    if (il.size() < size_) {
+      Arrays::clear(data_ + il.size(), size_ - il.size());
+    }
+    size_ = 0;
     addAll(il.begin(), int(il.size()));
 
     return *this;
@@ -516,12 +554,12 @@ public:
   /**
    * Resize the list to the specified number of elements.
    */
-  void resize(int newCount)
+  void resize(int newSize)
   {
-    OZ_ASSERT(newCount <= CAPACITY);
+    OZ_ASSERT(newSize <= CAPACITY);
 
-    Arrays::clear<Elem>(data_ + newCount, size_ - newCount);
-    size_ = newCount;
+    Arrays::clear<Elem>(data_ + newSize, size_ - newSize);
+    size_ = newSize;
   }
 
   /**

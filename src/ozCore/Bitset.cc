@@ -29,14 +29,14 @@ namespace oz
 {
 
 Bitset::Bitset(int nBits)
-  : data_(Alloc::alignUp<int>(nBits, PORT_BITS) / UNIT_BITS)
+  : data_((nBits + UNIT_BITS - 1) / UNIT_BITS)
 {}
 
 Bitset::Bitset(const char* s)
   : Bitset(String::length(s))
 {
   for (int i = 0; s[i] != '\0'; ++i) {
-    data_[i / UNIT_BITS] |= size_t(s[i] != '0') << (i % UNIT_BITS);
+    data_[i / UNIT_BITS] |= uint64(s[i] != '0') << (i % UNIT_BITS);
   }
 }
 
@@ -84,7 +84,7 @@ bool Bitset::isSubset(const Bitset& b) const
 
 void Bitset::clear()
 {
-  Arrays::fill<size_t, size_t>(data_.begin(), data_.size(), 0);
+  Arrays::fill<uint64, uint64>(data_.begin(), data_.size(), 0);
 }
 
 Bitset Bitset::operator~() const
@@ -153,7 +153,7 @@ void Bitset::resize(int nBits)
 {
   OZ_ASSERT(nBits >= 0);
 
-  data_.resize(Alloc::alignUp(nBits, PORT_BITS) / UNIT_BITS, true);
+  data_.resize((nBits + UNIT_BITS - 1) / UNIT_BITS, true);
 }
 
 }

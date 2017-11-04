@@ -24,9 +24,9 @@
 
 using namespace oz;
 
-void test_arrays()
+void test_Arrays()
 {
-  Log() << "+ arrays";
+  Log() << "+ Arrays";
 
   Arrays::CRangeType<Foo> rca;
   Arrays::RangeType<Foo>  ra;
@@ -108,7 +108,7 @@ void test_arrays()
   OZ_CHECK(Arrays::size(a) == 4);
 
   Foo* d = new Foo[4]();
-  Arrays::copy(b, 4, d);
+  Arrays::copy<Foo>(b, 4, d);
   d = Arrays::reallocate(d, 4, 10);
   OZ_CHECK(Arrays::equals(b, 4, d));
   delete[] d;

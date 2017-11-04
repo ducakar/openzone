@@ -124,7 +124,7 @@ bool Semaphore::tryWait(int decrement)
 
   pthread_mutex_lock(&descriptor_->mutex);
 
-  if (descriptor_->value.value < uint(decrement)) {
+  if (descriptor_->value.value >= uint(decrement)) {
     descriptor_->value.value -= decrement;
     hasSucceeded = true;
   }

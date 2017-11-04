@@ -157,7 +157,7 @@ struct Foo : oz::DChainNode<Foo>
 
 void test_common();
 void test_iterables();
-void test_arrays();
+void test_Arrays();
 
 void test_Alloc();
 

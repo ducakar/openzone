@@ -369,7 +369,7 @@ public:
   static String si(double e, const char* format = "%.3g");
 
   /**
-   * Equality.
+   * Same as `strcmp() == 0`.
    */
   bool operator==(const String& other) const
   {
@@ -377,7 +377,7 @@ public:
   }
 
   /**
-   * Equality.
+   * Same as `strcmp() == 0`.
    */
   bool operator==(const char* other) const
   {
@@ -385,7 +385,7 @@ public:
   }
 
   /**
-   * Equality.
+   * Same as `strcmp() == 0`.
    */
   friend bool operator==(const char* a, const String& b)
   {
@@ -393,7 +393,7 @@ public:
   }
 
   /**
-   * Inequality.
+   * Same as `strcmp() != 0`.
    */
   bool operator!=(const String& other) const
   {
@@ -401,7 +401,7 @@ public:
   }
 
   /**
-   * Inequality.
+   * Same as `strcmp() != 0`.
    */
   bool operator!=(const char* other) const
   {
@@ -409,11 +409,107 @@ public:
   }
 
   /**
-   * Inequality.
+   * Same as `strcmp() != 0`.
    */
   friend bool operator!=(const char* a, const String& b)
   {
     return compare(a, b.begin()) != 0;
+  }
+
+  /**
+   * Same as `strcmp() < 0`.
+   */
+  bool operator<(const String& other) const
+  {
+    return compare(begin(), other.begin()) < 0;
+  }
+
+  /**
+   * Same as `strcmp() < 0`.
+   */
+  bool operator<(const char* other) const
+  {
+    return compare(begin(), other) < 0;
+  }
+
+  /**
+   * Same as `strcmp() < 0`.
+   */
+  friend bool operator<(const char* a, const String& b)
+  {
+    return compare(a, b.begin()) < 0;
+  }
+
+  /**
+   * Same as `strcmp() <= 0`.
+   */
+  bool operator<=(const String& other) const
+  {
+    return compare(begin(), other.begin()) <= 0;
+  }
+
+  /**
+   * Same as `strcmp() <= 0`.
+   */
+  bool operator<=(const char* other) const
+  {
+    return compare(begin(), other) <= 0;
+  }
+
+  /**
+   * Same as `strcmp() <= 0`.
+   */
+  friend bool operator<=(const char* a, const String& b)
+  {
+    return compare(a, b.begin()) <= 0;
+  }
+
+  /**
+   * Same as `strcmp() > 0`.
+   */
+  bool operator>(const String& other) const
+  {
+    return compare(begin(), other.begin()) > 0;
+  }
+
+  /**
+   * Same as `strcmp() > 0`.
+   */
+  bool operator>(const char* other) const
+  {
+    return compare(begin(), other) > 0;
+  }
+
+  /**
+   * Same as `strcmp() > 0`.
+   */
+  friend bool operator>(const char* a, const String& b)
+  {
+    return compare(a, b.begin()) > 0;
+  }
+
+  /**
+   * Same as `strcmp() >= 0`.
+   */
+  bool operator>=(const String& other) const
+  {
+    return compare(begin(), other.begin()) >= 0;
+  }
+
+  /**
+   * Same as `strcmp() >= 0`.
+   */
+  bool operator>=(const char* other) const
+  {
+    return compare(begin(), other) >= 0;
+  }
+
+  /**
+   * Same as `strcmp() >= 0`.
+   */
+  friend bool operator>=(const char* a, const String& b)
+  {
+    return compare(a, b.begin()) >= 0;
   }
 
   /**

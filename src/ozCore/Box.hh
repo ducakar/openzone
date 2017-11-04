@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "common.hh"
+#include "Arrays.hh"
 
 namespace oz
 {
@@ -78,17 +78,6 @@ public:
   }
 
   /**
-   * Create a new owner, the source box is emptied.
-   */
-  template <typename Type_>
-  OZ_ALWAYS_INLINE
-  constexpr Box(Box<Type_>&& other) noexcept
-    : data_(other.data_)
-  {
-    other.data_ = nullptr;
-  }
-
-  /**
    * Empty and take ownership, the source box is emptied.
    */
   Box& operator=(Box&& other) noexcept
@@ -107,64 +96,74 @@ public:
   /**
    * Empty and take ownership, the source box is emptied.
    */
-  template <typename Type_>
-  Box& operator=(Box<Type_>&& other) noexcept
-  {
-    if (&other != this) {
-      delete data_;
-
-      data_ = other.data_;
-
-      other.data_ = nullptr;
-    }
-
-    return *this;
-  }
-
-  /**
-   * Empty and take ownership, the source box is emptied.
-   */
   Box& operator=(Type* data)
   {
     delete data_;
+
     data_ = data;
 
     return *this;
   }
 
   /**
-   * True iff pointing to the same memory location.
+   * True iff pointing to the same location.
    */
   OZ_ALWAYS_INLINE
   bool operator==(const Box& other) const
   {
-    return data_ == other.data;
+    return data_ == other.data_;
   }
 
   /**
-   * True iff pointing to the same memory location.
+   * True iff pointing to the same location.
    */
-  template <typename Type_>
   OZ_ALWAYS_INLINE
-  bool operator==(const Box<Type_>& other) const
+  bool operator==(const Type* p) const
   {
-    return data_ == other.data;
+    return data_ == p;
   }
 
   /**
-   * True iff pointing to the same memory location.
+   * True iff pointing to the same location.
    */
   OZ_ALWAYS_INLINE
-  bool operator==(const Type* data) const
+  friend bool operator==(const Type* p, const Box& box)
   {
-    return data_ == data;
+    return p == box.data_;
+  }
+
+  /**
+   * True iff pointing to a lower location.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator<(const Box& other) const
+  {
+    return data_ < other.data_;
+  }
+
+  /**
+   * True iff pointing to a lower location.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator<(const Type* p) const
+  {
+    return data_ < p;
+  }
+
+  /**
+   * True iff pointing to a lower location.
+   */
+  OZ_ALWAYS_INLINE
+  friend bool operator<(const Type* p, const Box& box)
+  {
+    return p < box.data_;
   }
 
   /**
    * Constant pointer to the object.
    */
   OZ_ALWAYS_INLINE
-  operator const Type*() const
+  const Type* get() const noexcept
   {
     return data_;
   }
@@ -173,9 +172,18 @@ public:
    * Pointer to the object.
    */
   OZ_ALWAYS_INLINE
-  operator Type*()
+  Type* get() noexcept
   {
     return data_;
+  }
+
+  /**
+   * True iff not null.
+   */
+  OZ_ALWAYS_INLINE
+  explicit operator bool() const noexcept
+  {
+    return data_ != nullptr;
   }
 
   /**
@@ -200,7 +208,7 @@ public:
    * Constant pointer to the object's member.
    */
   OZ_ALWAYS_INLINE
-  const Type* operator->() const
+  const Type* operator->() const noexcept
   {
     return data_;
   }
@@ -209,7 +217,7 @@ public:
    * Pointer to the object's member.
    */
   OZ_ALWAYS_INLINE
-  Type* operator->()
+  Type* operator->() noexcept
   {
     return data_;
   }
@@ -261,40 +269,12 @@ public:
   }
 
   /**
-   * Create a new owner, the source box is emptied.
-   */
-  template <typename Type_>
-  OZ_ALWAYS_INLINE
-  constexpr Box(Box<Type_>&& other) noexcept
-    : data_(other.data_)
-  {
-    other.data_ = nullptr;
-  }
-
-  /**
    * Empty and take ownership, the source box is emptied.
    */
   Box& operator=(Box&& other) noexcept
   {
     if (&other != this) {
-      delete data_;
-
-      data_ = other.data_;
-
-      other.data_ = nullptr;
-    }
-
-    return *this;
-  }
-
-  /**
-   * Empty and take ownership, the source box is emptied.
-   */
-  template <typename Type_>
-  Box& operator=(Box<Type_>&& other) noexcept
-  {
-    if (&other != this) {
-      delete data_;
+      delete[] data_;
 
       data_ = other.data_;
 
@@ -309,45 +289,71 @@ public:
    */
   Box& operator=(Type data[])
   {
-    delete data_;
-    data_ = data;
+    delete[] data_;
 
+    data_ = data;
     return *this;
   }
 
   /**
-   * True iff pointing to the same memory location.
+   * True iff pointing to the same location.
    */
   OZ_ALWAYS_INLINE
   bool operator==(const Box& other) const
   {
-    return data_ == other.data;
+    return data_ == other.data_;
   }
 
   /**
-   * True iff pointing to the same memory location.
-   */
-  template <typename Type_>
-  OZ_ALWAYS_INLINE
-  bool operator==(const Box<Type_>& other) const
-  {
-    return data_ == other.data;
-  }
-
-  /**
-   * True iff pointing to the same memory location.
+   * True iff pointing to the same location.
    */
   OZ_ALWAYS_INLINE
-  bool operator==(const Type data[]) const
+  bool operator==(const Type* data) const
   {
     return data_ == data;
+  }
+
+  /**
+   * True iff pointing to the same location.
+   */
+  OZ_ALWAYS_INLINE
+  friend bool operator==(const Type* data, const Box& box)
+  {
+    return data == box.data_;
+  }
+
+  /**
+   * True iff pointing to a lower location.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator<(const Box& other) const
+  {
+    return data_ < other.data_;
+  }
+
+  /**
+   * True iff pointing to a lower location.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator<(const Type* data) const
+  {
+    return data_ < data;
+  }
+
+  /**
+   * True iff pointing to a lower location.
+   */
+  OZ_ALWAYS_INLINE
+  friend bool operator<(const Type* data, const Box& box)
+  {
+    return data < box.data_;
   }
 
   /**
    * Constant pointer to the first element.
    */
   OZ_ALWAYS_INLINE
-  operator const Type*() const
+  const Type* get() const noexcept
   {
     return data_;
   }
@@ -356,9 +362,18 @@ public:
    * Pointer to the first element.
    */
   OZ_ALWAYS_INLINE
-  operator Type*()
+  Type* get() noexcept
   {
     return data_;
+  }
+
+  /**
+   * True iff not null.
+   */
+  OZ_ALWAYS_INLINE
+  explicit operator bool() const noexcept
+  {
+    return data_ != nullptr;
   }
 
   /**
@@ -377,6 +392,29 @@ public:
   Type& operator[](int i)
   {
     return data_[i];
+  }
+
+  /**
+   * Reallocate an array to a different size, moving its elements.
+   *
+   * Allocate a new zero-initialised array of `newSize` elements, move first `min(size, newSize)`
+   * elements to the newly created array and free the original array.
+   *
+   * If `newSize` is 0 the existing array is deleted and replaced by `nullptr`.
+   */
+  void reallocate(int size, int newSize)
+  {
+    OZ_ASSERT(size >= 0 && newSize >= 0);
+
+    Type* newData = nullptr;
+
+    if (newSize != 0) {
+      newData = new Type[newSize] {};
+      Arrays::move<Type>(data_, min<int>(size, newSize), newData);
+    }
+
+    delete[] data_;
+    data_ = newData;
   }
 
 };

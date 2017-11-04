@@ -28,28 +28,26 @@ void test_Alloc()
 {
   Log() << "+ Alloc";
 
-  static const size_t STAT_META_SIZE = OZ_ALIGNMENT;
-
   size_t oAmount    = Alloc::amount;
   size_t oSumAmount = Alloc::sumAmount;
   int    oCount     = Alloc::count;
   int    oSumCount  = Alloc::sumCount;
 
   Foo* array = new Foo[10]();
-  OZ_CHECK(Alloc::amount >= oAmount + 10 * sizeof(Foo) + STAT_META_SIZE);
-  OZ_CHECK(Alloc::sumAmount >= oSumAmount + 10 * sizeof(Foo) + STAT_META_SIZE);
+  OZ_CHECK(Alloc::amount >= oAmount + 10 * sizeof(Foo));
+  OZ_CHECK(Alloc::sumAmount >= oSumAmount + 10 * sizeof(Foo));
   OZ_CHECK(Alloc::count == oCount + 1);
   OZ_CHECK(Alloc::sumCount == oSumCount + 1);
 
   array = Arrays::reallocate(array, 5, 8);
-  OZ_CHECK(Alloc::amount >= oAmount + 8 * sizeof(Foo) + STAT_META_SIZE);
-  OZ_CHECK(Alloc::sumAmount >= oSumAmount + 18 * sizeof(Foo) + 2 * STAT_META_SIZE);
+  OZ_CHECK(Alloc::amount >= oAmount + 8 * sizeof(Foo));
+  OZ_CHECK(Alloc::sumAmount >= oSumAmount + 18 * sizeof(Foo));
   OZ_CHECK(Alloc::count == oCount + 1);
   OZ_CHECK(Alloc::sumCount == oSumCount + 2);
 
   delete[] array;
   OZ_CHECK(Alloc::amount >= oAmount);
-  OZ_CHECK(Alloc::sumAmount >= 18 * sizeof(Foo) + 2 * STAT_META_SIZE);
+  OZ_CHECK(Alloc::sumAmount >= 18 * sizeof(Foo));
   OZ_CHECK(Alloc::count == oCount + 0);
   OZ_CHECK(Alloc::sumCount == oSumCount + 2);
 

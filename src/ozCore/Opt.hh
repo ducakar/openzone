@@ -30,6 +30,10 @@
 
 #include "System.hh"
 
+/**
+ * @def OZ_UNWRAP
+ * Wrapper for `oz::Opt::unwrap()`, filling in the current function, file and line parameters.
+ */
 #define OZ_UNWRAP(...) \
   unwrap(__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__)
 
@@ -357,6 +361,9 @@ public:
         : static_cast<Type&&>(static_cast<Type_&&>(defaultValue));
   }
 
+  /**
+   * Return value if exists or crash with error otherwise.
+   */
   const Type& unwrap() const&
   {
     if (!hasValue_) {
@@ -365,6 +372,9 @@ public:
     return asValue();
   }
 
+  /**
+   * Return value if exists or crash with error otherwise.
+   */
   Type& unwrap() &
   {
     if (!hasValue_) {
@@ -373,6 +383,9 @@ public:
     return asValue();
   }
 
+  /**
+   * Return value if exists or crash with error otherwise.
+   */
   const Type&& unwrap() const&&
   {
     if (!hasValue_) {
@@ -381,6 +394,9 @@ public:
     return static_cast<Type&&>(asValue());
   }
 
+  /**
+   * Return value if exists or crash with error otherwise.
+   */
   Type&& unwrap() &&
   {
     if (!hasValue_) {
@@ -389,6 +405,9 @@ public:
     return static_cast<Type&&>(asValue());
   }
 
+  /**
+   * Return value if exists or crash with a given error message otherwise.
+   */
   OZ_PRINTF_FORMAT(5, 6)
   const Type& unwrap(const char* function, const char* file, int line,
                      const char* message, ...) const&
@@ -402,6 +421,9 @@ public:
     return asValue();
   }
 
+  /**
+   * Return value if exists or crash with a given error message otherwise.
+   */
   OZ_PRINTF_FORMAT(5, 6)
   Type& unwrap(const char* function, const char* file, int line, const char* message, ...) &
   {
@@ -414,6 +436,9 @@ public:
     return asValue();
   }
 
+  /**
+   * Return value if exists or crash with a given error message otherwise.
+   */
   OZ_PRINTF_FORMAT(5, 6)
   const Type&& unwrap(const char* function, const char* file, int line,
                       const char* message, ...) const&&
@@ -427,6 +452,9 @@ public:
     return static_cast<Type&&>(asValue());
   }
 
+  /**
+   * Return value if exists or crash with a given error message otherwise.
+   */
   OZ_PRINTF_FORMAT(5, 6)
   Type&& unwrap(const char* function, const char* file, int line, const char* message, ...) &&
   {

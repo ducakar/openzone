@@ -398,12 +398,16 @@ static void* bellMain(void*)
                                               &sampleSpec, nullptr,  nullptr, nullptr);
 
     if (pa != nullptr) {
-      List<short> samples(BELL_SAMPLES * 2);
-      generateBellSamples(samples.begin(), BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
+      size_t samplesSize = BELL_SAMPLES * 2 * sizeof(short);
+      short* samples     = static_cast<short*>(malloc(samplesSize));
 
-      pa_simple_write(pa, samples.begin(), size_t(samples.size()) * sizeof(short), nullptr);
+      generateBellSamples(samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
+
+      pa_simple_write(pa, samples, samplesSize, nullptr);
       pa_simple_drain(pa, nullptr);
       pa_simple_free(pa);
+
+      free(samples);
     }
   }
 

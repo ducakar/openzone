@@ -36,7 +36,7 @@ namespace oz
 /**
  * Bit array with dynamically allocated storage.
  *
- * Bits are stored in an array of `size_t`s and its size is always a multiple of 64 bits.
+ * Bits are stored in an array of `uint64`s so its size is always a multiple of 64.
  *
  * @sa `oz::SBitset`
  */
@@ -45,14 +45,11 @@ class Bitset
 private:
 
   /// Number of bits per the internal unit.
-  static const int UNIT_BITS = sizeof(size_t) * 8;
-
-  /// Number of bits per the platfrom-independent unit.
-  static const int PORT_BITS = sizeof(uint64) * 8;
+  static const int UNIT_BITS = sizeof(uint64) * 8;
 
 private:
 
-  List<size_t> data_; ///< Bit storage.
+  List<uint64> data_; ///< Bit storage.
 
 public:
 
@@ -85,7 +82,7 @@ public:
    * Constant pointer to the first unit.
    */
   OZ_ALWAYS_INLINE
-  const size_t* begin() const noexcept
+  const uint64* begin() const noexcept
   {
     return data_.begin();
   }
@@ -94,7 +91,7 @@ public:
    * Pointer to the first unit.
    */
   OZ_ALWAYS_INLINE
-  size_t* begin() noexcept
+  uint64* begin() noexcept
   {
     return data_.begin();
   }
@@ -103,7 +100,7 @@ public:
    * Constant pointer past the last unit.
    */
   OZ_ALWAYS_INLINE
-  const size_t* end() const noexcept
+  const uint64* end() const noexcept
   {
     return data_.end();
   }
@@ -112,7 +109,7 @@ public:
    * Pointer past the last unit.
    */
   OZ_ALWAYS_INLINE
-  size_t* end() noexcept
+  uint64* end() noexcept
   {
     return data_.end();
   }
@@ -163,7 +160,7 @@ public:
   OZ_ALWAYS_INLINE
   bool get(int i) const
   {
-    return (data_[i / UNIT_BITS] & (size_t(1) << (i % UNIT_BITS))) != 0;
+    return (data_[i / UNIT_BITS] & (uint64(1) << (i % UNIT_BITS))) != 0;
   }
 
   /**
@@ -172,7 +169,7 @@ public:
   OZ_ALWAYS_INLINE
   void set(int i)
   {
-    data_[i / UNIT_BITS] |= size_t(1) << (i % UNIT_BITS);
+    data_[i / UNIT_BITS] |= uint64(1) << (i % UNIT_BITS);
   }
 
   /**
@@ -181,7 +178,7 @@ public:
   OZ_ALWAYS_INLINE
   void clear(int i)
   {
-    data_[i / UNIT_BITS] &= ~(size_t(1) << (i % UNIT_BITS));
+    data_[i / UNIT_BITS] &= ~(uint64(1) << (i % UNIT_BITS));
   }
 
   /**
@@ -190,7 +187,7 @@ public:
   OZ_ALWAYS_INLINE
   void flip(int i)
   {
-    data_[i / UNIT_BITS] ^= size_t(1) << (i % UNIT_BITS);
+    data_[i / UNIT_BITS] ^= uint64(1) << (i % UNIT_BITS);
   }
 
   /**

@@ -37,7 +37,7 @@ namespace oz
 /**
  * Bit array with static storage.
  *
- * Bits are stored in an array of `size_t`s, size of which if a multiple of 64 bits.
+ * Bits are stored in an array of `uint64`s so its size is always a multiple of 64.
  *
  * @sa `oz::Bitset`
  */
@@ -49,17 +49,14 @@ class SBitset
 private:
 
   /// Number of bits per the internal unit.
-  static const int UNIT_BITS = sizeof(size_t) * 8;
-
-  /// Number of bits per the platfrom-independent unit.
-  static const int PORT_BITS = sizeof(uint64) * 8;
+  static const int UNIT_BITS = sizeof(uint64) * 8;
 
   /// Number of units.
-  static const int SIZE = Alloc::alignUp<int>(BITS, PORT_BITS) / UNIT_BITS;
+  static const int SIZE = (BITS + UNIT_BITS - 1) / UNIT_BITS;
 
 private:
 
-  SList<size_t, SIZE> data_; ///< Bit storage.
+  SList<uint64, SIZE> data_; ///< Bit storage.
 
 public:
 
@@ -80,7 +77,7 @@ public:
     : data_(SIZE)
   {
     for (int i = 0; s[i] != '\0'; ++i) {
-      data_[i / UNIT_BITS] |= size_t(s[i] != '0') << (i % UNIT_BITS);
+      data_[i / UNIT_BITS] |= uint64(s[i] != '0') << (i % UNIT_BITS);
     }
   }
 
@@ -96,7 +93,7 @@ public:
    * Constant pointer to the first unit.
    */
   OZ_ALWAYS_INLINE
-  const size_t* begin() const noexcept
+  const uint64* begin() const noexcept
   {
     return data_.begin();
   }
@@ -105,7 +102,7 @@ public:
    * Pointer to the first unit.
    */
   OZ_ALWAYS_INLINE
-  size_t* begin() noexcept
+  uint64* begin() noexcept
   {
     return data_.begin();
   }
@@ -114,7 +111,7 @@ public:
    * Constant pointer past the last unit.
    */
   OZ_ALWAYS_INLINE
-  const size_t* end() const noexcept
+  const uint64* end() const noexcept
   {
     return data_.end();
   }
@@ -123,7 +120,7 @@ public:
    * Pointer past the last unit.
    */
   OZ_ALWAYS_INLINE
-  size_t* end() noexcept
+  uint64* end() noexcept
   {
     return data_.end();
   }
@@ -204,7 +201,7 @@ public:
   OZ_ALWAYS_INLINE
   bool get(int i) const
   {
-    return (data_[i / UNIT_BITS] & (size_t(1) << (i % UNIT_BITS))) != 0;
+    return (data_[i / UNIT_BITS] & (uint64(1) << (i % UNIT_BITS))) != 0;
   }
 
   /**
@@ -213,7 +210,7 @@ public:
   OZ_ALWAYS_INLINE
   void set(int i)
   {
-    data_[i / UNIT_BITS] |= size_t(1) << (i % UNIT_BITS);
+    data_[i / UNIT_BITS] |= uint64(1) << (i % UNIT_BITS);
   }
 
   /**
@@ -222,7 +219,7 @@ public:
   OZ_ALWAYS_INLINE
   void clear(int i)
   {
-    data_[i / UNIT_BITS] &= ~(size_t(1) << (i % UNIT_BITS));
+    data_[i / UNIT_BITS] &= ~(uint64(1) << (i % UNIT_BITS));
   }
 
   /**
@@ -231,7 +228,7 @@ public:
   OZ_ALWAYS_INLINE
   void flip(int i)
   {
-    data_[i / UNIT_BITS] ^= size_t(1) << (i % UNIT_BITS);
+    data_[i / UNIT_BITS] ^= uint64(1) << (i % UNIT_BITS);
   }
 
   /**
@@ -239,7 +236,7 @@ public:
    */
   void clear()
   {
-    Arrays::fill<size_t, size_t>(data_.begin(), SIZE, 0);
+    Arrays::fill<uint64, uint64>(data_.begin(), SIZE, 0);
   }
 
   /**

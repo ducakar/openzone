@@ -21,6 +21,21 @@
 
 using namespace oz;
 
+struct Foo
+{
+  Foo() { Log() << "Foo()"; }
+  ~Foo() { Log() << "~Foo()"; }
+
+  Foo(const Foo&) { Log() << "Foo(const Foo&)"; }
+  Foo(Foo&&) { Log() << "Foo(Foo&&)"; }
+
+  Foo& operator=(const Foo&) { Log() << "Foo(const Foo&)"; return *this; }
+  Foo& operator=(Foo&&) { Log() << "Foo(Foo&&)"; return *this; }
+
+  bool operator==(const Foo&) { return true; }
+  bool operator<(const Foo&) { return false; }
+};
+
 int main()
 {
   System::init();

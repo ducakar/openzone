@@ -194,7 +194,6 @@ else()
   set(flags "${flags} -Wall -Wextra -Wcast-align -Winit-self -Wlogical-op -Wundef -Winvalid-pch")
   set(flags "${flags} -Wmissing-declarations -Wnon-virtual-dtor -Woverloaded-virtual -Wformat=2")
   set(flags "${flags} -Wno-format-zero-length -Wmissing-format-attribute -Wduplicated-cond")
-  set(flags "${flags} -Wzero-as-null-pointer-constant -Wsuggest-attribute=noreturn")
 endif()
 
 set(CMAKE_CXX_FLAGS "${flags} ${CMAKE_CXX_FLAGS}")

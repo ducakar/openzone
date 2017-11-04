@@ -160,7 +160,7 @@ using ulong = unsigned long;
 /**
  * Signed 64-bit integer.
  */
-using int64 = long long;
+using int64 = signed long long;
 
 /**
  * Unsigned 64-bit integer.

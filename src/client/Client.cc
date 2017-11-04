@@ -465,6 +465,7 @@ int Client::init(int argc, char** argv)
 
   // Load configuration.
   File configFile = configDir / "client.json";
+
   if (appConfig.load(configFile) && String::equals(appConfig["_version"].get(""), OZ_VERSION)) {
     Log::printEnd("Configuration read from '%s'", configFile.c());
     initFlags |= INIT_CONFIG;

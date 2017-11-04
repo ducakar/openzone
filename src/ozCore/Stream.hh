@@ -477,12 +477,8 @@ public:
   template <class BitsetType>
   void readBitset(BitsetType& b)
   {
-    for (size_t& unit : b) {
-#if __SIZEOF_SIZE_T__ == 4
-      unit = size_t(readUInt());
-#else
-      unit = size_t(readUInt64());
-#endif
+    for (uint64& unit : b) {
+      unit = readUInt64();
     }
   }
 
@@ -492,12 +488,8 @@ public:
   template <class BitsetType>
   void writeBitset(const BitsetType& b)
   {
-    for (size_t unit : b) {
-#if __SIZEOF_SIZE_T__ == 4
-      writeUInt(uint(unit));
-#else
-      writeUInt64(uint64(unit));
-#endif
+    for (uint64 unit : b) {
+      writeUInt64(unit);
     }
   }
 
