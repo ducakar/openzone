@@ -27,6 +27,8 @@
 namespace oz
 {
 
+const Instant Instant::EPOCH = Instant();
+
 Instant Instant::now()
 {
   struct timespec ts;

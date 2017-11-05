@@ -95,10 +95,17 @@ void* Thread::Descriptor::mainWrapper(void* handle)
   return nullptr;
 }
 
+static timespec toTimespec(Duration duration)
+{
+  int64 ns = duration.ns() % 1000000000 + 1000000000;
+  int64 s  = duration.ns() / 1000000000 - 1;
+
+  return timespec{s + ns / 1000000000, int(ns % 1000000000)};
+}
+
 void Thread::sleepFor(Duration duration)
 {
-  auto [s, ns] = duration.timespec();
-  struct timespec ts = {time_t(s), ns};
+  timespec ts = toTimespec(duration);
 # ifdef __native_client__
   nanosleep(&ts, nullptr);
 # else
@@ -108,8 +115,7 @@ void Thread::sleepFor(Duration duration)
 
 void Thread::sleepUntil(Instant instant)
 {
-  auto [s, ns] = instant.timespec();
-  struct timespec ts = {time_t(s), ns};
+  timespec ts = toTimespec(instant.fromEpoch());
 # ifdef __native_client__
   nanosleep(&ts, nullptr);
 # else

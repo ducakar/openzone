@@ -25,6 +25,6 @@
 namespace oz
 {
 
-const Duration Duration::ZERO = Duration(0);
+const Duration Duration::ZERO = Duration();
 
 }

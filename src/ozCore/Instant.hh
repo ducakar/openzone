@@ -52,13 +52,11 @@ public:
 
 public:
 
-  using Duration::Timespec;
   using Duration::ns;
   using Duration::us;
   using Duration::ms;
   using Duration::s;
   using Duration::t;
-  using Duration::timespec;
 
   /**
    * Epoch.
@@ -72,13 +70,6 @@ public:
   OZ_ALWAYS_INLINE
   explicit constexpr Instant(int64 ns)
     : Duration(ns)
-  {}
-
-  /**
-   * Create instant from Timespec.
-   */
-  explicit constexpr Instant(Timespec ts)
-    : Duration(ts)
   {}
 
   /**
@@ -142,6 +133,15 @@ public:
   constexpr Instant& operator-=(const Duration& d)
   {
     return static_cast<Instant&>(Duration::operator-=(d));
+  }
+
+  /**
+   * Duration from epoch.
+   */
+  OZ_ALWAYS_INLINE
+  constexpr Duration fromEpoch() const
+  {
+    return static_cast<const Duration&>(*this);
   }
 
   /**

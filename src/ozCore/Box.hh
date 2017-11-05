@@ -409,7 +409,7 @@ public:
     Type* newData = nullptr;
 
     if (newSize != 0) {
-      newData = new Type[newSize] {};
+      newData = new Type[newSize]{};
       Arrays::move<Type>(data_, min<int>(size, newSize), newData);
     }
 

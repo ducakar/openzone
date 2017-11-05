@@ -786,13 +786,13 @@ void Context::init()
   dynamicLoading = appConfig.include("context.dynamicLoading", false).get(false);
 
   if (!liber.imagines.isEmpty()) {
-    imagoClasses = new Imago::CreateFunc*[liber.imagines.size()] {};
+    imagoClasses = new Imago::CreateFunc*[liber.imagines.size()]{};
   }
   if (!liber.audios.isEmpty()) {
-    audioClasses = new Audio::CreateFunc*[liber.audios.size()] {};
+    audioClasses = new Audio::CreateFunc*[liber.audios.size()]{};
   }
   if (!liber.fragPools.isEmpty() != 0) {
-    fragPools = new FragPool*[liber.fragPools.size()] {};
+    fragPools = new FragPool*[liber.fragPools.size()]{};
   }
 
   OZ_REGISTER_IMAGOCLASS(SMM);
@@ -811,14 +811,14 @@ void Context::init()
   int nModels      = liber.models.size();
   int nBSPs        = liber.bsps.size();
 
-  textures    = nTextures    == 0 ? nullptr : new TextureResource[nTextures] {};
-  sounds      = nSounds      == 0 ? nullptr : new SoundResource[nSounds] {};
+  textures    = nTextures    == 0 ? nullptr : new TextureResource[nTextures]{};
+  sounds      = nSounds      == 0 ? nullptr : new SoundResource[nSounds]{};
 
-  models      = nModels      == 0 ? nullptr : new Resource<Model*>[nModels] {};
-  partClasses = nPartClasses == 0 ? nullptr : new Resource<PartClass>[nPartClasses] {};
+  models      = nModels      == 0 ? nullptr : new Resource<Model*>[nModels]{};
+  partClasses = nPartClasses == 0 ? nullptr : new Resource<PartClass>[nPartClasses]{};
 
-  bspImagines = nBSPs        == 0 ? nullptr : new Resource<BSPImago*>[nBSPs] {};
-  bspAudios   = nBSPs        == 0 ? nullptr : new Resource<BSPAudio*>[nBSPs] {};
+  bspImagines = nBSPs        == 0 ? nullptr : new Resource<BSPImago*>[nBSPs]{};
+  bspAudios   = nBSPs        == 0 ? nullptr : new Resource<BSPAudio*>[nBSPs]{};
 
   Log::printEnd(" OK");
 }

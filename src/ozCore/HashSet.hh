@@ -173,7 +173,7 @@ protected:
     Entry** newData = nullptr;
 
     if (newCapacity != 0) {
-      newData = new Entry*[newCapacity] {};
+      newData = new Entry*[newCapacity]{};
 
       // Rebuild hashtable.
       for (int i = 0; i < capacity_; ++i) {
@@ -372,7 +372,7 @@ public:
    * STL-style constant begin iterator.
    */
   OZ_ALWAYS_INLINE
-  typename CRangeType::Begin cbegin() const noexcept
+  HashIterator<const Entry, const Elem> cbegin() const noexcept
   {
     return HashIterator<const Entry, const Elem>(*this);
   }
@@ -381,7 +381,7 @@ public:
    * STL-style constant begin iterator.
    */
   OZ_ALWAYS_INLINE
-  typename CRangeType::Begin begin() const noexcept
+  HashIterator<const Entry, const Elem> begin() const noexcept
   {
     return HashIterator<const Entry, const Elem>(*this);
   }
@@ -390,7 +390,7 @@ public:
    * STL-style begin iterator.
    */
   OZ_ALWAYS_INLINE
-  typename RangeType::Begin begin() noexcept
+  HashIterator<Entry, Elem> begin() noexcept
   {
     return HashIterator<Entry, Elem>(*this);
   }
@@ -399,7 +399,7 @@ public:
    * STL-style constant end iterator.
    */
   OZ_ALWAYS_INLINE
-  typename CRangeType::End cend() const noexcept
+  nullptr_t cend() const noexcept
   {
     return nullptr;
   }
@@ -408,7 +408,7 @@ public:
    * STL-style constant end iterator.
    */
   OZ_ALWAYS_INLINE
-  typename CRangeType::End end() const noexcept
+  nullptr_t end() const noexcept
   {
     return nullptr;
   }
@@ -417,7 +417,7 @@ public:
    * STL-style end iterator.
    */
   OZ_ALWAYS_INLINE
-  typename RangeType::End end() noexcept
+  nullptr_t end() noexcept
   {
     return nullptr;
   }

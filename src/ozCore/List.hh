@@ -202,7 +202,7 @@ public:
    * STL-style constant begin iterator.
    */
   OZ_ALWAYS_INLINE
-  typename CRangeType::Begin cbegin() const noexcept
+  const Elem* cbegin() const noexcept
   {
     return data_;
   }
@@ -211,7 +211,7 @@ public:
    * STL-style constant begin iterator.
    */
   OZ_ALWAYS_INLINE
-  typename CRangeType::Begin begin() const noexcept
+  const Elem* begin() const noexcept
   {
     return data_;
   }
@@ -220,7 +220,7 @@ public:
    * STL-style begin iterator.
    */
   OZ_ALWAYS_INLINE
-  typename RangeType::Begin begin() noexcept
+  Elem* begin() noexcept
   {
     return data_;
   }
@@ -229,7 +229,7 @@ public:
    * STL-style constant end iterator.
    */
   OZ_ALWAYS_INLINE
-  typename CRangeType::End cend() const noexcept
+  const Elem* cend() const noexcept
   {
     return data_ + size_;
   }
@@ -238,7 +238,7 @@ public:
    * STL-style constant end iterator.
    */
   OZ_ALWAYS_INLINE
-  typename CRangeType::End end() const noexcept
+  const Elem* end() const noexcept
   {
     return data_ + size_;
   }
@@ -247,7 +247,7 @@ public:
    * STL-style end iterator.
    */
   OZ_ALWAYS_INLINE
-  typename RangeType::End end() noexcept
+  Elem* end() noexcept
   {
     return data_ + size_;
   }

@@ -372,7 +372,7 @@ public:
     Elem* newArray = nullptr;
 
     if (newSize != 0) {
-      newArray = new Elem[newSize] {};
+      newArray = new Elem[newSize]{};
       move<Elem>(array, min<int>(size, newSize), newArray);
     }
 

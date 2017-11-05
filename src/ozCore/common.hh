@@ -114,17 +114,17 @@ namespace detail {}
 /**
  * Null pointer type.
  */
-using std::nullptr_t;
+using nullptr_t = std::nullptr_t;
 
 /**
  * Platform-dependent unsigned integer type for memory offsets and sizes.
  */
-using std::size_t;
+using size_t = std::size_t;
 
 /**
  * Platform-dependent signed integer type for memory offsets and pointer differences.
  */
-using std::ptrdiff_t;
+using ptrdiff_t = std::ptrdiff_t;
 
 /**
  * Initialiser list.

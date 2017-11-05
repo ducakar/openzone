@@ -343,7 +343,7 @@ ImageData* TerraBuilder::generateCubeNoise(int size)
   int    stride = size * 4;
   double dim    = size / 2.0;
 
-  ImageData* images = new ImageData[6] {
+  ImageData* images = new ImageData[6]{
     ImageData(size, size),
     ImageData(size, size),
     ImageData(size, size),

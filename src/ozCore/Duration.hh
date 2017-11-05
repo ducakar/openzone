@@ -45,17 +45,6 @@ class Duration
 public:
 
   /**
-   * `std::timespec`-compatible type.
-   *
-   * This struct is primarily for use with `clock_nanosleep()` and similar functions.
-   */
-  struct Timespec
-  {
-    int64 s;  ///< Seconds.
-    int   ns; ///< Nanoseconds in range 0...999999999.
-  };
-
-  /**
    * Zero time duration.
    */
   static const Duration ZERO;
@@ -78,13 +67,6 @@ public:
   OZ_ALWAYS_INLINE
   explicit constexpr Duration(int64 ns)
     : ns_(ns)
-  {}
-
-  /**
-   * Create duration from Timespec.
-   */
-  explicit constexpr Duration(Timespec ts)
-    : ns_(ts.s * 1000000000 + ts.ns)
   {}
 
   /**
@@ -148,17 +130,6 @@ public:
   constexpr float t() const
   {
     return float(ns_) / 1000000000.0f;
-  }
-
-  /**
-   * Convert to Timespec.
-   */
-  constexpr Timespec timespec() const
-  {
-    int64 ns = ns_ % 1000000000 + 1000000000;
-    int64 s  = ns_ / 1000000000 - 1;
-
-    return Timespec{s + ns / 1000000000, int(ns_ % 1000000000)};
   }
 
   /**

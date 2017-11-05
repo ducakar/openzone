@@ -241,7 +241,7 @@ void BuildFrame::onRealign()
     add(new Button(OZ_GETTEXT("I"), selectItems,     55, 18), 122, -HEADER_SIZE - 2);
     add(new Button(OZ_GETTEXT("M"), selectObjects,   55, 18), 181, -HEADER_SIZE - 2);
 
-    models = new ModelField*[rows * 3] {};
+    models = new ModelField*[rows * 3]{};
 
     for (int i = 0; i < rows; ++i) {
       models[i*3 + 0] = new ModelField(startPlacement, SLOT_SIZE);
