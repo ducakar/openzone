@@ -44,9 +44,11 @@ void Font::close()
 }
 
 Font::Font(const File& file, int height)
-  : fontHeight(height)
+  : fontHeight(height), fileBuffer(0)
 {
-  fileBuffer = file.read().OZ_UNWRAP("oz::Font: Failed to read font file `%s'", file.c());
+  if (!file.read(&fileBuffer)) {
+    OZ_ERROR("oz::Font: Failed to read font file `%s'", file.c());
+  }
 
   SDL_RWops* rwOps = SDL_RWFromConstMem(fileBuffer.begin(), fileBuffer.capacity());
   TTF_Font*  font  = TTF_OpenFontRW(rwOps, true, height);

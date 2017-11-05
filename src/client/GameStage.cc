@@ -61,9 +61,12 @@ void GameStage::read()
 {
   Log::print("Loading state from '%s' ...", stateFile.c());
 
-  Stream is = stateFile.read()
-              .OZ_UNWRAP("Reading saved state '%s' failed", stateFile.c())
-              .decompress();
+  Stream is(0);
+  if (!stateFile.read(&is)) {
+    OZ_ERROR("Reading saved state '%s' failed", stateFile.c());
+  }
+
+  is = is.decompress();
 
   Log::printEnd(" OK");
 

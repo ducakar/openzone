@@ -1297,12 +1297,12 @@ String Json::toFormattedString(const Format& format) const
 
 bool Json::load(const File& file)
 {
-  Opt<Stream> is = file.read();
-  if (!is) {
+  Stream is(0);
+  if (!file.read(&is)) {
     return false;
   }
 
-  *this = Parser::parse(&*is, file);
+  *this = Parser::parse(&is, file);
   return true;
 }
 

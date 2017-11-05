@@ -434,7 +434,7 @@ void Liber::initModels()
     String name = subDir.name();
     File   file = subDir / "data.ozcModel";
 
-    if (!file.isFile()) {
+    if (!file.isRegular()) {
       OZ_ERROR("Invalid model '%s'", name.c());
     }
 

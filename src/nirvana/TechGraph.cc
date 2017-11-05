@@ -121,7 +121,7 @@ void TechGraph::load()
   for (const File& configFile : techDir.list()) {
     Json config;
 
-    if (!configFile.isFile() || !config.load(configFile)) {
+    if (!configFile.isRegular() || !config.load(configFile)) {
       continue;
     }
 

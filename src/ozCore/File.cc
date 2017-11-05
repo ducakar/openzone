@@ -159,13 +159,13 @@ static void setSpecialDir(Map<String, File>* vars, int id, const char* name, con
 
 static void loadXDGSettings(Map<String, File>* vars, const File& file)
 {
-  Opt<Stream> is = file.read();
-  if (!is) {
+  Stream is(0);
+  if (!file.read(&is)) {
     return;
   }
 
-  while (is->available() != 0) {
-    String line = is->readLine();
+  while (is.available() != 0) {
+    String line = is.readLine();
 
     if (line[0] == '#') {
       continue;
@@ -269,7 +269,7 @@ bool File::exists() const
   return Stat(begin()).type != Stat::MISSING;
 }
 
-bool File::isFile() const
+bool File::isRegular() const
 {
   return Stat(begin()).type == Stat::FILE;
 }
@@ -471,34 +471,31 @@ bool File::read(char* buffer, int64* size) const
       return false;
     }
 
-    int nBytes = int(::read(fd, buffer, *size));
+    int64 result = ::read(fd, buffer, *size);
     close(fd);
 
-    if (nBytes != *size) {
-      *size = max<int>(0, nBytes);
+    if (result != *size) {
+      *size = max<int64>(0, result);
       return false;
     }
     return true;
   }
 }
 
-Opt<Stream> File::read(Endian::Order order) const
+bool File::read(Stream* stream) const
 {
-  Opt<Stream> result;
-  Stat        stat   = Stat(begin());
-  int64       size   = stat.size;
+  Stat  stat = Stat(begin());
+  int64 size = stat.size;
 
-  if (stat.type == Stat::FILE) {
-    if (uint64(size) > INT_MAX) {
-      OZ_ERROR("oz::File: Cannot read file larger than INT_MAX to a stream");
-    }
-
-    Stream is(int(size), order);
-    if (size == 0 || read(is.begin(), &size)) {
-      result = static_cast<Stream&&>(is);
-    }
+  if (stat.type != Stat::FILE || uint64(size) > INT_MAX) {
+    return false;
   }
-  return static_cast<Opt<Stream>&&>(result);
+  if (size == 0) {
+    return true;
+  }
+
+  *stream = Stream(int(size), stream->order());
+  return read(stream->begin(), &size) && size == stat.size;
 }
 
 bool File::write(const char* buffer, int64 size) const
@@ -524,7 +521,7 @@ bool File::write(const char* buffer, int64 size) const
       return false;
     }
 
-    int result = int(::write(fd, buffer, size));
+    int64 result = ::write(fd, buffer, size);
     close(fd);
 
     return result == size;
@@ -538,13 +535,13 @@ bool File::write(const Stream& is) const
 
 bool File::copyTo(const File& dest) const
 {
-  Opt<Stream> is = read();
-  if (!is) {
+  Stream is(0);
+  if (!read(&is)) {
     return false;
   }
 
   File destFile = Stat(dest).type == Stat::DIRECTORY ? dest / name() : dest;
-  return destFile.write(is->begin(), is->capacity());
+  return destFile.write(is.begin(), is.capacity());
 }
 
 bool File::copyTreeTo(const File& dest, const char* ext) const

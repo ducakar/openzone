@@ -68,8 +68,12 @@ void BSPImago::schedule(const Struct* str, Model::QueueType queue)
 
 void BSPImago::preload()
 {
-  const File* file  = model.preload();
-  Stream      is    = file->read(Endian::LITTLE).OZ_UNWRAP("BSP image '%s' read failed", file->c());
+  const File* file = model.preload();
+  Stream      is(0, Endian::LITTLE);
+
+  if (!file->read(&is)) {
+    OZ_ERROR("BSP image '%s' read failed", file->c());
+  }
 
   int modelEnd = is.readInt();
 

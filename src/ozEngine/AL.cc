@@ -101,8 +101,10 @@ public:
   OZ_INTERNAL
   explicit WaveStream(AL::Decoder* decoder, const File& file)
   {
-    is_ = file.read(Endian::LITTLE)
-          .OZ_UNWRAP("oz::AL::Decoder: Failed to open WAVE file `%s'", file.c());
+    is_ = Stream(0, Endian::LITTLE);
+    if (!file.read(&is_)) {
+      OZ_ERROR("oz::AL::Decoder: Failed to open WAVE file `%s'", file.c());
+    }
 
     if (is_.available() < 44) {
       OZ_ERROR("oz::AL::Decoder: Invalid WAVE header in `%s'", file.c());
@@ -211,7 +213,10 @@ public:
   OZ_INTERNAL
   explicit OpusStream(AL::Decoder* decoder, const File& file, bool isStreaming)
   {
-    is_ = file.read().OZ_UNWRAP("oz::AL::Decoder: Failed to open Opus file `%s'", file.c());
+    is_ = Stream(0);
+    if (!file.read(&is_)) {
+      OZ_ERROR("oz::AL::Decoder: Failed to open Opus file `%s'", file.c());
+    }
 
     int error;
     opFile_ = op_open_memory(reinterpret_cast<const ubyte*>(is_.begin()), is_.available(), &error);
@@ -287,7 +292,10 @@ public:
   OZ_INTERNAL
   explicit VorbisStream(AL::Decoder* decoder, const File& file, bool isStreaming)
   {
-    is_ = file.read().OZ_UNWRAP("oz::AL::Decoder: Failed to open Vorbis file `%s'", file.c());
+    is_ = Stream(0);
+    if (!file.read(&is_)) {
+      OZ_ERROR("oz::AL::Decoder: Failed to open Vorbis file `%s'", file.c());
+    }
 
     int error = ov_open_callbacks(&is_, &ovFile_, nullptr, 0, VORBIS_CALLBACKS);
     if (error != 0) {

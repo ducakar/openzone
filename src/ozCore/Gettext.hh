@@ -73,12 +73,12 @@ public:
   /**
    * Move constructor.
    */
-  Gettext(Gettext&&) = default;
+  Gettext(Gettext&&);
 
   /**
    * Move operator.
    */
-  Gettext& operator=(Gettext&&) = default;
+  Gettext& operator=(Gettext&& other);
 
   /**
    * Number of messages it contains.

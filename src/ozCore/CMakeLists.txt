@@ -34,7 +34,6 @@ add_library(ozCore
   Mat4.hh
   Math.hh
   Monitor.hh
-  Opt.hh
   ozCore.hh
   Pepper.hh
   Plane.hh

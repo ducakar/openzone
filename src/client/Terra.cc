@@ -172,7 +172,11 @@ void Terra::load()
 
   File   file = "@terra/" + name + ".ozcTerra";
   File   map  = "@terra/" + name + ".dds";
-  Stream is   = file.read(Endian::LITTLE).OZ_UNWRAP("Terra file '%s' read failed", file.c());
+  Stream is(0, Endian::LITTLE);
+
+  if (!file.read(&is)) {
+    OZ_ERROR("Terra file '%s' read failed", file.c());
+  }
 
   glGenBuffers(TILES * TILES, &vbos[0][0]);
   glGenBuffers(1, &ibo);

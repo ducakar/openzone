@@ -57,6 +57,22 @@ Gettext::Gettext()
 Gettext::~Gettext()
 {}
 
+Gettext::Gettext(Gettext&& other)
+  : buckets_(static_cast<List<Message*>&&>(other.buckets_)),
+    messages_(static_cast<List<Message>&&>(other.messages_)),
+    strings_(static_cast<List<char>&&>(other.strings_))
+{}
+
+Gettext& Gettext::operator=(Gettext&& other)
+{
+  if (&other != this) {
+    buckets_  = static_cast<List<Message*>&&>(other.buckets_);
+    messages_ = static_cast<List<Message>&&>(other.messages_);
+    strings_  = static_cast<List<char>&&>(other.strings_);
+  }
+  return *this;
+}
+
 bool Gettext::contains(const char* message) const
 {
   if (messages_.isEmpty() || String::isEmpty(message)) {
@@ -104,12 +120,10 @@ List<const char*> Gettext::catalogueDescriptions() const
 // .mo file layout can be found at http://www.gnu.org/software/gettext/manual/gettext.html#MO-Files.
 bool Gettext::import(const File& file)
 {
-  Opt<Stream> optIs = file.read();
-  if (!optIs) {
+  Stream is(0);
+  if (!file.read(&is)) {
     return false;
   }
-
-  Stream& is = *optIs;
 
   // Header.
   uint magic = is.readUInt();

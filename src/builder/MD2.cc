@@ -204,7 +204,10 @@ void MD2::build(const File& path)
   Json config;
   config.load(configFile);
 
-  Stream is = modelFile.read(Endian::LITTLE).OZ_UNWRAP("MD2 file read failed");
+  Stream is(0, Endian::LITTLE);
+  if (!modelFile.read(&is)) {
+    OZ_ERROR("MD2 file read failed");
+  }
 
   MD2Header header;
 

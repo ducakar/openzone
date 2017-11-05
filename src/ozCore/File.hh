@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "Opt.hh"
 #include "Stream.hh"
 
 namespace oz
@@ -105,6 +104,13 @@ public:
   {}
 
   /**
+   * Create an instance for a given path.
+   */
+  File(const char* path, int length)
+    : String(path, length)
+  {}
+
+  /**
    * Recreate instance for a given path.
    */
   File& operator=(const String& path);
@@ -148,7 +154,7 @@ public:
   /**
    * True iff file is a regular file.
    */
-  bool isFile() const;
+  bool isRegular() const;
 
   /**
    * True iff file is a directory.
@@ -268,14 +274,14 @@ public:
    *
    * @return true iff read operation succeeded (it is not necessary the whole file was read).
    */
-  bool read(char* data_, int64* length) const;
+  bool read(char* buffer, int64* length) const;
 
   /**
-   * Create a buffered stream that contains file contents.
+   * Read file contents to a buffered stream.
    *
-   * An invalid (empty) stream is returned on error.
+   * File size can be at most `INT_MAX`.
    */
-  Opt<Stream> read(Endian::Order order = Endian::NATIVE) const;
+  bool read(Stream* steam) const;
 
   /**
    * Write buffer contents to the file.

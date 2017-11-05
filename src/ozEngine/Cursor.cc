@@ -41,13 +41,11 @@ Cursor::Cursor(const File& file, Mode mode, int size)
   : mode_(mode)
 {
   // Implementation is based on specifications from xcursor(3) manual.
-  Opt<Stream> optIs = file.read(Endian::LITTLE);
+  Stream is(0, Endian::LITTLE);
 
-  if (!optIs || optIs->available() < 12 || !String::beginsWith(optIs->begin(), "Xcur")) {
+  if (!file.read(&is) || is.available() < 12 || !String::beginsWith(is.begin(), "Xcur")) {
     return;
   }
-
-  Stream& is = *optIs;
 
   is.seek(12);
 

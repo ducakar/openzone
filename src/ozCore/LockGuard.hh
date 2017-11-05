@@ -36,9 +36,9 @@ namespace oz
 /**
  * Lock guard.
  *
- * RAII wrapper for SpinLock and Mutex.
+ * RAII wrapper for SpinLock, Monitor, RWLock::Read and RWLock::Write.
  *
- * @sa `oz::SpinLock`, `oz::Mutex`
+ * @sa `oz::SpinLock`, `oz::Monitor`, `oz::RWLock`
  */
 template <class Lock>
 class LockGuard

@@ -101,7 +101,11 @@ Transform tf;
 
 void Shader::compileShader(uint shaderId, const File& file) const
 {
-  Stream is = file.read().OZ_UNWRAP("Failed to read '%s'", file.c());
+  Stream is(0);
+
+  if (!file.read(&is)) {
+    OZ_ERROR("Failed to read '%s'", file.c());
+  }
 
   const char* strings[] = {defines.begin(), is.begin()};
   int         lengths[] = {defines.length(), is.available()};

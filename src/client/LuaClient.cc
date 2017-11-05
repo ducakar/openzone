@@ -159,7 +159,10 @@ void LuaClient::read(Stream* is)
       continue;
     }
 
-    Stream mis = file.read().unwrap();
+    Stream mis(0);
+    if (!file.read(&mis)) {
+      OZ_ERROR("Failed to read '%s'", file.c());
+    }
 
     if (mis.available() == 0 || l_dobufferx(mis.begin(), mis.available(), file, "t") != 0) {
       OZ_ERROR("Client Lua script error in %s", file.c());

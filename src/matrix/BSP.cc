@@ -32,7 +32,11 @@ BSP::BSP(const char* name_, int id_)
 void BSP::load()
 {
   File   file   = String::format("@bsp/%s.ozBSP", name.c());
-  Stream is     = file.read(Endian::LITTLE).OZ_UNWRAP("BSP file '%s' read failed", file.c());
+  Stream is     = Stream(0, Endian::LITTLE);
+
+  if (!file.read(&is)) {
+    OZ_ERROR("BSP file '%s' read failed", file.c());
+  }
 
   mins          = is.read<Point>();
   maxs          = is.read<Point>();

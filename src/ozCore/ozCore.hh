@@ -45,11 +45,6 @@
 #include "System.hh"
 
 /*
- * Optional value.
- */
-#include "Opt.hh"
-
-/*
  * Array utilities.
  */
 #include "Arrays.hh"
