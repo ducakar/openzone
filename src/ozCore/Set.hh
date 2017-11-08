@@ -125,7 +125,7 @@ public:
   /**
    * Move constructor, moves element storage.
    */
-  Set(Set&& other) = default;
+  Set(Set&& other) noexcept = default;
 
   /**
    * Copy operator, copies elements.
@@ -137,7 +137,7 @@ public:
   /**
    * Move operator, moves element storage.
    */
-  Set& operator=(Set&& other) = default;
+  Set& operator=(Set&& other) noexcept = default;
 
   /**
    * Assign from an initialiser list.

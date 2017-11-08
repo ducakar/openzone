@@ -107,7 +107,7 @@ void LuaClient::create(const char* mission)
 
   File layoutFile = missionDir / "layout.json";
 
-  if (layoutFile.isFile()) {
+  if (layoutFile.isRegular()) {
     Log::print("Loading layout from '%s' ...", layoutFile.c());
 
     Json json;
@@ -155,7 +155,7 @@ void LuaClient::read(Stream* is)
   }
 
   for (const File& file : missionDir.list()) {
-    if (!file.isFile() || !file.hasExtension("lua")) {
+    if (!file.isRegular() || !file.hasExtension("lua")) {
       continue;
     }
 

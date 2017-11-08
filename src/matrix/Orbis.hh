@@ -36,7 +36,7 @@ struct Cell
 {
   static const int SIZE = 16;
 
-  SList<short, 6> structs;
+  SList<int16, 6> structs;
   Chain<Object>   objects;
   Chain<Frag>     frags;
 };

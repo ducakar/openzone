@@ -139,22 +139,22 @@ void Context::buildTexture(const File& basePath, const File& destBasePath, bool 
 
     if (specular.exists()) {
       specularImage = ImageBuilder::loadImage(specular);
-      specularImage.flags = 0;
+      specularImage.setAlpha(false);
     }
     if (emission.exists()) {
       emissionImage = ImageBuilder::loadImage(emission);
-      emissionImage.flags = 0;
+      emissionImage.setAlpha(false);
     }
 
     if (specularImage.isEmpty() && emissionImage.isEmpty()) {
       // Drop through.
     }
     else if (emissionImage.isEmpty()) {
-      for (int i = 0; i < specularImage.width * specularImage.height; ++i) {
-        char& r = specularImage.pixels[i*4 + 0];
-        char& g = specularImage.pixels[i*4 + 1];
-        char& b = specularImage.pixels[i*4 + 2];
-        char& a = specularImage.pixels[i*4 + 3];
+      for (int i = 0; i < specularImage.width() * specularImage.height(); ++i) {
+        char& r = specularImage[i*4 + 0];
+        char& g = specularImage[i*4 + 1];
+        char& b = specularImage[i*4 + 2];
+        char& a = specularImage[i*4 + 3];
 
         char s = char((r + g + b) / 3);
 
@@ -167,11 +167,11 @@ void Context::buildTexture(const File& basePath, const File& destBasePath, bool 
       ImageBuilder::createDDS(&specularImage, 1, destBasePath + "_m.dds");
     }
     else if (specularImage.isEmpty()) {
-      for (int i = 0; i < emissionImage.width * emissionImage.height; ++i) {
-        char& r = emissionImage.pixels[i*4 + 0];
-        char& g = emissionImage.pixels[i*4 + 1];
-        char& b = emissionImage.pixels[i*4 + 2];
-        char& a = emissionImage.pixels[i*4 + 3];
+      for (int i = 0; i < emissionImage.width() * emissionImage.height(); ++i) {
+        char& r = emissionImage[i*4 + 0];
+        char& g = emissionImage[i*4 + 1];
+        char& b = emissionImage[i*4 + 2];
+        char& a = emissionImage[i*4 + 3];
 
         char e = char((r + g + b) / 3);
 
@@ -184,21 +184,21 @@ void Context::buildTexture(const File& basePath, const File& destBasePath, bool 
       ImageBuilder::createDDS(&emissionImage, 1, destBasePath + "_m.dds");
     }
     else {
-      if (specularImage.width != emissionImage.width ||
-          specularImage.height != emissionImage.height)
+      if (specularImage.width() != emissionImage.width() ||
+          specularImage.height() != emissionImage.height())
       {
         OZ_ERROR("Specular and emission texture masks must have the same size.");
       }
 
-      for (int i = 0; i < specularImage.width * specularImage.height; ++i) {
-        char& r = specularImage.pixels[i*4 + 0];
-        char& g = specularImage.pixels[i*4 + 1];
-        char& b = specularImage.pixels[i*4 + 2];
-        char& a = specularImage.pixels[i*4 + 3];
+      for (int i = 0; i < specularImage.width() * specularImage.height(); ++i) {
+        char& r = specularImage[i*4 + 0];
+        char& g = specularImage[i*4 + 1];
+        char& b = specularImage[i*4 + 2];
+        char& a = specularImage[i*4 + 3];
 
-        char& er = emissionImage.pixels[i*4 + 0];
-        char& eg = emissionImage.pixels[i*4 + 1];
-        char& eb = emissionImage.pixels[i*4 + 2];
+        char& er = emissionImage[i*4 + 0];
+        char& eg = emissionImage[i*4 + 1];
+        char& eb = emissionImage[i*4 + 2];
 
         char s = char((r + g + b) / 3);
         char e = char((er + eg + eb) / 3);

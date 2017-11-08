@@ -90,7 +90,7 @@ public:
   /**
    * Open a shared library with a given (file) name.
    */
-  SharedLib(const char* name);
+  explicit SharedLib(const char* name);
 
   /**
    * Destructor, closes the library if opened.

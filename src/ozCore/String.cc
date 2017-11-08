@@ -300,8 +300,14 @@ String::String(const String& other)
 {}
 
 String::String(String&& other) noexcept
+  : size_(other.size_)
 {
-  memcpy(this, &other, sizeof(String));
+  if (size_ >= STATIC_SIZE) {
+    data_ = other.data_;
+  }
+  else {
+    memcpy(staticData_, &other.staticData_, other.size_ + 1);
+  }
 
   other.size_          = 0;
   other.staticData_[0] = '\0';
@@ -322,7 +328,13 @@ String& String::operator=(String&& other) noexcept
       delete[] data_;
     }
 
-    memcpy(this, &other, sizeof(String));
+    size_ = other.size_;
+    if (size_ >= STATIC_SIZE) {
+      data_ = other.data_;
+    }
+    else {
+      memcpy(staticData_, &other.staticData_, other.size_ + 1);
+    }
 
     other.size_          = 0;
     other.staticData_[0] = '\0';

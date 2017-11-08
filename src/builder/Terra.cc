@@ -76,14 +76,14 @@ void Terra::load()
     }
 
     for (int y = 0; y < VERTS; ++y) {
-      const ushort* pixel = reinterpret_cast<const ushort*>(FreeImage_GetScanLine(image, y));
+      const uint16* pixel = reinterpret_cast<const uint16*>(FreeImage_GetScanLine(image, y));
 
       for (int x = 0; x < VERTS; ++x) {
         float value = float(*pixel) / float(USHRT_MAX);
 
-        quads[x][y].vertex.x     = float(x * Quad::SIZE - DIM);
-        quads[x][y].vertex.y     = float(y * Quad::SIZE - DIM);
-        quads[x][y].vertex.z     = Math::mix(minHeight, maxHeight, value);
+        quads[x][y].vertex.x   = float(x * Quad::SIZE - DIM);
+        quads[x][y].vertex.y   = float(y * Quad::SIZE - DIM);
+        quads[x][y].vertex.z   = Math::mix(minHeight, maxHeight, value);
         quads[x][y].normals[0] = Vec3::ZERO;
         quads[x][y].normals[1] = Vec3::ZERO;
 
@@ -153,9 +153,9 @@ void Terra::load()
 
     for (int x = 0; x < VERTS; ++x) {
       for (int y = 0; y < VERTS; ++y) {
-        quads[x][y].vertex.x     = float(x * Quad::SIZE - DIM);
-        quads[x][y].vertex.y     = float(y * Quad::SIZE - DIM);
-        quads[x][y].vertex.z     = heightmap[x * VERTS + y];
+        quads[x][y].vertex.x   = float(x * Quad::SIZE - DIM);
+        quads[x][y].vertex.y   = float(y * Quad::SIZE - DIM);
+        quads[x][y].vertex.z   = heightmap[x * VERTS + y];
         quads[x][y].normals[0] = Vec3::ZERO;
         quads[x][y].normals[1] = Vec3::ZERO;
       }
@@ -270,15 +270,15 @@ void Terra::saveClient()
   int index = 0;
   for (int x = 0; x < TILE_QUADS; ++x) {
     if (x != 0) {
-      os.writeUShort(ushort(index + TILE_QUADS + 1));
+      os.writeUInt16(uint16(index + TILE_QUADS + 1));
     }
     for (int y = 0; y <= TILE_QUADS; ++y) {
-      os.writeUShort(ushort(index + TILE_QUADS + 1));
-      os.writeUShort(ushort(index));
+      os.writeUInt16(uint16(index + TILE_QUADS + 1));
+      os.writeUInt16(uint16(index));
       ++index;
     }
     if (x != TILE_QUADS - 1) {
-      os.writeUShort(ushort(index - 1));
+      os.writeUInt16(uint16(index - 1));
     }
   }
 

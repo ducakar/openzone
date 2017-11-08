@@ -36,7 +36,7 @@ static SBitset<Input::MAX_ACTIONS> previousActions;
 static SBitset<Input::MAX_ACTIONS> currentActions;
 static Input::ModKey               modKey = Input::NONE;
 
-static inline void updateModKey(ushort modMask)
+static inline void updateModKey(uint16 modMask)
 {
   modKey = modMask & KMOD_ALT ? Input::ALT
            : modMask & KMOD_CTRL ? Input::CONTROL

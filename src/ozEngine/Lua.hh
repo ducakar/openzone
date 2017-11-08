@@ -83,37 +83,37 @@ public:
     /**
      * Create stack
      */
-    explicit Result(lua_State* l_);
+    explicit Result(lua_State* l);
 
     /**
      * Read a bool value at a given (1-based) stack index.
      */
-    void read(int index, bool& value) const;
+    void read(int index, bool* value) const;
 
     /**
      * Read an int value at a given (1-based) stack index.
      */
-    void read(int index, int& value) const;
+    void read(int index, int* value) const;
 
     /**
      * Read a float value at a given (1-based) stack index.
      */
-    void read(int index, float& value) const;
+    void read(int index, float* value) const;
 
     /**
      * Read a string value at a given (1-based) stack index.
      */
-    void read(int index, String& value) const;
+    void read(int index, String* value) const;
 
     /**
      * Read a C function value at a given (1-based) stack index.
      */
-    void read(int index, Function*& value) const;
+    void read(int index, Function** value) const;
 
     /**
      * Read a (light) user data pointer at a given (1-based) stack index.
      */
-    void read(int index, void*& value) const;
+    void read(int index, void** value) const;
 
   public:
 
@@ -187,7 +187,7 @@ public:
     bool toBool(int index = 1) const
     {
       bool value;
-      read(index, value);
+      read(index, &value);
       return value;
     }
 
@@ -197,7 +197,7 @@ public:
     int toInt(int index = 1) const
     {
       int value;
-      read(index, value);
+      read(index, &value);
       return value;
     }
 
@@ -207,7 +207,7 @@ public:
     float toFloat(int index = 1) const
     {
       float value;
-      read(index, value);
+      read(index, &value);
       return value;
     }
 
@@ -217,7 +217,7 @@ public:
     String toString(int index = 1) const
     {
       String value;
-      read(index, value);
+      read(index, &value);
       return value;
     }
 
@@ -227,7 +227,7 @@ public:
     Function* toFunction(int index = 1) const
     {
       Function* value;
-      read(index, value);
+      read(index, &value);
       return value;
     }
 
@@ -237,7 +237,7 @@ public:
     void* toPointer(int index = 1) const
     {
       void* value;
-      read(index, value);
+      read(index, &value);
       return value;
     }
 
@@ -283,12 +283,12 @@ public:
     /**
      * Create accessor for string key.
      */
-    explicit Field(lua_State* l_, const Field* parent, const char* name);
+    explicit Field(lua_State* l, const Field* parent, const char* name);
 
     /**
      * Create accessor for integer key.
      */
-    explicit Field(lua_State* l_, const Field* parent, int index);
+    explicit Field(lua_State* l, const Field* parent, int index);
 
     /**
      * Recursively push all parent field values and finally this field value onto the stack.
@@ -423,12 +423,12 @@ public:
     /**
      * Access a field of the current field (should be a table).
      */
-    Field operator[](const char* name_) const;
+    Field operator[](const char* name) const;
 
     /**
      * Access a field of the current field (should be a table).
      */
-    Field operator[](int index_) const;
+    Field operator[](int index) const;
 
     /**
      * Call the current field (must be a function).
@@ -528,7 +528,7 @@ public:
     /**
      * Set metatable or remove it if null.
      */
-    void setMetatable(const char* name_);
+    void setMetatable(const char* name);
 
   };
 
@@ -582,22 +582,22 @@ public:
   /**
    * Read serialised Lua value and push it on the stack (recursively for tables).
    */
-  static void readValue(lua_State* l_, Stream* is);
+  static void readValue(lua_State* l, Stream* is);
 
   /**
    * Read Lua value from a JSON value and push it on the stack (recursively for tables).
    */
-  static void readValue(lua_State* l_, const Json& json);
+  static void readValue(lua_State* l, const Json& json);
 
   /**
    * Serialise Lua value at the top of the stack (recursively for tables).
    */
-  static void writeValue(lua_State* l_, Stream* os);
+  static void writeValue(lua_State* l, Stream* os);
 
   /**
    * Return Lua value at the top of the stack (recursively for tables) as a JSON value.
    */
-  static Json writeValue(lua_State* l_);
+  static Json writeValue(lua_State* l);
 
   /**
    * Load and execute a script.

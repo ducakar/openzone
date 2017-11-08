@@ -47,8 +47,8 @@ bool Bitset::operator==(const Bitset& other) const
 
 bool Bitset::isAllSet() const
 {
-  for (int i = 0; i < data_.size(); ++i) {
-    if (~data_[i] != 0) {
+  for (uint64 u : data_) {
+    if (~u != 0) {
       return false;
     }
   }
@@ -57,8 +57,8 @@ bool Bitset::isAllSet() const
 
 bool Bitset::isAnySet() const
 {
-  for (int i = 0; i < data_.size(); ++i) {
-    if (data_[i] != 0) {
+  for (int64 u : data_) {
+    if (u != 0) {
       return true;
     }
   }
@@ -119,8 +119,8 @@ Bitset Bitset::operator^(const Bitset& b) const
 
 Bitset& Bitset::flip()
 {
-  for (int i = 0; i < data_.size(); ++i) {
-    data_[i] = ~data_[i];
+  for (uint64& u : data_) {
+    u = ~u;
   }
   return *this;
 }

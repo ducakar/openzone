@@ -61,8 +61,8 @@ struct Vertex
   {
     os->write<Point>(pos);
 
-    os->writeShort(short(Math::lround(texCoord.u * 1024.0f)));
-    os->writeShort(short(Math::lround(texCoord.v * 1024.0f)));
+    os->writeInt16(int16(Math::lround(texCoord.u * 1024.0f)));
+    os->writeInt16(int16(Math::lround(texCoord.v * 1024.0f)));
 
     os->writeByte(byte(normal.x * 127.0f));
     os->writeByte(byte(normal.y * 127.0f));
@@ -105,7 +105,7 @@ struct Mesh
 
   int          firstIndex;
   int          nIndices;
-  List<ushort> indices;
+  List<uint16> indices;
 };
 
 struct Light
@@ -179,7 +179,7 @@ static int                nFrames;
 static int                nFramePositions;
 static Compiler::PolyMode mode;
 static int                vertNum;
-static List<ushort>       polyIndices;
+static List<uint16>       polyIndices;
 
 static void calculateBounds(const Node* node, const Mat4& parentTransf)
 {
@@ -536,13 +536,13 @@ void Compiler::vertex(float x, float y, float z)
   if (caps & UNIQUE) {
     index = int(&vertices.include(currentVert) - vertices.begin());
 
-    polyIndices.add(ushort(index));
+    polyIndices.add(uint16(index));
   }
   else {
     index = vertices.size();
 
     vertices.add(currentVert);
-    polyIndices.add(ushort(index));
+    polyIndices.add(uint16(index));
   }
 
   ++vertNum;
@@ -688,7 +688,7 @@ void Compiler::writeModel(Stream* os, bool globalTextures)
   Log::print("Writing mesh ...");
 
   List<String> textures;
-  List<ushort> indices;
+  List<uint16> indices;
 
   int nIndices = 0;
 
@@ -798,8 +798,8 @@ void Compiler::writeModel(Stream* os, bool globalTextures)
     }
     vertex.write(os);
   }
-  for (ushort index : indices) {
-    os->writeUShort(index);
+  for (uint16 index : indices) {
+    os->writeUInt16(index);
   }
 
   if (nFrames != 0) {

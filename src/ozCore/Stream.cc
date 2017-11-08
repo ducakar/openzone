@@ -78,7 +78,7 @@ void Stream::writeFloats(const float* values, int count)
 
 Stream::Stream(const char* start, const char* end, Endian::Order order)
   : pos_(const_cast<char*>(start)), begin_(const_cast<char*>(start)), end_(const_cast<char*>(end)),
-    flags_(0), order_(order)
+    order_(order)
 {}
 
 Stream::Stream(char* start, char* end, Endian::Order order)
@@ -273,32 +273,32 @@ void Stream::writeUByte(ubyte b)
   *data = char(b);
 }
 
-short Stream::readShort()
+int16 Stream::readInt16()
 {
-  Endian::ToValue<short> value;
+  Endian::ToValue<int16> value;
   read(value.data, sizeof(value.data));
 
   return order_ == Endian::NATIVE ? value.value : Endian::bswap(value.value);
 }
 
-void Stream::writeShort(short s)
+void Stream::writeInt16(int16 s)
 {
-  Endian::ToBytes<short> value = {order_ == Endian::NATIVE ? s : Endian::bswap(s)};
+  Endian::ToBytes<int16> value = {order_ == Endian::NATIVE ? s : Endian::bswap(s)};
 
   write(value.data, sizeof(value.data));
 }
 
-ushort Stream::readUShort()
+uint16 Stream::readUInt16()
 {
-  Endian::ToValue<ushort> value;
+  Endian::ToValue<uint16> value;
   read(value.data, sizeof(value.data));
 
   return order_ == Endian::NATIVE ? value.value : Endian::bswap(value.value);
 }
 
-void Stream::writeUShort(ushort s)
+void Stream::writeUInt16(uint16 s)
 {
-  Endian::ToBytes<ushort> value = {order_ == Endian::NATIVE ? s : Endian::bswap(s)};
+  Endian::ToBytes<uint16> value = {order_ == Endian::NATIVE ? s : Endian::bswap(s)};
 
   write(value.data, sizeof(value.data));
 }
@@ -482,7 +482,8 @@ String Stream::readLine()
 
   int length = int(pos_ - begin);
 
-  pos_ += (pos_ < end_) + (pos_ + 2 == end_ && pos_[0] == '\r' && pos_[1] == '\n');
+  pos_ += size_t(pos_ < end_);
+  pos_ += size_t(pos_ + 1 == end_ && pos_[-1] == '\r' && pos_[0] == '\n');
 
   return String(begin, length);
 }
@@ -530,25 +531,24 @@ Stream Stream::compress(int level) const
   if (ret != Z_STREAM_END) {
     return Stream();
   }
-  else {
-    outSize = 8 + int(zstream.total_out);
 
-    out.seek(outSize);
-    out.resize(outSize);
+  outSize = 8 + int(zstream.total_out);
 
-    // Write size and order of the original data (in little endian).
-    int* start = reinterpret_cast<int*>(out.begin_);
+  out.seek(outSize);
+  out.resize(outSize);
+
+  // Write size and order of the original data (in little endian).
+  int* start = reinterpret_cast<int*>(out.begin_);
 
 #if OZ_BYTE_ORDER == 4321
-    start[0] = Endian::bswap32(tell());
-    start[1] = Endian::bswap32(order_);
+  start[0] = Endian::bswap32(tell());
+  start[1] = Endian::bswap32(order_);
 #else
-    start[0] = tell();
-    start[1] = order_;
+  start[0] = tell();
+  start[1] = order_;
 #endif
 
-    return out;
-  }
+  return out;
 }
 
 Stream Stream::decompress() const
@@ -586,12 +586,7 @@ Stream Stream::decompress() const
   int ret = ::inflate(&zstream, Z_FINISH);
   inflateEnd(&zstream);
 
-  if (ret != Z_STREAM_END) {
-    return Stream();
-  }
-  else {
-    return out;
-  }
+  return ret == Z_STREAM_END ? static_cast<Stream&&>(out) : Stream();
 }
 
 }

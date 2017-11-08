@@ -256,12 +256,14 @@ File::File(String&& path) noexcept
 
 File& File::operator=(const String& path)
 {
-  return static_cast<File&>(String::operator=(path));
+  String::operator=(path);
+  return *this;
 }
 
 File& File::operator=(String&& path) noexcept
 {
-  return static_cast<File&>(String::operator=(static_cast<String&&>(path)));
+  String::operator=(static_cast<String&&>(path));
+  return *this;
 }
 
 bool File::exists() const
@@ -292,7 +294,8 @@ int64 File::time() const
 File File::directory() const
 {
   int slash = lastIndex('/', length() - 1);
-  int end   = slash < 0 ? length() != 1 && first() == '@' : slash + (slash == 0 && first() == '/');
+  int end   = slash < 0 ? int(length() != 1 && first() == '@')
+                        : slash + int(slash == 0 && first() == '/');
 
   return File(begin(), end); // = substring(0, end), but prevents String -> File ctor.
 }
@@ -300,9 +303,9 @@ File File::directory() const
 String File::name() const
 {
   int start = lastIndex('/', length() - 1) + 1;
-  int end   = length() - (last() == '/');
+  int end   = length() - int(last() == '/');
 
-  start = start == 0 ? isVirtual() : start;
+  start = start == 0 ? int(isVirtual()) : start;
 
   return substring(start, end);
 }
@@ -312,8 +315,8 @@ String File::baseName() const
   int start = lastIndex('/', length() - 1) + 1;
   int end   = lastIndex('.');
 
-  start = start == 0 ? isVirtual() : start;
-  end   = end < start ? length() - (last() == '/') : end;
+  start = start == 0 ? int(isVirtual()) : start;
+  end   = end < start ? length() - int(last() == '/') : end;
 
   return substring(start, end);
 }
@@ -331,7 +334,7 @@ String File::extension() const
 {
   int slash = lastIndex('/', length() - 1);
   int start = lastIndex('.');
-  int end   = start <= slash ? start + 1 : length() - (last() == '/');
+  int end   = start <= slash ? start + 1 : length() - int(last() == '/');
 
   return substring(start + 1, end);
 }
@@ -351,13 +354,13 @@ bool File::hasExtension(const char* ext) const
 
 File File::toNative() const
 {
-  int start = (first() == '@');
+  int start = int(first() == '@');
   return File(begin() + start, length() - start);
 }
 
 File File::toVirtual() const
 {
-  return File("@", first() == '@', begin(), length());
+  return File("@", int(first() == '@'), begin(), length());
 }
 
 String File::realDirectory() const
@@ -454,7 +457,7 @@ bool File::read(char* buffer, int64* size) const
       return false;
     }
 
-    int result = int(PHYSFS_readBytes(file, buffer, *size));
+    int64 result = PHYSFS_readBytes(file, buffer, *size);
     PHYSFS_close(file);
 
     *size = result;
@@ -482,7 +485,7 @@ bool File::read(char* buffer, int64* size) const
   }
 }
 
-bool File::read(Stream* stream) const
+bool File::read(Stream* os) const
 {
   Stat  stat = Stat(begin());
   int64 size = stat.size;
@@ -494,8 +497,8 @@ bool File::read(Stream* stream) const
     return true;
   }
 
-  *stream = Stream(int(size), stream->order());
-  return read(stream->begin(), &size) && size == stat.size;
+  *os = Stream(int(size), os->order());
+  return read(os->begin(), &size) && size == stat.size;
 }
 
 bool File::write(const char* buffer, int64 size) const
@@ -506,7 +509,7 @@ bool File::write(const char* buffer, int64 size) const
       return false;
     }
 
-    int result = int(PHYSFS_writeBytes(file, buffer, size));
+    int64 result = PHYSFS_writeBytes(file, buffer, size);
     PHYSFS_close(file);
 
     return result == size;
@@ -580,7 +583,7 @@ bool File::moveTo(const File& dest) const
 bool File::remove() const
 {
   if (isVirtual()) {
-    return PHYSFS_delete(begin() + 1);
+    return PHYSFS_delete(begin() + 1) != 0;
   }
   else {
     return ::remove(begin()) == 0;
@@ -701,7 +704,7 @@ bool File::mkdir(bool makeParents) const
 
 bool File::mountAt(const char* mountPoint, bool append) const
 {
-  return PHYSFS_mount(begin(), mountPoint, append) != 0;
+  return PHYSFS_mount(begin(), mountPoint, int(append)) != 0;
 }
 
 bool File::mountLocalAt(bool append) const
@@ -709,7 +712,7 @@ bool File::mountLocalAt(bool append) const
   if (PHYSFS_setWriteDir(begin()) == 0) {
     return false;
   }
-  if (PHYSFS_mount(begin(), nullptr, append) == 0) {
+  if (PHYSFS_mount(begin(), nullptr, int(append)) == 0) {
     PHYSFS_setWriteDir(nullptr);
     return false;
   }

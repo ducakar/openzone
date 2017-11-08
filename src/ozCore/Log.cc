@@ -188,14 +188,14 @@ bool Log::printMemorySummary()
   indent();
 
   println("current chunks    %7d", Alloc::count);
-  println("current amount    %7.2f MiB (%lu B)",
-          Alloc::amount / (1024.0 * 1024.0), ulong(Alloc::amount));
+  println("current amount    %7.2f MiB (%llu B)",
+          Alloc::amount / (1024.0 * 1024.0), Alloc::amount);
   println("maximum chunks    %7d", Alloc::maxCount);
-  println("maximum amount    %7.2f MiB (%lu B)",
-          Alloc::maxAmount / (1024.0 * 1024.0), ulong(Alloc::maxAmount));
+  println("maximum amount    %7.2f MiB (%llu B)",
+          Alloc::maxAmount / (1024.0 * 1024.0), Alloc::maxAmount);
   println("cumulative chunks %7d", Alloc::sumCount);
-  println("cumulative amount %7.2f MiB (%lu B)",
-          Alloc::sumAmount / (1024.0 * 1024.0), ulong(Alloc::sumAmount));
+  println("cumulative amount %7.2f MiB (%llu B)",
+          Alloc::sumAmount / (1024.0 * 1024.0), Alloc::sumAmount);
 
   unindent();
   println("}");
@@ -233,8 +233,8 @@ bool Log::printMemoryLeaks()
   bool hasOutput = false;
 
   for (const auto& ci : Alloc::objectCRange()) {
-    println("Leaked object at %p of size %lu B allocated",
-            static_cast<const void*>(&ci), ulong(ci.size));
+    println("Leaked object at %p of size %llu B allocated",
+            static_cast<const void*>(&ci), uint64(ci.size));
     indent();
     printTrace(ci.stackTrace);
     unindent();
@@ -243,8 +243,8 @@ bool Log::printMemoryLeaks()
   }
 
   for (const auto& ci : Alloc::arrayCRange()) {
-    println("Leaked array at %p of size %lu B allocated",
-            static_cast<const void*>(&ci), ulong(ci.size));
+    println("Leaked array at %p of size %llu B allocated",
+            static_cast<const void*>(&ci), uint64(ci.size));
     indent();
     printTrace(ci.stackTrace);
     unindent();
@@ -319,13 +319,13 @@ const Log& Log::operator<<(ubyte b) const
   return *this;
 }
 
-const Log& Log::operator<<(short s) const
+const Log& Log::operator<<(int16 s) const
 {
   printRaw("%hd", s);
   return *this;
 }
 
-const Log& Log::operator<<(ushort s) const
+const Log& Log::operator<<(uint16 s) const
 {
   printRaw("%hu", s);
   return *this;
@@ -343,22 +343,10 @@ const Log& Log::operator<<(uint i) const
   return *this;
 }
 
-const Log& Log::operator<<(long l) const
-{
-  printRaw("%ld", l);
-  return *this;
-}
-
-const Log& Log::operator<<(ulong l) const
-{
-  printRaw("%lu", l);
-  return *this;
-}
-
 const Log& Log::operator<<(int64 l) const
 {
 #ifdef _WIN32
-  printRaw("%ld", long(l));
+  printRaw("%I64d", l);
 #else
   printRaw("%lld", l);
 #endif
@@ -368,7 +356,7 @@ const Log& Log::operator<<(int64 l) const
 const Log& Log::operator<<(uint64 l) const
 {
 #ifdef _WIN32
-  printRaw("%lu", ulong(l));
+  printRaw("%I64u", l);
 #else
   printRaw("%llu", l);
 #endif

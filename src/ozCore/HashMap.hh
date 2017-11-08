@@ -90,7 +90,7 @@ private:
       entry = entry->next;
     }
 
-    data_[index] = new(pool_) Entry {
+    data_[index] = new(&pool_) Entry {
       data_[index], h, {static_cast<Key_&&>(key), static_cast<Value_&&>(value)}
     };
     return data_[index]->elem;
@@ -142,7 +142,7 @@ public:
   /**
    * Move constructor, moves storage.
    */
-  HashMap(HashMap&& other) = default;
+  HashMap(HashMap&& other) noexcept = default;
 
   /**
    * Copy operator, copies elements but does not preserve bucket array length.
@@ -152,7 +152,7 @@ public:
   /**
    * Move operator, moves storage.
    */
-  HashMap& operator=(HashMap&& other) = default;
+  HashMap& operator=(HashMap&& other) noexcept = default;
 
   /**
    * Assign from an initialiser list.

@@ -90,7 +90,7 @@ protected:
      * Create hashtable iterator, initially pointing to the first hashtable element.
      */
     explicit HashIterator(const HashSet& table) noexcept
-      : detail::IteratorBase<EntryType>(nullptr), table_(&table), index_(0)
+      : detail::IteratorBase<EntryType>(nullptr), table_(&table)
     {
       while (elem_ == nullptr && index_ < table_->capacity_) {
         elem_ = table_->data_[index_];
@@ -240,7 +240,7 @@ protected:
       entry = entry->next;
     }
 
-    data_[index] = new(pool_) Entry{data_[index], h, static_cast<Elem_&&>(elem)};
+    data_[index] = new(&pool_) Entry{data_[index], h, static_cast<Elem_&&>(elem)};
     return *data_[index];
   }
 

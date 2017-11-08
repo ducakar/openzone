@@ -69,7 +69,7 @@ Pool<Context::Source> Context::Source::pool;
 int                   Context::speakSampleRate;
 Context::SpeakSource  Context::speakSource;
 
-int Context::speakCallback(short int* samples, int nSamples, void*)
+int Context::speakCallback(int16* samples, int nSamples, void*)
 {
   if (nSamples != 0) {
     int maxSamples = SpeakSource::BUFFER_SIZE - speakSource.nSamples;
@@ -78,7 +78,7 @@ int Context::speakCallback(short int* samples, int nSamples, void*)
       Log::printRaw("AL: Speak buffer overrun\n");
     }
 
-    memcpy(speakSource.samples + speakSource.nSamples, samples, nSamples * sizeof(short));
+    memcpy(speakSource.samples + speakSource.nSamples, samples, nSamples * sizeof(int16));
     speakSource.nSamples += nSamples;
 
     if (speakSource.nQueuedBuffers != 2) {
@@ -87,7 +87,7 @@ int Context::speakCallback(short int* samples, int nSamples, void*)
       speakSource.mutex.lock();
 
       alBufferData(speakSource.bufferIds[i], AL_FORMAT_MONO16, speakSource.samples,
-                   speakSource.nSamples * sizeof(short), speakSampleRate);
+                   speakSource.nSamples * sizeof(int16), speakSampleRate);
       alSourceQueueBuffers(speakSource.id, 1, &speakSource.bufferIds[i]);
       alSourcePlay(speakSource.id);
 
@@ -135,7 +135,7 @@ int Context::speakCallback(short int* samples, int nSamples, void*)
 
     if (speakSource.nSamples != 0) {
       alBufferData(buffer, AL_FORMAT_MONO16, speakSource.samples,
-                   speakSource.nSamples * sizeof(short), speakSampleRate);
+                   speakSource.nSamples * sizeof(int16), speakSampleRate);
       alSourceQueueBuffers(speakSource.id, 1, &buffer);
 
       ++speakSource.nQueuedBuffers;
@@ -264,17 +264,17 @@ Texture Context::loadTexture(const File& albedoFile, const File& masksFile, cons
   Texture texture;
   texture.id = -2;
 
-  if (albedoFile.isFile()) {
+  if (albedoFile.isRegular()) {
     glGenTextures(1, &texture.albedo);
     glBindTexture(GL_TEXTURE_2D, texture.albedo);
     GL::textureDataFromFile(albedoFile, context.textureLod);
   }
-  if (masksFile.isFile()) {
+  if (masksFile.isRegular()) {
     glGenTextures(1, &texture.masks);
     glBindTexture(GL_TEXTURE_2D, texture.masks);
     GL::textureDataFromFile(masksFile, context.textureLod);
   }
-  if (normalsFile.isFile()) {
+  if (normalsFile.isRegular()) {
     glGenTextures(1, &texture.normals);
     glBindTexture(GL_TEXTURE_2D, texture.normals);
     GL::textureDataFromFile(normalsFile, context.textureLod);

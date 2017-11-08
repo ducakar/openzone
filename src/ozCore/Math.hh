@@ -317,7 +317,7 @@ public:
 #if __FINITE_MATH_ONLY__
     return (toBits(x) << 1) < 0xff000000;
 #else
-    return __builtin_isfinite(x);
+    return __builtin_isfinite(x) != 0;
 #endif
   }
 
@@ -330,7 +330,7 @@ public:
 #if __FINITE_MATH_ONLY__
     return (toBits(x) << 1) == 0xff000000;
 #else
-    return __builtin_isinf(x);
+    return __builtin_isinf(x) != 0;
 #endif
   }
 
@@ -343,7 +343,7 @@ public:
 #if __FINITE_MATH_ONLY__
     return (toBits(x) << 1) > 0xff000000;
 #else
-    return __builtin_isnan(x);
+    return __builtin_isnan(x) != 0;
 #endif
   }
 
@@ -353,7 +353,7 @@ public:
   OZ_ALWAYS_INLINE
   static bool isNormal(float x)
   {
-    return __builtin_isnormal(x);
+    return __builtin_isnormal(x) != 0;
   }
 
   /**

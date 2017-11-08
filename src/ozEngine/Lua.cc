@@ -38,35 +38,35 @@ Lua::Result::Result(lua_State* l)
   : l_(l)
 {}
 
-void Lua::Result::read(int index, bool& value) const
+void Lua::Result::read(int index, bool* value) const
 {
-  value = lua_toboolean(l_, index);
+  *value = lua_toboolean(l_, index);
 }
 
-void Lua::Result::read(int index, int& value) const
+void Lua::Result::read(int index, int* value) const
 {
-  value = int(lua_tointeger(l_, index));
+  *value = int(lua_tointeger(l_, index));
 }
 
-void Lua::Result::read(int index, float& value) const
+void Lua::Result::read(int index, float* value) const
 {
-  value = float(lua_tonumber(l_, index));
+  *value = float(lua_tonumber(l_, index));
 }
 
-void Lua::Result::read(int index, String& value) const
+void Lua::Result::read(int index, String* value) const
 {
   const char* s = lua_tostring(l_, index);
-  value = s == nullptr ? String() : String(s);
+  *value = s == nullptr ? String() : String(s);
 }
 
-void Lua::Result::read(int index, Function*& value) const
+void Lua::Result::read(int index, Function** value) const
 {
-  value = lua_tocfunction(l_, index);
+  *value = lua_tocfunction(l_, index);
 }
 
-void Lua::Result::read(int index, void*& value) const
+void Lua::Result::read(int index, void** value) const
 {
-  value = lua_touserdata(l_, index);
+  *value = lua_touserdata(l_, index);
 }
 
 Lua::Result::~Result()
@@ -394,15 +394,15 @@ Lua::Field& Lua::Field::operator=(const char* value)
   return *this;
 }
 
-Lua::Field& Lua::Field::operator=(Lua::Function* value)
+Lua::Field& Lua::Field::operator=(Lua::Function* func)
 {
   if (parent_ == nullptr) {
-    lua_pushcfunction(l_, value);
+    lua_pushcfunction(l_, func);
     lua_setglobal(l_, name_);
   }
   else {
     parent_->push();
-    lua_pushcfunction(l_, value);
+    lua_pushcfunction(l_, func);
 
     if (name_ == nullptr) {
       lua_rawseti(l_, -2, index_);

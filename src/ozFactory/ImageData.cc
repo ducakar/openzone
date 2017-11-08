@@ -1,5 +1,5 @@
 /*
- * ozCore - OpenZone Core Library.
+ * ozFactory - OpenZone Assets Builder Library.
  *
  * Copyright © 2002-2016 Davorin Učakar
  *
@@ -20,62 +20,48 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-/**
- * @file ozCore/LockGuard.hh
- *
- * `LockGuard` class.
- */
-
-#pragma once
-
-#include "common.hh"
+#include "ImageData.hh"
 
 namespace oz
 {
 
-/**
- * Lock guard.
- *
- * RAII wrapper for SpinLock, Monitor, RWLock::Read and RWLock::Write.
- *
- * @sa `oz::SpinLock`, `oz::Monitor`, `oz::RWLock`
- */
-template <class Lock>
-class LockGuard
+ImageData::ImageData() = default;
+
+ImageData::ImageData(int width, int height, bool hasAlpha)
+  : width_(width), height_(height), flags_(hasAlpha ? ALPHA_BIT : 0),
+    pixels_(new char[width * height * 4])
+{}
+
+ImageData::~ImageData()
 {
-private:
+  delete[] pixels_;
+}
 
-  Lock* const lock_; ///< Wrapped lock.
+ImageData::ImageData(ImageData&& other) noexcept
+  : width_(other.width_), height_(other.height_), flags_(other.flags_), pixels_(other.pixels_)
+{
+  other.width_  = 0;
+  other.height_ = 0;
+  other.flags_  = 0;
+  other.pixels_ = nullptr;
+}
 
-public:
+ImageData& ImageData::operator=(ImageData&& other) noexcept
+{
+  if (&other != this) {
+    delete[] pixels_;
 
-  /**
-   * Acquire lock on construction.
-   */
-  explicit LockGuard(Lock* lock)
-    : lock_(lock)
-  {
-    lock_->lock();
+    width_  = other.width_;
+    height_ = other.height_;
+    flags_  = other.flags_;
+    pixels_ = other.pixels_;
+
+    other.width_  = 0;
+    other.height_ = 0;
+    other.flags_  = 0;
+    other.pixels_ = nullptr;
   }
-
-  /**
-   * Release lock on destruction.
-   */
-  ~LockGuard()
-  {
-    lock_->unlock();
-  }
-
-  /**
-   * Copying or moving is not possible.
-   */
-  LockGuard(const LockGuard&) = delete;
-
-  /**
-   * Copying or moving is not possible.
-   */
-  LockGuard& operator=(const LockGuard&) = delete;
-
-};
+  return *this;
+}
 
 }

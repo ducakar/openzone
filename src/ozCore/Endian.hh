@@ -85,18 +85,18 @@ public:
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static constexpr short bswap(short s)
+  static constexpr int16 bswap(int16 s)
   {
-    return short(s << 8 | ushort(s) >> 8);
+    return int16(s << 8 | uint16(s) >> 8);
   }
 
   /**
    * Swap byte order.
    */
   OZ_ALWAYS_INLINE
-  static constexpr ushort bswap(ushort s)
+  static constexpr uint16 bswap(uint16 s)
   {
-    return ushort(s << 8 | s >> 8);
+    return uint16(s << 8 | s >> 8);
   }
 
   /**

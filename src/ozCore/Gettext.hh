@@ -45,9 +45,9 @@ private:
 
   struct Message;
 
-  List<Message*> buckets_;         ///< Message hashtable.
-  List<Message>  messages_;        ///< Messages.
-  List<char>     strings_;         ///< Strings buffer.
+  List<Message*> buckets_;  ///< Message hashtable.
+  List<Message>  messages_; ///< Messages.
+  List<char>     strings_;  ///< Strings buffer.
 
 public:
 
@@ -73,12 +73,12 @@ public:
   /**
    * Move constructor.
    */
-  Gettext(Gettext&&);
+  Gettext(Gettext&&) noexcept;
 
   /**
    * Move operator.
    */
-  Gettext& operator=(Gettext&& other);
+  Gettext& operator=(Gettext&& other) noexcept;
 
   /**
    * Number of messages it contains.

@@ -28,58 +28,10 @@
 
 #pragma once
 
-#include "common.hh"
+#include "ImageData.hh"
 
 namespace oz
 {
-
-/**
- * %Image pixel data with basic metadata (dimensions and transparency).
- */
-struct ImageData
-{
-  /// Alpha flag.
-  static const int ALPHA_BIT = 0x01;
-
-  int   width;  ///< Width.
-  int   height; ///< Height.
-  int   flags;  ///< Flags.
-  char* pixels; ///< Pixels data in RGBA format.
-
-  /**
-   * Create empty instance, no allocation is performed.
-   */
-  ImageData();
-
-  /**
-   * Create an image an allocate memory for pixel data.
-   */
-  explicit ImageData(int width, int height);
-
-  /**
-   * Destructor.
-   */
-  ~ImageData();
-
-  /**
-   * Move constructor, moves pixel data.
-   */
-  ImageData(ImageData&& other) noexcept;
-
-  /**
-   * Move operator, moves pixel data.
-   */
-  ImageData& operator=(ImageData&& other) noexcept;
-
-  /**
-   * True iff it holds no image data.
-   */
-  OZ_ALWAYS_INLINE
-  bool isEmpty() const
-  {
-    return pixels == nullptr;
-  }
-};
 
 /**
  * %ImageBuilder class converts generic image formats to DDS (DirectDraw Surface).

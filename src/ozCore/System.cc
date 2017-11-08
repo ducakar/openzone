@@ -129,7 +129,7 @@ static void catchSignals()
 }
 
 // Buffer should contain space for (nSamples * 2) 16-bit samples.
-static void generateBellSamples(short* buffer, int nSamples, int rate, int fromSample, int toSample)
+static void generateBellSamples(int16* buffer, int nSamples, int rate, int fromSample, int toSample)
 {
   float length = float(nSamples);
   float quotient = BELL_FREQUENCY / float(rate) * Math::TAU;
@@ -140,7 +140,7 @@ static void generateBellSamples(short* buffer, int nSamples, int rate, int fromS
     float amplitude = 0.8f * Math::fastSqrt(max<float>(0.0f, (length - i) / length));
     float theta     = i * quotient;
     float value     = amplitude * Math::sin(theta);
-    short sample    = short(Math::lround(value * SHRT_MAX));
+    int16 sample    = int16(Math::lround(value * SHRT_MAX));
 
     buffer[0] = sample;
     buffer[1] = sample;
@@ -188,8 +188,8 @@ static void* bellMain(void*)
   SLBufferQueueItf iBufferQueue;
   (*player)->GetInterface(player, SL_IID_BUFFERQUEUE, &iBufferQueue);
 
-  int    size     = BELL_SAMPLES * 2 * sizeof(short);
-  short* samples  = static_cast<short*>(alloca(size));
+  int    size     = BELL_SAMPLES * 2 * sizeof(int16);
+  int16* samples  = static_cast<int16*>(alloca(size));
 
   generateBellSamples(samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
   (*iBufferQueue)->Enqueue(iBufferQueue, samples, size);
@@ -243,22 +243,22 @@ struct Wave
 
   char  subchunk1Id[4];
   int   subchunk1Size;
-  short audioFormat;
-  short nChannels;
+  int16 audioFormat;
+  int16 nChannels;
   int   sampleRate;
   int   byteRate;
-  short blockAlign;
-  short bitsPerSample;
+  int16 blockAlign;
+  int16 bitsPerSample;
 
   char  subchunk2Id[4];
   int   subchunk2Size;
-  short samples[BELL_SAMPLES * 2];
+  int16 samples[BELL_SAMPLES * 2];
 };
 
 static void bellCallback(void* buffer, uint, void* info_)
 {
   SampleInfo* info    = static_cast<SampleInfo*>(info_);
-  short*      samples = static_cast<short*>(buffer);
+  int16*      samples = static_cast<int16*>(buffer);
 
   if (info->offset >= info->nSamples) {
     pthread_mutex_lock(&info.finishMutex);
@@ -332,9 +332,9 @@ static void* bellMain(void*)
   wave->audioFormat    = 1;
   wave->nChannels      = 2;
   wave->sampleRate     = BELL_RATE;
-  wave->byteRate       = BELL_RATE * 2 * sizeof(short);
-  wave->blockAlign     = short(2 * sizeof(short));
-  wave->bitsPerSample  = short(sizeof(short) * 8);
+  wave->byteRate       = BELL_RATE * 2 * sizeof(int16);
+  wave->blockAlign     = int16(2 * sizeof(int16));
+  wave->bitsPerSample  = int16(sizeof(int16) * 8);
 
   wave->subchunk2Id[0] = 'd';
   wave->subchunk2Id[1] = 'a';
@@ -398,8 +398,8 @@ static void* bellMain(void*)
                                               &sampleSpec, nullptr,  nullptr, nullptr);
 
     if (pa != nullptr) {
-      size_t samplesSize = BELL_SAMPLES * 2 * sizeof(short);
-      short* samples     = static_cast<short*>(malloc(samplesSize));
+      size_t samplesSize = BELL_SAMPLES * 2 * sizeof(int16);
+      int16* samples     = static_cast<int16*>(malloc(samplesSize));
 
       generateBellSamples(samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
 

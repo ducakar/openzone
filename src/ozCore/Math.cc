@@ -27,12 +27,6 @@
 namespace oz
 {
 
-constexpr float Math::FLOAT_EPS;
-constexpr float Math::NaN;
-constexpr float Math::INF;
-constexpr float Math::E;
-constexpr float Math::TAU;
-
 void Math::seed(int n)
 {
   srand(n);

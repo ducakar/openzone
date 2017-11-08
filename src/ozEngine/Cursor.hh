@@ -106,7 +106,7 @@ public:
   /**
    * Create from file.
    */
-  explicit Cursor(const File& file, Mode mode_, int size = -1);
+  explicit Cursor(const File& file, Mode mode, int size = -1);
 
   /**
    * Destructor, destroys textures if loaded.

@@ -36,7 +36,7 @@ void Terra::load(int id_)
   if (id == -1) {
     for (int x = 0; x < VERTS; ++x) {
       for (int y = 0; y < VERTS; ++y) {
-        quads[x][y].vertex.z     = 0.0f;
+        quads[x][y].vertex.z   = 0.0f;
         quads[x][y].normals[0] = Vec3(0.0f, 0.0f, 1.0f);
         quads[x][y].normals[1] = Vec3(0.0f, 0.0f, 1.0f);
       }

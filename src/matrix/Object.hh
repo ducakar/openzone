@@ -164,14 +164,14 @@ public:
   static const int MOVE_CLEAR_MASK    = DISABLED_BIT | ON_FLOOR_BIT | IN_LIQUID_BIT | IN_LAVA_BIT |
                                         ON_LADDER_BIT | ON_SLICK_BIT;
 
-  static const int   MAX_DIM          = 4;
-  static const float REAL_MAX_DIM;
+  static constexpr int   MAX_DIM      = 4;
+  static constexpr float REAL_MAX_DIM = float(MAX_DIM) - 0.01f;
 
 protected:
 
-  static const float DAMAGE_BASE_INTENSITY;
-  static const float DAMAGE_INTENSITY_COEF;
-  static const Vec3  DESTRUCT_FRAG_VELOCITY;
+  static constexpr float DAMAGE_BASE_INTENSITY  = 0.30f;
+  static constexpr float DAMAGE_INTENSITY_COEF  = 0.01f;
+  static const Vec3      DESTRUCT_FRAG_VELOCITY;
 
 public:
 

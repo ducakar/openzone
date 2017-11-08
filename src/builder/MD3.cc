@@ -217,9 +217,9 @@ void MD3::buildMesh(const char* name, int meshFrame)
     is.readSkip(surfaceStart + surface.offVertices);
 
     for (int j = 0; j < surfaceVertices.size(); ++j) {
-      vertices[j].y = float(+is.readShort()) / 64.0f * scale;
-      vertices[j].x = float(-is.readShort()) / 64.0f * scale;
-      vertices[j].z = float(+is.readShort()) / 64.0f * scale;
+      vertices[j].y = float(+is.readInt16()) / 64.0f * scale;
+      vertices[j].x = float(-is.readInt16()) / 64.0f * scale;
+      vertices[j].z = float(+is.readInt16()) / 64.0f * scale;
 
       float h  = float(is.readChar()) / 255.0f * Math::TAU;
       float v  = float(is.readChar()) / 255.0f * Math::TAU;

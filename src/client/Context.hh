@@ -103,7 +103,7 @@ private:
     Thread       thread;
 
     String       text;
-    short        samples[BUFFER_SIZE];
+    int16        samples[BUFFER_SIZE];
   };
 
 private:
@@ -155,7 +155,7 @@ public:
 
 private:
 
-  static int speakCallback(short int* samples, int nSamples, void*);
+  static int speakCallback(int16* samples, int nSamples, void*);
   static void speakMain(void*);
 
   Source* addSource(int sound);

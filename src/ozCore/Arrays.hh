@@ -82,8 +82,12 @@ private:
       swap(*pivot, *last);
 
       do {
-        for (; !LessFunc()(pivotValue, *top) && top <= bottom; ++top);
-        for (; LessFunc()(pivotValue, *bottom) && top < bottom; --bottom);
+        while (!LessFunc()(pivotValue, *top) && top <= bottom) {
+          ++top;
+        }
+        while (LessFunc()(pivotValue, *bottom) && top < bottom) {
+          --bottom;
+        }
 
         if (top >= bottom) {
           break;

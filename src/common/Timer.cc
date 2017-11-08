@@ -22,10 +22,6 @@
 namespace oz
 {
 
-constexpr int64 Timer::TICKS_PER_SEC;
-constexpr Duration Timer::TICK_DURATION;
-constexpr float Timer::TICK_TIME;
-
 void Timer::reset()
 {
   runDuration   = Duration::ZERO;

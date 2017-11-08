@@ -24,22 +24,20 @@
 
 #include <noise/noise.h>
 
-using namespace noise;
-
 namespace oz
 {
 
-static module::Billow      plainsBase;
-static module::ScaleBias   plainsFinal;
-static module::RidgedMulti mountainsBase;
-static module::ScaleBias   mountainsFinal;
-static module::Perlin      terrainType;
-static module::Select      combiner;
-static module::Turbulence  turbulence;
-static module::Billow      noiseBase;
-static module::ScaleBias   noiseFinal;
-static List<Vec4>          gradientPoints;
-static bool                isInitialised = false;
+static noise::module::Billow      plainsBase;
+static noise::module::ScaleBias   plainsFinal;
+static noise::module::RidgedMulti mountainsBase;
+static noise::module::ScaleBias   mountainsFinal;
+static noise::module::Perlin      terrainType;
+static noise::module::Select      combiner;
+static noise::module::Turbulence  turbulence;
+static noise::module::Billow      noiseBase;
+static noise::module::ScaleBias   noiseFinal;
+static List<Vec4>                 gradientPoints;
+static bool                       isInitialised  = false;
 
 static void ensureInitialised()
 {
@@ -315,13 +313,13 @@ ImageData TerraBuilder::generateImage(int width, int height)
 {
   ensureInitialised();
 
-  ImageData  image(width, height);
+  ImageData  image(width, height, false);
   int    stride  = width * 4;
   double dWidth  = width;
   double dHeight = height;
 
   for (int y = 0; y < height; ++y) {
-    char* pixels = &image.pixels[y * stride];
+    char* pixels = &image[y * stride];
 
     for (int x = 0; x < width; ++x) {
       uint pixelColour = getColour(x / dWidth, 1.0 - y / dHeight);
@@ -344,17 +342,17 @@ ImageData* TerraBuilder::generateCubeNoise(int size)
   double dim    = size / 2.0;
 
   ImageData* images = new ImageData[6]{
-    ImageData(size, size),
-    ImageData(size, size),
-    ImageData(size, size),
-    ImageData(size, size),
-    ImageData(size, size),
-    ImageData(size, size),
+    ImageData(size, size, false),
+    ImageData(size, size, false),
+    ImageData(size, size, false),
+    ImageData(size, size, false),
+    ImageData(size, size, false),
+    ImageData(size, size, false),
   };
 
   // +X.
   for (int y = 0; y < size; ++y) {
-    char* line = &images[0].pixels[(size - 1 - y) * stride];
+    char* line = &images[0][(size - 1 - y) * stride];
 
     for (int x = 0; x < size; ++x) {
       double u      = x / (dim - 0.5);
@@ -370,7 +368,7 @@ ImageData* TerraBuilder::generateCubeNoise(int size)
   }
   // -X.
   for (int y = 0; y < size; ++y) {
-    char* line = &images[1].pixels[(size - 1 - y) * stride];
+    char* line = &images[1][(size - 1 - y) * stride];
 
     for (int x = 0; x < size; ++x) {
       double u      = x / (dim - 0.5);
@@ -387,7 +385,7 @@ ImageData* TerraBuilder::generateCubeNoise(int size)
 
   // +Y.
   for (int y = 0; y < size; ++y) {
-    char* line = &images[2].pixels[(size - 1 - y) * stride];
+    char* line = &images[2][(size - 1 - y) * stride];
 
     for (int x = 0; x < size; ++x) {
       double u      = x / (dim - 0.5);
@@ -404,7 +402,7 @@ ImageData* TerraBuilder::generateCubeNoise(int size)
 
   // -Y.
   for (int y = 0; y < size; ++y) {
-    char* line = &images[3].pixels[(size - 1 - y) * stride];
+    char* line = &images[3][(size - 1 - y) * stride];
 
     for (int x = 0; x < size; ++x) {
       double u      = x / (dim - 0.5);
@@ -421,7 +419,7 @@ ImageData* TerraBuilder::generateCubeNoise(int size)
 
   // +Z.
   for (int y = 0; y < size; ++y) {
-    char* line = &images[4].pixels[(size - 1 - y) * stride];
+    char* line = &images[4][(size - 1 - y) * stride];
 
     for (int x = 0; x < size; ++x) {
       double u      = x / (dim - 0.5);
@@ -438,7 +436,7 @@ ImageData* TerraBuilder::generateCubeNoise(int size)
 
   // -Z.
   for (int y = 0; y < size; ++y) {
-    char* line = &images[5].pixels[(size - 1 - y) * stride];
+    char* line = &images[5][(size - 1 - y) * stride];
 
     for (int x = 0; x < size; ++x) {
       double u      = x / (dim - 0.5);

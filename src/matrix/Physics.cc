@@ -569,7 +569,7 @@ void Physics::updateObj(Dynamic* dyn_)
         if (dyn->resistance <= LAVA_DAMAGE_ABSOLUTE) {
           dyn->flags |= Object::ENABLE_BIT;
 
-          if ((uint(timer.ticks) + uint(dyn->index * 1025)) % LAVA_DAMAGE_INTERVAL == 0) {
+          if ((timer.ticks + uint64(dyn->index) * 1025u) % LAVA_DAMAGE_INTERVAL == 0) {
             dyn->damage(max(LAVA_DAMAGE_ABSOLUTE, dyn->clazz->life * LAVA_DAMAGE_RATIO));
           }
         }

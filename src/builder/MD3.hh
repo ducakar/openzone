@@ -110,7 +110,7 @@ private:
 
   struct MD3Vertex
   {
-    short pos[3];
+    int16 pos[3];
     ubyte normal[2];
   };
 

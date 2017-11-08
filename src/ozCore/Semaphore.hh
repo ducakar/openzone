@@ -59,7 +59,7 @@ public:
   /**
    * Create and initialise semaphore.
    */
-  Semaphore(int initialValue = 0, int maxValue = INT_MAX);
+  explicit Semaphore(int initialValue = 0, int maxValue = INT_MAX);
 
   /**
    * Destroy semaphore.

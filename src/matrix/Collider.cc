@@ -121,8 +121,8 @@ bool Collider::overlapsAABBEntities()
   Point  originalStartPos = startPos;
   Bounds localTrace       = str->toStructCS(trace);
 
-  for (int i = 0; i < str->entities.size(); ++i) {
-    entity = &str->entities[i];
+  for (const Entity& e : str->entities) {
+    entity = &e;
 
     if (localTrace.overlaps(*entity->clazz + entity->offset)) {
       for (int j = 0; j < entity->clazz->nBrushes; ++j) {
@@ -158,9 +158,7 @@ bool Collider::overlapsAABBOrbis()
     for (int y = span.minY; y <= span.maxY; ++y) {
       const Cell& cell = orbis.cells[x][y];
 
-      for (int i = 0; i < cell.structs.size(); ++i) {
-        int strIndex = cell.structs[i];
-
+      for (int strIndex : cell.structs) {
         str = orbis.str(strIndex);
 
         if (visitedStructs.get(strIndex) || !trace.overlaps(*str)) {
@@ -522,8 +520,8 @@ void Collider::trimAABBEntities()
   Point  originalEndPos   = endPos;
   Bounds localTrace       = str->toStructCS(trace);
 
-  for (int i = 0; i < str->entities.size(); ++i) {
-    entity = &str->entities[i];
+  for (const Entity& e : str->entities) {
+    entity = &e;
 
     if (localTrace.overlaps(*entity->clazz + entity->offset)) {
       startPos = originalStartPos - entity->offset;
@@ -644,9 +642,7 @@ void Collider::trimAABBOrbis()
     for (int y = span.minY; y <= span.maxY; ++y) {
       const Cell& cell = orbis.cells[x][y];
 
-      for (int i = 0; i < cell.structs.size(); ++i) {
-        int strIndex = cell.structs[i];
-
+      for (int strIndex : cell.structs) {
         str = orbis.str(strIndex);
 
         if (visitedStructs.get(strIndex) || !trace.overlaps(*str)) {
@@ -737,8 +733,8 @@ void Collider::getOrbisOverlaps(List<Struct*>* structs, List<Object*>* objects)
       const Cell& cell = orbis.cells[x][y];
 
       if (structs != nullptr) {
-        for (int i = 0; i < cell.structs.size(); ++i) {
-          str = orbis.str(cell.structs[i]);
+        for (int16 i : cell.structs) {
+          str = orbis.str(i);
 
           if (trace.overlaps(*str) && !structs->contains(const_cast<Struct*>(str))) {
             visitedBrushes.clear();

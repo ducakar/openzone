@@ -53,8 +53,7 @@ static File                  dataDir;
 static const PPB_InputEvent* ppbInputEvent      = nullptr;
 #endif
 
-Application::Stage::~Stage()
-{}
+Application::Stage::~Stage() = default;
 
 void Application::Stage::load()
 {}

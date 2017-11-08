@@ -8,10 +8,12 @@ add_library(ozFactory
 #BEGIN SOURCES
   common.hh
   ImageBuilder.hh
+  ImageData.hh
   ModelBuilder.hh
   ozFactory.hh
   TerraBuilder.hh
   ImageBuilder.cc
+  ImageData.cc
   ModelBuilder.cc
   TerraBuilder.cc
 #END SOURCES

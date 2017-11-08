@@ -69,10 +69,7 @@ static void* allocate(AllocMode mode, size_t size)
 
 #ifdef OZ_ALLOCATOR
 
-  Alloc::ChunkInfo* ci = new(ptr) Alloc::ChunkInfo();
-
-  ci->size       = size;
-  ci->stackTrace = StackTrace::current(2);
+  Alloc::ChunkInfo* ci = new(ptr) Alloc::ChunkInfo{size, StackTrace::current(2)};
 
   allocInfoLock.lock();
 
@@ -85,7 +82,7 @@ static void* allocate(AllocMode mode, size_t size)
   Alloc::sumAmount += size;
 
   Alloc::maxCount  = max<int>(Alloc::count, Alloc::maxCount);
-  Alloc::maxAmount = max<size_t>(Alloc::amount, Alloc::maxAmount);
+  Alloc::maxAmount = max<uint64>(Alloc::amount, Alloc::maxAmount);
 
   allocInfoLock.unlock();
 
@@ -114,12 +111,12 @@ static void deallocate(AllocMode mode, void* ptr)
   }
   // Check if allocated as a different kind (object/array)
   else if (chunkInfos[!mode].has(ci)) {
-    OZ_ERROR("oz::Alloc: new[] -> delete mismatch for %s block at %p of size %lu",
-             ALLOC_MODE_NAMES[mode], ptr, ulong(ci->size));
+    OZ_ERROR("oz::Alloc: new[] -> delete mismatch for %s block at %p of size %llu",
+             ALLOC_MODE_NAMES[mode], ptr, ci->size);
   }
   else {
-    OZ_ERROR("oz::Alloc: Freeing unregistered %s block at %p of size %lu",
-             ALLOC_MODE_NAMES[mode], ptr, ulong(ci->size));
+    OZ_ERROR("oz::Alloc: Freeing unregistered %s block at %p of size %llu",
+             ALLOC_MODE_NAMES[mode], ptr, ci->size);
   }
 
   --Alloc::count;
@@ -140,11 +137,11 @@ static void deallocate(AllocMode mode, void* ptr)
 }
 
 int    Alloc::count     = 0;
-size_t Alloc::amount    = 0;
+uint64 Alloc::amount    = 0;
 int    Alloc::sumCount  = 0;
-size_t Alloc::sumAmount = 0;
+uint64 Alloc::sumAmount = 0;
 int    Alloc::maxCount  = 0;
-size_t Alloc::maxAmount = 0;
+uint64 Alloc::maxAmount = 0;
 
 Alloc::CRange Alloc::objectCRange() noexcept
 {

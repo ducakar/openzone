@@ -183,7 +183,7 @@ public:
   /**
    * Move constructor, moves element storage.
    */
-  Map(Map&& other) = default;
+  Map(Map&& other) noexcept = default;
 
   /**
    * Copy operator, copies elements.
@@ -195,7 +195,7 @@ public:
   /**
    * Move operator, moves element storage.
    */
-  Map& operator=(Map&& other) = default;
+  Map& operator=(Map&& other) noexcept = default;
 
   /**
    * Assign from an initialiser list.
@@ -204,7 +204,8 @@ public:
    */
   Map& operator=(InitialiserList<Pair> il)
   {
-    return static_cast<Map&>(Set<Pair>::operator=(il));
+    Set<Pair>::operator=(il);
+    return *this;
   }
 
   /**

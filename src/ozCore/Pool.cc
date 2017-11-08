@@ -124,12 +124,10 @@ void* PoolAlloc::allocate()
 
     return firstBlock_->slot(0, slotSize_)->storage;
   }
-  else {
-    Slot* slot = freeSlot_;
 
-    freeSlot_ = slot->nextSlot;
-    return slot->storage;
-  }
+  Slot* slot = freeSlot_;
+  freeSlot_ = slot->nextSlot;
+  return slot->storage;
 }
 
 void PoolAlloc::deallocate(void* ptr)

@@ -36,36 +36,36 @@ struct RWLock::Descriptor
 
 void RWLock::Read::lock()
 {
-  pthread_rwlock_rdlock(&parent_.descriptor_->rwlock);
+  pthread_rwlock_rdlock(&parent_->descriptor_->rwlock);
 }
 
 bool RWLock::Read::tryLock()
 {
-  return pthread_rwlock_tryrdlock(&parent_.descriptor_->rwlock) == 0;
+  return pthread_rwlock_tryrdlock(&parent_->descriptor_->rwlock) == 0;
 }
 
 void RWLock::Read::unlock()
 {
-  pthread_rwlock_unlock(&parent_.descriptor_->rwlock);
+  pthread_rwlock_unlock(&parent_->descriptor_->rwlock);
 }
 
 void RWLock::Write::lock()
 {
-  pthread_rwlock_rdlock(&parent_.descriptor_->rwlock);
+  pthread_rwlock_rdlock(&parent_->descriptor_->rwlock);
 }
 
 bool RWLock::Write::tryLock()
 {
-  return pthread_rwlock_tryrdlock(&parent_.descriptor_->rwlock) == 0;
+  return pthread_rwlock_tryrdlock(&parent_->descriptor_->rwlock) == 0;
 }
 
 void RWLock::Write::unlock()
 {
-  pthread_rwlock_unlock(&parent_.descriptor_->rwlock);
+  pthread_rwlock_unlock(&parent_->descriptor_->rwlock);
 }
 
 RWLock::RWLock()
-  : read(*this), write(*this), descriptor_(new Descriptor)
+  : read(this), write(this), descriptor_(new Descriptor)
 {}
 
 RWLock::~RWLock()

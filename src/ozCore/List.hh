@@ -420,9 +420,7 @@ public:
     if (i >= 0) {
       return data_[i];
     }
-    else {
-      return insert<Elem_>(size_, static_cast<Elem_&&>(elem));
-    }
+    return insert<Elem_>(size_, static_cast<Elem_&&>(elem));
   }
 
   /**
@@ -552,13 +550,12 @@ public:
     if (size_ == 0) {
       return Elem();
     }
-    else {
-      Elem elem = static_cast<Elem&&>(data_[0]);
 
-      --size_;
-      Arrays::move<Elem>(data_ + 1, size_, data_);
-      return elem;
-    }
+    Elem elem = static_cast<Elem&&>(data_[0]);
+
+    --size_;
+    Arrays::move<Elem>(data_ + 1, size_, data_);
+    return elem;
   }
 
   /**
@@ -571,10 +568,9 @@ public:
     if (size_ == 0) {
       return Elem();
     }
-    else {
-      --size_;
-      return static_cast<Elem&&>(data_[size_]);
-    }
+
+    --size_;
+    return static_cast<Elem&&>(data_[size_]);
   }
 
   /**

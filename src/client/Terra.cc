@@ -182,7 +182,7 @@ void Terra::load()
   glGenBuffers(1, &ibo);
 
   int vboSize = TILE_VERTICES * sizeof(Vertex);
-  int iboSize = TILE_INDICES  * sizeof(ushort);
+  int iboSize = TILE_INDICES  * sizeof(uint16);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, is.readSkip(iboSize), GL_STATIC_DRAW);
@@ -203,8 +203,8 @@ void Terra::load()
           vertex.pos[1]      = orbis.terra.quads[x][y].vertex.y;
           vertex.pos[2]      = orbis.terra.quads[x][y].vertex.z;
 
-          vertex.texCoord[0] = short(x);
-          vertex.texCoord[1] = short(oz::Terra::VERTS - y);
+          vertex.texCoord[0] = int16(x);
+          vertex.texCoord[1] = int16(oz::Terra::VERTS - y);
 
           vertex.normal[0]   = is.readByte();
           vertex.normal[1]   = is.readByte();

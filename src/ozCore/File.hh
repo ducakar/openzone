@@ -125,7 +125,8 @@ public:
    */
   File& operator=(const char* path)
   {
-    return static_cast<File&>(String::operator=(path));
+    String::operator=(path);
+    return *this;
   }
 
   /**
@@ -274,19 +275,19 @@ public:
    *
    * @return true iff read operation succeeded (it is not necessary the whole file was read).
    */
-  bool read(char* buffer, int64* length) const;
+  bool read(char* buffer, int64* size) const;
 
   /**
    * Read file contents to a buffered stream.
    *
    * File size can be at most `INT_MAX`.
    */
-  bool read(Stream* steam) const;
+  bool read(Stream* os) const;
 
   /**
    * Write buffer contents to the file.
    */
-  bool write(const char* data_, int64 length) const;
+  bool write(const char* buffer, int64 size) const;
 
   /**
    * Write contents of a stream, equivalent to `write(is.begin(), is.tell())`.

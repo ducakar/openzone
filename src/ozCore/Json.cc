@@ -403,9 +403,7 @@ private:
 
     os_->writeChar('"');
 
-    for (int i = 0; i < string.length(); ++i) {
-      char ch = string[i];
-
+    for (char ch : string) {
       switch (ch) {
         case '\\': {
           os_->write("\\\\", 2);
@@ -743,20 +741,20 @@ Json::Json(const Mat4& m, const char* comment)
   : Json(m, 16, comment)
 {}
 
-Json::Json(InitialiserList<Json> l, const char* comment)
+Json::Json(InitialiserList<Json> il, const char* comment)
   : data_(new ArrayData()), comment_(comment), type_(ARRAY)
 {
   List<Json>& list = static_cast<ArrayData*>(data_)->list;
 
-  list.addAll(l.begin(), int(l.size()));
+  list.addAll(il.begin(), int(il.size()));
 }
 
-Json::Json(InitialiserList<Pair> l, const char* comment)
+Json::Json(InitialiserList<Pair> il, const char* comment)
   : data_(new ObjectData()), comment_(comment), type_(OBJECT)
 {
   Map<String, Json>& map = static_cast<ObjectData*>(data_)->map;
 
-  for (const auto& i : l) {
+  for (const auto& i : il) {
     map.add(i.key, i.value);
   }
 }
@@ -1077,27 +1075,27 @@ Mat4 Json::get(const Mat4& defaultValue) const
   return getVector(m, 16) ? m : defaultValue;
 }
 
-Json& Json::add(const Json& json)
+Json& Json::add(const Json& value)
 {
   if (type_ != ARRAY) {
     OZ_ERROR("oz::Json: Tried to add a value to a non-array JSON value: %s", toString().c());
   }
 
   List<Json>& list = static_cast<ArrayData*>(data_)->list;
-  return list.add(json);
+  return list.add(value);
 }
 
-Json& Json::add(Json&& json)
+Json& Json::add(Json&& value)
 {
   if (type_ != ARRAY) {
     OZ_ERROR("oz::Json: Tried to add a value to a non-array JSON value: %s", toString().c());
   }
 
   List<Json>& list = static_cast<ArrayData*>(data_)->list;
-  return list.add(static_cast<Json&&>(json));
+  return list.add(static_cast<Json&&>(value));
 }
 
-Json& Json::add(const char* key, const Json& json)
+Json& Json::add(const char* key, const Json& value)
 {
   if (type_ != OBJECT) {
     OZ_ERROR("oz::Json: Tried to add a key-value pair '%s' to a non-object JSON value: %s",
@@ -1105,10 +1103,10 @@ Json& Json::add(const char* key, const Json& json)
   }
 
   Map<String, Json>& map = static_cast<ObjectData*>(data_)->map;
-  return map.add(key, json).value;
+  return map.add(key, value).value;
 }
 
-Json& Json::add(const char* key, Json&& json)
+Json& Json::add(const char* key, Json&& value)
 {
   if (type_ != OBJECT) {
     OZ_ERROR("oz::Json: Tried to add a key-value pair '%s' to a non-object JSON value: %s",
@@ -1116,10 +1114,10 @@ Json& Json::add(const char* key, Json&& json)
   }
 
   Map<String, Json>& map = static_cast<ObjectData*>(data_)->map;
-  return map.add(key, static_cast<Json&&>(json)).value;
+  return map.add(key, static_cast<Json&&>(value)).value;
 }
 
-Json& Json::include(const char* key, const Json& json)
+Json& Json::include(const char* key, const Json& value)
 {
   if (type_ != OBJECT) {
     OZ_ERROR("oz::Json: Tried to include a key-value pair '%s' in a non-object JSON value: %s",
@@ -1127,10 +1125,10 @@ Json& Json::include(const char* key, const Json& json)
   }
 
   Map<String, Json>& map = static_cast<ObjectData*>(data_)->map;
-  return map.include(key, json).value;
+  return map.include(key, value).value;
 }
 
-Json& Json::include(const char* key, Json&& json)
+Json& Json::include(const char* key, Json&& value)
 {
   if (type_ != OBJECT) {
     OZ_ERROR("oz::Json: Tried to include a key-value pair '%s' in a non-object JSON value: %s",
@@ -1138,7 +1136,7 @@ Json& Json::include(const char* key, Json&& json)
   }
 
   Map<String, Json>& map = static_cast<ObjectData*>(data_)->map;
-  return map.include(key, static_cast<Json&&>(json)).value;
+  return map.include(key, static_cast<Json&&>(value)).value;
 }
 
 bool Json::erase(int index)

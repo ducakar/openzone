@@ -355,24 +355,24 @@ public:
   void writeUByte(ubyte b);
 
   /**
-   * Read short integer.
+   * Read 16-bit integer.
    */
-  short readShort();
+  int16 readInt16();
 
   /**
-   * Write short integer.
+   * Write 16-bit integer.
    */
-  void writeShort(short s);
+  void writeInt16(int16 s);
 
   /**
-   * Read unsigned short integer.
+   * Read unsigned 16-bit integer.
    */
-  ushort readUShort();
+  uint16 readUInt16();
 
   /**
-   * Write unsigned short integer.
+   * Write unsigned 16-bit integer.
    */
-  void writeUShort(ushort s);
+  void writeUInt16(uint16 s);
 
   /**
    * Read integer.

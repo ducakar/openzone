@@ -206,7 +206,7 @@ void Builder::buildBSPTextures()
 
   for (const File& subDir : usedDirs) {
     for (const File& file : subDir.list()) {
-      if (!file.isFile()) {
+      if (!file.isRegular()) {
         continue;
       }
 
@@ -316,7 +316,7 @@ void Builder::buildModels()
     dir.toNative().mkdir();
 
     for (const File& file : dir.list()) {
-      if (!file.isFile()) {
+      if (!file.isRegular()) {
         continue;
       }
 
@@ -339,10 +339,10 @@ void Builder::buildModels()
     File objFile = dir / "data.obj";
     File md2File = dir / "tris.md2";
 
-    if (daeFile.isFile() || objFile.isFile()) {
+    if (daeFile.isRegular() || objFile.isRegular()) {
       assImp.build(dir);
     }
-    else if (md2File.isFile()) {
+    else if (md2File.isRegular()) {
       md2.build(dir);
     }
     else {
@@ -385,7 +385,7 @@ void Builder::copySounds()
     }
 
     for (const File& file : subDir.list()) {
-      if (!file.isFile() ||
+      if (!file.isRegular() ||
           (!file.hasExtension("wav") && !file.hasExtension("oga") &&
            !file.hasExtension("ogg")))
       {
@@ -417,7 +417,7 @@ void Builder::copySounds()
 
   for (const File& subDir : usedDirs) {
     for (const File& file : subDir.list()) {
-      if (!file.isFile()) {
+      if (!file.isRegular()) {
         continue;
       }
 

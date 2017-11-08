@@ -51,27 +51,13 @@ const char* Gettext::systemLanguage(const char* fallback)
   return fallback;
 }
 
-Gettext::Gettext()
-{}
+Gettext::Gettext() = default;
 
-Gettext::~Gettext()
-{}
+Gettext::~Gettext() = default;
 
-Gettext::Gettext(Gettext&& other)
-  : buckets_(static_cast<List<Message*>&&>(other.buckets_)),
-    messages_(static_cast<List<Message>&&>(other.messages_)),
-    strings_(static_cast<List<char>&&>(other.strings_))
-{}
+Gettext::Gettext(Gettext&& other) noexcept = default;
 
-Gettext& Gettext::operator=(Gettext&& other)
-{
-  if (&other != this) {
-    buckets_  = static_cast<List<Message*>&&>(other.buckets_);
-    messages_ = static_cast<List<Message>&&>(other.messages_);
-    strings_  = static_cast<List<char>&&>(other.strings_);
-  }
-  return *this;
-}
+Gettext& Gettext::operator=(Gettext&& other) noexcept = default;
 
 bool Gettext::contains(const char* message) const
 {
@@ -129,7 +115,7 @@ bool Gettext::import(const File& file)
   uint magic = is.readUInt();
   if (magic != GETTEXT_MAGIC) {
     if (Endian::bswap(magic) == GETTEXT_MAGIC) {
-      is.setOrder(Endian::Order(!is.order()));
+      is.setOrder(Endian::Order(1 - is.order()));
     }
     else {
       return false;

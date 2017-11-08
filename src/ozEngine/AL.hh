@@ -64,19 +64,19 @@ public:
     class OpusStream;
     class VorbisStream;
 
-    float*      samples_;  ///< Samples buffer.
-    int         size_;     ///< Number of samples written in buffer (total sum per all channels).
-    int         capacity_; ///< Buffer capacity (total sum per all channels).
-    ALenum      format_;   ///< OpenAL format (AL_FORMAT_MONO_FLOAT32 or AL_FORMAT_STEREO_FLOAT32).
-    int         rate_;     ///< Sampling rate.
-    StreamBase* stream_;   ///< Internal structures used for stream decoding.
+    float*      samples_  = nullptr; ///< Samples buffer.
+    int         size_     = 0;       ///< Sum of all samples per all channels written in buffer.
+    int         capacity_ = 0;       ///< Buffer capacity (total sum per all channels).
+    ALenum      format_   = 0;       ///< AL_FORMAT_MONO_FLOAT32 or AL_FORMAT_STEREO_FLOAT32.
+    int         rate_     = 0;       ///< Sampling rate.
+    StreamBase* stream_   = nullptr; ///< Internal structures used for stream decoding.
 
   public:
 
     /**
      * Create empty instance.
      */
-    Decoder();
+    Decoder() = default;
 
     /**
      * Initialise an instance and open a file for decoding.

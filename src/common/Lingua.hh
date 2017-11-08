@@ -46,10 +46,6 @@ namespace oz
  */
 class Lingua
 {
-private:
-
-  Gettext catalogue; ///< Gettext catalogue.
-
 public:
 
   /**
@@ -65,10 +61,7 @@ public:
   /**
    * Obtain translation from the loaded catalogue.
    */
-  const char* get(const char* message) const
-  {
-    return catalogue.get(message);
-  }
+  const char* get(const char* message) const;
 
   /**
    * Initialise per-mission Lingua instance.

@@ -150,7 +150,7 @@ Cursor::~Cursor()
 }
 
 Cursor::Cursor(Cursor&& other) noexcept
-  : mode_(other.mode_), frame_(other.frame_), lastFrame_(-1), frameDuration_(other.frameDuration_),
+  : mode_(other.mode_), frame_(other.frame_), frameDuration_(other.frameDuration_),
     images_(static_cast<List<Image>&&>(other.images_))
 {
   other.mode_          = SYSTEM;

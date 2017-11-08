@@ -87,8 +87,7 @@ public:
 
 };
 
-AL::Decoder::StreamBase::~StreamBase()
-{}
+AL::Decoder::StreamBase::~StreamBase() = default;
 
 class AL::Decoder::WaveStream : public AL::Decoder::StreamBase
 {
@@ -112,12 +111,12 @@ public:
 
     is_.seek(22);
 
-    int nChannels = is_.readShort();
+    int nChannels = is_.readInt16();
     int rate      = is_.readInt();
 
     is_.seek(34);
 
-    sampleSize_ = is_.readShort() / 8;
+    sampleSize_ = is_.readInt16() / 8;
 
     while (is_.available() != 0 && !String::beginsWith(is_.readSkip(4), "data")) {
       is_.readSkip(is_.readInt());
@@ -168,7 +167,7 @@ bool AL::Decoder::WaveStream::decode(AL::Decoder* decoder)
     }
   }
   else {
-    const short* samples = reinterpret_cast<const short*>(is_.pos());
+    const int16* samples = reinterpret_cast<const int16*>(is_.pos());
 
     while (begin != alignedEnd) {
 #if OZ_BYTE_ORDER == 4321
@@ -367,12 +366,7 @@ bool AL::Decoder::VorbisStream::decode(AL::Decoder* decoder)
   return true;
 }
 
-AL::Decoder::Decoder()
-  : samples_(nullptr), size_(0), capacity_(0), format_(0), rate_(0), stream_(nullptr)
-{}
-
 AL::Decoder::Decoder(const File& file, bool isStreaming)
-  : samples_(nullptr), size_(0), capacity_(0), format_(0), rate_(0), stream_(nullptr)
 {
   if (file.hasExtension("wav")) {
     stream_ = new WaveStream(this, file);

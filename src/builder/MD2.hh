@@ -65,8 +65,8 @@ private:
 
   struct MD2TexCoord
   {
-    short s;
-    short t;
+    int16 s;
+    int16 t;
   };
 
   struct MD2Frame
@@ -79,8 +79,8 @@ private:
 
   struct MD2Triangle
   {
-    short vertices[3];
-    short texCoords[3];
+    int16 vertices[3];
+    int16 texCoords[3];
   };
 
   static const Vec3 NORMALS[];

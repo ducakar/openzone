@@ -130,7 +130,7 @@ const String& Thread::name()
 
 bool Thread::isMain()
 {
-  return pthread_equal(pthread_self(), MAIN_THREAD);
+  return pthread_equal(pthread_self(), MAIN_THREAD) != 0;
 }
 
 Thread::Descriptor* Thread::start(const char* name, Main* main, void* data)

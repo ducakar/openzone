@@ -52,7 +52,7 @@ public:
   /**
    * Create a barrier for synchonising a given number of threads.
    */
-  Barrier(int count);
+  explicit Barrier(int count);
 
   /**
    * Destroy barrier.

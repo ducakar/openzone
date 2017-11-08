@@ -24,19 +24,20 @@
 namespace oz
 {
 
-static String language;
+static String  currentLanguage;
+static Gettext catalogue;
 
 String Lingua::detectLanguage(const char* fallback)
 {
-  String lang = Gettext::systemLanguage();
+  String language = Gettext::systemLanguage();
 
-  if (lang.isEmpty() || lang == "C") {
-    lang = fallback;
+  if (language.isEmpty() || language == "C") {
+    language = fallback;
   }
 
-  int underscore = lang.index('_');
+  int underscore = language.index('_');
   if (underscore >= 2) {
-    lang = lang.substring(0, underscore);
+    language = language.substring(0, underscore);
   }
 
   for (const File& file : File("@lingua").list("json")) {
@@ -44,22 +45,27 @@ String Lingua::detectLanguage(const char* fallback)
 
     if (!langMap.isNull()) {
       for (const auto& langAlias : langMap.objectCRange()) {
-        if (lang == langAlias.key) {
-          lang = langAlias.value.get(lang);
+        if (language == langAlias.key) {
+          language = langAlias.value.get(language);
           break;
         }
       }
     }
   }
 
-  return lang;
+  return language;
+}
+
+const char* Lingua::get(const char* message) const
+{
+  return catalogue.get(message);
 }
 
 bool Lingua::initMission(const char* mission)
 {
   clear();
 
-  File file = String::format("@mission/%s/lingua/%s.mo", mission, language.c());
+  File file = String::format("@mission/%s/lingua/%s.mo", mission, currentLanguage.c());
   return catalogue.import(file);
 }
 
@@ -68,12 +74,12 @@ void Lingua::clear()
   catalogue.clear();
 }
 
-bool Lingua::init(const char* language_)
+bool Lingua::init(const char* language)
 {
-  language = language_;
+  currentLanguage = language;
   catalogue.clear();
 
-  File dir = "@lingua/" + language;
+  File dir = "@lingua/" + currentLanguage;
   if (!dir.isDirectory()) {
     return false;
   }
@@ -91,7 +97,7 @@ bool Lingua::init(const char* language_)
 void Lingua::destroy()
 {
   catalogue.clear();
-  language = "";
+  currentLanguage = "";
 }
 
 Lingua lingua;

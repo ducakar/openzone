@@ -54,16 +54,18 @@ public:
 
   private:
 
-    RWLock& parent_; ///< Parent shared mutex.
+    RWLock* const parent_; ///< Parent shared mutex.
 
   private:
 
     /**
      * Create reader lock accessor for a given shared mutex.
      */
-    explicit Read(RWLock& parent)
+    explicit Read(RWLock* parent)
       : parent_(parent)
     {}
+
+  public:
 
     /**
      * No copying.
@@ -74,8 +76,6 @@ public:
      * No copying.
      */
     Read& operator=(const Read&) = delete;
-
-  public:
 
     /**
      * Wait until reader lock is acquired.
@@ -114,16 +114,18 @@ public:
 
   private:
 
-    RWLock& parent_; ///< Parent shared mutex.
+    RWLock* const parent_; ///< Parent shared mutex.
 
   private:
 
     /**
      * Create writer lock accessor for a given shared mutex.
      */
-    explicit Write(RWLock& parent)
+    explicit Write(RWLock* parent)
       : parent_(parent)
     {}
+
+  public:
 
     /**
      * No copying.
@@ -134,8 +136,6 @@ public:
      * No copying.
      */
     Write& operator=(const Write&) = delete;
-
-  public:
 
     /**
      * Wait until writer lock is acquired.

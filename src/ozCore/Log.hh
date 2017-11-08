@@ -209,12 +209,12 @@ public:
   /**
    * Same as `printRaw("%d", s)`.
    */
-  const Log& operator<<(short s) const;
+  const Log& operator<<(int16 s) const;
 
   /**
    * Same as `printRaw("%ud", s)`.
    */
-  const Log& operator<<(ushort s) const;
+  const Log& operator<<(uint16 s) const;
 
   /**
    * Same as `printRaw("%d", i)`.
@@ -225,16 +225,6 @@ public:
    * Same as `printRaw("%ud", i)`.
    */
   const Log& operator<<(uint i) const;
-
-  /**
-   * Same as `printRaw("%ld", l)`.
-   */
-  const Log& operator<<(long l) const;
-
-  /**
-   * Same as `printRaw("%lud", l)`.
-   */
-  const Log& operator<<(ulong l) const;
 
   /**
    * Same as `printRaw("%lld", l)`.

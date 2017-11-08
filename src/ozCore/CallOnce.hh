@@ -72,7 +72,7 @@ public:
   void operator<<(Function function)
   {
     if (!wasCalled_.load<ACQUIRE>()) {
-      LockGuard<Monitor> guard(lock_);
+      LockGuard<Monitor> guard(&lock_);
 
       if (!wasCalled_.load<RELAXED>()) {
         function();

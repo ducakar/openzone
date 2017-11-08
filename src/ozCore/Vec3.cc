@@ -42,12 +42,11 @@ Vec3 Vec3::slerp(const Vec3& a, const Vec3& b, float t)
 
     return a;
   }
-  else {
-    float alpha = Math::sin((1.0f - t) * angle) / sine;
-    float beta  = Math::sin(t * angle) / sine;
 
-    return alpha * a + beta * b;
-  }
+  float alpha = Math::sin((1.0f - t) * angle) / sine;
+  float beta  = Math::sin(t * angle) / sine;
+
+  return alpha * a + beta * b;
 }
 
 }

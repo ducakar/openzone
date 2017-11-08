@@ -104,7 +104,7 @@ public:
   /**
    * Move constructor, moves element storage.
    */
-  Heap(Heap&& other) = default;
+  Heap(Heap&& other) noexcept = default;
 
   /**
    * Copy operator, copies elements.
@@ -116,7 +116,7 @@ public:
   /**
    * Move operator, moves element storage.
    */
-  Heap& operator=(Heap&& other) = default;
+  Heap& operator=(Heap&& other) noexcept = default;
 
   /**
    * Assign from an initialiser list.

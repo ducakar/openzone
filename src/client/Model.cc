@@ -179,7 +179,7 @@ void Model::drawNode(const Node* node, int mask)
       glUniform1f(uniform.shininess, mesh.shininess);
 
       glDrawElements(GL_TRIANGLES, mesh.nIndices, GL_UNSIGNED_SHORT,
-                     static_cast<ushort*>(nullptr) + mesh.firstIndex);
+                     static_cast<uint16*>(nullptr) + mesh.firstIndex);
     }
   }
 
@@ -449,7 +449,7 @@ const File* Model::preload()
   }
 
   int vboSize = nVertices * sizeof(Vertex);
-  int iboSize = nIndices  * sizeof(ushort);
+  int iboSize = nIndices  * sizeof(uint16);
 
   const void* vertexBuffer = is.readSkip(vboSize);
   is.readSkip(iboSize);
@@ -603,7 +603,7 @@ void Model::load()
 
   uint usage   = nFrames != 0 && shader.hasVTF ? GL_STREAM_DRAW : GL_STATIC_DRAW;
   int  vboSize = nVertices * sizeof(Vertex);
-  int  iboSize = nIndices  * sizeof(ushort);
+  int  iboSize = nIndices  * sizeof(uint16);
 
   const void* vertexBuffer = is.readSkip(vboSize);
 

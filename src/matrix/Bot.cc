@@ -487,7 +487,7 @@ void Bot::onUpdate()
       if (stamina < 0.0f) {
         life += stamina * DROWNING_RATIO;
 
-        if ((uint(timer.ticks) + uint(index * 1025)) % Timer::TICKS_PER_SEC == 0) {
+        if ((timer.ticks + uint64(index) * 1025u) % Timer::TICKS_PER_SEC == 0) {
           addEvent(EVENT_DAMAGE, 1.0f);
         }
       }

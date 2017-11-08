@@ -32,7 +32,7 @@ namespace oz::client
 struct Vertex
 {
   float pos[3];
-  short texCoord[2];
+  int16 texCoord[2];
   byte  normal[4];
   byte  tangent[4];
   byte  binormal[4];

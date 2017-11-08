@@ -75,13 +75,13 @@ public:
 public:
 
   static int    count;     ///< Current number of allocated memory chunks.
-  static size_t amount;    ///< Amount of currently allocated memory.
+  static uint64 amount;    ///< Amount of currently allocated memory.
 
   static int    sumCount;  ///< Number of all memory allocations.
-  static size_t sumAmount; ///< Cumulative amount of all memory allocations.
+  static uint64 sumAmount; ///< Cumulative amount of all memory allocations.
 
   static int    maxCount;  ///< Top number to memory allocations.
-  static size_t maxAmount; ///< Top amount of allocated memory.
+  static uint64 maxAmount; ///< Top amount of allocated memory.
 
 public:
 

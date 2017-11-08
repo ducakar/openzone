@@ -248,8 +248,8 @@ void Struct::onDemolish()
   collider.getOverlaps(toAABB(), nullptr, &overlappingObjs, 2.0f * EPSILON);
   collider.mask = Object::SOLID_BIT;
 
-  for (int i = 0; i < overlappingObjs.size(); ++i) {
-    Dynamic* dyn = static_cast<Dynamic*>(overlappingObjs[i]);
+  for (Object* obj : overlappingObjs) {
+    Dynamic* dyn = static_cast<Dynamic*>(obj);
 
     if ((dyn->flags & Object::SOLID_BIT) &&
         collider.overlaps(AABB(*dyn, -2.0f * EPSILON), dyn))
@@ -293,9 +293,7 @@ void Struct::onUpdate()
     onDemolish();
   }
   else {
-    for (int i = 0; i < entities.size(); ++i) {
-      Entity& entity = entities[i];
-
+    for (Entity& entity : entities) {
       (entity.*Entity::HANDLERS[entity.clazz->type])();
     }
   }
@@ -347,8 +345,8 @@ Bounds Struct::toAbsoluteCS(const Bounds& bb) const
 
 void Struct::destroy()
 {
-  for (int i = 0; i < boundObjects.size(); ++i) {
-    Object* obj = orbis.obj(boundObjects[i]);
+  for (int i : boundObjects) {
+    Object* obj = orbis.obj(i);
 
     if (obj != nullptr) {
       obj->destroy();
@@ -517,15 +515,15 @@ Json Struct::write() const
 
   Json& entitiesJson = json.add("entities", Json::ARRAY);
 
-  for (int i = 0; i < entities.size(); ++i) {
+  for (const Entity& entity : entities) {
     Json& entityJson = entitiesJson.add(Json::OBJECT);
 
-    entityJson.add("key", entities[i].key);
-    entityJson.add("state", entities[i].state);
-    entityJson.add("move", entities[i].moveDist);
-    entityJson.add("time", entities[i].time);
-    entityJson.add("offset", entities[i].offset);
-    entityJson.add("velocity", entities[i].velocity);
+    entityJson.add("key", entity.key);
+    entityJson.add("state", entity.state);
+    entityJson.add("move", entity.moveDist);
+    entityJson.add("time", entity.time);
+    entityJson.add("offset", entity.offset);
+    entityJson.add("velocity", entity.velocity);
   }
 
   Json& boundObjectsJson = json.add("boundObjects", Json::ARRAY);
@@ -551,13 +549,13 @@ void Struct::write(Stream* os) const
   os->writeFloat(life);
   os->writeFloat(demolishing);
 
-  for (int i = 0; i < entities.size(); ++i) {
-    os->writeInt(entities[i].key);
-    os->writeInt(entities[i].state);
-    os->writeFloat(entities[i].moveDist);
-    os->writeFloat(entities[i].time);
-    os->write<Vec3>(entities[i].offset);
-    os->write<Vec3>(entities[i].velocity);
+  for (const Entity& entity : entities) {
+    os->writeInt(entity.key);
+    os->writeInt(entity.state);
+    os->writeFloat(entity.moveDist);
+    os->writeFloat(entity.time);
+    os->write<Vec3>(entity.offset);
+    os->write<Vec3>(entity.velocity);
   }
 
   os->writeInt(boundObjects.size());

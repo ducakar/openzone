@@ -35,11 +35,11 @@ private:
   struct Vertex
   {
     float pos[3];
-    short texCoord[2];
+    int16 texCoord[2];
   };
 
   static const Vertex VERTICES[];
-  static const ushort INDICES[];
+  static const uint16 INDICES[];
 
   uint vbo;
   uint ibo;

@@ -196,13 +196,13 @@ bool GameStage::update()
     stateFile = "";
   }
   else if (input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD]) {
-    if (quicksaveFile.isFile()) {
+    if (quicksaveFile.isRegular()) {
       stateFile = quicksaveFile;
       Stage::nextStage = this;
     }
   }
   else if (input.keys[Input::KEY_AUTOLOAD] && !input.oldKeys[Input::KEY_AUTOLOAD]) {
-    if (autosaveFile.isFile()) {
+    if (autosaveFile.isRegular()) {
       stateFile = autosaveFile;
       Stage::nextStage = this;
     }
@@ -304,7 +304,7 @@ void GameStage::load()
   camera.reset();
   camera.setState(Camera::STRATEGIC);
 
-  if (stateFile.isFile()) {
+  if (stateFile.isRegular()) {
     read();
   }
   else {

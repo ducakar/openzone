@@ -143,19 +143,19 @@ using byte = signed char;
 using ubyte = unsigned char;
 
 /**
- * Unsigned short integer.
+ * signed 16-bit integer.
  */
-using ushort = unsigned short;
+using int16 = signed short;
+
+/**
+ * Unsigned 16-bit integer.
+ */
+using uint16 = unsigned short;
 
 /**
  * Unsigned integer.
  */
 using uint = unsigned int;
-
-/**
- * Unsigned long integer.
- */
-using ulong = unsigned long;
 
 /**
  * Signed 64-bit integer.
@@ -167,32 +167,8 @@ using int64 = signed long long;
  */
 using uint64 = unsigned long long;
 
-/**
- * Unit type.
- */
-struct Void
-{
-  /**
-   * All instances are identical.
-   */
-  OZ_ALWAYS_INLINE
-  constexpr bool operator==(const Void&) const
-  {
-    return true;
-  }
-
-  /**
-   * All instances are identical.
-   */
-  OZ_ALWAYS_INLINE
-  constexpr bool operator!=(const Void&) const
-  {
-    return false;
-  }
-};
-
 static_assert(sizeof(char  ) == 1, "sizeof(char) should be 1"  );
-static_assert(sizeof(short ) == 2, "sizeof(short) should be 2" );
+static_assert(sizeof(int16 ) == 2, "sizeof(int16) should be 2" );
 static_assert(sizeof(int   ) == 4, "sizeof(int) should be 4"   );
 static_assert(sizeof(int64 ) == 8, "sizeof(int64) should be 8" );
 static_assert(sizeof(float ) == 4, "sizeof(float) should be 4" );

@@ -480,14 +480,14 @@ public:
    *
    * If the current value is not an array, `System::error()` is invoked.
    */
-  Json& add(const Json& json);
+  Json& add(const Json& value);
 
   /**
    * Append a value to array (move).
    *
    * If the current value is not an array, `System::error()` is invoked.
    */
-  Json& add(Json&& json);
+  Json& add(Json&& value);
 
   /**
    * Add a value with a given key to the object (copy) overwriting an existing entry with that key.
@@ -508,14 +508,14 @@ public:
    *
    * If the current value is not an object, `System::error()` is invoked.
    */
-  Json& include(const char* key, const Json& json);
+  Json& include(const char* key, const Json& value);
 
   /**
    * Add a value with a given key to the object (move) if the key does not exist in the object.
    *
    * If the current value is not an object, `System::error()` is invoked.
    */
-  Json& include(const char* key, Json&& json);
+  Json& include(const char* key, Json&& value);
 
   /**
    * Remove element at a given index from an array.

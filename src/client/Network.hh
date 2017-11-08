@@ -33,7 +33,7 @@ class Network
 private:
 
 //  String host;
-//  ushort port;
+//  uint16 port;
 
 public:
 

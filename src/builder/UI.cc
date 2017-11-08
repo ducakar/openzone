@@ -62,7 +62,7 @@ void UI::buildIcons()
   for (const File& image : dir.list()) {
     String name = image.baseName();
 
-    if (!image.isFile() || !image.hasExtension("png")) {
+    if (!image.isRegular() || !image.hasExtension("png")) {
       continue;
     }
 

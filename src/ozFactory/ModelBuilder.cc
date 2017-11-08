@@ -138,7 +138,7 @@ struct Node
 
 static List<Vertex>     vertices;
 static List<AnimVertex> animVertices;
-static List<ushort>     indices;
+static List<uint16>     indices;
 static List<Triangle>   triangles[8];
 static List<Mesh>       meshes;
 static List<Material>   materials;
@@ -338,7 +338,7 @@ bool ModelBuilder::buildModel(const File& file, OutputStream* os)
     os->writeFloat(vertices[i].v);
   }
   for (int i = 0; i < indices.length(); ++i) {
-    os->writeUShort(indices[i]);
+    os->writeUInt16(indices[i]);
   }
 
   for (int i = 0; i < meshes.length(); ++i) {

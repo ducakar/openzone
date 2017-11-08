@@ -135,7 +135,7 @@ public:
   static char last(const char* s)
   {
     size_t sCount = __builtin_strlen(s);
-    return s[sCount - (sCount != 0)];
+    return s[sCount - size_t(sCount != 0)];
   }
 
   /**
@@ -646,7 +646,7 @@ public:
   OZ_ALWAYS_INLINE
   const char& last() const
   {
-    return begin()[size_ - (size_ != 0)];
+    return begin()[size_ - int(size_ != 0)];
   }
 
   /**
@@ -655,7 +655,7 @@ public:
   OZ_ALWAYS_INLINE
   char& last()
   {
-    return begin()[size_ - (size_ != 0)];
+    return begin()[size_ - int(size_ != 0)];
   }
 
   /**

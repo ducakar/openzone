@@ -71,16 +71,15 @@ static void printError(FREE_IMAGE_FORMAT fif, const char* message)
 
 static FIBITMAP* createBitmap(const ImageData& image)
 {
-  FIBITMAP* dib = FreeImage_ConvertFromRawBits(reinterpret_cast<ubyte*>(image.pixels),
-                                               image.width, image.height, image.width * 4, 32,
-                                               FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK,
-                                               FI_RGBA_BLUE_MASK);
-
+  ubyte*    originalPixels = reinterpret_cast<ubyte*>(const_cast<char*>(image.pixels()));
+  FIBITMAP* dib            = FreeImage_ConvertFromRawBits(originalPixels,
+                                                          image.width(), image.height(),
+                                                          image.width() * 4, 32, FI_RGBA_RED_MASK,
+                                                          FI_RGBA_GREEN_MASK, FI_RGBA_BLUE_MASK);
   // Convert RGBA -> BGRA.
-  int    size   = image.width * image.height * 4;
   ubyte* pixels = FreeImage_GetBits(dib);
 
-  for (int i = 0; i < size; i += 4) {
+  for (int i = 0; i < image.size(); i += 4) {
     swap(pixels[i + 0], pixels[i + 2]);
   }
 
@@ -88,7 +87,7 @@ static FIBITMAP* createBitmap(const ImageData& image)
     snprintf(errorBuffer, ERROR_LENGTH, "FreeImage_ConvertFromRawBits failed to build image.");
   }
 
-  FreeImage_SetTransparent(dib, image.flags & ImageData::ALPHA_BIT);
+  FreeImage_SetTransparent(dib, image.hasAlpha());
   return dib;
 }
 
@@ -140,8 +139,8 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
 {
   OZ_ASSERT(nFaces > 0);
 
-  int width      = faces[0].width;
-  int height     = faces[0].height;
+  int width      = faces[0].width();
+  int height     = faces[0].height();
 
   bool isCubeMap = ImageBuilder::options & ImageBuilder::CUBE_MAP_BIT;
   bool isNormal  = ImageBuilder::options & ImageBuilder::NORMAL_MAP_BIT;
@@ -151,11 +150,11 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
   bool doFlop    = ImageBuilder::options & ImageBuilder::FLOP_BIT;
   bool doYYYX    = ImageBuilder::options & ImageBuilder::YYYX_BIT;
   bool doZYZX    = ImageBuilder::options & ImageBuilder::ZYZX_BIT;
-  bool hasAlpha  = (faces[0].flags & ImageData::ALPHA_BIT) || doYYYX || doZYZX;
+  bool hasAlpha  = faces[0].hasAlpha() || doYYYX || doZYZX;
   bool isArray   = !isCubeMap && nFaces > 1;
 
   for (int i = 1; i < nFaces; ++i) {
-    if (faces[i].width != width || faces[i].height != height) {
+    if (faces[i].width() != width || faces[i].height() != height) {
       snprintf(errorBuffer, ERROR_LENGTH, "All faces must have the same dimensions.");
       return false;
     }
@@ -357,46 +356,6 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
 int   ImageBuilder::options = 0;
 float ImageBuilder::scale   = 1.0f;
 
-ImageData::ImageData()
-  : width(0), height(0), flags(0), pixels(nullptr)
-{}
-
-ImageData::ImageData(int width_, int height_)
-  : width(width_), height(height_), flags(0), pixels(new char[width* height * 4])
-{}
-
-ImageData::~ImageData()
-{
-  delete[] pixels;
-}
-
-ImageData::ImageData(ImageData&& other) noexcept
-  : width(other.width), height(other.height), flags(other.flags), pixels(other.pixels)
-{
-  other.width  = 0;
-  other.height = 0;
-  other.flags  = 0;
-  other.pixels = nullptr;
-}
-
-ImageData& ImageData::operator=(ImageData&& other) noexcept
-{
-  if (&other != this) {
-    delete[] pixels;
-
-    width  = other.width;
-    height = other.height;
-    flags  = other.flags;
-    pixels = other.pixels;
-
-    other.width  = 0;
-    other.height = 0;
-    other.flags  = 0;
-    other.pixels = nullptr;
-  }
-  return *this;
-}
-
 const char* ImageBuilder::getError()
 {
   return errorBuffer;
@@ -430,21 +389,19 @@ ImageData ImageBuilder::loadImage(const File& file)
     return image;
   }
 
-  image = ImageData(FreeImage_GetWidth(dib), FreeImage_GetHeight(dib));
+  image = ImageData(FreeImage_GetWidth(dib),
+                    FreeImage_GetHeight(dib),
+                    FreeImage_IsTransparent(dib) != 0);
 
   // Copy and convert BGRA -> RGBA.
-  int    size   = image.width * image.height * 4;
+  int    size   = image.size();
   ubyte* pixels = FreeImage_GetBits(dib);
 
   for (int i = 0; i < size; i += 4) {
-    image.pixels[i + 0] = char(pixels[i + 2]);
-    image.pixels[i + 1] = char(pixels[i + 1]);
-    image.pixels[i + 2] = char(pixels[i + 0]);
-    image.pixels[i + 3] = char(pixels[i + 3]);
-  }
-
-  if (FreeImage_IsTransparent(dib)) {
-    image.flags |= ImageData::ALPHA_BIT;
+    image[i + 0] = char(pixels[i + 2]);
+    image[i + 1] = char(pixels[i + 1]);
+    image[i + 2] = char(pixels[i + 0]);
+    image[i + 3] = char(pixels[i + 3]);
   }
 
   FreeImage_Unload(dib);

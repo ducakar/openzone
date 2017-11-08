@@ -124,9 +124,9 @@ bool Orbis::position(Struct* str)
 
   for (int x = span.minX; x <= span.maxX; ++x) {
     for (int y = span.minY; y <= span.maxY; ++y) {
-      OZ_ASSERT(!cells[x][y].structs.contains(short(str->index)));
+      OZ_ASSERT(!cells[x][y].structs.contains(int16(str->index)));
 
-      cells[x][y].structs.add(short(str->index));
+      cells[x][y].structs.add(int16(str->index));
     }
   }
 
@@ -139,9 +139,9 @@ void Orbis::unposition(Struct* str)
 
   for (int x = span.minX; x <= span.maxX; ++x) {
     for (int y = span.minY; y <= span.maxY; ++y) {
-      OZ_ASSERT(cells[x][y].structs.contains(short(str->index)));
+      OZ_ASSERT(cells[x][y].structs.contains(int16(str->index)));
 
-      cells[x][y].structs.excludeUnordered(short(str->index));
+      cells[x][y].structs.excludeUnordered(int16(str->index));
     }
   }
 }
@@ -510,25 +510,19 @@ void Orbis::write(Stream* os) const
   os->writeInt(nObjects);
   os->writeInt(nFrags);
 
-  for (int i = 0; i < MAX_STRUCTS; ++i) {
-    Struct* str = structs[i];
-
+  for (const Struct* str : structs) {
     if (str != nullptr) {
       os->writeString(str->bsp->name);
       str->write(os);
     }
   }
-  for (int i = 0; i < MAX_OBJECTS; ++i) {
-    Object* obj = objects[i];
-
+  for (const Object* obj : objects) {
     if (obj != nullptr) {
       os->writeString(obj->clazz->name);
       obj->write(os);
     }
   }
-  for (int i = 0; i < MAX_FRAGS; ++i) {
-    Frag* frag = frags[i];
-
+  for (const Frag* frag : frags) {
     if (frag != nullptr) {
       os->writeString(frag->pool->name);
       frag->write(os);
@@ -559,9 +553,7 @@ Json Orbis::write() const
   Json structsJson = Json::ARRAY;
   Json objectsJson = Json::ARRAY;
 
-  for (int i = 0; i < MAX_STRUCTS; ++i) {
-    const Struct* str = structs[i];
-
+  for (const Struct* str : structs) {
     if (str != nullptr) {
       structsJson.add(str->write());
 
@@ -573,9 +565,7 @@ Json Orbis::write() const
     }
   }
 
-  for (int i = 0; i < MAX_OBJECTS; ++i) {
-    const Object* obj = objects[i];
-
+  for (const Object* obj : objects) {
     if (obj != nullptr && obj->cell != nullptr && !boundObjects.contains(obj->index)) {
       objectsJson.add(obj->write());
     }

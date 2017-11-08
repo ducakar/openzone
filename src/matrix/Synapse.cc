@@ -179,11 +179,9 @@ Object* Synapse::add(const ObjectClass* clazz, const Point& p, Heading heading, 
   addedObjects.add(obj->index);
 
   if (!empty) {
-    const List<const ObjectClass*>& defaultItems = obj->clazz->defaultItems;
-
-    for (int i = 0; i < defaultItems.size(); ++i) {
+    for (const ObjectClass* defaultItem : obj->clazz->defaultItems) {
       Heading itemHeading = Heading(Math::rand(4));
-      Dynamic* item = static_cast<Dynamic*>(orbis.add(defaultItems[i], Point::ORIGIN, itemHeading));
+      Dynamic* item = static_cast<Dynamic*>(orbis.add(defaultItem, Point::ORIGIN, itemHeading));
 
       if (item == nullptr) {
         continue;
@@ -266,8 +264,8 @@ void Synapse::remove(Struct* str)
 {
   OZ_ASSERT(str->index != -1);
 
-  for (int i = 0; i < str->boundObjects.size(); ++i) {
-    Object* boundObj = orbis.obj(str->boundObjects[i]);
+  for (int boundObjIndex : str->boundObjects) {
+    Object* boundObj = orbis.obj(boundObjIndex);
 
     if (boundObj != nullptr) {
       remove(boundObj);
@@ -294,8 +292,8 @@ void Synapse::remove(Object* obj)
 {
   OZ_ASSERT(obj->index != -1);
 
-  for (int i = 0; i < obj->items.size(); ++i) {
-    Object* item = orbis.obj(obj->items[i]);
+  for (int itemIndex : obj->items) {
+    Object* item = orbis.obj(itemIndex);
 
     if (item != nullptr) {
       remove(item);

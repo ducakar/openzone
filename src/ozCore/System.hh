@@ -130,10 +130,10 @@ public:
    * - `HALT_BIT`: If runing from a terminal, previous handlers wait for user to press Enter before
    *   terminating the process via `System::abort()`, so one have time to attach a debugger.
    *
-   * @param crashHandler user-provided function called when the application is aborted by a signal
+   * @param handler user-provided function called when the application is aborted by a signal
    *        `System::error()`. If non-null, it is invoked after the stack trace is printed.
    */
-  static void init(int flags = DEFAULT_MASK, CrashHandler* crashHandler = nullptr);
+  static void init(int flags = DEFAULT_MASK, CrashHandler* handler = nullptr);
 
 };
 
