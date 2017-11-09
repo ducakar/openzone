@@ -35,9 +35,9 @@ class Sound
 {
 private:
 
-  static const int   MUSIC_BUFFER_SIZE       = 64 * 1024;
-  static const int   MUSIC_INPUT_BUFFER_SIZE = 64 * 1024;
-  static const float SOUND_DISTANCE;
+  static constexpr int   MUSIC_BUFFER_SIZE       = 64 * 1024;
+  static constexpr int   MUSIC_INPUT_BUFFER_SIZE = 64 * 1024;
+  static constexpr float SOUND_DISTANCE          = 192.0f;
 
   SharedLib                   libeSpeak;
 

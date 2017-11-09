@@ -27,9 +27,6 @@
 namespace oz::client::ui
 {
 
-const float HudArea::VEHICLE_DIM      = VEHICLE_SIZE / 2.0f;
-const float HudArea::CROSS_FADE_COEFF = 8.0f;
-
 void HudArea::drawBotCrosshair()
 {
   const Bot*      me      = camera.botObj;
@@ -304,8 +301,7 @@ HudArea::HudArea()
     botLife(&style.botLife),
     botStamina(&style.botStamina),
     vehicleHull(&style.vehicleHull),
-    vehicleFuel(&style.vehicleFuel),
-    vehicleModel(nullptr)
+    vehicleFuel(&style.vehicleFuel)
 {
   flags |= UPDATE_BIT | PINNED_BIT;
 

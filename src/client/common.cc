@@ -22,8 +22,6 @@
 namespace oz::client
 {
 
-const TexCoord TexCoord::ZERO = TexCoord(0.0f, 0.0f);
-
 const Json::Format CONFIG_FORMAT = {2, 32, "%.4g"};
 
 Collider collider;

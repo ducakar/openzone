@@ -37,9 +37,9 @@ private:
 
 public:
 
-  explicit Bar(const Style::Bar* style = nullptr);
+  explicit Bar(const Style::Bar* style_ = nullptr);
 
-  void setStyle(const Style::Bar* style);
+  void setStyle(const Style::Bar* style_);
 
   void draw(const Area* area, float ratio) const;
   void draw(const Area* area, int barX, int barY, int barWidth, int barHeight, float ratio) const;

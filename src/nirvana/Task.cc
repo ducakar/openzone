@@ -22,8 +22,7 @@
 namespace oz
 {
 
-Task::~Task()
-{}
+Task::~Task() = default;
 
 void Task::write(Stream* os) const
 {

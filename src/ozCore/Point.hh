@@ -54,13 +54,13 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  Point() = default;
+  constexpr Point() = default;
 
   /**
    * Create a point with given coordinates.
    */
   OZ_ALWAYS_INLINE
-  explicit Point(float x, float y, float z)
+  explicit constexpr Point(float x, float y, float z)
     : VectorBase3(x, y, z, 1.0f)
   {}
 

@@ -45,7 +45,7 @@ class Input
 public:
 
   /// Maximum number of actions.
-  static const int MAX_ACTIONS = 128;
+  static constexpr int MAX_ACTIONS = 128;
 
 public:
 

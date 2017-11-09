@@ -44,7 +44,7 @@ class StackTrace
 public:
 
   /// Maximum number of stack frames.
-  static const int MAX_FRAMES = 32;
+  static constexpr int MAX_FRAMES = 32;
 
 public:
 

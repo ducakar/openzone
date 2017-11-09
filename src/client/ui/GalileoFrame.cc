@@ -140,8 +140,8 @@ void GalileoFrame::onDraw()
 }
 
 GalileoFrame::GalileoFrame()
-  : Frame(240, 232 - HEADER_SIZE, ""), mapTexId(0), colour(style.colours.galileoNormal),
-    clickX(Math::NaN), clickY(Math::NaN), isMaximised(false)
+  : Frame(240, 232 - HEADER_SIZE, ""),  colour(style.colours.galileoNormal),
+    clickX(Math::NaN), clickY(Math::NaN)
 {
   flags |= UPDATE_BIT | PINNED_BIT;
 

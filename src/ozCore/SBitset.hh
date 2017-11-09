@@ -49,10 +49,10 @@ class SBitset
 private:
 
   /// Number of bits per the internal unit.
-  static const int UNIT_BITS = sizeof(uint64) * 8;
+  static constexpr int UNIT_BITS = sizeof(uint64) * 8;
 
   /// Number of units.
-  static const int SIZE = (BITS + UNIT_BITS - 1) / UNIT_BITS;
+  static constexpr int SIZE = (BITS + UNIT_BITS - 1) / UNIT_BITS;
 
 private:
 

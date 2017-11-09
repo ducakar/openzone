@@ -33,32 +33,32 @@ class Vehicle : public Dynamic
 {
 public:
 
-  static const int   MAX_WEAPONS      = 4;
+  static constexpr int   MAX_WEAPONS        = 4;
 
   // not in use, used to reserve a slot for engine sound sample
-  static const int   EVENT_ENGINE     = 9;
-  static const int   EVENT_SHOT0      = 10;
-  static const int   EVENT_SHOT1      = 11;
-  static const int   EVENT_SHOT2      = 12;
-  static const int   EVENT_SHOT3      = 13;
-  static const int   EVENT_SHOT_EMPTY = 14;
+  static constexpr int   EVENT_ENGINE       = 9;
+  static constexpr int   EVENT_SHOT0        = 10;
+  static constexpr int   EVENT_SHOT1        = 11;
+  static constexpr int   EVENT_SHOT2        = 12;
+  static constexpr int   EVENT_SHOT3        = 13;
+  static constexpr int   EVENT_SHOT_EMPTY   = 14;
 
-  static const int   CREW_VISIBLE_BIT = 0x0001;
-  static const int   HAS_EJECT_BIT    = 0x0004;
-  static const int   AUTO_EJECT_BIT   = 0x0008;
+  static constexpr int   CREW_VISIBLE_BIT   = 0x0001;
+  static constexpr int   HAS_EJECT_BIT      = 0x0004;
+  static constexpr int   AUTO_EJECT_BIT     = 0x0008;
 
-  static const int   MOVING_BIT       = 0x0010;
-  static const int   WALKING_BIT      = 0x0020;
+  static constexpr int   MOVING_BIT         = 0x0010;
+  static constexpr int   WALKING_BIT        = 0x0020;
 
 private:
 
-  static const float ROT_DIFF_LIMIT;
-  static const float ROT_VEL_DIFF_RATIO;
-  static const float AIR_FRICTION;
-  static const float EXIT_EPSILON;
-  static const float EXIT_MOMENTUM;
-  static const float EJECT_EPSILON;
-  static const float EJECT_MOMENTUM;
+  static constexpr float ROT_DIFF_LIMIT     = 0.50f;
+  static constexpr float ROT_VEL_DIFF_RATIO = 0.10f;
+  static constexpr float AIR_FRICTION       = 0.02f;
+  static constexpr float EXIT_EPSILON       = 0.20f;
+  static constexpr float EXIT_MOMENTUM      = 1.00f;
+  static constexpr float EJECT_EPSILON      = 0.80f;
+  static constexpr float EJECT_MOMENTUM     = 15.0f;
 
   using Handler = void (Vehicle::*)();
 
@@ -107,9 +107,9 @@ protected:
 
 public:
 
-  explicit Vehicle(const VehicleClass* clazz, int index, const Point& p, Heading heading);
-  explicit Vehicle(const VehicleClass* clazz, int index, const Json& json);
-  explicit Vehicle(const VehicleClass* clazz, Stream* is);
+  explicit Vehicle(const VehicleClass* clazz_, int index_, const Point& p_, Heading heading);
+  explicit Vehicle(const VehicleClass* clazz_, int index, const Json& json);
+  explicit Vehicle(const VehicleClass* clazz_, Stream* is);
 
   Json write() const override;
   void write(Stream* os) const override;

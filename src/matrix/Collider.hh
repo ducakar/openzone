@@ -30,34 +30,34 @@ namespace oz
 
 struct Material
 {
-  static const int NONE        = 0;      ///< No material.
+  static constexpr int NONE        = 0;      ///< No material.
 
-  static const int VOID_BIT    = 0x0080; ///< World bounds, invisible walls preventing you to leave.
-  static const int TERRAIN_BIT = 0x0001; ///< Terrain.
-  static const int STRUCT_BIT  = 0x0002; ///< Structure.
-  static const int SLICK_BIT   = 0x0004; ///< Slick brush in a structure.
-  static const int OBJECT_BIT  = 0x0008; ///< Object.
+  static constexpr int VOID_BIT    = 0x0080; ///< World bounds, invisible walls.
+  static constexpr int TERRAIN_BIT = 0x0001; ///< Terrain.
+  static constexpr int STRUCT_BIT  = 0x0002; ///< Structure.
+  static constexpr int SLICK_BIT   = 0x0004; ///< Slick brush in a structure.
+  static constexpr int OBJECT_BIT  = 0x0008; ///< Object.
 
-  static const int MASK        = 0x00ff; ///< Material mask (to distinguish from Medium bits when
-                                         ///< used together in same variable).
+  static constexpr int MASK        = 0x00ff; ///< Material mask (to distinguish from Medium bits
+                                             ///< when used together in same variable).
 };
 
 struct Medium
 {
-  static const int NONE        = 0;      ///< No medium.
+  static constexpr int NONE        = 0;      ///< No medium.
 
-  static const int LADDER_BIT  = 0x0100; ///< Overlapping with BSP ladder brush.
-  static const int AIR_BIT     = 0x0200; ///< Overlapping with BSP air brush.
-  static const int WATER_BIT   = 0x0400; ///< Overlapping with BSP water brush or overlapping with
-                                         ///< terrain water sea but not BSP air brush.
-  static const int LAVA_BIT    = 0x0800; ///< Overlapping with BSP lava brush or overlapping with
-                                         ///< terrain lava sea but not BSP air brush.
-  static const int SEA_BIT     = 0x1000; ///< Overlapping with terrain water/lava sea but not BSP
-                                         ///< air brush or overlapping with BSP sea brush.
+  static constexpr int LADDER_BIT  = 0x0100; ///< Overlapping with BSP ladder brush.
+  static constexpr int AIR_BIT     = 0x0200; ///< Overlapping with BSP air brush.
+  static constexpr int WATER_BIT   = 0x0400; ///< Overlapping with BSP water brush or overlapping
+                                             ///< with terrain water sea but not BSP air brush.
+  static constexpr int LAVA_BIT    = 0x0800; ///< Overlapping with BSP lava brush or overlapping
+                                             ///< with terrain lava sea but not BSP air brush.
+  static constexpr int SEA_BIT     = 0x1000; ///< Overlapping with terrain water/lava sea but not
+                                             ///< BSP air brush or overlapping with BSP sea brush.
 
-  static const int LIQUID_MASK = 0x0c00; ///< Mask for liquids (water or lava bit, but not sea).
-  static const int MASK        = 0xff00; ///< Medium mask (to distinguish from Material bits when
-                                         ///< used together in same variable).
+  static constexpr int LIQUID_MASK = 0x0c00; ///< Mask for liquids (water or lava bit, but not sea).
+  static constexpr int MASK        = 0xff00; ///< Medium mask (to distinguish from Material bits
+                                             ///< when used together in same variable).
 };
 
 struct Hit
@@ -141,20 +141,20 @@ private:
 
 public:
 
-  bool overlaps(const Point& point, const Object* exclObj = nullptr);
-  bool overlaps(const AABB& aabb, const Object* exclObj = nullptr);
-  bool overlaps(const Object* obj);
-  bool overlaps(const Entity* entity, float margin = 0.0f);
+  bool overlaps(const Point& point, const Object* exclObj_ = nullptr);
+  bool overlaps(const AABB& aabb_, const Object* exclObj_ = nullptr);
+  bool overlaps(const Object* obj_);
+  bool overlaps(const Entity* entity_, float margin_ = 0.0f);
 
-  void translate(const Point& point, const Vec3& move, const Object* exclObj = nullptr);
-  void translate(const AABB& aabb, const Vec3& move, const Object* exclObj = nullptr);
-  void translate(const Dynamic* obj, const Vec3& move);
-  void translate(const Entity* entity, const Vec3& localMove);
+  void translate(const Point& point, const Vec3& move_, const Object* exclObj_ = nullptr);
+  void translate(const AABB& aabb_, const Vec3& move_, const Object* exclObj_ = nullptr);
+  void translate(const Dynamic* obj_, const Vec3& move_);
+  void translate(const Entity* entity_, const Vec3& localMove);
 
   // fill given vectors with objects and structures overlapping with the AABB
   // if either vector is nullptr the respective test is not performed
-  void getOverlaps(const AABB& aabb, List<Struct*>* structs, List<Object*>* objects, float margin);
-  void getOverlaps(const Entity* entity, List<Object*>* objects, float margin);
+  void getOverlaps(const AABB& aabb_, List<Struct*>* structs, List<Object*>* objects, float margin_);
+  void getOverlaps(const Entity* entity_, List<Object*>* objects, float margin_);
 
 };
 

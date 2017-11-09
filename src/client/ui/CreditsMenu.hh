@@ -36,9 +36,9 @@ private:
   List<String> lines;
   List<Text>   labels;
   const int    stride;
-  int          scroll;
-  int          bias;
-  int          direction;
+  int          scroll    = 0;
+  int          bias      = 0;
+  int          direction = 1;
 
 protected:
 

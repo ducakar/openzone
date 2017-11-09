@@ -52,7 +52,7 @@ namespace oz
 /**
  * Maximum allowed value for world coordinates.
  */
-const int MAX_WORLD_COORD = 2048;
+constexpr int MAX_WORLD_COORD = 2048;
 
 /**
  * Margin for collision detection.
@@ -66,7 +66,7 @@ const int MAX_WORLD_COORD = 2048;
  * \f$ \cdot |maxWorldCoord| \cdot \varepsilon \sqrt 3 \f$ error.
  * Sum of all those errors should hence be less than `|maxWorldCoord| * 2 * Math::FLOAT_EPS`.
  */
-const float EPSILON = float(MAX_WORLD_COORD) * 2.0f * Math::FLOAT_EPS;
+constexpr float EPSILON = float(MAX_WORLD_COORD) * 2.0f * Math::FLOAT_EPS;
 
 /**
  * 2D integer position.

@@ -35,7 +35,7 @@ class FragPool
 public:
 
   // OR'ed to the client::FragPoo::flags, so we must assure bits don't overlap
-  static const int FADEOUT_BIT = 0x0100;
+  static constexpr int FADEOUT_BIT = 0x0100;
 
   String    name;
   int       id;
@@ -55,7 +55,7 @@ public:
 
 public:
 
-  explicit FragPool(const Json& config, const char* name, int id);
+  explicit FragPool(const Json& config, const char* name_, int id_);
 
   Frag* create(int index, const Point& pos, const Vec3& velocity) const;
   Frag* create(Stream* is) const;

@@ -44,14 +44,16 @@ struct Vertex
 
 struct Texture
 {
-  int  id;      ///< -2: external, -1: default, 0+ BSP texture index.
+  static constexpr int NONE     = -1;
+  static constexpr int EXTERNAL = -2;
+
+  int  id      = NONE; ///< NONE, EXTERNAL or BSP texture index.
   uint albedo;
   uint masks;
   uint normals;
 
   Texture()
-    : id(-1), albedo(shader.defaultTexture), masks(shader.defaultMasks),
-      normals(shader.defaultNormals)
+    : albedo(shader.defaultTexture), masks(shader.defaultMasks), normals(shader.defaultNormals)
   {}
 };
 
@@ -109,14 +111,14 @@ class Model
 {
 public:
 
-  static const int EMBEDED_TEX_BIT = 0x01; ///< Textures are embedded into model file.
+  static constexpr int EMBEDED_TEX_BIT = 0x01; ///< Textures are embedded into model file.
 
-  static const int SOLID_BIT       = 0x04; ///< Mesh is opaque.
-  static const int ALPHA_BIT       = 0x08; ///< Mesh is transparent.
+  static constexpr int SOLID_BIT       = 0x04; ///< Mesh is opaque.
+  static constexpr int ALPHA_BIT       = 0x08; ///< Mesh is transparent.
 
-  static const int DIFFUSE_BIT     = 0x10; ///< Texture has base per-pixel colours.
-  static const int MASKS_BIT       = 0x20; ///< Texture has specular and emission masks.
-  static const int NORMALS_BIT     = 0x40; ///< Texture has normal map.
+  static constexpr int DIFFUSE_BIT     = 0x10; ///< Texture has base per-pixel colours.
+  static constexpr int MASKS_BIT       = 0x20; ///< Texture has specular and emission masks.
+  static constexpr int NORMALS_BIT     = 0x40; ///< Texture has normal map.
 
   enum Collation
   {
@@ -233,14 +235,14 @@ private:
 
 public:
 
-  static void setCollation(Collation collation);
+  static void setCollation(Collation collation_);
 
   static void drawScheduled(QueueType queue, int mask);
   static void clearScheduled(QueueType queue);
 
   static void deallocate();
 
-  explicit Model(const File& path);
+  explicit Model(const char* path_);
   ~Model();
 
   bool isPreloaded() const

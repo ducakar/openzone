@@ -41,7 +41,7 @@ class ImageData
 private:
 
   /// Alpha flag.
-  static const int ALPHA_BIT = 0x01;
+  static constexpr int ALPHA_BIT = 0x01;
 
 private:
 

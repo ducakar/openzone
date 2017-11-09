@@ -29,16 +29,6 @@
 namespace oz::client
 {
 
-const float StrategicProxy::MIN_HEIGHT      = 2.00f;
-const float StrategicProxy::MAX_HEIGHT      = 50.0f;
-const float StrategicProxy::DEFAULT_HEIGHT  = 15.0f;
-const float StrategicProxy::DEFAULT_ANGLE   = 45.0f;
-const float StrategicProxy::FREE_LOW_SPEED  = 2.40f;
-const float StrategicProxy::FREE_HIGH_SPEED = 30.0f;
-const float StrategicProxy::RTS_LOW_SPEED   = 15.0f;
-const float StrategicProxy::RTS_HIGH_SPEED  = 45.0f;
-const float StrategicProxy::ZOOM_FACTOR     = 0.10f;
-
 void StrategicProxy::begin()
 {
   camera.setTaggedObj(nullptr);

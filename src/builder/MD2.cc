@@ -26,7 +26,7 @@
 namespace oz::builder
 {
 
-const Vec3 MD2::NORMALS[] =
+static const Vec3 NORMALS[] =
 {
   Vec3(-0.000000f, -0.525731f,  0.850651f),
   Vec3(-0.238856f, -0.442863f,  0.864188f),

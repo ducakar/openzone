@@ -34,7 +34,7 @@ namespace oz
 
 struct Cell
 {
-  static const int SIZE = 16;
+  static constexpr int SIZE = 16;
 
   SList<int16, 6> structs;
   Chain<Object>   objects;
@@ -52,11 +52,11 @@ class Orbis : public Bounds
 public:
 
   // # of cells on each (x, y) axis
-  static const int DIM         = MAX_WORLD_COORD;
-  static const int CELLS       = 2 * DIM / Cell::SIZE;
-  static const int MAX_STRUCTS = 1 << 10;
-  static const int MAX_OBJECTS = 1 << 15;
-  static const int MAX_FRAGS   = 1 << 12;
+  static constexpr int DIM         = MAX_WORLD_COORD;
+  static constexpr int CELLS       = 2 * DIM / Cell::SIZE;
+  static constexpr int MAX_STRUCTS = 1 << 10;
+  static constexpr int MAX_OBJECTS = 1 << 15;
+  static constexpr int MAX_FRAGS   = 1 << 12;
 
   Caelum  caelum;
   Terra   terra;

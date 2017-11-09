@@ -90,7 +90,7 @@ private:
 
   struct SpeakSource
   {
-    static const int BUFFER_SIZE = 44100;
+    static constexpr int BUFFER_SIZE = 44100;
 
     uint         id;
     uint         bufferIds[2];
@@ -111,23 +111,23 @@ private:
   static int               speakSampleRate;       // Set from Sound class.
   static SpeakSource       speakSource;
 
-  Imago::CreateFunc**      imagoClasses;
-  Audio::CreateFunc**      audioClasses;
-  FragPool**               fragPools;
+  Imago::CreateFunc**      imagoClasses = nullptr;
+  Audio::CreateFunc**      audioClasses = nullptr;
+  FragPool**               fragPools    = nullptr;
 
-  TextureResource*         textures;
-  SoundResource*           sounds;
+  TextureResource*         textures     = nullptr;
+  SoundResource*           sounds       = nullptr;
 
   Chain<Source>            sources;               // Non-looping sources.
   HashMap<int, ContSource> contSources;           // Looping sources.
 
   Chain<PartGen>           partGens;
 
-  Resource<Model*>*        models;
-  Resource<PartClass>*     partClasses;
+  Resource<Model*>*        models       = nullptr;
+  Resource<PartClass>*     partClasses  = nullptr;
 
-  Resource<BSPImago*>*     bspImagines;
-  Resource<BSPAudio*>*     bspAudios;
+  Resource<BSPImago*>*     bspImagines  = nullptr;
+  Resource<BSPAudio*>*     bspAudios    = nullptr;
 
   HashMap<int, Imago*>     imagines;              // Currently loaded graphics models.
   HashMap<int, Audio*>     audios;                // Currently loaded audio models.
@@ -171,8 +171,6 @@ private:
   void removePartGen(PartGen* partGen);
 
 public:
-
-  Context();
 
   static Texture loadTexture(const File& albedoFile, const File& masksFile, const File& normalsFile);
   static Texture loadTexture(const String& basePath);

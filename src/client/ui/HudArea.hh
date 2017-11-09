@@ -37,10 +37,10 @@ class HudArea : public Area
 
 private:
 
-  static const int   ICON_SIZE    = 32;
-  static const int   VEHICLE_SIZE = 180;
-  static const float VEHICLE_DIM;
-  static const float CROSS_FADE_COEFF;
+  static constexpr int   ICON_SIZE        = 32;
+  static constexpr int   VEHICLE_SIZE     = 180;
+  static constexpr float VEHICLE_DIM      = VEHICLE_SIZE / 2.0f;
+  static constexpr float CROSS_FADE_COEFF = 8.0f;
 
   Text        title;
   Text        weaponName;
@@ -55,7 +55,7 @@ private:
   Bar         vehicleHull;
   Bar         vehicleFuel;
 
-  ModelField* vehicleModel;
+  ModelField* vehicleModel = nullptr;
 
   int         descTextX;
   int         descTextY;

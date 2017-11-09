@@ -44,22 +44,22 @@ struct EntityClass : Bounds
   };
 
   /// Don't check for collisions with objects when moving, just go through objects.
-  static const int IGNORANT = 0x01;
+  static constexpr int IGNORANT = 0x01;
 
   /// Push obstacles on the way when moving.
-  static const int PUSHER = 0x02;
+  static constexpr int PUSHER = 0x02;
 
   /// If pushing obstacles fails, crush them.
-  static const int CRUSHER = 0x04;
+  static constexpr int CRUSHER = 0x04;
 
   /// Revert motion instead of stopping when an obstacle is detected (and cannot be pushed).
-  static const int REVERTER = 0x08;
+  static constexpr int REVERTER = 0x08;
 
   /// Automatically open (after openTimeout) when an object overlaps with the margin.
-  static const int AUTO_OPEN = 0x10;
+  static constexpr int AUTO_OPEN = 0x10;
 
   /// Automatically close (after closeTimeout) when an object overlaps with the margin.
-  static const int AUTO_CLOSE = 0x20;
+  static constexpr int AUTO_CLOSE = 0x20;
 
   int    firstBrush;   ///< Index of the first brush in `brushes` array.
   int    nBrushes;     ///< Number of brushes.
@@ -98,7 +98,7 @@ class BSP : public Bounds
 {
 public:
 
-  static const int MAX_BRUSHES = 1024;
+  static constexpr int MAX_BRUSHES = 1024;
 
   /**
    * %BSP node.
@@ -175,7 +175,7 @@ public:
 
 public:
 
-  explicit BSP(const char* name, int id);
+  explicit BSP(const char* name_, int id_);
 
   void load();
   void unload();

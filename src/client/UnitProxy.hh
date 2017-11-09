@@ -32,21 +32,21 @@ class UnitProxy : public Proxy
 {
 private:
 
-  static const float CAMERA_Z_SMOOTHING;
-  static const float CAMERA_Z_TOLERANCE;
-  static const float CAMERA_DIST_SMOOTHING;
-  static const float EXTERNAL_CAM_DIST;
-  static const float EXTERNAL_CAM_CLIP_DIST; // Leave this much space between obstacle and camera
-                                             // if camera is brought closer to the eyes because of
-                                             // an obstacle.
-  static const float SHOULDER_CAM_RIGHT;
-  static const float SHOULDER_CAM_UP;
-  static const float VEHICLE_CAM_UP_FACTOR;
-  static const float BOB_SUPPRESSION_COEF;
-  static const float BINOCULARS_MAGNIFICATION;
-  static const float INJURY_SUPPRESSION_COEF;
-  static const float INJURY_CLAMP;
-  static const float DEATH_CAM_DIST;
+  static constexpr float CAMERA_Z_SMOOTHING       = 0.40f;
+  static constexpr float CAMERA_Z_TOLERANCE       = 0.30f;
+  static constexpr float CAMERA_DIST_SMOOTHING    = 0.80f;
+  static constexpr float EXTERNAL_CAM_DIST        = 2.75f;
+  // Leave this much space between obstacle and camera if camera is brought closer to the eyes
+  // because of an obstacle.
+  static constexpr float EXTERNAL_CAM_CLIP_DIST   = 0.10f;
+  static constexpr float SHOULDER_CAM_RIGHT       = 0.25f;
+  static constexpr float SHOULDER_CAM_UP          = 0.25f;
+  static constexpr float VEHICLE_CAM_UP_FACTOR    = 0.15f;
+  static constexpr float BOB_SUPPRESSION_COEF     = 0.80f;
+  static constexpr float BINOCULARS_MAGNIFICATION = 0.20f;
+  static constexpr float INJURY_SUPPRESSION_COEF  = 0.98f;
+  static constexpr float INJURY_CLAMP             = 2.00f;
+  static constexpr float DEATH_CAM_DIST           = 4.00f;
 
 public:
 

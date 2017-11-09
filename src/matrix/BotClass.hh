@@ -32,8 +32,15 @@ class BotClass : public DynamicClass
 {
 public:
 
-  static const Mat4 INJURY_COLOUR;
-  static const Mat4 NV_COLOUR;
+  static constexpr Mat4 INJURY_COLOUR = Mat4(1.00f, 0.00f, 0.00f, 0.00f,
+                                             1.00f, 0.00f, 0.00f, 0.00f,
+                                             1.00f, 0.00f, 0.00f, 0.00f,
+                                             0.20f, 0.05f, 0.05f, 1.00f);
+
+  static constexpr Mat4 NV_COLOUR     = Mat4(0.25f, 2.00f, 0.25f, 0.00f,
+                                             0.25f, 2.00f, 0.25f, 0.00f,
+                                             0.25f, 2.00f, 0.25f, 0.00f,
+                                             0.00f, 0.00f, 0.00f, 1.00f);
 
   int    state;
 
@@ -98,7 +105,7 @@ public:
 
   static ObjectClass* createClass();
 
-  void init(const Json& config, const char* name) override;
+  void init(const Json& config, const char* name_) override;
 
   Object* create(int index, const Point& pos, Heading heading) const override;
   Object* create(int index, const Json& json) const override;

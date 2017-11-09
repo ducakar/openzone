@@ -25,8 +25,6 @@
 namespace oz::client
 {
 
-const float BotAudio::FOOTSTEP_DISTANCE_SQ = 32.0f*32.0f;
-
 Pool<BotAudio> BotAudio::pool(256);
 
 BotAudio::BotAudio(const Object* obj)
@@ -47,8 +45,8 @@ void BotAudio::play(const Object* playAt)
   const Bot*  bot    = static_cast<const Bot*>(obj);
   const auto& sounds = obj->clazz->audioSounds;
 
-  for (int i = 0; i < ObjectClass::MAX_SOUNDS; ++i) {
-    recent[i] = max(recent[i] - 1, 0);
+  for (int& i : eventCountdowns) {
+    i = max(i - 1, 0);
   }
 
   // events
@@ -61,16 +59,16 @@ void BotAudio::play(const Object* playAt)
       if (event.intensity < 0.0f) {
         playContSound(sounds[event.id], -event.intensity, playAt);
       }
-      else if (recent[event.id] == 0) {
-        recent[event.id] = RECENT_TICKS;
+      else if (eventCountdowns[event.id] == 0) {
+        eventCountdowns[event.id] = COUNTDOWN_TICKS;
         playSound(sounds[event.id], event.intensity, playAt);
       }
     }
   }
 
   // inventory items' events
-  for (int i = 0; i < obj->items.size(); ++i) {
-    const Object* item = orbis.obj(obj->items[i]);
+  for (int i : obj->items) {
+    const Object* item = orbis.obj(i);
 
     if (item != nullptr && (item->flags & Object::AUDIO_BIT)) {
       context.playAudio(item, playAt);
@@ -82,7 +80,7 @@ void BotAudio::play(const Object* playAt)
       (bot->p - camera.p).sqN() < FOOTSTEP_DISTANCE_SQ)
   {
     if (bot->flags & Object::FRICTING_BIT) {
-      recent[Object::EVENT_FRICTING] = RECENT_TICKS;
+      eventCountdowns[Object::EVENT_FRICTING] = COUNTDOWN_TICKS;
     }
 
     int currStep = int(2.0f * bot->step) % 2;
@@ -95,7 +93,7 @@ void BotAudio::play(const Object* playAt)
           playSound(sounds[sample], 1.0f, bot);
         }
       }
-      else if (recent[Object::EVENT_FRICTING] != 0) {
+      else if (eventCountdowns[Object::EVENT_FRICTING] != 0) {
         OZ_ASSERT(bot->depth >= 0.0f);
 
         int sample = bot->depth != 0.0f ? Bot::EVENT_WATER_STEP : Bot::EVENT_STEP;

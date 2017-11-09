@@ -32,7 +32,7 @@ class BotAudio : public BasicAudio
 {
 private:
 
-  static const float FOOTSTEP_DISTANCE_SQ;
+  static constexpr float FOOTSTEP_DISTANCE_SQ = 32.0f * 32.0f;
 
   int prevStep;
 

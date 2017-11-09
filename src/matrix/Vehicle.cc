@@ -25,14 +25,6 @@
 namespace oz
 {
 
-const float Vehicle::ROT_DIFF_LIMIT     = 0.50f;
-const float Vehicle::ROT_VEL_DIFF_RATIO = 0.10f;
-const float Vehicle::AIR_FRICTION       = 0.02f;
-const float Vehicle::EXIT_EPSILON       = 0.20f;
-const float Vehicle::EXIT_MOMENTUM      = 1.00f;
-const float Vehicle::EJECT_EPSILON      = 0.80f;
-const float Vehicle::EJECT_MOMENTUM     = 15.0f;
-
 Pool<Vehicle> Vehicle::pool(256);
 
 const Vehicle::Handler Vehicle::HANDLERS[] = {

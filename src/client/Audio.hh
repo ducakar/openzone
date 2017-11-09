@@ -34,11 +34,11 @@ class Audio
 {
 public:
 
-  static const int UPDATED_BIT = 0x00000001;
+  static constexpr int   UPDATED_BIT          = 0x00000001;
 
-  static const float ROLLOFF_FACTOR;
-  static const float COCKPIT_GAIN_FACTOR;
-  static const float COCKPIT_PITCH_FACTOR;
+  static constexpr float ROLLOFF_FACTOR       = 0.50f;
+  static constexpr float COCKPIT_GAIN_FACTOR  = 0.35f;
+  static constexpr float COCKPIT_PITCH_FACTOR = 0.95f;
 
 public:
 
@@ -53,7 +53,7 @@ protected:
   bool playSpeak(const char* text, float volume, const Object* parent) const;
   void playEngineSound(int sound, float volume, float pitch, const Object* parent) const;
 
-  explicit Audio(const Object* obj);
+  explicit Audio(const Object* obj_);
 
 public:
 

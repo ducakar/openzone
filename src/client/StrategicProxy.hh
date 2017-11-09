@@ -32,15 +32,15 @@ class StrategicProxy : public Proxy
 {
 private:
 
-  static const float MIN_HEIGHT;
-  static const float MAX_HEIGHT;
-  static const float DEFAULT_HEIGHT;
-  static const float DEFAULT_ANGLE;
-  static const float FREE_LOW_SPEED;
-  static const float FREE_HIGH_SPEED;
-  static const float RTS_LOW_SPEED;
-  static const float RTS_HIGH_SPEED;
-  static const float ZOOM_FACTOR;
+  static constexpr float MIN_HEIGHT      = 2.00f;
+  static constexpr float MAX_HEIGHT      = 50.0f;
+  static constexpr float DEFAULT_HEIGHT  = 15.0f;
+  static constexpr float DEFAULT_ANGLE   = 45.0f;
+  static constexpr float FREE_LOW_SPEED  = 2.40f;
+  static constexpr float FREE_HIGH_SPEED = 30.0f;
+  static constexpr float RTS_LOW_SPEED   = 15.0f;
+  static constexpr float RTS_HIGH_SPEED  = 45.0f;
+  static constexpr float ZOOM_FACTOR     = 0.10f;
 
 public:
 

@@ -83,8 +83,6 @@ private:
     int16 texCoords[3];
   };
 
-  static const Vec3 NORMALS[];
-
 public:
 
   void build(const File& path);

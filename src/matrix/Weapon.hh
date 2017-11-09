@@ -33,8 +33,8 @@ class Weapon : public Dynamic
 {
 public:
 
-  static const int EVENT_SHOT_EMPTY = 9;
-  static const int EVENT_SHOT       = 10;
+  static constexpr int EVENT_SHOT_EMPTY = 9;
+  static constexpr int EVENT_SHOT       = 10;
 
   static Pool<Weapon> pool;
 
@@ -52,9 +52,9 @@ protected:
 
 public:
 
-  explicit Weapon(const WeaponClass* clazz, int index, const Point& p, Heading heading);
-  explicit Weapon(const WeaponClass* clazz, int index, const Json& json);
-  explicit Weapon(const WeaponClass* clazz, Stream* is);
+  explicit Weapon(const WeaponClass* clazz_, int index_, const Point& p_, Heading heading);
+  explicit Weapon(const WeaponClass* clazz_, int index, const Json& json);
+  explicit Weapon(const WeaponClass* clazz_, Stream* is);
 
   Json write() const override;
   void write(Stream* os) const override;

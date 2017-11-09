@@ -301,9 +301,7 @@ void CinematicProxy::write(Stream* os) const
   os->writeInt(prevState);
 
   os->writeInt(steps.size());
-  for (int i = 0; i < steps.size(); ++i) {
-    const Step& step = steps[i];
-
+  for (const Step& step : steps) {
     os->write<Quat>(step.rot);
     os->write<Point>(step.p);
     os->write<Mat4>(step.colour);

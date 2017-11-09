@@ -32,19 +32,19 @@ class Terra
 {
 public:
 
-  static const int       TILE_QUADS    = 32;
-  static const int       TILES         = oz::Terra::QUADS / TILE_QUADS;
+  static constexpr int   TILE_QUADS    = 32;
+  static constexpr int   TILES         = oz::Terra::QUADS / TILE_QUADS;
 
 private:
 
-  static const int       TILE_SIZE     = TILE_QUADS * oz::Terra::Quad::SIZE;
-  static const int       TILE_INDICES  = TILE_QUADS * (TILE_QUADS + 1) * 2 + (TILE_QUADS - 1) * 2;
-  static const int       TILE_VERTICES = (TILE_QUADS + 1) * (TILE_QUADS + 1);
+  static constexpr int   TILE_SIZE     = TILE_QUADS * oz::Terra::Quad::SIZE;
+  static constexpr int   TILE_INDICES  = TILE_QUADS * (TILE_QUADS + 1) * 2 + (TILE_QUADS - 1) * 2;
+  static constexpr int   TILE_VERTICES = (TILE_QUADS + 1) * (TILE_QUADS + 1);
 
-  static const float     WAVE_BIAS_INC;
+  static constexpr float WAVE_BIAS_INC = 1.5f;
 
-  uint                   vbos[TILES][TILES];
-  uint                   ibo;
+  uint                   vbos[TILES][TILES] = {};
+  uint                   ibo                = 0;
 
   int                    detailTexId;
   int                    landShaderId;
@@ -61,12 +61,10 @@ private:
 
 public:
 
-  int  id;
+  int  id = -1;
 
   int  liquidTexId;
   Vec4 liquidFogColour;
-
-  Terra();
 
   void draw();
   void drawLiquid();

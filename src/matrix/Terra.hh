@@ -51,17 +51,17 @@ public:
   //
   struct Quad
   {
-    static const int SIZE = 8;        ///< Integer size of a terrain quad.
-    static const int DIM  = SIZE / 2; ///< Dimension of a terrain quad (size / 2).
+    static constexpr int SIZE = 8;        ///< Integer size of a terrain quad.
+    static constexpr int DIM  = SIZE / 2; ///< Dimension of a terrain quad (size / 2).
 
     Point vertex;                     ///< Upper-left vertex.
     Vec3  normals[2];                 ///< [0] upper-left and [1] lower-right triangle normal.
   };
 
   // Orbis::DIM == Terrain::DIM == Terrain::MAX * TerraQuad::DIM
-  static const int QUADS = 2 * MAX_WORLD_COORD / Quad::SIZE;
-  static const int VERTS = QUADS + 1;
-  static const int DIM   = QUADS * Quad::DIM;
+  static constexpr int QUADS = 2 * MAX_WORLD_COORD / Quad::SIZE;
+  static constexpr int VERTS = QUADS + 1;
+  static constexpr int DIM   = QUADS * Quad::DIM;
 
   Quad quads[VERTS][VERTS]; ///< Vertices and triangle normals.
   int  liquid;              ///< Either `matrix::Medium::GLOBAL_WATER_BIT` or
@@ -101,7 +101,7 @@ public:
   }
 
   void reset();
-  void load(int id);
+  void load(int id_);
   void init();
 
   void read(const Json& json);

@@ -36,10 +36,9 @@ private:
 
   Text         description;
   int          contentHeight;
-  bool         isOpened;
-
-  int          lastQuest;
-  Quest::State lastState;
+  bool         isOpened      = false;
+  int          lastQuest     = -1;
+  Quest::State lastState     = Quest::NONE;
 
 private:
 

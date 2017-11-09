@@ -28,8 +28,6 @@
 namespace oz::client
 {
 
-const float Sound::SOUND_DISTANCE = 192.0f;
-
 void Sound::musicMain(void*)
 {
   sound.musicRun();
@@ -71,9 +69,7 @@ void Sound::playCell(int cellX, int cellY)
 {
   const Cell& cell = orbis.cells[cellX][cellY];
 
-  for (int i = 0; i < cell.structs.size(); ++i) {
-    int strIndex = cell.structs[i];
-
+  for (int strIndex : cell.structs) {
     if (!playedStructs.get(strIndex)) {
       playedStructs.set(strIndex);
 

@@ -28,8 +28,7 @@ void Device::onUse(const Bot*)
 void Device::onUpdate()
 {}
 
-Device::~Device()
-{}
+Device::~Device() = default;
 
 const char* Device::getMemo() const
 {

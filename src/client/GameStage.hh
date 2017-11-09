@@ -34,7 +34,7 @@ class GameStage : public Stage
 private:
 
   // 2.5 min.
-  static const uint AUTOSAVE_INTERVAL;
+  static constexpr uint AUTOSAVE_INTERVAL = 150 * Timer::TICKS_PER_SEC;
 
   uint64       startTicks;
   Duration     sleepDuration;

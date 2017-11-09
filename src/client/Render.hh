@@ -41,32 +41,33 @@ class Render
 
 public:
 
-  static const int UI_BIT      = 0x01;
-  static const int ORBIS_BIT   = 0x02;
-  static const int EFFECTS_BIT = 0x04;
+  static constexpr int UI_BIT                   = 0x01;
+  static constexpr int ORBIS_BIT                = 0x02;
+  static constexpr int EFFECTS_BIT              = 0x04;
 
 private:
 
-  static const float WIDE_CULL_FACTOR;
-  static const float OBJECT_VISIBILITY_COEF;
-  static const float FRAG_VISIBILITY_RANGE2;
-  static const float CELL_RADIUS;
-  static const float EFFECTS_DISTANCE;
+  static constexpr float WIDE_CULL_FACTOR       = 6.0f;
+  static constexpr float OBJECT_VISIBILITY_COEF = 0.004f;
+  static constexpr float FRAG_VISIBILITY_RANGE2 = 150.0f*150.0f;
+  static constexpr float CELL_RADIUS            = (Cell::SIZE / 2 +
+                                                   Object::MAX_DIM * WIDE_CULL_FACTOR) * 1.41f;
+  static constexpr float EFFECTS_DISTANCE       = 192.0f;
 
-  static const float NIGHT_FOG_COEFF;
-  static const float NIGHT_FOG_DIST;
-  static const float WATER_VISIBILITY;
-  static const float LAVA_VISIBILITY;
+  static constexpr float NIGHT_FOG_COEFF        = 2.0f;
+  static constexpr float NIGHT_FOG_DIST         = 0.3f;
+  static constexpr float WATER_VISIBILITY       = 32.0f;
+  static constexpr float LAVA_VISIBILITY        = 4.0f;
 
-  static const float WIND_FACTOR;
-  static const float WIND_PHI_INC;
+  static constexpr float WIND_FACTOR            = 0.0008f;
+  static constexpr float WIND_PHI_INC           = 0.04f;
 
-  static const int   GLOW_MINIFICATION;
+  static constexpr int   GLOW_MINIFICATION      = 4;
 
-  static const Vec4  STRUCT_AABB;
-  static const Vec4  ENTITY_AABB;
-  static const Vec4  SOLID_AABB;
-  static const Vec4  NONSOLID_AABB;
+  static constexpr Vec4  STRUCT_AABB            = Vec4(0.20f, 0.50f, 1.00f, 1.00f);
+  static constexpr Vec4  ENTITY_AABB            = Vec4(1.00f, 0.20f, 0.50f, 1.00f);
+  static constexpr Vec4  SOLID_AABB             = Vec4(0.50f, 0.80f, 0.20f, 1.00f);
+  static constexpr Vec4  NONSOLID_AABB          = Vec4(0.70f, 0.80f, 0.90f, 1.00f);
 
   struct DrawEntry;
 

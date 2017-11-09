@@ -30,10 +30,6 @@ namespace oz::builder
 
 class UI
 {
-private:
-
-  static const char* const ICON_NAMES[];
-
 public:
 
   static void buildIcons();

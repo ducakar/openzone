@@ -458,9 +458,6 @@ static void abort(bool doHalt)
   _Exit(EXIT_FAILURE);
 }
 
-const int System::HANDLER_BIT;
-const int System::HALT_BIT;
-
 void System::trap()
 {
 #ifdef _WIN32
@@ -493,16 +490,10 @@ void System::bell()
 void System::error(const char* function, const char* file, int line, int nSkippedFrames,
                    const char* message, ...)
 {
+  trap();
+
   va_list ap;
   va_start(ap, message);
-
-  verror(function, file, line, nSkippedFrames + 1, message, ap);
-}
-
-void System::verror(const char* function, const char* file, int line, int nSkippedFrames,
-                    const char* message, va_list ap)
-{
-  trap();
 
 #ifdef __ANDROID__
   __android_log_vprint(ANDROID_LOG_FATAL, "oz", msg, ap);

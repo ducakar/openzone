@@ -72,7 +72,7 @@ public:
 
   private:
 
-    static const float MIN_SHOT_INTERVAL_SYNC;
+    static constexpr float MIN_SHOT_INTERVAL_SYNC = 0.2f;
 
     const Bot*     bot;
     const Vehicle* vehicle;
@@ -94,8 +94,8 @@ public:
 
   public:
 
-    explicit AnimState(const Bot* bot);
-    explicit AnimState(const Vehicle* vehicle);
+    explicit AnimState(const Bot* bot_);
+    explicit AnimState(const Vehicle* vehicle_);
 
     void advance();
 

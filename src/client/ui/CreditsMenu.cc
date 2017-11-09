@@ -128,8 +128,7 @@ void CreditsMenu::onDraw()
 }
 
 CreditsMenu::CreditsMenu()
-  : Area(camera.width, camera.height),
-    stride(style.sansFont.height()), scroll(0), bias(0), direction(1)
+  : Area(camera.width, camera.height), stride(style.sansFont.height())
 {
   flags |= UPDATE_BIT;
 

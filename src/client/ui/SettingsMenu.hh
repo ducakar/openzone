@@ -66,7 +66,6 @@ protected:
 public:
 
   SettingsMenu();
-  ~SettingsMenu() override;
 
 };
 

@@ -37,11 +37,11 @@ class StrategicArea : public Area
 {
 private:
 
-  static const float TAG_REACH_DIST;
-  static const float TAG_CLIP_DIST;
-  static const float TAG_CLIP_K;
-  static const float TAG_MIN_PIXEL_SIZE;
-  static const float TAG_MAX_COEFF_SIZE;
+  static constexpr float TAG_REACH_DIST     = 100.0f;
+  static constexpr float TAG_CLIP_DIST      = 0.1f;
+  static constexpr float TAG_CLIP_K         = 9.0f;
+  static constexpr float TAG_MIN_PIXEL_SIZE = 4.0f; // size in pixels
+  static constexpr float TAG_MAX_COEFF_SIZE = 4.0f; // size in coefficient
 
   using OverlayCallback = void (Area* sender, const Vec3& p);
 
@@ -50,23 +50,23 @@ private:
   float            pixelStep;
   float            stepPixel;
 
-  OverlayCallback* overlayCallback;
-  Area*            overlaySender;
+  OverlayCallback* overlayCallback = nullptr;
+  Area*            overlaySender   = nullptr;
 
   int              dragStartX;
   int              dragStartY;
 
-  int              hoverStr;
-  int              hoverEnt;
-  int              hoverObj;
+  int              hoverStr = -1;
+  int              hoverEnt = -1;
+  int              hoverObj = -1;
   Set<int>         dragObjs;
 
 public:
 
-  int              taggedStr;
+  int              taggedStr = -1;
   Set<int>         taggedObjs;
 
-  float            mouseW;
+  float            mouseW = 0.0f;
 
 private:
 

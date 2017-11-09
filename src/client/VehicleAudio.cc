@@ -42,8 +42,8 @@ void VehicleAudio::play(const Object* playAt)
   const VehicleClass* clazz   = static_cast<const VehicleClass*>(this->clazz);
   const auto&         sounds  = obj->clazz->audioSounds;
 
-  for (int i = 0; i < ObjectClass::MAX_SOUNDS; ++i) {
-    recent[i] = max(recent[i] - 1, 0);
+  for (int& i : eventCountdowns) {
+    i = max(i - 1, 0);
   }
 
   // engine sound
@@ -58,17 +58,17 @@ void VehicleAudio::play(const Object* playAt)
   for (const Object::Event& event : obj->events) {
     OZ_ASSERT(event.id < ObjectClass::MAX_SOUNDS);
 
-    if (event.id >= 0 && sounds[event.id] != -1 && recent[event.id] == 0) {
+    if (event.id >= 0 && sounds[event.id] != -1 && eventCountdowns[event.id] == 0) {
       OZ_ASSERT(0.0f <= event.intensity);
 
-      recent[event.id] = RECENT_TICKS;
+      eventCountdowns[event.id] = COUNTDOWN_TICKS;
       playSound(sounds[event.id], event.intensity, playAt);
     }
   }
 
   // inventory items' events
-  for (int i = 0; i < obj->items.size(); ++i) {
-    const Object* item = orbis.obj(obj->items[i]);
+  for (int i : obj->items) {
+    const Object* item = orbis.obj(i);
 
     if (item != nullptr && (item->flags & Object::AUDIO_BIT)) {
       context.playAudio(item, vehicle);

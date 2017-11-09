@@ -34,13 +34,13 @@ class Input
 {
 public:
 
-  static const int LEFT_BUTTON   = 0x01;
-  static const int MIDDLE_BUTTON = 0x02;
-  static const int RIGHT_BUTTON  = 0x04;
+  static constexpr int LEFT_BUTTON   = 0x01;
+  static constexpr int MIDDLE_BUTTON = 0x02;
+  static constexpr int RIGHT_BUTTON  = 0x04;
 
-  static const int MOD_OFF_BIT   = 0x10000000;
-  static const int MOD_ON_BIT    = 0x20000000;
-  static const int MOD_MASK      = 0x30000000;
+  static constexpr int MOD_OFF_BIT   = 0x10000000;
+  static constexpr int MOD_ON_BIT    = 0x20000000;
+  static constexpr int MOD_MASK      = 0x30000000;
 
   enum Key
   {

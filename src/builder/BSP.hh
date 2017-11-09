@@ -40,30 +40,30 @@ class BSP : public Bounds
 {
 private:
 
-  static const float DEFAULT_SCALE;
-  static const float DEFAULT_LIFE;
-  static const float DEFAULT_RESISTANCE;
-  static const float DEFAULT_MARGIN;
+  static constexpr float DEFAULT_SCALE          = 0.01f;
+  static constexpr float DEFAULT_LIFE           = 10000.0f;
+  static constexpr float DEFAULT_RESISTANCE     = 400.0f;
+  static constexpr float DEFAULT_MARGIN         = 0.1f;
 
-  static const float LIQUID_ALPHA;
-  static const float LIQUID_SPECULAR;
-  static const float GLASS_ALPHA;
-  static const float GLASS_SPECULAR;
+  static constexpr float LIQUID_ALPHA           = 0.75f;
+  static constexpr float LIQUID_SPECULAR        = 0.50f;
+  static constexpr float GLASS_ALPHA            = 0.15f;
+  static constexpr float GLASS_SPECULAR         = 2.00f;
 
   // Quake
-  static const int   QBSP_SLICK_FLAG_BIT    = 0x00000002;
-  static const int   QBSP_LADDER_FLAG_BIT   = 0x00000008;
-  static const int   QBSP_NONSOLID_FLAG_BIT = 0x00004000;
-  static const int   QBSP_LAVA_TYPE_BIT     = 0x00000008;
-  static const int   QBSP_SEA_TYPE_BIT      = 0x00000010;
-  static const int   QBSP_WATER_TYPE_BIT    = 0x00000020;
-  static const int   QBSP_AIR_TYPE_BIT      = 0x00200000;
-  static const int   QBSP_ALPHA_TYPE_BIT    = 0x20000000;
+  static constexpr int   QBSP_SLICK_FLAG_BIT    = 0x00000002;
+  static constexpr int   QBSP_LADDER_FLAG_BIT   = 0x00000008;
+  static constexpr int   QBSP_NONSOLID_FLAG_BIT = 0x00004000;
+  static constexpr int   QBSP_LAVA_TYPE_BIT     = 0x00000008;
+  static constexpr int   QBSP_SEA_TYPE_BIT      = 0x00000010;
+  static constexpr int   QBSP_WATER_TYPE_BIT    = 0x00000020;
+  static constexpr int   QBSP_AIR_TYPE_BIT      = 0x00200000;
+  static constexpr int   QBSP_ALPHA_TYPE_BIT    = 0x20000000;
 
-  static const int   QBSP_LIGHTMAP_DIM      = 128;
-  static const int   QBSP_LIGHTMAP_BPP      = 3;
-  static const int   QBSP_LIGHTMAP_SIZE     = QBSP_LIGHTMAP_DIM * QBSP_LIGHTMAP_DIM *
-                                              QBSP_LIGHTMAP_BPP;
+  static constexpr int   QBSP_LIGHTMAP_DIM      = 128;
+  static constexpr int   QBSP_LIGHTMAP_BPP      = 3;
+  static constexpr int   QBSP_LIGHTMAP_SIZE     = QBSP_LIGHTMAP_DIM * QBSP_LIGHTMAP_DIM *
+                                                  QBSP_LIGHTMAP_BPP;
 
   // Data structure for Quake 3 BSP lump entry.
   struct QBSPLump

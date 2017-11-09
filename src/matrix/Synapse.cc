@@ -26,10 +26,6 @@
 namespace oz
 {
 
-Synapse::Synapse()
-  : mode(SINGLE)
-{}
-
 bool Synapse::use(Bot* user, Object* target)
 {
   return target->use(user);

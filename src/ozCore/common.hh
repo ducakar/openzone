@@ -355,7 +355,7 @@ template <>
 struct Hash<const char*>
 {
   /// %Hash value for an empty string.
-  static const int EMPTY = int(2166136261);
+  static constexpr int EMPTY = int(2166136261);
 
   /**
    * FNV hash function.

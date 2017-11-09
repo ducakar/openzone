@@ -24,7 +24,13 @@
 namespace oz::client
 {
 
-const Shape::Vertex Shape::VERTICES[] = {
+struct Vertex
+{
+  float pos[3];
+  int16 texCoord[2];
+};
+
+const Vertex VERTICES[] = {
   // filled rectangle (base index 0)
   {{0.0f, 0.0f, 0.0f}, {0, 1}},
   {{1.0f, 0.0f, 0.0f}, {1, 1}},
@@ -106,7 +112,7 @@ const Shape::Vertex Shape::VERTICES[] = {
   {{-1.0f, +1.0f, -1.0f}, {0, 0}}
 };
 
-const uint16 Shape::INDICES[] = {
+const uint16 INDICES[] = {
   /*
    * Full box (GL_TRIANGLE_STRIP)
    */
@@ -212,10 +218,6 @@ const uint16 Shape::INDICES[] = {
   56 + 3,
   56 + 2
 };
-
-Shape::Shape()
-  : vbo(0), ibo(0)
-{}
 
 void Shape::bind() const
 {

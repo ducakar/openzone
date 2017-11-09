@@ -34,7 +34,7 @@ class Frag : public DChainNode<Frag>
 {
 private:
 
-  static const float DAMAGE_THRESHOLD;
+  static constexpr float DAMAGE_THRESHOLD = 50.0f;
 
 public:
 
@@ -72,8 +72,8 @@ public:
 
 public:
 
-  explicit Frag(const FragPool* pool, int index, const Point& p, const Vec3& velocity);
-  explicit Frag(const FragPool* pool, Stream* is);
+  explicit Frag(const FragPool* pool_, int index_, const Point& p_, const Vec3& velocity_);
+  explicit Frag(const FragPool* pool_, Stream* is);
 
   void write(Stream* os) const;
 

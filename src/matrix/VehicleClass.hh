@@ -32,7 +32,7 @@ class VehicleClass : public DynamicClass
 {
 public:
 
-  static const int MAX_WEAPONS = 4;
+  static constexpr int MAX_WEAPONS = 4;
 
   enum Type
   {
@@ -137,7 +137,7 @@ public:
 
   static ObjectClass* createClass();
 
-  void init(const Json& config, const char* name) override;
+  void init(const Json& config, const char* name_) override;
 
   Object* create(int index, const Point& pos, Heading heading) const override;
   Object* create(int index, const Json& json) const override;

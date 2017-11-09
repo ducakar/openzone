@@ -335,7 +335,7 @@ void Model::deallocate()
   sceneLights.trim();
 }
 
-Model::Model(const File& path_)
+Model::Model(const char* path_)
   : path(path_), vbo(0), ibo(0), animationTexId(0),
     nTextures(0), nVertices(0), nIndices(0), nFrames(0), nFramePositions(0),
     vertices(nullptr), positions(nullptr), normals(nullptr),
@@ -666,11 +666,18 @@ void Model::unload()
   }
 
   for (const Texture& texture : textures) {
-    if (texture.id >= -1) {
-      context.releaseTexture(texture.id);
-    }
-    else {
-      context.unloadTexture(&texture);
+    switch (texture.id) {
+      case Texture::NONE: {
+        break;
+      }
+      case Texture::EXTERNAL: {
+        context.unloadTexture(&texture);
+        break;
+      }
+      default: {
+        context.releaseTexture(texture.id);
+        break;
+      }
     }
   }
 

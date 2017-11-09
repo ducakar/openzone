@@ -36,9 +36,9 @@ public:
 
 private:
 
-  static const float DEFAULT_ROTATION;
-  static const float ROTATION_VEL;
-  static const float ROTATION_SMOOTHING;
+  static constexpr float DEFAULT_ROTATION   = 3.0f * Math::TAU / 8.0f;
+  static constexpr float ROTATION_VEL       = 1.30f * Timer::TICK_TIME;
+  static constexpr float ROTATION_SMOOTHING = 0.80f;
 
   Callback*  callback;
   const BSP* bsp;
@@ -65,13 +65,13 @@ protected:
 
 public:
 
-  explicit ModelField(Callback* callback, int size);
+  explicit ModelField(Callback* callback_, int size);
 
-  void setCallback(Callback* callback);
+  void setCallback(Callback* callback_);
   void setDefaultRotation(float defaultRotation);
 
-  void setModel(const BSP* bsp);
-  void setModel(int model);
+  void setModel(const BSP* bsp_);
+  void setModel(int model_);
 
   void setClickMask(int mask);
 

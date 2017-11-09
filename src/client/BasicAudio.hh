@@ -32,9 +32,16 @@ class BasicAudio : public Audio
 {
 protected:
 
-  static const int RECENT_TICKS = Timer::TICKS_PER_SEC / 12;
+  static constexpr int COUNTDOWN_TICKS = Timer::TICKS_PER_SEC / 12;
 
-  int recent[ObjectClass::MAX_SOUNDS];
+  // Recent event countdowns. This is to prevent event spawning rafales of same event sounds when
+  // some event is occurring every few frames. The same event sound can only be triggered every
+  // COUNTDOWN_TICKS on the same Audio.
+  // The other usage is for friction. This is a continuous sound, but friction will likely not occur
+  // on every tick (because of bouncing away on hits, when moving downhill ...), so friction sound
+  // would keep start/stop/restart-ing every few frames. This is is compensated by the countdowns,
+  // so friction sound only stops when not detected for COUNTDOWN_TICKS.
+  int eventCountdowns[ObjectClass::MAX_SOUNDS];
 
   explicit BasicAudio(const Object* obj);
 

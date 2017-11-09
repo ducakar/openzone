@@ -56,9 +56,9 @@ public:
 
 public:
 
-  explicit Dynamic(const DynamicClass* clazz, int index, const Point& p, Heading heading);
-  explicit Dynamic(const DynamicClass* clazz, int index, const Json& json);
-  explicit Dynamic(const DynamicClass* clazz, Stream* is);
+  explicit Dynamic(const DynamicClass* clazz_, int index_, const Point& p_, Heading heading);
+  explicit Dynamic(const DynamicClass* clazz_, int index, const Json& json);
+  explicit Dynamic(const DynamicClass* clazz_, Stream* is);
 
   Json write() const override;
   void write(Stream* os) const override;

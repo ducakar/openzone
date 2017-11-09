@@ -33,7 +33,7 @@ class Frame : public Area
 {
 public:
 
-  static const int HEADER_SIZE = 22;
+  static constexpr int HEADER_SIZE = 22;
 
 protected:
 

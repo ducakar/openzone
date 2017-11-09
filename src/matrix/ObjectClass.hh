@@ -44,13 +44,13 @@ class ObjectClass
 {
 public:
 
-  static const int MAX_SOUNDS       = 32;
+  static constexpr int MAX_SOUNDS       = 32;
 
-  static const int NIGHT_VISION_BIT = 0x01;
-  static const int BINOCULARS_BIT   = 0x02;
-  static const int GALILEO_BIT      = 0x04;
-  static const int MUSIC_PLAYER_BIT = 0x08;
-  static const int SUICIDE_BIT      = 0x10;
+  static constexpr int NIGHT_VISION_BIT = 0x01;
+  static constexpr int BINOCULARS_BIT   = 0x02;
+  static constexpr int GALILEO_BIT      = 0x04;
+  static constexpr int MUSIC_PLAYER_BIT = 0x08;
+  static constexpr int SUICIDE_BIT      = 0x10;
 
   using CreateFunc = ObjectClass* ();
 
@@ -92,7 +92,7 @@ public:
 
   static ObjectClass* createClass();
 
-  virtual void init(const Json& config, const char* name);
+  virtual void init(const Json& config, const char* name_);
 
   virtual Object* create(int index, const Point& pos, Heading heading) const;
   virtual Object* create(int index, const Json& json) const;

@@ -49,7 +49,7 @@ class HashSet
 protected:
 
   /// Granularity for bucket array and pool block sizes.
-  static const int GRANULARITY = 256;
+  static constexpr int GRANULARITY = 256;
 
 protected:
 

@@ -27,10 +27,6 @@
 namespace oz::client::ui
 {
 
-const float ModelField::DEFAULT_ROTATION   = 3.0f * Math::TAU / 8.0f;
-const float ModelField::ROTATION_VEL       = 1.30f * Timer::TICK_TIME;
-const float ModelField::ROTATION_SMOOTHING = 0.80f;
-
 void ModelField::onVisibilityChange(bool)
 {
   currRot       = defaultRot;

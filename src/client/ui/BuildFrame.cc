@@ -33,20 +33,22 @@
 namespace oz::client::ui
 {
 
-const Mat4 BuildFrame::OVERLAY_GREEN  = Mat4(0.0f, 1.0f, 0.0f, 0.0f,
-                                             0.0f, 1.0f, 0.0f, 0.0f,
-                                             0.0f, 1.0f, 0.0f, 0.0f,
-                                             0.0f, 0.0f, 0.0f, 0.5f);
+static const int  SLOT_SIZE      = 78;
 
-const Mat4 BuildFrame::OVERLAY_YELLOW = Mat4(0.8f, 0.8f, 0.0f, 0.0f,
-                                             0.8f, 0.8f, 0.0f, 0.0f,
-                                             0.8f, 0.8f, 0.0f, 0.0f,
-                                             0.0f, 0.0f, 0.0f, 0.5f);
+static const Mat4 OVERLAY_GREEN  = Mat4(0.0f, 1.0f, 0.0f, 0.0f,
+                                        0.0f, 1.0f, 0.0f, 0.0f,
+                                        0.0f, 1.0f, 0.0f, 0.0f,
+                                        0.0f, 0.0f, 0.0f, 0.5f);
 
-const Mat4 BuildFrame::OVERLAY_RED    = Mat4(1.0f, 0.0f, 0.0f, 0.0f,
-                                             1.0f, 0.0f, 0.0f, 0.0f,
-                                             1.0f, 0.0f, 0.0f, 0.0f,
-                                             0.0f, 0.0f, 0.0f, 0.5f);
+static const Mat4 OVERLAY_YELLOW = Mat4(0.8f, 0.8f, 0.0f, 0.0f,
+                                        0.8f, 0.8f, 0.0f, 0.0f,
+                                        0.8f, 0.8f, 0.0f, 0.0f,
+                                        0.0f, 0.0f, 0.0f, 0.5f);
+
+static const Mat4 OVERLAY_RED    = Mat4(1.0f, 0.0f, 0.0f, 0.0f,
+                                        1.0f, 0.0f, 0.0f, 0.0f,
+                                        1.0f, 0.0f, 0.0f, 0.0f,
+                                        0.0f, 0.0f, 0.0f, 0.5f);
 
 void BuildFrame::overlayCallback(Area* area, const Vec3& ray)
 {
@@ -85,8 +87,8 @@ void BuildFrame::overlayCallback(Area* area, const Vec3& ray)
         {bounds.maxs.x, bounds.maxs.y}
       };
 
-      for (int i = 0; i < 4; ++i) {
-        if (orbis.terra.getHeight(corners[i][0], corners[i][1]) < bounds.mins.z) {
+      for (const auto& corner : corners) {
+        if (orbis.terra.getHeight(corner[0], corner[1]) < bounds.mins.z) {
           overlaps  = true;
           tf.colour = OVERLAY_YELLOW;
           break;
@@ -361,9 +363,7 @@ void BuildFrame::onDraw()
 }
 
 BuildFrame::BuildFrame()
-  : Frame(240, 54, OZ_GETTEXT("Buildings")), mode(BUILDINGS), models(nullptr),
-    overlayBSP(nullptr), overlayClass(nullptr), overlayHeading(NORTH),
-    rows(0), nScrollRows(0), scroll(0), isOverModel(false), wasOverModel(false)
+  : Frame(240, 54, OZ_GETTEXT("Buildings"))
 {}
 
 BuildFrame::~BuildFrame()

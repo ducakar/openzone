@@ -34,9 +34,9 @@ class FragPool
 {
 public:
 
-  static const int   UPDATED_BIT = 0x01;
-  static const int   FADEOUT_BIT = oz::FragPool::FADEOUT_BIT;
-  static const float FRAG_RADIUS;
+  static constexpr int   UPDATED_BIT = 0x01;
+  static constexpr int   FADEOUT_BIT = oz::FragPool::FADEOUT_BIT;
+  static constexpr float FRAG_RADIUS = 1.0f;
 
 private:
 
@@ -50,7 +50,7 @@ public:
 
 public:
 
-  explicit FragPool(const oz::FragPool* pool);
+  explicit FragPool(const oz::FragPool* pool_);
   ~FragPool();
 
   void draw(const Frag* frag);

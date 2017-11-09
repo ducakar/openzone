@@ -44,8 +44,6 @@ namespace oz::client
 
 struct TexCoord
 {
-  static const TexCoord ZERO;
-
   float u = 0.0f;
   float v = 0.0f;
 

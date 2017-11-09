@@ -32,7 +32,7 @@ class PartGen : public ChainNode<PartGen>
 {
 public:
 
-  static const int UPDATED_BIT = 0x01;
+  static constexpr int UPDATED_BIT = 0x01;
 
 private:
 

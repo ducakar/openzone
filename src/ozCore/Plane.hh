@@ -54,13 +54,13 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  Plane() = default;
+  constexpr Plane() = default;
 
   /**
    * Create form a pair of normal and distance from the origin.
    */
   OZ_ALWAYS_INLINE
-  explicit Plane(const Vec3& n_, float d_)
+  explicit constexpr Plane(const Vec3& n_, float d_)
     : n(n_), d(d_)
   {}
 
@@ -76,7 +76,7 @@ public:
    * Create with given member values.
    */
   OZ_ALWAYS_INLINE
-  explicit Plane(float nx, float ny, float nz, float d_)
+  explicit constexpr Plane(float nx, float ny, float nz, float d_)
     : n(nx, ny, nz), d(d_)
   {}
 

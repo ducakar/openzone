@@ -36,11 +36,11 @@ private:
   // Some "shortcuts".
   using Quad = oz::Terra::Quad;
 
-  static const int DIM        = oz::Terra::DIM;
-  static const int VERTS      = oz::Terra::VERTS;
-  static const int QUADS      = oz::Terra::QUADS;
-  static const int TILES      = client::Terra::TILES;
-  static const int TILE_QUADS = client::Terra::TILE_QUADS;
+  static constexpr int DIM        = oz::Terra::DIM;
+  static constexpr int VERTS      = oz::Terra::VERTS;
+  static constexpr int QUADS      = oz::Terra::QUADS;
+  static constexpr int TILES      = client::Terra::TILES;
+  static constexpr int TILE_QUADS = client::Terra::TILE_QUADS;
 
 private:
 

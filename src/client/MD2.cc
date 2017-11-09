@@ -47,8 +47,6 @@ const MD2::AnimInfo MD2::ANIM_LIST[] =
   {190, 197,  7.0f, ANIM_NONE         }  // DEATH_FALLBACKSLOW
 };
 
-const float MD2::AnimState::MIN_SHOT_INTERVAL_SYNC = 0.2f;
-
 MD2::AnimType MD2::AnimState::extractAnim()
 {
   // Vehicle.

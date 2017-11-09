@@ -42,7 +42,7 @@ private:
 
 public:
 
-  explicit BSPAudio(const BSP* bsp);
+  explicit BSPAudio(const BSP* bsp_);
   ~BSPAudio();
 
   void play(const Struct* str) const;

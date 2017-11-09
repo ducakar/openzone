@@ -44,31 +44,31 @@ class ImageBuilder
 public:
 
   /// Image array is a cube map.
-  static const int CUBE_MAP_BIT = 0x01;
+  static constexpr int CUBE_MAP_BIT = 0x01;
 
   /// Image is a normal map (set DDPF_NORMAL bit).
-  static const int NORMAL_MAP_BIT = 0x02;
+  static constexpr int NORMAL_MAP_BIT = 0x02;
 
   /// Generate mipmaps.
-  static const int MIPMAPS_BIT = 0x04;
+  static constexpr int MIPMAPS_BIT = 0x04;
 
   /// Enable texture compression (DXT1 or DXT5, depending on presence of alpha channel).
-  static const int COMPRESSION_BIT = 0x08;
+  static constexpr int COMPRESSION_BIT = 0x08;
 
   /// Flip vertically.
-  static const int FLIP_BIT = 0x10;
+  static constexpr int FLIP_BIT = 0x10;
 
   /// Flip horizontally.
-  static const int FLOP_BIT = 0x20;
+  static constexpr int FLOP_BIT = 0x20;
 
   /// Perform RGB(A) -> GGGR swizzle (for DXT5nm normal map compression).
-  static const int YYYX_BIT = 0x40;
+  static constexpr int YYYX_BIT = 0x40;
 
   /// Perform RGB(A) -> BGBR swizzle (for DXT5nm+z normal map compression).
-  static const int ZYZX_BIT = 0x80;
+  static constexpr int ZYZX_BIT = 0x80;
 
   /// Use fastest but low-quality filters.
-  static const int FAST_BIT = 0x100;
+  static constexpr int FAST_BIT = 0x100;
 
   static int   options; ///< Bitfield to control compression, mipmap generation etc.
   static float scale;   ///< Scale to resize images.

@@ -30,28 +30,6 @@
 namespace oz::client
 {
 
-const float Render::WIDE_CULL_FACTOR       = 6.0f;
-const float Render::OBJECT_VISIBILITY_COEF = 0.004f;
-const float Render::FRAG_VISIBILITY_RANGE2 = 150.0f*150.0f;
-const float Render::CELL_RADIUS            = (Cell::SIZE / 2 + Object::MAX_DIM * WIDE_CULL_FACTOR) *
-                                             Math::sqrt(2.0f);
-const float Render::EFFECTS_DISTANCE       = 192.0f;
-
-const float Render::NIGHT_FOG_COEFF        = 2.0f;
-const float Render::NIGHT_FOG_DIST         = 0.3f;
-const float Render::WATER_VISIBILITY       = 32.0f;
-const float Render::LAVA_VISIBILITY        = 4.0f;
-
-const float Render::WIND_FACTOR            = 0.0008f;
-const float Render::WIND_PHI_INC           = 0.04f;
-
-const int   Render::GLOW_MINIFICATION      = 4;
-
-const Vec4  Render::STRUCT_AABB            = Vec4(0.20f, 0.50f, 1.00f, 1.00f);
-const Vec4  Render::ENTITY_AABB            = Vec4(1.00f, 0.20f, 0.50f, 1.00f);
-const Vec4  Render::SOLID_AABB             = Vec4(0.50f, 0.80f, 0.20f, 1.00f);
-const Vec4  Render::NONSOLID_AABB          = Vec4(0.70f, 0.80f, 0.90f, 1.00f);
-
 struct Render::DrawEntry
 {
   float distance;
@@ -137,11 +115,11 @@ void Render::scheduleCell(int cellX, int cellY)
 {
   const Cell& cell = orbis.cells[cellX][cellY];
 
-  for (int i = 0; i < cell.structs.size(); ++i) {
-    if (!drawnStructs.get(cell.structs[i])) {
-      drawnStructs.set(cell.structs[i]);
+  for (int16 strIndex : cell.structs) {
+    if (!drawnStructs.get(strIndex)) {
+      drawnStructs.set(strIndex);
 
-      Struct* str    = orbis.str(cell.structs[i]);
+      Struct* str    = orbis.str(strIndex);
       float   radius = str->dim().fastN();
 
       if (frustum.isVisible(str->p, radius)) {
@@ -228,9 +206,8 @@ void Render::prepareDraw()
   // frustum
   camera.maxDist = visibility;
 
-  Span span;
   frustum.update();
-  frustum.getExtrems(span, camera.p);
+  Span span = frustum.getExtremes(camera.p);
 
   caelum.update();
 
@@ -251,13 +228,13 @@ void Render::prepareDraw()
   }
 
   structs.sort();
-  for (int i = 0; i < structs.size(); ++i) {
-    context.drawBSP(structs[i].str);
+  for (const DrawEntry& i : structs) {
+    context.drawBSP(i.str);
   }
 
   objects.sort();
-  for (int i = 0; i < objects.size(); ++i) {
-    context.drawImago(objects[i].obj, nullptr);
+  for (const DrawEntry& i : objects) {
+    context.drawImago(i.obj, nullptr);
   }
 
   currentInstant = Instant::now();
@@ -368,15 +345,15 @@ void Render::drawGeometry()
   if (showBounds) {
     glLineWidth(1.0f);
 
-    for (int i = 0; i < objects.size(); ++i) {
-      const Object* obj = objects[i].obj;
+    for (const DrawEntry& i : objects) {
+      const Object* obj = i.obj;
 
       shape.colour(obj->flags & Object::SOLID_BIT ? SOLID_AABB : NONSOLID_AABB);
       shape.wireBox(*obj);
     }
 
-    for (int i = 0; i < structs.size(); ++i) {
-      const Struct* str = structs[i].str;
+    for (const DrawEntry& i : structs) {
+      const Struct* str = i.str;
 
       shape.colour(ENTITY_AABB);
 

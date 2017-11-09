@@ -40,7 +40,7 @@ public:
 
   static Device* create(int id, Stream* is);
 
-  explicit Memo(const char* text);
+  explicit Memo(const char* text_);
 
   const char* type() const override;
   const char* getMemo() const override;

@@ -55,7 +55,7 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  Quat()
+  constexpr Quat()
     : VectorBase4(0.0f, 0.0f, 0.0f, 1.0f)
   {}
 
@@ -63,7 +63,7 @@ public:
    * Create a quaternion with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit Quat(float x, float y, float z, float w)
+  explicit constexpr Quat(float x, float y, float z, float w)
     : VectorBase4(x, y, z, w)
   {}
 

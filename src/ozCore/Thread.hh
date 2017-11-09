@@ -42,7 +42,7 @@ class Thread
 public:
 
   /// Maximum length for a thread name.
-  static const int NAME_LENGTH = 15;
+  static constexpr int NAME_LENGTH = 15;
 
 public:
 

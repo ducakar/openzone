@@ -33,8 +33,6 @@
 namespace oz
 {
 
-const int StackTrace::MAX_FRAMES;
-
 StackTrace StackTrace::current(int nSkippedFrames)
 {
   OZ_ASSERT(0 <= nSkippedFrames && nSkippedFrames <= 3);

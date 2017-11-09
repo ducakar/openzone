@@ -36,26 +36,6 @@
 namespace oz
 {
 
-const float Bot::AIR_FRICTION         =  0.01f;
-const float Bot::LADDER_SLIP_MOMENTUM =  16.0f;
-
-const float Bot::WOUNDED_THRESHOLD    =  0.70f;
-const float Bot::DROWNING_RATIO       =  8.00f;
-const float Bot::CORPSE_FADE_FACTOR   =  0.50f / 100.0f;
-
-const float Bot::INSTRUMENT_DIST      =  2.00f;
-const float Bot::INSTRUMENT_DOT_MIN   =  0.80f;
-
-const float Bot::GRAB_EPSILON         =  0.20f;
-const float Bot::GRAB_STRING_RATIO    =  10.0f;
-const float Bot::GRAB_HANDLE_TOL      =  1.60f;
-const float Bot::GRAB_MOM_RATIO       =  0.30f;
-const float Bot::GRAB_MOM_MAX         =  1.00f; // must be < abs(Physics::HIT_THRESHOLD)
-const float Bot::GRAB_MOM_MAX_SQ      =  1.00f;
-
-const float Bot::STEP_MOVE_AHEAD      =  0.20f;
-const float Bot::CLIMB_MOVE_AHEAD     =  0.40f;
-
 Pool<Bot> Bot::pool(1024);
 
 bool Bot::hasAttribute(int attribute) const
@@ -70,8 +50,8 @@ bool Bot::hasAttribute(int attribute) const
     return true;
   }
 
-  for (int i = 0; i < items.size(); ++i) {
-    const Object* item = orbis.obj(items[i]);
+  for (int i : items) {
+    const Object* item = orbis.obj(i);
 
     if (item != nullptr && (item->clazz->attributes & attribute)) {
       return true;
@@ -329,8 +309,8 @@ void Bot::heal()
 
 void Bot::rearm()
 {
-  for (int i = 0; i < items.size(); ++i) {
-    Weapon* weaponObj = orbis.obj<Weapon>(items[i]);
+  for (int item : items) {
+    Weapon* weaponObj = orbis.obj<Weapon>(item);
 
     if (weaponObj != nullptr && (weaponObj->flags & Object::WEAPON_BIT)) {
       const WeaponClass* weaponClazz = static_cast<const WeaponClass*>(weaponObj->clazz);

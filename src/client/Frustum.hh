@@ -71,7 +71,7 @@ public:
   }
 
   // get min and max index for cells per each axis, which should be included in PVS
-  void getExtrems(Span& span, const Point& p);
+  Span getExtremes(const Point& p) const;
 
   void update();
 

@@ -175,10 +175,8 @@ void EditFrame::onDraw()
 
 EditFrame::EditFrame()
   : Frame(COLS*SLOT_SIZE, SINGLE_HEIGHT, ""),
-    owner(nullptr),
     lifeBar(&style.taggedLife), statusBar(&style.taggedStatus),
-    itemDesc(-ICON_SIZE - 12, FOOTER_SIZE / 2, 0, ALIGN_RIGHT | ALIGN_VCENTRE, &style.sansFont, ""),
-    taggedItemIndex(-1), scrollOwner(0)
+    itemDesc(-ICON_SIZE - 12, FOOTER_SIZE / 2, 0, ALIGN_RIGHT | ALIGN_VCENTRE, &style.sansFont, "") 
 {
   flags |= UPDATE_BIT;
 

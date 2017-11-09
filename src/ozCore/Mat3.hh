@@ -61,13 +61,13 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  Mat3() = default;
+  constexpr Mat3() = default;
 
   /**
    * Create matrix with given columns.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat3(const Vec3& a, const Vec3& b, const Vec3& c)
+  explicit constexpr Mat3(const Vec3& a, const Vec3& b, const Vec3& c)
     : x(a), y(b), z(c)
   {}
 
@@ -75,9 +75,9 @@ public:
    * Create matrix with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit Mat3(float xx, float xy, float xz,
-                float yx, float yy, float yz,
-                float zx, float zy, float zz)
+  explicit constexpr Mat3(float xx, float xy, float xz,
+                          float yx, float yy, float yz,
+                          float zx, float zy, float zz)
     : x(xx, xy, xz),
       y(yx, yy, yz),
       z(zx, zy, zz)
@@ -94,7 +94,7 @@ public:
   /**
    * Top-left 3x3 submatrix of a 4x4 matrix.
    */
-  explicit Mat3(const Mat4& m);
+  explicit constexpr Mat3(const Mat4& m);
 
   /**
    * Equality.

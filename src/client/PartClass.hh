@@ -32,8 +32,8 @@ class PartClass
 {
 public:
 
-  static const int UPDATED_BIT = 0x01;
-  static const int LOADED_BIT  = 0x02;
+  static constexpr int UPDATED_BIT = 0x01;
+  static constexpr int LOADED_BIT  = 0x02;
 
 public:
 

@@ -43,10 +43,10 @@ class Stream
 private:
 
   /// Writing to stream is enabled.
-  static const int WRITABLE = 0x1;
+  static constexpr int WRITABLE = 0x1;
 
   /// Stream has its own internal buffer.
-  static const int BUFFERED = 0x2;
+  static constexpr int BUFFERED = 0x2;
 
 private:
 

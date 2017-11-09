@@ -60,13 +60,13 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  Vec4() = default;
+  constexpr Vec4() = default;
 
   /**
    * Create a vector with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit Vec4(float x, float y, float z, float w)
+  explicit constexpr Vec4(float x, float y, float z, float w)
     : VectorBase4(x, y, z, w)
   {}
 
@@ -79,10 +79,22 @@ public:
   {}
 
   /**
+   * Create vector from a point (the additional component is zero).
+   */
+  OZ_ALWAYS_INLINE
+  explicit constexpr Vec4(const Vec3& v)
+#ifdef OZ_SIMD
+    : VectorBase4(v.f4)
+#else
+    : VectorBase4(v.x, v.y, v.z, 0.0f)
+#endif
+  {}
+
+  /**
    * Create vector from a point (the additional component is one).
    */
   OZ_ALWAYS_INLINE
-  explicit Vec4(const Point& p)
+  explicit constexpr Vec4(const Point& p)
 #ifdef OZ_SIMD
     : VectorBase4(p.f4)
 #else
@@ -389,5 +401,9 @@ inline Vec4 clamp(const Vec4& c, const Vec4& a, const Vec4& b)
               clamp<float>(c.z, a.z, b.z), clamp<float>(c.w, a.w, b.w));
 #endif
 }
+
+inline constexpr Vec3::Vec3(const Vec4& v)
+    : VectorBase3(v.x, v.y, v.z, 0.0f)
+{}
 
 }

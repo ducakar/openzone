@@ -47,30 +47,28 @@ class UI
 
 private:
 
-  float          fps;
-  Text*          fpsLabel;
+  float          fps        = 0.0f;
+  Text*          fpsLabel   = nullptr;
 
-  bool           isFreelook;
-  bool           showFPS;
-  bool           showDebug;
+  bool           isFreelook = false;
+  bool           showFPS    = false;
+  bool           showDebug  = false;
 
 public:
 
-  bool           isVisible;
+  bool           isVisible     = true;
 
-  Area*          root;
-  LoadingArea*   loadingScreen;
-  HudArea*       hudArea;
-  StrategicArea* strategicArea;
-  QuestFrame*    questFrame;
-  GalileoFrame*  galileoFrame;
-  MusicPlayer*   musicPlayer;
-  Inventory*     inventory;
-  InfoFrame*     infoFrame;
-  BuildFrame*    buildFrame;
-  DebugFrame*    debugFrame;
-
-  UI();
+  Area*          root          = nullptr;
+  LoadingArea*   loadingScreen = nullptr;
+  HudArea*       hudArea       = nullptr;
+  StrategicArea* strategicArea = nullptr;
+  QuestFrame*    questFrame    = nullptr;
+  GalileoFrame*  galileoFrame  = nullptr;
+  MusicPlayer*   musicPlayer   = nullptr;
+  Inventory*     inventory     = nullptr;
+  InfoFrame*     infoFrame     = nullptr;
+  BuildFrame*    buildFrame    = nullptr;
+  DebugFrame*    debugFrame    = nullptr;
 
   void showLoadingScreen(bool doShow);
 

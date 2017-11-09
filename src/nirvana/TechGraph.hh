@@ -34,7 +34,7 @@ public:
 
   struct Node
   {
-    static const int MAX_DEPS = 8;
+    static constexpr int MAX_DEPS = 8;
 
     enum Type
     {

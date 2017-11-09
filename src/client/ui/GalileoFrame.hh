@@ -32,7 +32,7 @@ class GalileoFrame : public Frame
 {
 private:
 
-  uint  mapTexId;
+  uint  mapTexId = 0;
 
   int   normalX;
   int   normalY;
@@ -52,7 +52,7 @@ public:
   float clickX;
   float clickY;
 
-  bool  isMaximised;
+  bool  isMaximised = false;
 
 protected:
 

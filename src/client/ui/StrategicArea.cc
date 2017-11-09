@@ -28,12 +28,6 @@
 namespace oz::client::ui
 {
 
-const float StrategicArea::TAG_REACH_DIST     = 100.0f;
-const float StrategicArea::TAG_CLIP_DIST      = 0.1f;
-const float StrategicArea::TAG_CLIP_K         = 9.0f;
-const float StrategicArea::TAG_MIN_PIXEL_SIZE = 4.0f; // size in pixels
-const float StrategicArea::TAG_MAX_COEFF_SIZE = 4.0f; // size in coefficient
-
 bool StrategicArea::projectPoint(const Point& p, int* x, int* y) const
 {
   Vec3  t  = camera.rotTMat * (p - camera.p);
@@ -65,8 +59,8 @@ bool StrategicArea::projectBounds(const AABB& bb, Span* span) const
   float maxX = -Math::INF;
   float maxY = -Math::INF;
 
-  for (int i = 0; i < 8; ++i) {
-    Vec3  t = camera.rotTMat * corners[i];
+  for (const Vec3& corner : corners) {
+    Vec3  t = camera.rotTMat * corner;
     float d  = -t.z;    if (d < TAG_CLIP_DIST)                    { return false; }
     float kx = t.x / d; if (kx < -TAG_CLIP_K || +TAG_CLIP_K < kx) { return false; }
     float ky = t.y / d; if (ky < -TAG_CLIP_K || +TAG_CLIP_K < ky) { return false; }
@@ -147,9 +141,9 @@ void StrategicArea::collectHovers()
     float maxX = -Math::INF;
     float maxY = -Math::INF;
 
-    for (int i = 0; i < 4; ++i) {
-      collider.translate(camera.p, rays[i]);
-      Point point = camera.p + collider.hit.ratio * rays[i];
+    for (const Vec3& ray : rays) {
+      collider.translate(camera.p, ray);
+      Point point = camera.p + collider.hit.ratio * ray;
 
       minX = min(minX, point.x);
       minY = min(minY, point.y);
@@ -451,11 +445,7 @@ void StrategicArea::onDraw()
 }
 
 StrategicArea::StrategicArea()
-  : Area(camera.width, camera.height),
-    unitName(0, 0, 0, ALIGN_HCENTRE, &style.sansFont, ""),
-    overlayCallback(nullptr), overlaySender(nullptr),
-    hoverStr(-1), hoverEnt(-1), hoverObj(-1), taggedStr(-1),
-    mouseW(0.0f)
+  : Area(camera.width, camera.height), unitName(0, 0, 0, ALIGN_HCENTRE, &style.sansFont, "")
 {
   flags |= UPDATE_BIT | PINNED_BIT;
 }

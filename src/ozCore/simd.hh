@@ -68,7 +68,7 @@ static_assert(sizeof(float4) >= sizeof(std::max_align_t),
  * Create a float vector with all components set to a given value.
  */
 OZ_ALWAYS_INLINE
-inline float4 vFill(float x)
+inline constexpr float4 vFill(float x)
 {
   return float4{x, x, x, x};
 }
@@ -77,7 +77,7 @@ inline float4 vFill(float x)
  * Create an uint vector with all components set to a given value.
  */
 OZ_ALWAYS_INLINE
-inline uint4 vFill(uint x)
+inline constexpr uint4 vFill(uint x)
 {
   return uint4{x, x, x, x};
 }
@@ -219,17 +219,17 @@ protected:
    * Zero vector.
    */
   OZ_ALWAYS_INLINE
-  VectorBase3() = default;
+  constexpr VectorBase3() = default;
 
   /**
    * Create a vector with given components.
    */
   OZ_ALWAYS_INLINE
 #ifdef OZ_SIMD
-  explicit VectorBase3(float x_, float y_, float z_, float w_)
+  explicit constexpr VectorBase3(float x_, float y_, float z_, float w_)
     : f4{x_, y_, z_, w_}
 #else
-  explicit VectorBase3(float x_, float y_, float z_, float)
+  explicit constexpr VectorBase3(float x_, float y_, float z_, float)
     : x(x_), y(y_), z(z_)
 #endif
   {}
@@ -239,7 +239,7 @@ public:
 #ifdef OZ_SIMD
 
   OZ_ALWAYS_INLINE
-  explicit VectorBase3(float4 f4_)
+  explicit constexpr VectorBase3(float4 f4_)
     : f4(f4_)
   {}
 
@@ -317,7 +317,7 @@ protected:
    * Zero vector.
    */
   OZ_ALWAYS_INLINE
-  VectorBase4() = default;
+  constexpr VectorBase4() = default;
 
 #ifndef OZ_SIMD
 
@@ -325,7 +325,7 @@ protected:
    * Create a vector with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit VectorBase4(float x_, float y_, float z_, float w_)
+  explicit constexpr VectorBase4(float x_, float y_, float z_, float w_)
     : VectorBase3(x_, y_, z_, 0.0f), w(w_)
   {}
 

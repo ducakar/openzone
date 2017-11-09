@@ -71,7 +71,7 @@ private:
 
 public:
 
-  void executeSequence(const File& file, const Lingua* lingua);
+  void executeSequence(const File& file, const Lingua* missionLingua);
 
   void begin() override;
   void end() override;

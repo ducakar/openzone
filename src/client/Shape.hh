@@ -32,21 +32,10 @@ class Shape
 {
 private:
 
-  struct Vertex
-  {
-    float pos[3];
-    int16 texCoord[2];
-  };
-
-  static const Vertex VERTICES[];
-  static const uint16 INDICES[];
-
-  uint vbo;
-  uint ibo;
+  uint vbo = 0;
+  uint ibo = 0;
 
 public:
-
-  Shape();
 
   void bind() const;
   void unbind() const;

@@ -99,8 +99,8 @@ public:
 
   void applyColour() const;
 
-  void setColour(const Mat4& colour) const;
-  void setColour(const Vec4& colour) const;
+  void setColour(const Mat4& colour_) const;
+  void setColour(const Vec4& colour_) const;
   void setColour(float r, float g, float b, float a = 1.0f) const;
 
 };
@@ -173,18 +173,18 @@ private:
 
 public:
 
-  int  plain;
-  int  mesh;
-  int  postprocess;
+  int  plain           = -1;
+  int  mesh            = -1;
+  int  postprocess     = -1;
 
   int  activeProgram;
 
   Vec4 fogColour;
 
-  uint defaultTexture;
-  uint defaultMasks;
-  uint defaultNormals;
-  uint noiseTexture;
+  uint defaultTexture  = 0;
+  uint defaultMasks    = 0;
+  uint defaultNormals  = 0;
+  uint noiseTexture    = 0;
 
   int  medium;
   bool hasFBO;
@@ -195,8 +195,6 @@ public:
   bool doBumpMap;
   bool doPostprocess;
   bool nLights;
-
-  Shader();
 
   void program(int id);
 

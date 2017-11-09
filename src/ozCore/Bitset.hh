@@ -45,7 +45,7 @@ class Bitset
 private:
 
   /// Number of bits per the internal unit.
-  static const int UNIT_BITS = sizeof(uint64) * 8;
+  static constexpr int UNIT_BITS = sizeof(uint64) * 8;
 
 private:
 

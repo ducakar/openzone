@@ -22,39 +22,6 @@
 namespace oz
 {
 
-const float Physics::FLOOR_NORMAL_Z          =  0.60f;
-const float Physics::MOVE_BOUNCE             =  EPSILON;
-const float Physics::ENTITY_BOND_G_RATIO     =  0.10f;
-const float Physics::SIDE_PUSH_RATIO         =  0.40f;
-
-const float Physics::HIT_MAX_MASS            =  100.0f;
-const float Physics::HIT_THRESHOLD           = -3.0f;
-const float Physics::HIT_INTENSITY_COEF      =  0.02f;
-const float Physics::HIT_ENERGY_COEF         =  0.01f;
-const float Physics::SPLASH_THRESHOLD        = -2.0f;
-const float Physics::SPLASH_INTENSITY_COEF   =  0.02f;
-
-const float Physics::SLIDE_DAMAGE_THRESHOLD  =  50.0f;
-const float Physics::SLIDE_DAMAGE_COEF       = -2.5f;
-
-const float Physics::STICK_VELOCITY          =  0.03f;
-const float Physics::SLICK_STICK_VELOCITY    =  0.003f;
-const float Physics::FLOATING_STICK_VELOCITY =  0.0005f;
-const float Physics::WATER_FRICTION          =  0.10f;
-const float Physics::LADDER_FRICTION         =  0.15f;
-const float Physics::FLOOR_FRICTION_COEF     =  0.30f;
-const float Physics::SLICK_FRICTION_COEF     =  0.03f;
-
-const float Physics::LAVA_LIFT               =  1.2f;
-const float Physics::LAVA_DAMAGE_ABSOLUTE    =  175.0f;
-const float Physics::LAVA_DAMAGE_RATIO       =  0.25f;
-const int   Physics::LAVA_DAMAGE_INTERVAL    =  Timer::TICKS_PER_SEC / 2;
-
-const float Physics::FRAG_HIT_VELOCITY2      =  100.0f;
-const float Physics::FRAG_DESTROY_VELOCITY2  =  300.0f;
-const float Physics::FRAG_DAMAGE_COEF        =  0.05f;
-const float Physics::FRAG_FIXED_DAMAGE       =  0.75f;
-
 //***********************************
 //*    OBJECT COLLISION HANDLING    *
 //***********************************

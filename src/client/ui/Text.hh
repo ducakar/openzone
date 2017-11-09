@@ -54,16 +54,16 @@ public:
   Text() = default;
 
   OZ_PRINTF_FORMAT(7, 8)
-  explicit Text(int x, int y, int width, int align, Font* font, const char* s, ...);
+  explicit Text(int x_, int y_, int width_, int align_, Font* font_, const char* s, ...);
 
   ~Text();
   Text(Text&& l) noexcept;
   Text& operator=(Text&& l) noexcept;
 
-  void setPosition(int x, int y);
-  void setWidth(int width);
-  void setAlign(int align);
-  void setFont(Font* font);
+  void setPosition(int x_, int y_);
+  void setWidth(int width_);
+  void setAlign(int align_);
+  void setFont(Font* font_);
   OZ_PRINTF_FORMAT(2, 0)
   void setTextv(const char* s, va_list ap);
   OZ_PRINTF_FORMAT(2, 3)

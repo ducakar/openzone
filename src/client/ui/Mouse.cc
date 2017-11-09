@@ -142,8 +142,8 @@ void Mouse::destroy()
 {
   Log::print("Destroying Mouse ...");
 
-  for (int i = 0; i < CURSORS_MAX; ++i) {
-    cursors[i].destroy();
+  for (Cursor& cursor : cursors) {
+    cursor.destroy();
   }
 
   Log::printEnd(" OK");

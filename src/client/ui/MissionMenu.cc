@@ -175,8 +175,7 @@ MissionMenu::~MissionMenu()
 
 MissionMenu::MissionMenu()
   : Area(camera.width, camera.height),
-    description(40, 190, width - 320, ALIGN_TOP, &style.sansFont, ""),
-    imageId(0)
+    description(40, 190, width - 320, ALIGN_TOP, &style.sansFont, "")
 {
   Button* backButton = new Button(OZ_GETTEXT("Back"), back, 200, 30);
   add(backButton, -20, 20);

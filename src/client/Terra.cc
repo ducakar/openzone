@@ -26,18 +26,6 @@
 namespace oz::client
 {
 
-const float Terra::WAVE_BIAS_INC = 1.5f;
-
-Terra::Terra()
-  : ibo(0), id(-1)
-{
-  for (int i = 0; i < TILES; ++i) {
-    for (int j = 0; j < TILES; ++j) {
-      vbos[i][j] = 0;
-    }
-  }
-}
-
 void Terra::draw()
 {
   if (id == -1) {

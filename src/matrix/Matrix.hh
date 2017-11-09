@@ -32,7 +32,7 @@ class Matrix
 {
 private:
 
-  static const float MAX_VELOCITY2;
+  static constexpr float MAX_VELOCITY2 = 100.0f * 100.0f;
 
   int maxStructs;
   int maxEvents;

@@ -35,7 +35,7 @@ class MD2Imago : public Imago
 
 private:
 
-  static const float TURN_SMOOTHING_COEF;
+  static constexpr float TURN_SMOOTHING_COEF = 0.25f;
 
 private:
 

@@ -44,7 +44,7 @@ class String
 public:
 
   /// Size of static buffer for short string optimisation.
-  static const int STATIC_SIZE = 32 - sizeof(int);
+  static constexpr int STATIC_SIZE = 32 - sizeof(int);
 
   /// Empty string. Useful when a function needs to return a reference to an empty string.
   static const String EMPTY;

@@ -25,8 +25,7 @@
 namespace oz
 {
 
-ObjectClass::~ObjectClass()
-{}
+ObjectClass::~ObjectClass() = default;
 
 ObjectClass* ObjectClass::createClass()
 {

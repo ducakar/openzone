@@ -32,20 +32,6 @@
 namespace oz::client
 {
 
-const float UnitProxy::CAMERA_Z_SMOOTHING       = 0.40f;
-const float UnitProxy::CAMERA_Z_TOLERANCE       = 0.30f;
-const float UnitProxy::CAMERA_DIST_SMOOTHING    = 0.80f;
-const float UnitProxy::EXTERNAL_CAM_DIST        = 2.75f;
-const float UnitProxy::EXTERNAL_CAM_CLIP_DIST   = 0.10f;
-const float UnitProxy::SHOULDER_CAM_RIGHT       = 0.25f;
-const float UnitProxy::SHOULDER_CAM_UP          = 0.25f;
-const float UnitProxy::VEHICLE_CAM_UP_FACTOR    = 0.15f;
-const float UnitProxy::BOB_SUPPRESSION_COEF     = 0.80f;
-const float UnitProxy::BINOCULARS_MAGNIFICATION = 0.20f;
-const float UnitProxy::INJURY_SUPPRESSION_COEF  = 0.98f;
-const float UnitProxy::INJURY_CLAMP             = 2.00f;
-const float UnitProxy::DEATH_CAM_DIST           = 4.00f;
-
 void UnitProxy::begin()
 {
   camera.setTaggedObj(nullptr);

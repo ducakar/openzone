@@ -32,8 +32,8 @@ class Device
 {
 public:
 
-  static const int MEMO_BIT     = 0x0001;
-  static const int COMPUTER_BIT = 0x0002;
+  static constexpr int MEMO_BIT     = 0x0001;
+  static constexpr int COMPUTER_BIT = 0x0002;
 
   using CreateFunc = Device* (int id, Stream* is);
 

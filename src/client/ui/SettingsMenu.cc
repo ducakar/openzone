@@ -119,9 +119,6 @@ void SettingsMenu::onDraw()
   drawChildren();
 }
 
-SettingsMenu::~SettingsMenu()
-{}
-
 SettingsMenu::SettingsMenu()
   : Area(camera.width, camera.height)
 {

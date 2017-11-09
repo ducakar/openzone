@@ -24,7 +24,7 @@
 namespace oz::builder
 {
 
-const char* const UI::ICON_NAMES[] = {
+const char* const ICON_NAMES[] = {
   "crosshair",
   "use",
   "device",

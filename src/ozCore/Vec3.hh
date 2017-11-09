@@ -34,6 +34,8 @@
 namespace oz
 {
 
+class Vec4;
+
 /**
  * 3D vector.
  *
@@ -58,13 +60,13 @@ public:
    * Create an uninitialised instance.
    */
   OZ_ALWAYS_INLINE
-  Vec3() = default;
+  constexpr Vec3() = default;
 
   /**
    * Create a vector with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit Vec3(float x, float y, float z)
+  explicit constexpr Vec3(float x, float y, float z)
     : VectorBase3(x, y, z, 0.0f)
   {}
 
@@ -75,6 +77,12 @@ public:
   explicit Vec3(const float* v)
     : VectorBase3(v[0], v[1], v[2], 0.0f)
   {}
+
+  /**
+   * Create from four-component vector.
+   */
+  OZ_ALWAYS_INLINE
+  explicit constexpr Vec3(const Vec4& v);
 
   /**
    * Norm.

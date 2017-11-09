@@ -34,24 +34,24 @@ class Area : public DChainNode<Area>
 
 public:
 
-  static const int CENTRE          = 0x10000000; ///< Special bit for x and y value.
+  static constexpr int CENTRE          = 0x10000000; ///< Special bit for x and y value.
 
-  static const int UPDATE_BIT      = 0x01;       ///< If `onUpdate()` should be called.
-  static const int PINNED_BIT      = 0x02;       ///< Show in both freelook and interface mode.
-  static const int GRAB_BIT        = 0x04;       ///< A child with GRAB_BIT get exclusive focus
-                                                 ///< for events
-  static const int ENABLED_BIT     = 0x10;       ///< Visibility and `onUpdate()` enabled.
-  static const int VISIBLE_BIT     = 0x20;       ///< Visible.
+  static constexpr int UPDATE_BIT      = 0x01;       ///< If `onUpdate()` should be called.
+  static constexpr int PINNED_BIT      = 0x02;       ///< Show in both freelook and interface mode.
+  static constexpr int GRAB_BIT        = 0x04;       ///< A child with GRAB_BIT get exclusive focus
+                                                     ///< for events
+  static constexpr int ENABLED_BIT     = 0x10;       ///< Visibility and `onUpdate()` enabled.
+  static constexpr int VISIBLE_BIT     = 0x20;       ///< Visible.
 
   // text alignment
-  static const int ALIGN_LEFT      = 0x00;
-  static const int ALIGN_RIGHT     = 0x01;
-  static const int ALIGN_HCENTRE   = 0x02;
-  static const int ALIGN_BOTTOM    = 0x00;
-  static const int ALIGN_TOP       = 0x04;
-  static const int ALIGN_VCENTRE   = 0x08;
-  static const int ALIGN_NONE      = ALIGN_LEFT | ALIGN_BOTTOM;
-  static const int ALIGN_CENTRE    = ALIGN_HCENTRE | ALIGN_VCENTRE;
+  static constexpr int ALIGN_LEFT      = 0x00;
+  static constexpr int ALIGN_RIGHT     = 0x01;
+  static constexpr int ALIGN_HCENTRE   = 0x02;
+  static constexpr int ALIGN_BOTTOM    = 0x00;
+  static constexpr int ALIGN_TOP       = 0x04;
+  static constexpr int ALIGN_VCENTRE   = 0x08;
+  static constexpr int ALIGN_NONE      = ALIGN_LEFT | ALIGN_BOTTOM;
+  static constexpr int ALIGN_CENTRE    = ALIGN_HCENTRE | ALIGN_VCENTRE;
 
 protected:
 
@@ -91,7 +91,7 @@ protected:
 
 public:
 
-  explicit Area(int width, int height);
+  explicit Area(int width_, int height_);
   virtual ~Area();
 
   OZ_ALWAYS_INLINE
@@ -113,7 +113,7 @@ public:
   /**
    * Calculate global (x, y) for given relative rectangle coordinates/dimension.
    */
-  Pos2 alignChild(int localX, int localY, int width, int height) const;
+  Pos2 alignChild(int localChildX, int localChildY, int childWidth, int childHeight) const;
 
   /**
    * Fix position if parent has been resized.

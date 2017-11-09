@@ -25,24 +25,11 @@
 namespace oz::client
 {
 
-const char* const Caelum::SKYBOX_FACES[]        = {"+x", "-x", "+y", "-y", "+z", "-z"};
-const Vec4        Caelum::GLOBAL_AMBIENT_COLOUR = Vec4(0.12f, 0.12f, 0.15f, 1.00f);
-
-const float       Caelum::DAY_BIAS              = 0.40f;
-const float       Caelum::DIFFUSE_COEF          = 0.80f;
-const float       Caelum::AMBIENT_COEF          = 0.40f;
-
-const float       Caelum::RED_COEF              = +0.05f;
-const float       Caelum::GREEN_COEF            = -0.05f;
-const float       Caelum::BLUE_COEF             = -0.10f;
-
-const Vec4        Caelum::DAY_COLOUR            = Vec4(0.45f, 0.55f, 0.95f, 1.0f);
-const Vec4        Caelum::NIGHT_COLOUR          = Vec4(0.02f, 0.02f, 0.05f, 1.0f);
+const char* const Caelum::SKYBOX_FACES[] = {"+x", "-x", "+y", "-y", "+z", "-z"};
 
 Caelum::Caelum()
-  : sunTexId(0), moonTexId(0), lightDir(0.0f, 0.0f, 1.0f),
-    diffuseColour(1.0f, 1.0f, 1.0f, 1.0f), ambientColour(1.0f, 1.0f, 1.0f, 1.0f),
-    caelumColour(1.0f, 1.0f, 1.0f, 1.0f), id(-1)
+  : lightDir(0.0f, 0.0f, 1.0f), diffuseColour(1.0f, 1.0f, 1.0f, 1.0f),
+    ambientColour(1.0f, 1.0f, 1.0f, 1.0f), caelumColour(1.0f, 1.0f, 1.0f, 1.0f)
 {}
 
 void Caelum::update()

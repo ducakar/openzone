@@ -83,8 +83,8 @@ void BSPImago::preload()
 
   leafClusters.resize(nLeaves);
 
-  for (int i = 0; i < leafClusters.size(); ++i) {
-    leafClusters[i] = is.readInt();
+  for (int & leafCluster : leafClusters) {
+    leafCluster = is.readInt();
   }
 
   nClusters      = is.readInt();

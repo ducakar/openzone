@@ -46,8 +46,8 @@ protected:
 
 public:
 
-  explicit MissionButton(const char* text, Callback* callback, MissionMenu* missionMenu, int index,
-                         int width, int height);
+  explicit MissionButton(const char* text, Callback* callback, MissionMenu* missionMenu_,
+                         int index_, int width, int height);
 
 };
 
@@ -72,7 +72,7 @@ private:
 
   Text              description;
 
-  uint              imageId;
+  uint              imageId     = 0;
   int               imageX;
   int               imageY;
   int               imageWidth;

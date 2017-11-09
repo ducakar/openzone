@@ -27,9 +27,6 @@
 namespace oz
 {
 
-// default 10000.0f: 100 m/s
-const float Matrix::MAX_VELOCITY2 = 1000000.0f;
-
 void Matrix::update()
 {
   maxStructs  = max(maxStructs,  Struct::pool.size());

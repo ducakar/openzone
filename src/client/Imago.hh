@@ -36,8 +36,8 @@ public:
 
   using CreateFunc = Imago* (const Object* object);
 
-  static const int UPDATED_BIT  = 0x00000001;
-  static const int MD2MODEL_BIT = 0x00000002;
+  static constexpr int UPDATED_BIT  = 0x00000001;
+  static constexpr int MD2MODEL_BIT = 0x00000002;
 
 protected:
 

@@ -27,16 +27,6 @@
 namespace oz::builder
 {
 
-const float BSP::DEFAULT_SCALE      = 0.01f;
-const float BSP::DEFAULT_LIFE       = 10000.0f;
-const float BSP::DEFAULT_RESISTANCE = 400.0f;
-const float BSP::DEFAULT_MARGIN     = 0.1f;
-
-const float BSP::LIQUID_ALPHA       = 0.75f;
-const float BSP::LIQUID_SPECULAR    = 0.50f;
-const float BSP::GLASS_ALPHA        = 0.15f;
-const float BSP::GLASS_SPECULAR     = 2.00f;
-
 void BSP::load()
 {
   File configFile = "@baseq3/maps/" + name + ".json";

@@ -53,9 +53,6 @@ static const Mat4 ROTATIONS[] =
 //static const Entity::State OPPOSITE_STATES[] = {Entity::CLOSING, Entity::OPENING};
 //static const Entity::State END_STATES[]      = {Entity::OPEN, Entity::CLOSED};
 
-const Vec3  Struct::DESTRUCT_FRAG_VELOCITY   = Vec3(0.0f, 0.0f, 2.0f);
-const float Struct::DEMOLISH_SPEED           = 8.0f;
-
 const Entity::Handler Entity::HANDLERS[] = {
   &Entity::staticHandler,
   &Entity::moverHandler,
@@ -559,8 +556,8 @@ void Struct::write(Stream* os) const
   }
 
   os->writeInt(boundObjects.size());
-  for (int i = 0; i < boundObjects.size(); ++i) {
-    os->writeInt(boundObjects[i]);
+  for (int boundObject : boundObjects) {
+    os->writeInt(boundObject);
   }
 }
 

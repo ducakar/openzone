@@ -34,7 +34,7 @@ class InfoFrame : public Frame
 private:
 
   Text text;
-  int  lastId;
+  int  lastId = -1;
 
 private:
 

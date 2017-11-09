@@ -35,13 +35,13 @@ class Mind
 public:
 
   // Normally, mind is only updated once in UPDATE_INTERVAL ticks.
-  static const int UPDATE_INTERVAL = 32;
+  static constexpr int UPDATE_INTERVAL = 32;
   // Force mind update in the next tick. Cleared after update.
-  static const int FORCE_UPDATE_BIT = 0x01;
+  static constexpr int FORCE_UPDATE_BIT = 0x01;
   // Force mind update when a collision occurs (in physical world).
-  static const int COLLISION_UPDATE_BIT = 0x02;
+  static constexpr int COLLISION_UPDATE_BIT = 0x02;
   // Disabled because player is currently controlling the bot.
-  static const int PLAYER_BIT = 0x04;
+  static constexpr int PLAYER_BIT = 0x04;
 
   Mind* prev[1];
   Mind* next[1];
@@ -55,8 +55,8 @@ public:
 public:
 
   Mind() = default;
-  explicit Mind(int bot);
-  explicit Mind(int bot, Stream* is);
+  explicit Mind(int bot_);
+  explicit Mind(int bot_, Stream* is);
   ~Mind();
 
   Mind(Mind&& m) noexcept;

@@ -36,9 +36,9 @@ private:
   Text trackTitle;
   Text trackLabel;
   Text volumeLabel;
-  int  currentTrack;
-  int  volume;
-  bool isPlaying;
+  int  currentTrack = 0;
+  int  volume       = 5;
+  bool isPlaying    = false;
 
   static void prevTrack(Button* sender);
   static void nextTrack(Button* sender);

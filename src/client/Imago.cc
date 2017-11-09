@@ -22,7 +22,6 @@
 namespace oz::client
 {
 
-Imago::~Imago()
-{}
+Imago::~Imago() = default;
 
 }

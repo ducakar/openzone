@@ -34,11 +34,6 @@ class BuildFrame : public Frame
 {
 private:
 
-  static const int  SLOT_SIZE      = 78;
-  static const Mat4 OVERLAY_GREEN;
-  static const Mat4 OVERLAY_YELLOW;
-  static const Mat4 OVERLAY_RED;
-
   enum Mode
   {
     BUILDINGS,
@@ -47,18 +42,18 @@ private:
     OBJECTS
   };
 
-  Mode               mode;
-  ModelField**       models;
+  Mode               mode           = BUILDINGS;
+  ModelField**       models         = nullptr;
 
-  const BSP*         overlayBSP;
-  const ObjectClass* overlayClass;
-  Heading            overlayHeading;
+  const BSP*         overlayBSP     = nullptr;
+  const ObjectClass* overlayClass   = nullptr;
+  Heading            overlayHeading = NORTH;
 
-  int                rows;
-  int                nScrollRows;
-  int                scroll;
-  bool               isOverModel;
-  bool               wasOverModel;
+  int                rows           = 0;
+  int                nScrollRows    = 0;
+  int                scroll         = 0;
+  bool               isOverModel    = false;
+  bool               wasOverModel   = false;
 
 private:
 

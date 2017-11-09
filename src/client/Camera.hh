@@ -36,14 +36,16 @@ class Camera
 {
 public:
 
-  static const float  ROT_LIMIT;
-  static const float  MIN_DISTANCE;
-  static const float  SMOOTHING_COEF;
-  static const float  ROT_SMOOTHING_COEF;
-  static const float  SHAKE_SUPPRESSION;
-  static const float  FLASH_SUPPRESSION;
-  static const Mat4   FLASH_COLOUR;
-  static Proxy* const PROXIES[];
+  static constexpr float ROT_LIMIT          = Math::TAU / 2.0f;
+  static constexpr float MIN_DISTANCE       = 0.10f;
+  static constexpr float SMOOTHING_COEF     = 0.35f;
+  static constexpr float ROT_SMOOTHING_COEF = 0.50f;
+  static constexpr float SHAKE_SUPPRESSION  = 0.85f;
+  static constexpr float FLASH_SUPPRESSION  = 0.75f;
+  static constexpr Mat4  FLASH_COLOUR       = Mat4(2.50f, 1.00f, 1.00f, 0.00f,
+                                                   1.00f, 2.50f, 1.00f, 0.00f,
+                                                   1.00f, 1.00f, 2.50f, 0.00f,
+                                                   0.00f, 0.00f, 0.00f, 1.00f);
 
   enum State
   {

@@ -27,7 +27,7 @@ namespace oz::client
 Pool<BasicAudio> BasicAudio::pool(2048);
 
 BasicAudio::BasicAudio(const Object* obj)
-  : Audio(obj), recent{}
+  : Audio(obj), eventCountdowns{}
 {}
 
 Audio* BasicAudio::create(const Object* obj)
@@ -41,8 +41,8 @@ void BasicAudio::play(const Object* playAt)
 
   const auto& sounds = obj->clazz->audioSounds;
 
-  for (int i = 0; i < ObjectClass::MAX_SOUNDS; ++i) {
-    recent[i] = max(recent[i] - 1, 0);
+  for (int& i : eventCountdowns) {
+    i = max(i - 1, 0);
   }
 
   // events
@@ -53,8 +53,8 @@ void BasicAudio::play(const Object* playAt)
       if (event.intensity < 0.0f) {
         playContSound(sounds[event.id], -event.intensity, playAt);
       }
-      else if (recent[event.id] == 0) {
-        recent[event.id] = RECENT_TICKS;
+      else if (eventCountdowns[event.id] == 0) {
+        eventCountdowns[event.id] = COUNTDOWN_TICKS;
         playSound(sounds[event.id], event.intensity, playAt);
       }
     }
@@ -69,10 +69,10 @@ void BasicAudio::play(const Object* playAt)
     if ((dyn->flags & (Object::FRICTING_BIT | Object::ON_SLICK_BIT)) == Object::FRICTING_BIT &&
         ((dyn->flags & Object::ON_FLOOR_BIT) || dyn->lower != -1))
     {
-      recent[Object::EVENT_FRICTING] = RECENT_TICKS;
+      eventCountdowns[Object::EVENT_FRICTING] = COUNTDOWN_TICKS;
     }
 
-    if (recent[Object::EVENT_FRICTING] != 0) {
+    if (eventCountdowns[Object::EVENT_FRICTING] != 0) {
       float dvx = dyn->velocity.x;
       float dvy = dyn->velocity.y;
 
@@ -88,8 +88,8 @@ void BasicAudio::play(const Object* playAt)
   }
 
   // inventory items' events
-  for (int i = 0; i < obj->items.size(); ++i) {
-    const Object* item = orbis.obj(obj->items[i]);
+  for (int i : obj->items) {
+    const Object* item = orbis.obj(i);
 
     if (item != nullptr && (item->flags & Object::AUDIO_BIT)) {
       context.playAudio(item, playAt);

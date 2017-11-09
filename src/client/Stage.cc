@@ -24,7 +24,6 @@ namespace oz::client
 
 Stage* Stage::nextStage = nullptr;
 
-Stage::~Stage()
-{}
+Stage::~Stage() = default;
 
 }

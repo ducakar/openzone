@@ -52,10 +52,10 @@ protected:
 
 public:
 
-  explicit Button(const char* s, Callback* callback, int width, int height);
+  explicit Button(const char* s, Callback* callback_, int width, int height);
 
   void setText(const char* s);
-  void setCallback(Callback* callback);
+  void setCallback(Callback* callback_);
 
 };
 

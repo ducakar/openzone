@@ -24,12 +24,14 @@
 namespace oz::client
 {
 
-void Frustum::getExtrems(Span& span, const Point& p)
+Span Frustum::getExtremes(const Point& p) const
 {
-  span.minX = max(int((p.x - radius_ + Orbis::DIM) / Cell::SIZE), 0);
-  span.minY = max(int((p.y - radius_ + Orbis::DIM) / Cell::SIZE), 0);
-  span.maxX = min(int((p.x + radius_ + Orbis::DIM) / Cell::SIZE), Orbis::CELLS - 1);
-  span.maxY = min(int((p.y + radius_ + Orbis::DIM) / Cell::SIZE), Orbis::CELLS - 1);
+  return Span{
+    max(int((p.x - radius_ + Orbis::DIM) / Cell::SIZE), 0),
+    max(int((p.y - radius_ + Orbis::DIM) / Cell::SIZE), 0),
+    min(int((p.x + radius_ + Orbis::DIM) / Cell::SIZE), Orbis::CELLS - 1),
+    min(int((p.y + radius_ + Orbis::DIM) / Cell::SIZE), Orbis::CELLS - 1)
+  };
 }
 
 void Frustum::update()

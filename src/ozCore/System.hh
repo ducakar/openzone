@@ -61,16 +61,16 @@ class System
 public:
 
   /// Install signal handler.
-  static const int HANDLER_BIT = 0x01;
+  static constexpr int HANDLER_BIT = 0x01;
 
   /// If running from a terminal, the crash handler will wait for Enter before termination.
-  static const int HALT_BIT = 0x02;
+  static constexpr int HALT_BIT = 0x02;
 
   /// Default set of bits.
 #ifdef NDEBUG
-  static const int DEFAULT_MASK = HANDLER_BIT;
+  static constexpr int DEFAULT_MASK = HANDLER_BIT;
 #else
-  static const int DEFAULT_MASK = HANDLER_BIT | HALT_BIT;
+  static constexpr int DEFAULT_MASK = HANDLER_BIT | HALT_BIT;
 #endif
 
   /// Type for crash handler function passed to `System::init()`.
@@ -112,14 +112,6 @@ public:
   OZ_PRINTF_FORMAT(5, 6)
   static void error(const char* function, const char* file, int line, int nSkippedFrames,
                     const char* message, ...);
-
-  /**
-   * Same as `error()` but with `va_list`.
-   */
-  OZ_NORETURN
-  OZ_PRINTF_FORMAT(5, 0)
-  static void verror(const char* function, const char* file, int line, int nSkippedFrames,
-                     const char* message, va_list ap);
 
   /**
    * Initialise `System`.

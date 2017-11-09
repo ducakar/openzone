@@ -254,15 +254,10 @@ void Context::releaseSpeakSource()
   speakSource.thread.join();
 }
 
-Context::Context()
-  : imagoClasses(nullptr), audioClasses(nullptr), textures(nullptr), sounds(nullptr),
-    models(nullptr), bspImagines(nullptr)
-{}
-
 Texture Context::loadTexture(const File& albedoFile, const File& masksFile, const File& normalsFile)
 {
   Texture texture;
-  texture.id = -2;
+  texture.id = Texture::EXTERNAL;
 
   if (albedoFile.isRegular()) {
     glGenTextures(1, &texture.albedo);
@@ -307,7 +302,7 @@ void Context::unloadTexture(const Texture* texture)
 Texture Context::requestTexture(int id)
 {
   // No texture.
-  if (id == -1) {
+  if (id == Texture::NONE) {
     return Texture();
   }
 

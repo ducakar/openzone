@@ -57,11 +57,9 @@ public:
   List<int> removedObjects;
   List<int> removedFrags;
 
-  Mode mode;
+  Mode mode = SINGLE;
 
 public:
-
-  Synapse();
 
   bool use(Bot* user, Object* target);
   bool trigger(Entity* target);

@@ -39,8 +39,6 @@
 namespace oz::client
 {
 
-const uint GameStage::AUTOSAVE_INTERVAL = 150 * Timer::TICKS_PER_SEC;
-
 void GameStage::saveMain(void*)
 {
   Log::print("Saving state to %s ...", gameStage.saveFile.c());

@@ -22,7 +22,6 @@
 namespace oz::client
 {
 
-Proxy::~Proxy()
-{}
+Proxy::~Proxy() = default;
 
 }

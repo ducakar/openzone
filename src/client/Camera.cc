@@ -26,27 +26,16 @@
 namespace oz::client
 {
 
-const float  Camera::ROT_LIMIT          = Math::TAU / 2.0f;
-const float  Camera::MIN_DISTANCE       = 0.10f;
-const float  Camera::SMOOTHING_COEF     = 0.35f;
-const float  Camera::ROT_SMOOTHING_COEF = 0.50f;
-const float  Camera::SHAKE_SUPPRESSION  = 0.85f;
-const float  Camera::FLASH_SUPPRESSION  = 0.75f;
-const Mat4   Camera::FLASH_COLOUR       = Mat4(2.50f, 1.00f, 1.00f, 0.00f,
-                                               1.00f, 2.50f, 1.00f, 0.00f,
-                                               1.00f, 1.00f, 2.50f, 0.00f,
-                                               0.00f, 0.00f, 0.00f, 1.00f);
-
-Proxy* const Camera::PROXIES[] = {
-  nullptr,
-  &strategic,
-  &unit,
-  &cinematic
-};
-
 StrategicProxy Camera::strategic;
 UnitProxy      Camera::unit;
 CinematicProxy Camera::cinematic;
+
+Proxy* const PROXIES[] = {
+  nullptr,
+  &Camera::strategic,
+  &Camera::unit,
+  &Camera::cinematic
+};
 
 void Camera::flash(float intensity)
 {
@@ -328,8 +317,8 @@ void Camera::write(Stream* os) const
   os->writeInt(vehicle);
 
   os->writeInt(switchableUnits.size());
-  for (int i = 0; i < switchableUnits.size(); ++i) {
-    os->writeInt(switchableUnits[i]);
+  for (int switchableUnit : switchableUnits) {
+    os->writeInt(switchableUnit);
   }
 
   os->writeBool(allowReincarnation);

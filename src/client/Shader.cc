@@ -31,8 +31,9 @@ namespace oz::client
 {
 
 static const int LOG_BUFFER_SIZE = 8192;
-static char      logBuffer[LOG_BUFFER_SIZE];
-static String    defines;
+
+static char   logBuffer[LOG_BUFFER_SIZE];
+static String defines;
 
 Uniform uniform;
 
@@ -252,10 +253,6 @@ void Shader::loadProgram(int id)
 
   OZ_GL_CHECK_ERROR();
 }
-
-Shader::Shader()
-  : plain(-1), defaultMasks(0)
-{}
 
 void Shader::program(int id)
 {

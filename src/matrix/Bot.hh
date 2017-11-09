@@ -39,125 +39,125 @@ public:
    */
 
   // Step and swim events are not in use but merely reserve sound slots.
-  static const int EVENT_STEP             = 9;
-  static const int EVENT_WATER_STEP       = 10;
-  static const int EVENT_SWIM_SURFACE     = 11;
-  static const int EVENT_SWIM_SUBMERGED   = 12;
+  static constexpr int EVENT_STEP             = 9;
+  static constexpr int EVENT_WATER_STEP       = 10;
+  static constexpr int EVENT_SWIM_SURFACE     = 11;
+  static constexpr int EVENT_SWIM_SUBMERGED   = 12;
 
-  static const int EVENT_DEATH            = 13;
-  static const int EVENT_JUMP             = 14;
-  static const int EVENT_MELEE            = 15;
-  static const int EVENT_TAKE             = 16;
+  static constexpr int EVENT_DEATH            = 13;
+  static constexpr int EVENT_JUMP             = 14;
+  static constexpr int EVENT_MELEE            = 15;
+  static constexpr int EVENT_TAKE             = 16;
 
   // Gestures.
-  static const int EVENT_POINT            = 17;
-  static const int EVENT_FALL_BACK        = 18;
-  static const int EVENT_SALUTE           = 19;
-  static const int EVENT_WAVE             = 20;
-  static const int EVENT_FLIP             = 21;
+  static constexpr int EVENT_POINT            = 17;
+  static constexpr int EVENT_FALL_BACK        = 18;
+  static constexpr int EVENT_SALUTE           = 19;
+  static constexpr int EVENT_WAVE             = 20;
+  static constexpr int EVENT_FLIP             = 21;
 
   /*
    * ACTIONS
    */
 
-  static const int ACTION_FORWARD         = 0x00000001;
-  static const int ACTION_BACKWARD        = 0x00000002;
-  static const int ACTION_RIGHT           = 0x00000004;
-  static const int ACTION_LEFT            = 0x00000008;
-  static const int ACTION_JUMP            = 0x00000010;
-  static const int ACTION_CROUCH          = 0x00000020;
-  static const int ACTION_WALK            = 0x00000040;
+  static constexpr int ACTION_FORWARD         = 0x00000001;
+  static constexpr int ACTION_BACKWARD        = 0x00000002;
+  static constexpr int ACTION_RIGHT           = 0x00000004;
+  static constexpr int ACTION_LEFT            = 0x00000008;
+  static constexpr int ACTION_JUMP            = 0x00000010;
+  static constexpr int ACTION_CROUCH          = 0x00000020;
+  static constexpr int ACTION_WALK            = 0x00000040;
 
-  static const int ACTION_ATTACK          = 0x00000080;
-  static const int ACTION_EXIT            = 0x00000100;
-  static const int ACTION_EJECT           = 0x00000200;
-  static const int ACTION_SUICIDE         = 0x00000400;
+  static constexpr int ACTION_ATTACK          = 0x00000080;
+  static constexpr int ACTION_EXIT            = 0x00000100;
+  static constexpr int ACTION_EJECT           = 0x00000200;
+  static constexpr int ACTION_SUICIDE         = 0x00000400;
 
-  static const int ACTION_VEH_UP          = 0x00000800;
-  static const int ACTION_VEH_DOWN        = 0x00001000;
-  static const int ACTION_VEH_NEXT_WEAPON = 0x00002000;
+  static constexpr int ACTION_VEH_UP          = 0x00000800;
+  static constexpr int ACTION_VEH_DOWN        = 0x00001000;
+  static constexpr int ACTION_VEH_NEXT_WEAPON = 0x00002000;
 
-  static const int ACTION_POINT           = 0x00004000;
-  static const int ACTION_BACK            = 0x00008000;
-  static const int ACTION_SALUTE          = 0x00010000;
-  static const int ACTION_WAVE            = 0x00020000;
-  static const int ACTION_FLIP            = 0x00040000;
+  static constexpr int ACTION_POINT           = 0x00004000;
+  static constexpr int ACTION_BACK            = 0x00008000;
+  static constexpr int ACTION_SALUTE          = 0x00010000;
+  static constexpr int ACTION_WAVE            = 0x00020000;
+  static constexpr int ACTION_FLIP            = 0x00040000;
 
-  static const int ACTION_TRIGGER         = 0x00080000;
-  static const int ACTION_LOCK            = 0x00100000;
-  static const int ACTION_USE             = 0x00200000;
-  static const int ACTION_TAKE            = 0x00400000;
-  static const int ACTION_GRAB            = 0x00800000;
-  static const int ACTION_ROTATE          = 0x01000000;
-  static const int ACTION_THROW           = 0x02000000;
+  static constexpr int ACTION_TRIGGER         = 0x00080000;
+  static constexpr int ACTION_LOCK            = 0x00100000;
+  static constexpr int ACTION_USE             = 0x00200000;
+  static constexpr int ACTION_TAKE            = 0x00400000;
+  static constexpr int ACTION_GRAB            = 0x00800000;
+  static constexpr int ACTION_ROTATE          = 0x01000000;
+  static constexpr int ACTION_THROW           = 0x02000000;
 
-  static const int ACTION_INV_USE         = 0x04000000;
-  static const int ACTION_INV_TAKE        = 0x08000000;
-  static const int ACTION_INV_GIVE        = 0x10000000;
-  static const int ACTION_INV_DROP        = 0x20000000;
-  static const int ACTION_INV_GRAB        = 0x40000000;
+  static constexpr int ACTION_INV_USE         = 0x04000000;
+  static constexpr int ACTION_INV_TAKE        = 0x08000000;
+  static constexpr int ACTION_INV_GIVE        = 0x10000000;
+  static constexpr int ACTION_INV_DROP        = 0x20000000;
+  static constexpr int ACTION_INV_GRAB        = 0x40000000;
 
-  static const int ACTION_GESTURE_MASK    = ACTION_POINT | ACTION_BACK | ACTION_SALUTE |
-                                            ACTION_WAVE | ACTION_FLIP;
+  static constexpr int ACTION_GESTURE_MASK    = ACTION_POINT | ACTION_BACK | ACTION_SALUTE |
+                                                ACTION_WAVE | ACTION_FLIP;
 
-  static const int INSTRUMENT_ACTIONS     = ACTION_TRIGGER | ACTION_LOCK | ACTION_USE |
-                                            ACTION_TAKE | ACTION_GRAB | ACTION_ROTATE |
-                                            ACTION_THROW | ACTION_INV_USE | ACTION_INV_TAKE |
-                                            ACTION_INV_GIVE | ACTION_INV_DROP | ACTION_INV_GRAB;
+  static constexpr int INSTRUMENT_ACTIONS     = ACTION_TRIGGER | ACTION_LOCK | ACTION_USE |
+                                                ACTION_TAKE | ACTION_GRAB | ACTION_ROTATE |
+                                                ACTION_THROW | ACTION_INV_USE | ACTION_INV_TAKE |
+                                                ACTION_INV_GIVE | ACTION_INV_DROP | ACTION_INV_GRAB;
 
   /*
    * STATE
    */
 
-  static const int DEAD_BIT               = 0x00000001;
-  static const int MECHANICAL_BIT         = 0x00000002;
-  static const int INCARNATABLE_BIT       = 0x00000004;
+  static constexpr int DEAD_BIT               = 0x00000001;
+  static constexpr int MECHANICAL_BIT         = 0x00000002;
+  static constexpr int INCARNATABLE_BIT       = 0x00000004;
 
-  static const int MOVING_BIT             = 0x00000010;
-  static const int CROUCHING_BIT          = 0x00000020;
-  static const int WALKING_BIT            = 0x00000040;
-  static const int ATTACKING_BIT          = 0x00000080;
+  static constexpr int MOVING_BIT             = 0x00000010;
+  static constexpr int CROUCHING_BIT          = 0x00000020;
+  static constexpr int WALKING_BIT            = 0x00000040;
+  static constexpr int ATTACKING_BIT          = 0x00000080;
 
   // current state bits
-  static const int JUMP_SCHED_BIT         = 0x00000100;
+  static constexpr int JUMP_SCHED_BIT         = 0x00000100;
   // on floor or an another object
-  static const int GROUNDED_BIT           = 0x00000200;
+  static constexpr int GROUNDED_BIT           = 0x00000200;
   // climbing a ladder
-  static const int LADDER_BIT             = 0x00000800;
+  static constexpr int LADDER_BIT             = 0x00000800;
   // climbing a ledge
-  static const int LEDGE_BIT              = 0x00001000;
-  static const int SWIMMING_BIT           = 0x00002000;
-  static const int SUBMERGED_BIT          = 0x00004000;
+  static constexpr int LEDGE_BIT              = 0x00001000;
+  static constexpr int SWIMMING_BIT           = 0x00002000;
+  static constexpr int SUBMERGED_BIT          = 0x00004000;
 
-  static const int GESTURE_POINT_BIT      = 0x01000000;
-  static const int GESTURE_FALL_BACK_BIT  = 0x02000000;
-  static const int GESTURE_SALUTE_BIT     = 0x04000000;
-  static const int GESTURE_WAVE_BIT       = 0x08000000;
-  static const int GESTURE_FLIP_BIT       = 0x10000000;
+  static constexpr int GESTURE_POINT_BIT      = 0x01000000;
+  static constexpr int GESTURE_FALL_BACK_BIT  = 0x02000000;
+  static constexpr int GESTURE_SALUTE_BIT     = 0x04000000;
+  static constexpr int GESTURE_WAVE_BIT       = 0x08000000;
+  static constexpr int GESTURE_FLIP_BIT       = 0x10000000;
 
-  static const int GESTURE_MASK           = GESTURE_POINT_BIT | GESTURE_FALL_BACK_BIT |
-                                            GESTURE_SALUTE_BIT | GESTURE_WAVE_BIT |
-                                            GESTURE_FLIP_BIT;
+  static constexpr int GESTURE_MASK           = GESTURE_POINT_BIT | GESTURE_FALL_BACK_BIT |
+                                                GESTURE_SALUTE_BIT | GESTURE_WAVE_BIT |
+                                                GESTURE_FLIP_BIT;
 
-  static const float AIR_FRICTION;
-  static const float LADDER_SLIP_MOMENTUM;
+  static constexpr float AIR_FRICTION         =  0.01f;
+  static constexpr float LADDER_SLIP_MOMENTUM =  16.0f;
 
-  static const float WOUNDED_THRESHOLD;
-  static const float DROWNING_RATIO;
-  static const float CORPSE_FADE_FACTOR;
+  static constexpr float WOUNDED_THRESHOLD    =  0.70f;
+  static constexpr float DROWNING_RATIO       =  8.00f;
+  static constexpr float CORPSE_FADE_FACTOR   =  0.50f / 100.0f;
 
-  static const float INSTRUMENT_DIST;
-  static const float INSTRUMENT_DOT_MIN;
+  static constexpr float INSTRUMENT_DIST      =  2.00f;
+  static constexpr float INSTRUMENT_DOT_MIN   =  0.80f;
 
-  static const float GRAB_EPSILON;
-  static const float GRAB_STRING_RATIO;
-  static const float GRAB_HANDLE_TOL;
-  static const float GRAB_MOM_RATIO;
-  static const float GRAB_MOM_MAX;
-  static const float GRAB_MOM_MAX_SQ;
+  static constexpr float GRAB_EPSILON         =  0.20f;
+  static constexpr float GRAB_STRING_RATIO    =  10.0f;
+  static constexpr float GRAB_HANDLE_TOL      =  1.60f;
+  static constexpr float GRAB_MOM_RATIO       =  0.30f;
+  static constexpr float GRAB_MOM_MAX         =  1.00f; // must be < abs(Physics::HIT_THRESHOLD)
+  static constexpr float GRAB_MOM_MAX_SQ      =  1.00f;
 
-  static const float STEP_MOVE_AHEAD;
-  static const float CLIMB_MOVE_AHEAD;
+  static constexpr float STEP_MOVE_AHEAD      =  0.20f;
+  static constexpr float CLIMB_MOVE_AHEAD     =  0.40f;
 
 public:
 
@@ -210,7 +210,7 @@ public:
   void rearm();
   void kill();
 
-  void enter(int vehicle);
+  void enter(int vehicle_);
   void exit();
 
 protected:
@@ -222,9 +222,9 @@ protected:
 
 public:
 
-  explicit Bot(const BotClass* clazz, int index, const Point& p, Heading heading);
-  explicit Bot(const BotClass* clazz, int index, const Json& json);
-  explicit Bot(const BotClass* clazz, Stream* is);
+  explicit Bot(const BotClass* clazz_, int index, const Point& p_, Heading heading);
+  explicit Bot(const BotClass* clazz_, int index, const Json& json);
+  explicit Bot(const BotClass* clazz_, Stream* is);
 
   Json write() const override;
   void write(Stream* os) const override;

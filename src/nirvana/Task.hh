@@ -34,7 +34,7 @@ class Task : public DChainNode<Task>
 {
 public:
 
-  static const int ACTIVE_BIT = 0x00000001;
+  static constexpr int ACTIVE_BIT = 0x00000001;
 
   using CreateFunc = Task* (const Task* parent);
   using ReadFunc = Task* (Stream* is, const Task* parent);

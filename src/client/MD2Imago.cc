@@ -25,8 +25,6 @@
 namespace oz::client
 {
 
-const float MD2Imago::TURN_SMOOTHING_COEF = 0.25f;
-
 Pool<MD2Imago> MD2Imago::pool(256);
 
 MD2Imago::~MD2Imago()

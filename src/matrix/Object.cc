@@ -35,8 +35,6 @@
 namespace oz
 {
 
-const Vec3  Object::DESTRUCT_FRAG_VELOCITY = Vec3(0.0f, 0.0f, 2.0f);
-
 Pool<Object::Event> Object::Event::pool(256);
 Pool<Object>        Object::pool(16384);
 

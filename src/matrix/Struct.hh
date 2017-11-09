@@ -85,13 +85,13 @@ class Struct : public Bounds
 {
 private:
 
-  static const Vec3  DESTRUCT_FRAG_VELOCITY;
-  static const float DEMOLISH_SPEED;
+  static constexpr float DEMOLISH_SPEED         = 8.0f;
+  static constexpr Vec3  DESTRUCT_FRAG_VELOCITY = Vec3(0.0f, 0.0f, 2.0f);
 
 public:
 
-  static const int MAX_ENT_SHIFT = 16;
-  static const int MAX_ENTITIES  = 1 << MAX_ENT_SHIFT;
+  static constexpr int MAX_ENT_SHIFT = 16;
+  static constexpr int MAX_ENTITIES  = 1 << MAX_ENT_SHIFT;
 
 public:
 
@@ -207,9 +207,9 @@ public:
 
 public:
 
-  explicit Struct(const BSP* bsp, int index, const Point& p, Heading heading);
-  explicit Struct(const BSP* bsp, int index, const Json& json);
-  explicit Struct(const BSP* bsp, Stream* is);
+  explicit Struct(const BSP* bsp_, int index_, const Point& p_, Heading heading_);
+  explicit Struct(const BSP* bsp_, int index_, const Json& json);
+  explicit Struct(const BSP* bsp_, Stream* is);
 
   Json write() const;
   void write(Stream* os) const;

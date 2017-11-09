@@ -32,34 +32,34 @@ class Loader
 {
 private:
 
-  static const uint TICK_PERIOD               = 180 * Timer::TICKS_PER_SEC;  // 2 min
+  static constexpr uint TICK_PERIOD               = 180 * Timer::TICKS_PER_SEC;  // 2 min
 
-  static const uint IMAGO_CLEAR_INTERVAL      = 10  * Timer::TICKS_PER_SEC;  //  10 s (+ 2 s)
-  static const uint IMAGO_CLEAR_LAG           = 2   * Timer::TICKS_PER_SEC;
+  static constexpr uint IMAGO_CLEAR_INTERVAL      = 10  * Timer::TICKS_PER_SEC;  //  10 s (+ 2 s)
+  static constexpr uint IMAGO_CLEAR_LAG           = 2   * Timer::TICKS_PER_SEC;
 
-  static const uint FRAG_CLEAR_INTERVAL       = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 0 s)
-  static const uint FRAG_CLEAR_LAG            = 0   * Timer::TICKS_PER_SEC;
+  static constexpr uint FRAG_CLEAR_INTERVAL       = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 0 s)
+  static constexpr uint FRAG_CLEAR_LAG            = 0   * Timer::TICKS_PER_SEC;
 
-  static const uint BSP_CLEAR_INTERVAL        = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 20 s)
-  static const uint BSP_CLEAR_LAG             = 20  * Timer::TICKS_PER_SEC;
+  static constexpr uint BSP_CLEAR_INTERVAL        = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 20 s)
+  static constexpr uint BSP_CLEAR_LAG             = 20  * Timer::TICKS_PER_SEC;
 
-  static const uint MODEL_CLEAR_INTERVAL      = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 40 s)
-  static const uint MODEL_CLEAR_LAG           = 40  * Timer::TICKS_PER_SEC;
+  static constexpr uint MODEL_CLEAR_INTERVAL      = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 40 s)
+  static constexpr uint MODEL_CLEAR_LAG           = 40  * Timer::TICKS_PER_SEC;
 
-  static const uint PARTICLE_CLEAR_INTERVAL   = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 60 s)
-  static const uint PARTICLE_CLEAR_LAG        = 60  * Timer::TICKS_PER_SEC;
+  static constexpr uint PARTICLE_CLEAR_INTERVAL   = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 60 s)
+  static constexpr uint PARTICLE_CLEAR_LAG        = 60  * Timer::TICKS_PER_SEC;
 
-  static const uint BSPAUDIO_CLEAR_INTERVAL   = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 80 s)
-  static const uint BSPAUDIO_CLEAR_LAG        = 80  * Timer::TICKS_PER_SEC;
+  static constexpr uint BSPAUDIO_CLEAR_INTERVAL   = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 80 s)
+  static constexpr uint BSPAUDIO_CLEAR_LAG        = 80  * Timer::TICKS_PER_SEC;
 
-  static const uint AUDIO_CLEAR_INTERVAL      = 5   * Timer::TICKS_PER_SEC;  //   5 s (+ 3 s)
-  static const uint AUDIO_CLEAR_LAG           = 3   * Timer::TICKS_PER_SEC;
+  static constexpr uint AUDIO_CLEAR_INTERVAL      = 5   * Timer::TICKS_PER_SEC;  //   5 s (+ 3 s)
+  static constexpr uint AUDIO_CLEAR_LAG           = 3   * Timer::TICKS_PER_SEC;
 
-  static const uint SOURCE_CLEAR_INTERVAL     = 1   * Timer::TICKS_PER_SEC;  //   1 s (+ ~0.5 s)
-  static const uint SOURCE_CLEAR_LAG          = 1   * Timer::TICKS_PER_SEC / 2;
+  static constexpr uint SOURCE_CLEAR_INTERVAL     = 1   * Timer::TICKS_PER_SEC;  //   1 s (+ ~0.5 s)
+  static constexpr uint SOURCE_CLEAR_LAG          = 1   * Timer::TICKS_PER_SEC / 2;
 
-  static const uint SOUND_CLEAR_INTERVAL      = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 100 s)
-  static const uint SOUND_CLEAR_LAG           = 100 * Timer::TICKS_PER_SEC;
+  static constexpr uint SOUND_CLEAR_INTERVAL      = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 100 s)
+  static constexpr uint SOUND_CLEAR_LAG           = 100 * Timer::TICKS_PER_SEC;
 
 private:
 

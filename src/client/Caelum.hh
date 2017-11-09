@@ -32,25 +32,26 @@ class Caelum
 {
 public:
 
+  static constexpr int  MAX_STARS             = 2048;
+  static constexpr Vec4 GLOBAL_AMBIENT_COLOUR = Vec4(0.12f, 0.12f, 0.15f, 1.00f);
+
   static const char* const SKYBOX_FACES[];
-  static const int         MAX_STARS = 2048;
-  static const Vec4        GLOBAL_AMBIENT_COLOUR;
 
 private:
 
-  static const float DAY_BIAS;
-  static const float DIFFUSE_COEF;
-  static const float AMBIENT_COEF;
+  static constexpr float DAY_BIAS     = 0.40f;
+  static constexpr float DIFFUSE_COEF = 0.80f;
+  static constexpr float AMBIENT_COEF = 0.40f;
 
-  static const float RED_COEF;
-  static const float GREEN_COEF;
-  static const float BLUE_COEF;
+  static constexpr float RED_COEF     = +0.05f;
+  static constexpr float GREEN_COEF   = -0.05f;
+  static constexpr float BLUE_COEF    = -0.10f;
 
-  static const Vec4  DAY_COLOUR;
-  static const Vec4  NIGHT_COLOUR;
+  static constexpr Vec4  DAY_COLOUR   = Vec4(0.45f, 0.55f, 0.95f, 1.0f);
+  static constexpr Vec4  NIGHT_COLOUR = Vec4(0.02f, 0.02f, 0.05f, 1.0f);
 
-  uint  sunTexId;
-  uint  moonTexId;
+  uint  sunTexId          = 0;
+  uint  moonTexId         = 0;
   uint  skyboxTexIds[6];
   int   celestialShaderId;
 
@@ -68,7 +69,7 @@ public:
   Vec4  nightColour;
   float nightLuminance;
 
-  int   id;
+  int   id = -1;
 
 public:
 

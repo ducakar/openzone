@@ -34,38 +34,38 @@ class Physics
 {
 public:
 
-  static const float FLOOR_NORMAL_Z;
-  static const float MOVE_BOUNCE;
-  static const float ENTITY_BOND_G_RATIO;
-  static const float SIDE_PUSH_RATIO;
+  static constexpr float FLOOR_NORMAL_Z          =  0.60f;
+  static constexpr float MOVE_BOUNCE             =  EPSILON;
+  static constexpr float ENTITY_BOND_G_RATIO     =  0.10f;
+  static constexpr float SIDE_PUSH_RATIO         =  0.40f;
 
-  static const float HIT_MAX_MASS;
-  static const float HIT_THRESHOLD;
-  static const float HIT_INTENSITY_COEF;
-  static const float HIT_ENERGY_COEF;
-  static const float SPLASH_THRESHOLD;
-  static const float SPLASH_INTENSITY_COEF;
+  static constexpr float HIT_MAX_MASS            =  100.0f;
+  static constexpr float HIT_THRESHOLD           = -3.0f;
+  static constexpr float HIT_INTENSITY_COEF      =  0.02f;
+  static constexpr float HIT_ENERGY_COEF         =  0.01f;
+  static constexpr float SPLASH_THRESHOLD        = -2.0f;
+  static constexpr float SPLASH_INTENSITY_COEF   =  0.02f;
 
-  static const float SLIDE_DAMAGE_THRESHOLD;
-  static const float SLIDE_DAMAGE_COEF;
+  static constexpr float SLIDE_DAMAGE_THRESHOLD  =  50.0f;
+  static constexpr float SLIDE_DAMAGE_COEF       = -2.5f;
 
-  static const float STICK_VELOCITY;
-  static const float SLICK_STICK_VELOCITY;
-  static const float FLOATING_STICK_VELOCITY;
-  static const float WATER_FRICTION;
-  static const float LADDER_FRICTION;
-  static const float FLOOR_FRICTION_COEF;
-  static const float SLICK_FRICTION_COEF;
+  static constexpr float STICK_VELOCITY          =  0.03f;
+  static constexpr float SLICK_STICK_VELOCITY    =  0.003f;
+  static constexpr float FLOATING_STICK_VELOCITY =  0.0005f;
+  static constexpr float WATER_FRICTION          =  0.10f;
+  static constexpr float LADDER_FRICTION         =  0.15f;
+  static constexpr float FLOOR_FRICTION_COEF     =  0.30f;
+  static constexpr float SLICK_FRICTION_COEF     =  0.03f;
 
-  static const float LAVA_LIFT;
-  static const float LAVA_DAMAGE_ABSOLUTE;
-  static const float LAVA_DAMAGE_RATIO;
-  static const int   LAVA_DAMAGE_INTERVAL;
+  static constexpr float LAVA_LIFT               =  1.2f;
+  static constexpr float LAVA_DAMAGE_ABSOLUTE    =  175.0f;
+  static constexpr float LAVA_DAMAGE_RATIO       =  0.25f;
+  static constexpr int   LAVA_DAMAGE_INTERVAL    =  Timer::TICKS_PER_SEC / 2;
 
-  static const float FRAG_HIT_VELOCITY2;
-  static const float FRAG_DESTROY_VELOCITY2;
-  static const float FRAG_DAMAGE_COEF;
-  static const float FRAG_FIXED_DAMAGE;
+  static constexpr float FRAG_HIT_VELOCITY2      =  100.0f;
+  static constexpr float FRAG_DESTROY_VELOCITY2  =  300.0f;
+  static constexpr float FRAG_DAMAGE_COEF        =  0.05f;
+  static constexpr float FRAG_FIXED_DAMAGE       =  0.75f;
 
 private:
 
@@ -90,8 +90,8 @@ private:
 public:
 
   void updateEnt(Entity* ent, const Vec3& localMove);
-  void updateObj(Dynamic* dyn);
-  void updateFrag(Frag* frag);
+  void updateObj(Dynamic* dyn_);
+  void updateFrag(Frag* frag_);
 
 };
 
