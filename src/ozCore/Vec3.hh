@@ -71,14 +71,6 @@ public:
   {}
 
   /**
-   * Create from an array of 3 floats.
-   */
-  OZ_ALWAYS_INLINE
-  explicit Vec3(const float* v)
-    : VectorBase3(v[0], v[1], v[2], 0.0f)
-  {}
-
-  /**
    * Create from four-component vector.
    */
   OZ_ALWAYS_INLINE

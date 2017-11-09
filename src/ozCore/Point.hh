@@ -65,12 +65,10 @@ public:
   {}
 
   /**
-   * Create from an array of 3 floats.
+   * Create from a four-component vector.
    */
   OZ_ALWAYS_INLINE
-  explicit Point(const float* v)
-    : VectorBase3(v[0], v[1], v[2], 1.0f)
-  {}
+  explicit constexpr Point(const Vec4& v);
 
   /**
    * Point translated for `v`.

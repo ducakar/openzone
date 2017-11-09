@@ -93,14 +93,6 @@ public:
   {}
 
   /**
-   * Create matrix from an array of 16 floats.
-   */
-  OZ_ALWAYS_INLINE
-  explicit Mat4(const float* v)
-    : x(&v[0]), y(&v[4]), z(&v[8]), w(&v[12])
-  {}
-
-  /**
    * Create from a 3x3 matrix.
    */
   OZ_ALWAYS_INLINE

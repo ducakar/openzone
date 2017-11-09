@@ -65,14 +65,6 @@ public:
   {}
 
   /**
-   * Create from an array of 4 floats.
-   */
-  OZ_ALWAYS_INLINE
-  explicit Plane(const float* p)
-    : n(p[0], p[1], p[2]), d(p[3])
-  {}
-
-  /**
    * Create with given member values.
    */
   OZ_ALWAYS_INLINE

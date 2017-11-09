@@ -84,14 +84,6 @@ public:
   {}
 
   /**
-   * Create matrix from an array of 9 floats.
-   */
-  OZ_ALWAYS_INLINE
-  explicit Mat3(const float* v)
-    : x(&v[0]), y(&v[3]), z(&v[6])
-  {}
-
-  /**
    * Top-left 3x3 submatrix of a 4x4 matrix.
    */
   explicit constexpr Mat3(const Mat4& m);

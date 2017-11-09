@@ -71,14 +71,6 @@ public:
   {}
 
   /**
-   * Create from an array of 4 floats.
-   */
-  OZ_ALWAYS_INLINE
-  explicit Vec4(const float* v)
-    : VectorBase4(v[0], v[1], v[2], v[3])
-  {}
-
-  /**
    * Create vector from a point (the additional component is zero).
    */
   OZ_ALWAYS_INLINE
@@ -403,7 +395,19 @@ inline Vec4 clamp(const Vec4& c, const Vec4& a, const Vec4& b)
 }
 
 inline constexpr Vec3::Vec3(const Vec4& v)
-    : VectorBase3(v.x, v.y, v.z, 0.0f)
+#ifdef OZ_SIMD
+  : VectorBase3(v.f4)
+#else
+  : VectorBase3(v.x, v.y, v.z, 0.0f)
+#endif
+{}
+
+inline constexpr Point::Point(const Vec4& v)
+#ifdef OZ_SIMD
+  : VectorBase3(v.f4)
+#else
+  : VectorBase3(v.x, v.y, v.z, 1.0f)
+#endif
 {}
 
 }

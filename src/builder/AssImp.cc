@@ -59,13 +59,26 @@ static List<Anim>       anims;
 static Assimp::Importer importer;
 static const aiScene*   scene;
 
+inline Vec3 fromAiVector(const aiVector3D& aiVector)
+{
+  return Vec3(aiVector.x, aiVector.y, aiVector.z);
+}
+
+inline Mat4 fromAiMatrix(const aiMatrix4x4& aiMatrix)
+{
+  return Mat4(aiMatrix.a1, aiMatrix.b1, aiMatrix.c1, aiMatrix.d1,
+              aiMatrix.a2, aiMatrix.b2, aiMatrix.c2, aiMatrix.d2,
+              aiMatrix.a3, aiMatrix.b3, aiMatrix.c3, aiMatrix.d3,
+              aiMatrix.a4, aiMatrix.b4, aiMatrix.c4, aiMatrix.d4);
+}
+
 static void readNode(const aiNode* node)
 {
   if (String::equals(node->mName.C_Str(), "Armature")) {
     return;
   }
 
-  Mat4 transf = ~Mat4(node->mTransformation[0]);
+  Mat4 transf = fromAiMatrix(node->mTransformation);
 
   Log::print("+ %s ", node->mName.C_Str());
   Log() << transf;
@@ -184,7 +197,7 @@ void AssImp::build(const File& path)
           compiler.texCoord(texCoords[index].x, 1.0f - texCoords[index].y);
         }
         if (normals != nullptr) {
-          Vec3 normal = Vec3(&normals[index].x);
+          Vec3 normal = fromAiVector(normals[index]);
 
           if (!Math::isFinite(normal.x) || !Math::isFinite(normal.y) || !Math::isFinite(normal.z)) {
             normal = Vec3::ZERO;
@@ -201,7 +214,7 @@ void AssImp::build(const File& path)
     for (uint j = 0; j < mesh->mNumBones; ++j) {
       Log() << "bone " << mesh->mBones[j]->mName.C_Str()
             << ", " << mesh->mBones[j]->mNumWeights
-            << ", " << ~Mat4(mesh->mBones[j]->mOffsetMatrix[0]);
+            << ", " << fromAiMatrix(mesh->mBones[j]->mOffsetMatrix);
     }
 
     compiler.endMesh();
