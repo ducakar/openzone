@@ -60,7 +60,7 @@ private:
   int      screenWidth;
   int      screenHeight;
 
-  Duration benchmarkTime;
+  Duration benchmarkDuration;
   bool     isBenchmark;
 
 private:

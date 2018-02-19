@@ -46,15 +46,24 @@ public:
   /// Length of one tick in seconds.
   static constexpr float TICK_TIME = 1.0f / float(TICKS_PER_SEC);
 
-  Duration runDuration;       ///< Run time (game time plus dropped time).
+private:
 
-  uint64   ticks         = 0; ///< Ticks from the start of the game.
-  Duration time;              ///< %Time from the start of the game.
+  int nTicksInSecond_ = 0; ///< Number of ticks elapsed for the current second.
+
+public:
+
+  uint64   nTicks        = 0; ///< Ticks from the start of the game.
+  Duration duration;          ///< %Time from the start of the game.
 
   uint64   nFrames       = 0; ///< Number of rendered frames from the start of the game.
   uint64   frameTicks    = 0; ///< Ticks from the last rendered frame.
   Duration frameDuration;     ///< Time from the last rendered frame.
   float    frameTime;         ///< Time in seconds from the last rendered frame.
+
+  Duration realTickDuration;  ///< Wait time for a tick.
+  Duration realDuration;      ///< Run time (game time plus dropped time).
+
+public:
 
   /**
    * Reset all timer counters to zero.
@@ -79,7 +88,7 @@ public:
    * ticks. That would results in a period after each "freeze" during which simulation will run
    * faster than in real time.
    */
-  void drop(Duration duration);
+  void drop(Duration skipDuration);
 
 };
 

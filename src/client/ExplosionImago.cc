@@ -35,7 +35,7 @@ Imago* ExplosionImago::create(const Object* obj)
   modelId = obj->clazz->imagoModel;
 
   imago->model     = context.requestModel(modelId);
-  imago->startTime = timer.time;
+  imago->startTime = timer.duration;
 
   return imago;
 }
@@ -51,7 +51,7 @@ void ExplosionImago::draw(const Imago*)
     return;
   }
 
-  float time   = (timer.time - startTime).t();
+  float time   = (timer.duration - startTime).t();
   float radius = 4.0f * time * obj->dim.z;
   float alpha  = 1.0f - 2.0f * time;
 

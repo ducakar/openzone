@@ -343,6 +343,18 @@ const Log& Log::operator<<(uint i) const
   return *this;
 }
 
+const Log& Log::operator<<(long l) const
+{
+  printRaw("%li", l);
+  return *this;
+}
+
+const Log& Log::operator<<(ulong l) const
+{
+  printRaw("%lu", l);
+  return *this;
+}
+
 const Log& Log::operator<<(int64 l) const
 {
 #ifdef _WIN32

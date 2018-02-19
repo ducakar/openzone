@@ -158,6 +158,11 @@ using uint16 = unsigned short;
 using uint = unsigned int;
 
 /**
+ * Unsigned long.
+ */
+using ulong = unsigned long;
+
+/**
  * Signed 64-bit integer.
  */
 using int64 = signed long long;

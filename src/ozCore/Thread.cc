@@ -100,7 +100,7 @@ static timespec toTimespec(Duration duration)
   int64 ns = duration.ns() % 1000000000 + 1000000000;
   int64 s  = duration.ns() / 1000000000 - 1;
 
-  return timespec{s + ns / 1000000000, int(ns % 1000000000)};
+  return timespec{s + ns / 1000000000, long(ns % 1000000000)};
 }
 
 void Thread::sleepFor(Duration duration)

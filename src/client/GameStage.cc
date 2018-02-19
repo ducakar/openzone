@@ -330,7 +330,7 @@ void GameStage::load()
 
   ui::ui.questFrame->enable(true);
 
-  startTicks = timer.ticks;
+  startTicks = timer.nTicks;
 
   ui::ui.showLoadingScreen(true);
 
@@ -378,7 +378,7 @@ void GameStage::unload()
   mainSemaphore.wait();
   auxThread.join();
 
-  uint64   ticks                 = timer.ticks - startTicks;
+  uint64   nTicks                = timer.nTicks - startTicks;
   Duration soundMicros           = sound.effectsDuration + sound.musicDuration;
   Duration renderMicros          = render.prepareDuration + render.caelumDuration +
                                    render.terraDuration + render.meshesDuration +
@@ -403,11 +403,11 @@ void GameStage::unload()
   float    matrixTime            = matrixDuration.t();
   float    nirvanaTime           = nirvanaDuration.t();
   float    loadingTime           = loadingDuration.t();
-  float    runTime               = timer.runDuration.t();
-  float    gameTime              = timer.time.t();
-  float    droppedTime           = (timer.runDuration - timer.time).t();
-  uint64   nFrameDrops           = ticks - timer.nFrames;
-  float    frameDropRate         = float(ticks - timer.nFrames) / float(ticks);
+  float    runTime               = timer.realDuration.t();
+  float    gameTime              = timer.duration.t();
+  float    droppedTime           = (timer.realDuration - timer.duration).t();
+  uint64   nFrameDrops           = nTicks - timer.nFrames;
+  float    frameDropRate         = float(nTicks - timer.nFrames) / float(nTicks);
 
   if (stateFile.isEmpty()) {
     stateFile = autosaveFile;
@@ -445,7 +445,7 @@ void GameStage::unload()
   Log::println("game time             %8.2f s",    gameTime);
   Log::println("dropped time          %8.2f s",    droppedTime);
   Log::println("optimal tick/frame rate %6.2f Hz", 1.0f / Timer::TICK_TIME);
-  Log::println("tick rate in run time   %6.2f Hz", float(ticks) / runTime);
+  Log::println("tick rate in run time   %6.2f Hz", float(nTicks) / runTime);
   Log::println("frame rate in run time  %6.2f Hz", float(timer.nFrames) / runTime);
   Log::println("frame drop rate         %6.2f %%", frameDropRate * 100.0f);
   Log::println("frame drops           %8lu",       ulong(nFrameDrops));

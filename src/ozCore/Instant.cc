@@ -34,7 +34,7 @@ Instant Instant::now()
   struct timespec ts;
   clock_gettime(CLOCK_MONOTONIC, &ts);
 
-  return Instant(ts.tv_sec * 1000000000 + ts.tv_nsec);
+  return Instant(int64(ts.tv_sec) * 1000000000 + int64(ts.tv_nsec));
 }
 
 }

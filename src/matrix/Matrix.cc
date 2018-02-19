@@ -151,8 +151,8 @@ void Matrix::read(Stream* is)
   Log::println("Reading Matrix {");
   Log::indent();
 
-  timer.ticks = is->readUInt64();
-  timer.time  = Duration(is->readInt64());
+  timer.nTicks = is->readUInt64();
+  timer.duration = Duration(is->readInt64());
   orbis.read(is);
   physics.gravity = is->readFloat();
 
@@ -173,8 +173,8 @@ void Matrix::read(const Json& json)
 
 void Matrix::write(Stream* os) const
 {
-  os->writeUInt64(timer.ticks);
-  os->writeInt64(timer.time.ns());
+  os->writeUInt64(timer.nTicks);
+  os->writeInt64(timer.duration.ns());
   orbis.write(os);
   os->writeFloat(physics.gravity);
 }

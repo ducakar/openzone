@@ -163,7 +163,7 @@ void Entity::doorHandler()
   switch (state) {
     case CLOSED: {
       if (clazz->flags & EntityClass::AUTO_OPEN) {
-        bool checkTick = (timer.ticks + uint(str->index * 1025)) % (Timer::TICKS_PER_SEC / 6) == 0;
+        bool checkTick = (timer.nTicks + uint(str->index * 1025)) % (Timer::TICKS_PER_SEC / 6) == 0;
 
         if (checkTick && collider.overlaps(this, clazz->margin)) {
           state = OPENING;

@@ -252,7 +252,7 @@ int Client::main()
 
     // Waste time when iconified.
     if (!isActive) {
-      Thread::sleepFor(Timer::TICK_DURATION);
+      Thread::sleepFor(timer.realTickDuration);
 
       timeSpent = Instant::now() - timeLast;
       timeLast += timeSpent;
@@ -264,7 +264,7 @@ int Client::main()
 
     timer.tick();
 
-    isAlive &= !isBenchmark || timer.time < benchmarkTime;
+    isAlive &= !isBenchmark || timer.duration < benchmarkDuration;
     isAlive &= stage->update();
 
     if (Stage::nextStage != nullptr) {
@@ -285,7 +285,7 @@ int Client::main()
     timeSpent = Instant::now() - timeLast;
 
     // Skip rendering graphics, only play sounds if there's not enough time left.
-    if (timeSpent >= Timer::TICK_DURATION && timer.frameDuration < 100_ms) {
+    if (timeSpent >= timer.realTickDuration && timer.frameDuration < 100_ms) {
       stage->present(false);
     }
     else {
@@ -295,17 +295,17 @@ int Client::main()
       // If there's still some time left, sleep.
       timeSpent = Instant::now() - timeLast;
 
-      if (timeSpent < Timer::TICK_DURATION) {
-        stage->wait(Timer::TICK_DURATION - timeSpent);
-        timeSpent = Timer::TICK_DURATION;
+      if (timeSpent < timer.realTickDuration) {
+        stage->wait(timer.realTickDuration - timeSpent);
+        timeSpent = timer.realTickDuration;
       }
     }
 
     if (timeSpent > 100_ms) {
-      timer.drop(timeSpent - Timer::TICK_DURATION);
-      timeLast += timeSpent - Timer::TICK_DURATION;
+      timer.drop(timeSpent - timer.realTickDuration);
+      timeLast += timeSpent - timer.realTickDuration;
     }
-    timeLast += Timer::TICK_DURATION;
+    timeLast += timer.realTickDuration;
   }
   while (isAlive);
 
@@ -321,9 +321,9 @@ int Client::init(int argc, char** argv)
   Pepper::post("init");
 #endif
 
-  initFlags     = 0;
-  isBenchmark   = false;
-  benchmarkTime = Duration::ZERO;
+  initFlags         = 0;
+  isBenchmark       = false;
+  benchmarkDuration = Duration::ZERO;
 
   File   prefixDir  = OZ_PREFIX;
   String language   = "";
@@ -354,7 +354,7 @@ int Client::init(int argc, char** argv)
       }
       case 't': {
         const char* end;
-        benchmarkTime = String::parseDouble(optarg, &end) * 1_s;
+        benchmarkDuration = String::parseDouble(optarg, &end) * 1_s;
 
         if (end == optarg) {
           printUsage();

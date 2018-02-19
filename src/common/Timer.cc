@@ -24,27 +24,34 @@ namespace oz
 
 void Timer::reset()
 {
-  runDuration   = Duration::ZERO;
+  nTicksInSecond_  = 0;
 
-  ticks         = 0;
-  time          = Duration::ZERO;
+  nTicks           = 0;
+  duration         = Duration::ZERO;
 
-  nFrames       = 0;
-  frameTicks    = 0;
-  frameDuration = Duration::ZERO;
-  frameTime     = 0.0f;
+  nFrames          = 0;
+  frameTicks       = 0;
+  frameDuration    = Duration::ZERO;
+  frameTime        = 0.0f;
+
+  realTickDuration = Duration::ZERO;
+  realDuration     = Duration::ZERO;
 }
 
 void Timer::tick()
 {
-  runDuration   += TICK_DURATION;
+  nTicks          += 1;
+  duration        += TICK_DURATION;
 
-  ticks         += 1;
-  time          += TICK_DURATION;
+  frameTicks      += 1;
+  frameDuration   += TICK_DURATION;
+  frameTime       += frameDuration.t();
 
-  frameTicks    += 1;
-  frameDuration += TICK_DURATION;
-  frameTime     += TICK_TIME;
+  realTickDuration = (1_s * (nTicksInSecond_ + 1)) / TICKS_PER_SEC -
+                     (1_s * nTicksInSecond_) / TICKS_PER_SEC;
+  realDuration    += realTickDuration;
+
+  nTicksInSecond_  = (nTicksInSecond_ + 1) % TICKS_PER_SEC;
 }
 
 void Timer::frame()
@@ -55,9 +62,9 @@ void Timer::frame()
   frameTime     = 0.0f;
 }
 
-void Timer::drop(Duration duration)
+void Timer::drop(Duration skipDuration)
 {
-  runDuration += duration;
+  realDuration += skipDuration;
 }
 
 Timer timer;

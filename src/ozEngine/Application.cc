@@ -133,8 +133,8 @@ void Application::run(Stage* initialStage)
   }
 
   uint     fps        = config["timing"]["fps"].get(defaults.timing.fps);
-  uint     nTicks     = 0;
-  uint     frameTicks = 0;
+  uint     nTicksInSecond     = 0;
+  uint     nTicksInFrame = 0;
   Duration tickTime   = 0_s;
   Instant  timeLast   = Instant::now();
   Duration timeSpent  = 0_s;
@@ -267,13 +267,13 @@ void Application::run(Stage* initialStage)
       continue;
     }
 
-    tickTime = (nTicks + 1) * 1_s / fps - nTicks * 1_s / fps;
-    nTicks   = (nTicks + 1) % fps;
+    tickTime       = 1_s * (nTicksInSecond + 1) / fps - 1_s * nTicksInSecond / fps;
+    nTicksInSecond = (nTicksInSecond + 1) % fps;
 
     currentStage->update();
 
-    frameTicks += 1;
-    timeSpent   = Instant::now() - timeLast;
+    nTicksInFrame += 1;
+    timeSpent      = Instant::now() - timeLast;
 
     // Skip rendering graphics, only play sounds if there's not enough time left.
     if (timeSpent >= tickTime) {
@@ -282,8 +282,8 @@ void Application::run(Stage* initialStage)
     else {
       currentStage->present(true);
 
-      frameTicks = 0;
-      timeSpent  = Instant::now() - timeLast;
+      nTicksInFrame = 0;
+      timeSpent     = Instant::now() - timeLast;
 
       // Sleep if there's still some time left.
       if (timeSpent < tickTime) {
