@@ -180,7 +180,7 @@ static void loadXDGSettings(Map<String, File>* vars, const File& file)
     }
 
     String name = line.substring(0, equal).trim();
-    File   dir  = File(line + firstQuote + 1, lastQuote - firstQuote - 1);
+    File   dir  = File(line.begin() + firstQuote + 1, lastQuote - firstQuote - 1);
 
     if (!name.beginsWith("XDG_") || !name.endsWith("_DIR")) {
       continue;

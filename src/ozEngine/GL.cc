@@ -163,7 +163,7 @@ void GL::checkError(const char* function, const char* file, int line)
     }
 # endif
     default: {
-      message = String::format("UNKNOWN(%d)", int(result));
+      message = "UNKNOWN";
       break;
     }
   }

@@ -59,7 +59,7 @@ void WeaponClass::init(const Json& config, const char* name_)
 
   onShot       = config["onShot"].get("");
 
-  if (!String::isEmpty(onShot)) {
+  if (!onShot.isEmpty()) {
     flags |= Object::LUA_BIT;
   }
 }

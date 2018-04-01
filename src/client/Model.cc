@@ -30,23 +30,23 @@ void Vertex::setFormat()
 {
   glEnableVertexAttribArray(Shader::POSITION);
   glVertexAttribPointer(Shader::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        static_cast<char*>(nullptr) + offsetof(Vertex, pos));
+                        reinterpret_cast<void*>(offsetof(Vertex, pos)));
 
   glEnableVertexAttribArray(Shader::TEXCOORD);
   glVertexAttribPointer(Shader::TEXCOORD, 2, GL_SHORT, GL_FALSE, sizeof(Vertex),
-                        static_cast<char*>(nullptr) + offsetof(Vertex, texCoord));
+                        reinterpret_cast<void*>(offsetof(Vertex, texCoord)));
 
   glEnableVertexAttribArray(Shader::NORMAL);
   glVertexAttribPointer(Shader::NORMAL, 3, GL_BYTE, GL_TRUE, sizeof(Vertex),
-                        static_cast<char*>(nullptr) + offsetof(Vertex, normal));
+                        reinterpret_cast<void*>(offsetof(Vertex, normal)));
 
   glEnableVertexAttribArray(Shader::TANGENT);
   glVertexAttribPointer(Shader::TANGENT, 3, GL_BYTE, GL_TRUE, sizeof(Vertex),
-                        static_cast<char*>(nullptr) + offsetof(Vertex, tangent));
+                        reinterpret_cast<void*>(offsetof(Vertex, tangent)));
 
   glEnableVertexAttribArray(Shader::BINORMAL);
   glVertexAttribPointer(Shader::BINORMAL, 3, GL_BYTE, GL_TRUE, sizeof(Vertex),
-                        static_cast<char*>(nullptr) + offsetof(Vertex, binormal));
+                        reinterpret_cast<void*>(offsetof(Vertex, binormal)));
 }
 
 struct Model::LightEntry
@@ -179,7 +179,7 @@ void Model::drawNode(const Node* node, int mask)
       glUniform1f(uniform.shininess, mesh.shininess);
 
       glDrawElements(GL_TRIANGLES, mesh.nIndices, GL_UNSIGNED_SHORT,
-                     static_cast<uint16*>(nullptr) + mesh.firstIndex);
+                     reinterpret_cast<void*>(mesh.firstIndex * sizeof(uint16)));
     }
   }
 

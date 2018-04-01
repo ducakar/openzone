@@ -34,7 +34,7 @@ ObjectClass* ObjectClass::createClass()
 
 void ObjectClass::init(const Json& config, const char* name_)
 {
-  const char* origTitle       = config["title"].get(name);
+  const char* origTitle       = config["title"].get(name_);
   const char* origDescription = config["description"].get("");
 
   /*

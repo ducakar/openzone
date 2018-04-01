@@ -366,6 +366,7 @@ public:
    * It adds a space after the number and, when neccessary, it multiplies the number with an
    * exponent of 1000 and adds a 'm', 'k', 'M' or 'G' unit prefix after the space.
    */
+  OZ_PRINTF_FORMAT(2, 0)
   static String si(double e, const char* format = "%.3g");
 
   /**
@@ -373,7 +374,7 @@ public:
    */
   bool operator==(const String& other) const
   {
-    return compare(begin(), other.begin()) == 0;
+    return size_ == other.size_ && compare(begin(), other.begin()) == 0;
   }
 
   /**
@@ -397,7 +398,7 @@ public:
    */
   bool operator!=(const String& other) const
   {
-    return compare(begin(), other.begin()) != 0;
+    return size_ != other.size_ || compare(begin(), other.begin()) != 0;
   }
 
   /**
@@ -568,7 +569,7 @@ public:
    * Cast to a C string.
    */
   OZ_ALWAYS_INLINE
-  operator const char*() const
+  operator const char*() const noexcept
   {
     return begin();
   }
@@ -577,7 +578,7 @@ public:
    * Cast to a C string.
    */
   OZ_ALWAYS_INLINE
-  const char* c() const
+  const char* c() const noexcept
   {
     return begin();
   }

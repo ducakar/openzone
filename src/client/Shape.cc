@@ -225,11 +225,11 @@ void Shape::bind() const
 
   glEnableVertexAttribArray(Shader::POSITION);
   glVertexAttribPointer(Shader::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        static_cast<char*>(nullptr) + offsetof(Vertex, pos));
+                        reinterpret_cast<void*>(offsetof(Vertex, pos)));
 
   glEnableVertexAttribArray(Shader::TEXCOORD);
   glVertexAttribPointer(Shader::TEXCOORD, 2, GL_SHORT, GL_FALSE, sizeof(Vertex),
-                        static_cast<char*>(nullptr) + offsetof(Vertex, texCoord));
+                        reinterpret_cast<void*>(offsetof(Vertex, texCoord)));
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 }
@@ -319,7 +319,7 @@ void Shape::box(const AABB& bb)
   tf.model.scale(bb.dim);
   tf.apply();
 
-  glDrawElements(GL_TRIANGLE_STRIP, 22, GL_UNSIGNED_SHORT, static_cast<uint16*>(nullptr) + 0);
+  glDrawElements(GL_TRIANGLE_STRIP, 22, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(0));
 }
 
 void Shape::wireBox(const AABB& bb)
@@ -328,7 +328,7 @@ void Shape::wireBox(const AABB& bb)
   tf.model.scale(bb.dim);
   tf.apply();
 
-  glDrawElements(GL_LINES, 24, GL_UNSIGNED_SHORT, static_cast<uint16*>(nullptr) + 22);
+  glDrawElements(GL_LINES, 24, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(44));
 }
 
 void Shape::skyBox(uint* texIds)
@@ -336,22 +336,22 @@ void Shape::skyBox(uint* texIds)
   tf.apply();
 
   glBindTexture(GL_TEXTURE_2D, texIds[0]);
-  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<uint16*>(nullptr) + 46);
+  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(92));
 
   glBindTexture(GL_TEXTURE_2D, texIds[1]);
-  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<uint16*>(nullptr) + 50);
+  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(100));
 
   glBindTexture(GL_TEXTURE_2D, texIds[2]);
-  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<uint16*>(nullptr) + 54);
+  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(108));
 
   glBindTexture(GL_TEXTURE_2D, texIds[3]);
-  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<uint16*>(nullptr) + 58);
+  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(116));
 
   glBindTexture(GL_TEXTURE_2D, texIds[4]);
-  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<uint16*>(nullptr) + 62);
+  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(124));
 
   glBindTexture(GL_TEXTURE_2D, texIds[5]);
-  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, static_cast<uint16*>(nullptr) + 66);
+  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(132));
 }
 
 void Shape::init()

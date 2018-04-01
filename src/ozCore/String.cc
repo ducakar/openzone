@@ -365,7 +365,8 @@ String String::vformat(const char* s, va_list ap)
 
 String String::si(double e, const char* format)
 {
-  char prefixes[] = "m kMG";
+  const char PREFIXES[] = "m kMG";
+  char       suffix[]   = " \0";
 
   int nGroups = 0;
   if (e < 1.0) {
@@ -378,9 +379,8 @@ String String::si(double e, const char* format)
     }
   }
 
-  char suffix[] = " \0";
   if (nGroups != 0) {
-    suffix[1] = prefixes[nGroups + 1];
+    suffix[1] = PREFIXES[nGroups + 1];
   }
 
   return String(e, format) + suffix;

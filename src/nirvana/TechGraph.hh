@@ -56,7 +56,7 @@ public:
       const BSP*           building;
       const ObjectClass*   object;
     };
-    SList<Node*, MAX_DEPS> requires;
+    SList<Node*, MAX_DEPS> dependencies;
     float                  progress;
   };
 

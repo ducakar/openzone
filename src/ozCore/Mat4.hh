@@ -539,8 +539,8 @@ inline Mat4 max(const Mat4& a, const Mat4& b)
  */
 inline Mat4 clamp(const Mat4& c, const Mat4& a, const Mat4& b)
 {
-  return Mat4(clamp(c.x, a.x, b.x), clamp(c.y, a.y, b.y), clamp(c.z, a.z, b.z),
-              clamp(c.w, a.w, b.w));
+  return Mat4(clamp(c.x, a.x, b.x), clamp(c.y, a.y, b.y),
+              clamp(c.z, a.z, b.z), clamp(c.w, a.w, b.w));
 }
 
 inline constexpr Mat3::Mat3(const Mat4& m)

@@ -176,19 +176,19 @@ void TechGraph::load()
     }
 
     for (int i = 0; i < nNodes; ++i) {
-      const Json& tech     = config[i];
-      const Json& requires = tech["requires"];
-      Node&       node     = nodes[i];
+      const Json& tech         = config[i];
+      const Json& dependencies = tech["dependencies"];
+      Node&       node         = nodes[i];
 
-      if (requires.size() > Node::MAX_DEPS) {
+      if (dependencies.size() > Node::MAX_DEPS) {
         OZ_ERROR("Only %d dependencies per technology supported.", Node::MAX_DEPS);
       }
 
-      int nRequires = requires.size();
+      int nRequires = dependencies.size();
       for (int j = 0; j < nRequires; ++j) {
-        Node* depNode = findNode(requires[j].get("?"));
+        Node* depNode = findNode(dependencies[j].get("?"));
 
-        node.requires.add(depNode);
+        node.dependencies.add(depNode);
       }
     }
 
