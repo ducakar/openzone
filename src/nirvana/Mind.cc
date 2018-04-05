@@ -55,26 +55,15 @@ Mind::~Mind()
   }
 }
 
-Mind::Mind(Mind&& m) noexcept
-  : flags(m.flags), side(m.side), bot(m.bot)
+Mind::Mind(Mind&& other) noexcept
+  : flags(other.flags), side(other.side), bot(other.bot)
 {
-  m.flags = 0;
-  m.side  = 0;
-  m.bot   = -1;
+  OZ_MOVE_CTOR_BODY(Mind);
 }
 
-Mind& Mind::operator=(Mind&& m) noexcept
+Mind& Mind::operator=(Mind&& other) noexcept
 {
-  if (&m != this) {
-    flags = m.flags;
-    side  = m.side;
-    bot   = m.bot;
-
-    m.flags = 0;
-    m.side  = 0;
-    m.bot   = -1;
-  }
-  return *this;
+  OZ_MOVE_OP_BODY(Mind);
 }
 
 void Mind::update(bool doRegularUpdate)

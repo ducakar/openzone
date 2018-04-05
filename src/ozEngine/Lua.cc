@@ -79,17 +79,12 @@ Lua::Result::~Result()
 Lua::Result::Result(Result&& other) noexcept
   : l_(other.l_)
 {
-  other.l_ = nullptr;
+  OZ_MOVE_CTOR_BODY(Result);
 }
 
 Lua::Result& Lua::Result::operator=(Lua::Result&& other) noexcept
 {
-  if (&other != this) {
-    l_ = other.l_;
-
-    other.l_ = nullptr;
-  }
-  return *this;
+  OZ_MOVE_OP_BODY(Result);
 }
 
 Lua::Field::Field(lua_State* l, const Field* parent, const char* name)

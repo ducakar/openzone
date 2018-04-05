@@ -83,34 +83,12 @@ PoolAlloc::PoolAlloc(PoolAlloc&& other) noexcept
   : firstBlock_(other.firstBlock_), freeSlot_(other.freeSlot_), slotSize_(other.slotSize_),
     blockSlots_(other.blockSlots_), size_(other.size_), capacity_(other.capacity_)
 {
-  other.firstBlock_ = nullptr;
-  other.freeSlot_   = nullptr;
-  other.slotSize_   = 0;
-  other.blockSlots_ = 0;
-  other.size_       = 0;
-  other.capacity_   = 0;
+  OZ_MOVE_CTOR_BODY(PoolAlloc);
 }
 
 PoolAlloc& PoolAlloc::operator=(PoolAlloc&& other) noexcept
 {
-  if (&other != this) {
-    free();
-
-    firstBlock_ = other.firstBlock_;
-    freeSlot_   = other.freeSlot_;
-    slotSize_   = other.slotSize_;
-    blockSlots_ = other.blockSlots_;
-    size_       = other.size_;
-    capacity_   = other.capacity_;
-
-    other.firstBlock_ = nullptr;
-    other.freeSlot_   = nullptr;
-    other.slotSize_   = 0;
-    other.blockSlots_ = 0;
-    other.size_       = 0;
-    other.capacity_   = 0;
-  }
-  return *this;
+  OZ_MOVE_OP_BODY(PoolAlloc);
 }
 
 void* PoolAlloc::allocate()

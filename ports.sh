@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # ports.sh [clean | fetch | build]
 #

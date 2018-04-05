@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # gettext-internal.sh <data_dir>
 #

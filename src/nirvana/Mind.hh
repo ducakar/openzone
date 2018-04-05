@@ -59,8 +59,8 @@ public:
   explicit Mind(int bot_, Stream* is);
   ~Mind();
 
-  Mind(Mind&& m) noexcept;
-  Mind& operator=(Mind&& m) noexcept;
+  Mind(Mind&& other) noexcept;
+  Mind& operator=(Mind&& other) noexcept;
 
   void update(bool doRegularUpdate);
 

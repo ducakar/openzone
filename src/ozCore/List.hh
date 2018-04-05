@@ -136,9 +136,7 @@ public:
   List(List&& other) noexcept
     : data_(other.data_), size_(other.size_), capacity_(other.capacity_)
   {
-    other.data_     = nullptr;
-    other.size_     = 0;
-    other.capacity_ = 0;
+    OZ_MOVE_CTOR_BODY(List);
   }
 
   /**
@@ -162,18 +160,7 @@ public:
    */
   List& operator=(List&& other) noexcept
   {
-    if (&other != this) {
-      delete[] data_;
-
-      data_     = other.data_;
-      size_     = other.size_;
-      capacity_ = other.capacity_;
-
-      other.data_     = nullptr;
-      other.size_     = 0;
-      other.capacity_ = 0;
-    }
-    return *this;
+    OZ_MOVE_OP_BODY(List);
   }
 
   /**

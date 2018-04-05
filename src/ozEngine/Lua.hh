@@ -76,9 +76,14 @@ public:
 
   private:
 
-    lua_State* l_; ///< %Lua state.
+    lua_State* l_ = nullptr; ///< %Lua state.
 
   private:
+
+    /**
+     * Invalid instance.
+     */
+    Result() = default;
 
     /**
      * Create stack

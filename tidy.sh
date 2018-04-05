@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 platform=Linux-x86_64-Clang
 buildType=Debug

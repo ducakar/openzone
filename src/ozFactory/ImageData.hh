@@ -55,7 +55,7 @@ public:
   /**
    * Create empty instance, no allocation is performed.
    */
-  ImageData();
+  ImageData() = default;
 
   /**
    * Create an image an allocate memory for pixel data.

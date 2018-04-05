@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # data-cleanup.sh <datasrc_dir>
 #

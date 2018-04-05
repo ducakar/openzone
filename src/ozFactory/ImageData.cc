@@ -25,8 +25,6 @@
 namespace oz
 {
 
-ImageData::ImageData() = default;
-
 ImageData::ImageData(int width, int height, bool hasAlpha)
   : width_(width), height_(height), flags_(hasAlpha ? ALPHA_BIT : 0),
     pixels_(new char[width * height * 4])
@@ -40,28 +38,12 @@ ImageData::~ImageData()
 ImageData::ImageData(ImageData&& other) noexcept
   : width_(other.width_), height_(other.height_), flags_(other.flags_), pixels_(other.pixels_)
 {
-  other.width_  = 0;
-  other.height_ = 0;
-  other.flags_  = 0;
-  other.pixels_ = nullptr;
+  OZ_MOVE_CTOR_BODY(ImageData);
 }
 
 ImageData& ImageData::operator=(ImageData&& other) noexcept
 {
-  if (&other != this) {
-    delete[] pixels_;
-
-    width_  = other.width_;
-    height_ = other.height_;
-    flags_  = other.flags_;
-    pixels_ = other.pixels_;
-
-    other.width_  = 0;
-    other.height_ = 0;
-    other.flags_  = 0;
-    other.pixels_ = nullptr;
-  }
-  return *this;
+  OZ_MOVE_OP_BODY(ImageData);
 }
 
 }

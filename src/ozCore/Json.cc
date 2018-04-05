@@ -773,9 +773,7 @@ Json::Json(Json&& other) noexcept
   : number_(other.number_), comment_(static_cast<String&&>(other.comment_)), type_(other.type_),
     wasAccessed_(other.wasAccessed_)
 {
-  other.number_      = 0.0;
-  other.type_        = NIL;
-  other.wasAccessed_ = true;
+  OZ_MOVE_CTOR_BODY(Json);
 }
 
 Json& Json::operator=(const Json& other)
@@ -789,19 +787,7 @@ Json& Json::operator=(const Json& other)
 
 Json& Json::operator=(Json&& other) noexcept
 {
-  if (&other != this) {
-    clear();
-
-    number_      = other.number_;
-    comment_     = static_cast<String&&>(other.comment_);
-    type_        = other.type_;
-    wasAccessed_ = other.wasAccessed_;
-
-    other.number_      = 0.0;
-    other.type_        = NIL;
-    other.wasAccessed_ = true;
-  }
-  return *this;
+  OZ_MOVE_OP_BODY(Json);
 }
 
 bool Json::operator==(const Json& other) const

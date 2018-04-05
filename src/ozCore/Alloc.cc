@@ -69,7 +69,9 @@ static void* allocate(AllocMode mode, size_t size)
 
 #ifdef OZ_ALLOCATOR
 
-  Alloc::ChunkInfo* ci = new(ptr) Alloc::ChunkInfo{size, StackTrace::current(2)};
+  Alloc::ChunkInfo* ci = new(ptr) Alloc::ChunkInfo;
+  ci->size       = size;
+  ci->stackTrace = StackTrace::current(2);
 
   allocInfoLock.lock();
 
@@ -112,11 +114,11 @@ static void deallocate(AllocMode mode, void* ptr)
   // Check if allocated as a different kind (object/array)
   else if (chunkInfos[!mode].has(ci)) {
     OZ_ERROR("oz::Alloc: new[] -> delete mismatch for %s block at %p of size %llu",
-             ALLOC_MODE_NAMES[mode], ptr, ci->size);
+             ALLOC_MODE_NAMES[mode], ptr, uint64(ci->size));
   }
   else {
     OZ_ERROR("oz::Alloc: Freeing unregistered %s block at %p of size %llu",
-             ALLOC_MODE_NAMES[mode], ptr, ci->size);
+             ALLOC_MODE_NAMES[mode], ptr, uint64(ci->size));
   }
 
   --Alloc::count;

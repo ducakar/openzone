@@ -36,6 +36,9 @@ namespace oz
 /**
  * Array list with static storage (fixed capacity).
  *
+ * This container uses trivial copy and move constructors and operators, so elements are not removed
+ * from the source list when the list is moved (but elements themselves are moved).
+ *
  * In contrast with `std::vector` all allocated elements are constructed all the time. This yields
  * slightly better performance and simplifies implementation. When an element is removed its
  * destruction is still guaranteed.
@@ -95,44 +98,6 @@ public:
   SList(InitialiserList<Elem> il)
     : SList(il.begin(), int(il.size()))
   {}
-
-  /**
-   * Copy constructor.
-   */
-  SList(const SList& other) = default;
-
-  /**
-   * Move constructor.
-   */
-  SList(SList&& other) noexcept
-    : size_(other.size_)
-  {
-    Arrays::move(other.data_, other.size_, data_);
-
-    other.size_ = 0;
-  }
-
-  /**
-   * Copy operator.
-   */
-  SList& operator=(const SList& other) = default;
-
-  /**
-   * Move operator, moves element storage.
-   */
-  SList& operator=(SList&& other) noexcept
-  {
-    if (&other != this) {
-      if (other.size_ < size_) {
-        Arrays::clear(data_ + other.size_, size_ - other.size_);
-      }
-      size_ = other.size_;
-      Arrays::move(other.data_, other.size_, data_);
-
-      other.size_ = 0;
-    }
-    return *this;
-  }
 
   /**
    * Assign from an initialiser list.

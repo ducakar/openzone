@@ -156,7 +156,7 @@ public:
   Chain(Chain&& other) noexcept
     : first_(other.first_)
   {
-    other.first_ = nullptr;
+    OZ_MOVE_CTOR_BODY(Chain);
   }
 
   /**
@@ -164,12 +164,7 @@ public:
    */
   Chain& operator=(Chain&& other) noexcept
   {
-    if (&other != this) {
-      first_ = other.first_;
-
-      other.first_ = nullptr;
-    }
-    return *this;
+    OZ_MOVE_OP_BODY(Chain);
   }
 
   /**

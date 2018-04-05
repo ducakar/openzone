@@ -99,31 +99,12 @@ Stream::Stream(Stream&& other) noexcept
   : pos_(other.pos_), begin_(other.begin_), end_(other.end_), flags_(other.flags_),
     order_(other.order_)
 {
-  other.pos_   = nullptr;
-  other.begin_ = nullptr;
-  other.end_   = nullptr;
-  other.flags_ = 0;
-  other.order_ = Endian::NATIVE;
+  OZ_MOVE_CTOR_BODY(Stream);
 }
 
 Stream& Stream::operator=(Stream&& other) noexcept
 {
-  if (&other != this) {
-    free();
-
-    pos_   = other.pos_;
-    begin_ = other.begin_;
-    end_   = other.end_;
-    flags_ = other.flags_;
-    order_ = other.order_;
-
-    other.pos_   = nullptr;
-    other.begin_ = nullptr;
-    other.end_   = nullptr;
-    other.flags_ = 0;
-    other.order_ = Endian::NATIVE;
-  }
-  return *this;
+  OZ_MOVE_OP_BODY(Stream);
 }
 
 void Stream::seek(int offset)

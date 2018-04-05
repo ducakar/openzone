@@ -296,8 +296,7 @@ public:
   HashSet(HashSet&& other) noexcept
     : pool_(static_cast<Pool<Entry>&&>(other.pool_)), data_(other.data_), capacity_(other.capacity_)
   {
-    other.data_     = nullptr;
-    other.capacity_ = 0;
+    OZ_MOVE_CTOR_BODY(HashSet);
   }
 
   /**
@@ -321,18 +320,7 @@ public:
    */
   HashSet& operator=(HashSet&& other) noexcept
   {
-    if (&other != this) {
-      clear();
-      delete[] data_;
-
-      pool_     = static_cast<Pool<Entry>&&>(other.pool_);
-      data_     = other.data_;
-      capacity_ = other.capacity_;
-
-      other.data_     = nullptr;
-      other.capacity_ = 0;
-    }
-    return *this;
+    OZ_MOVE_OP_BODY(HashSet);
   }
 
   /**

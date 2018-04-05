@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # build.sh [clean | conf] [<platform>]
 #

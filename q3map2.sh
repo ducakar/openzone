@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # q3map2.sh <map_file>
 #

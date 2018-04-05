@@ -142,8 +142,6 @@ struct Node
     : transf(Mat4::ID), mesh(-1), name(name_), includeInBounds(true), parent(parent_)
   {}
 
-  Node& operator=(Node&&) = default;
-
   ~Node()
   {
     children.free();

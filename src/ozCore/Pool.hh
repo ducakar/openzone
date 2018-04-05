@@ -102,6 +102,11 @@ private:
 public:
 
   /**
+   * Invalid, uninitialised instance.
+   */
+  PoolAlloc() = default;
+
+  /**
    * Create an empty pool, storage is allocated when the first allocation is made.
    */
   explicit PoolAlloc(int slotSize, int blockSlots = 256);

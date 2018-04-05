@@ -54,22 +54,15 @@ SharedLib::~SharedLib()
   close();
 }
 
-SharedLib::SharedLib(SharedLib&& l) noexcept
-  : handle_(l.handle_)
+SharedLib::SharedLib(SharedLib&& other) noexcept
+  : handle_(other.handle_)
 {
-  l.handle_ = nullptr;
+  OZ_MOVE_CTOR_BODY(SharedLib);
 }
 
-SharedLib& SharedLib::operator=(SharedLib&& l) noexcept
+SharedLib& SharedLib::operator=(SharedLib&& other) noexcept
 {
-  if (&l != this) {
-    close();
-
-    handle_ = l.handle_;
-
-    l.handle_ = nullptr;
-  }
-  return *this;
+  OZ_MOVE_OP_BODY(SharedLib);
 }
 
 SharedLib::Function* SharedLib::get(const char* symbol) const

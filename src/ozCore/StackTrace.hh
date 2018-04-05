@@ -39,7 +39,7 @@ namespace oz
  * @note
  * Stack trace retrieval is currently only implemented for glibc.
  */
-class StackTrace
+struct StackTrace
 {
 public:
 

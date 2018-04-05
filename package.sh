@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # package.sh {src | data | datasrc | bondle}
 #

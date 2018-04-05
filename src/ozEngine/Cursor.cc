@@ -153,29 +153,12 @@ Cursor::Cursor(Cursor&& other) noexcept
   : mode_(other.mode_), frame_(other.frame_), frameDuration_(other.frameDuration_),
     images_(static_cast<List<Image>&&>(other.images_))
 {
-  other.mode_          = SYSTEM;
-  other.frame_         = 0;
-  other.lastFrame_     = -1;
-  other.frameDuration_ = Duration::ZERO;
+  OZ_MOVE_CTOR_BODY(Cursor);
 }
 
 Cursor& Cursor::operator=(Cursor&& other) noexcept
 {
-  if (&other != this) {
-    destroy();
-
-    mode_          = other.mode_;
-    frame_         = other.frame_;
-    lastFrame_     = other.lastFrame_;
-    frameDuration_ = other.frameDuration_;
-    images_        = static_cast<List<Image>&&>(other.images_);
-
-    other.mode_          = SYSTEM;
-    other.frame_         = 0;
-    other.lastFrame_     = -1;
-    other.frameDuration_ = Duration::ZERO;
-  }
-  return *this;
+  OZ_MOVE_OP_BODY(Cursor);
 }
 
 void Cursor::reset()

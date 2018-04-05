@@ -101,6 +101,32 @@
 #define OZ_WEAK [[gnu::weak]]
 
 /**
+ * @def OZ_MOVE_CTOR_BODY
+ * Generic move constructor implementation.
+ *
+ * It assumes the type has default constructor that initialises the object into the same state as
+ * the source is left in after move and the destructor is a NOOP on a default constructed instance.
+ *
+ * @sa `OZ_MOVE_OP_BODY`
+ */
+#define OZ_MOVE_CTOR_BODY(Type) \
+  new(&other) Type()
+
+/**
+ * @def OZ_MOVE_OP_BODY
+ * Generic move operator implementation.
+ *
+ * It is based on same assumptions as `OZ_MOVE_CTOR_BODY` and requires move constructor to be
+ * implemented. It works correctly for `x = std::move(x)`.
+ *
+ * @sa `OZ_MOVE_CTOR_BODY`
+ */
+#define OZ_MOVE_OP_BODY(Type) \
+  Type temp(static_cast<Type&&>(*this)); \
+  new(this) Type(static_cast<Type&&>(other)); \
+  return *this
+
+/**
  * Top-level OpenZone namespace.
  */
 namespace oz
@@ -267,6 +293,7 @@ inline constexpr const Value& max(const Value& a, const Value& b)
 {
   return a < b ? b : a;
 }
+
 /**
  * Maximum of more than two arguments.
  */

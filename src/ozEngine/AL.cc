@@ -392,35 +392,12 @@ AL::Decoder::Decoder(Decoder&& other) noexcept
   : samples_(other.samples_), size_(other.size_), capacity_(other.capacity_),
     format_(other.format_), rate_(other.rate_), stream_(other.stream_)
 {
-  other.samples_  = nullptr;
-  other.size_     = 0;
-  other.capacity_ = 0;
-  other.format_   = 0;
-  other.rate_     = 0;
-  other.stream_   = nullptr;
+  OZ_MOVE_CTOR_BODY(Decoder);
 }
 
 AL::Decoder& AL::Decoder::operator=(AL::Decoder&& other) noexcept
 {
-  if (&other != this) {
-    delete[] samples_;
-    delete stream_;
-
-    samples_  = other.samples_;
-    size_     = other.size_;
-    capacity_ = other.capacity_;
-    format_   = other.format_;
-    rate_     = other.rate_;
-    stream_   = other.stream_;
-
-    other.samples_  = nullptr;
-    other.size_     = 0;
-    other.capacity_ = 0;
-    other.format_   = 0;
-    other.rate_     = 0;
-    other.stream_   = nullptr;
-  }
-  return *this;
+  OZ_MOVE_OP_BODY(Decoder);
 }
 
 bool AL::Decoder::decode()

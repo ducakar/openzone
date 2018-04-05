@@ -57,8 +57,8 @@ public:
   explicit Text(int x_, int y_, int width_, int align_, Font* font_, const char* s, ...);
 
   ~Text();
-  Text(Text&& l) noexcept;
-  Text& operator=(Text&& l) noexcept;
+  Text(Text&& other) noexcept;
+  Text& operator=(Text&& other) noexcept;
 
   void setPosition(int x_, int y_);
   void setWidth(int width_);

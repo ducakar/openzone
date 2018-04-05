@@ -159,21 +159,12 @@ Thread::~Thread()
 Thread::Thread(Thread&& other) noexcept
   : descriptor_(other.descriptor_)
 {
-  other.descriptor_ = nullptr;
+  OZ_MOVE_CTOR_BODY(Thread);
 }
 
 Thread& Thread::operator=(Thread&& other) noexcept
 {
-  if (&other != this) {
-    if (descriptor_ != nullptr) {
-      join();
-    }
-
-    descriptor_ = other.descriptor_;
-
-    other.descriptor_ = nullptr;
-  }
-  return *this;
+  OZ_MOVE_OP_BODY(Thread);
 }
 
 void Thread::detach()

@@ -67,26 +67,16 @@ Font::~Font()
   close();
 }
 
-Font::Font(Font&& f) noexcept
-  : handle(f.handle), fontHeight(f.fontHeight), fileBuffer(static_cast<Stream&&>(f.fileBuffer))
+Font::Font(Font&& other) noexcept
+  : handle(other.handle), fontHeight(other.fontHeight),
+    fileBuffer(static_cast<Stream&&>(other.fileBuffer))
 {
-  f.handle     = nullptr;
-  f.fontHeight = 0;
+  OZ_MOVE_CTOR_BODY(Font);
 }
 
-Font& Font::operator=(Font&& f) noexcept
+Font& Font::operator=(Font&& other) noexcept
 {
-  if (&f != this) {
-    close();
-
-    handle     = f.handle;
-    fontHeight = f.fontHeight;
-    fileBuffer = static_cast<Stream&&>(f.fileBuffer);
-
-    f.handle     = nullptr;
-    f.fontHeight = 0;
-  }
-  return *this;
+  OZ_MOVE_OP_BODY(Font);
 }
 
 void Font::sizeOf(const char* s, int* width, int* height) const

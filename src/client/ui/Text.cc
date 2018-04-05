@@ -60,53 +60,17 @@ Text::~Text()
   clear();
 }
 
-Text::Text(Text&& l) noexcept
-  : x(l.x), y(l.y), width(l.width), align(l.align), font(l.font), lastHash(l.lastHash),
-    texX(l.texX), texY(l.texY), texWidth(l.texWidth), texHeight(l.texHeight), texId(l.texId)
+Text::Text(Text&& other) noexcept
+  : x(other.x), y(other.y), width(other.width), align(other.align), font(other.font),
+    lastHash(other.lastHash), texX(other.texX), texY(other.texY), texWidth(other.texWidth),
+    texHeight(other.texHeight), texId(other.texId)
 {
-  l.x         = 0;
-  l.y         = 0;
-  l.width     = 0;
-  l.align     = Area::ALIGN_NONE;
-  l.font      = nullptr;
-  l.lastHash  = Hash<const char*>::EMPTY;
-  l.texX      = 0;
-  l.texY      = 0;
-  l.texWidth  = 0;
-  l.texHeight = 0;
-  l.texId     = 0;
+  OZ_MOVE_CTOR_BODY(Text);
 }
 
-Text& Text::operator=(Text&& l) noexcept
+Text& Text::operator=(Text&& other) noexcept
 {
-  if (&l != this) {
-    clear();
-
-    x         = l.x;
-    y         = l.y;
-    width     = l.width;
-    align     = l.align;
-    font      = l.font;
-    lastHash  = l.lastHash;
-    texX      = l.texX;
-    texY      = l.texY;
-    texWidth  = l.texWidth;
-    texHeight = l.texHeight;
-    texId     = l.texId;
-
-    l.x         = 0;
-    l.y         = 0;
-    l.width     = 0;
-    l.align     = Area::ALIGN_NONE;
-    l.font      = nullptr;
-    l.lastHash  = Hash<const char*>::EMPTY;
-    l.texX      = 0;
-    l.texY      = 0;
-    l.texWidth  = 0;
-    l.texHeight = 0;
-    l.texId     = 0;
-  }
-  return *this;
+  OZ_MOVE_OP_BODY(Text);
 }
 
 void Text::setPosition(int x_, int y_)

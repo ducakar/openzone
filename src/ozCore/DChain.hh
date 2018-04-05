@@ -121,7 +121,7 @@ public:
   DChain(DChain&& other) noexcept
     : Chain<Elem, INDEX>(static_cast<DChain&&>(other)), last_(other.last_)
   {
-    other.last_ = nullptr;
+    OZ_MOVE_CTOR_BODY(DChain);
   }
 
   /**
@@ -129,14 +129,7 @@ public:
    */
   DChain& operator=(DChain&& other) noexcept
   {
-    if (&other != this) {
-      first_ = other.first_;
-      last_  = other.last_;
-
-      other.first_ = nullptr;
-      other.last_  = nullptr;
-    }
-    return *this;
+    OZ_MOVE_OP_BODY(DChain);
   }
 
   /**
