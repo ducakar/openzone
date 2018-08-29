@@ -40,9 +40,9 @@ class Font
 {
 private:
 
-  void*  handle     = nullptr; ///< TTF_Font handle.
-  int    fontHeight = 0;       ///< %Font height.
-  Stream fileBuffer;           ///< Cached font file, must be loaded all the time.
+  void*  handle_     = nullptr; ///< TTF_Font handle.
+  int    fontHeight_ = 0;       ///< %Font height.
+  Stream fileBuffer_;           ///< Cached font file, must be loaded all the time.
 
 private:
 
@@ -79,11 +79,16 @@ public:
   Font& operator=(Font&& other) noexcept;
 
   /**
+   * Swap instances.
+   */
+  friend void swap(Font& a, Font& b) noexcept;
+
+  /**
    * Height.
    */
   int height() const
   {
-    return fontHeight;
+    return fontHeight_;
   }
 
   /**

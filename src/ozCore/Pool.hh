@@ -127,6 +127,11 @@ public:
   PoolAlloc& operator=(PoolAlloc&& other) noexcept;
 
   /**
+   * Swap instances.
+   */
+  friend void swap(PoolAlloc& a, PoolAlloc& b) noexcept;
+
+  /**
    * Number of used slots in the pool.
    */
   OZ_ALWAYS_INLINE
@@ -215,6 +220,14 @@ public:
   explicit Pool(int blockSlots)
     : PoolAlloc(sizeof(Elem), blockSlots)
   {}
+
+  /**
+   * Swap instances.
+   */
+  friend void swap(Pool& a, Pool& b) noexcept
+  {
+    swap(static_cast<PoolAlloc&>(a), static_cast<PoolAlloc&>(b));
+  }
 
 };
 

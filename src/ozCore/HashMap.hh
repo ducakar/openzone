@@ -135,26 +135,6 @@ public:
   }
 
   /**
-   * Copy constructor, copies elements but does not preserve bucket array length.
-   */
-  HashMap(const HashMap& other) = default;
-
-  /**
-   * Move constructor, moves storage.
-   */
-  HashMap(HashMap&& other) noexcept = default;
-
-  /**
-   * Copy operator, copies elements but does not preserve bucket array length.
-   */
-  HashMap& operator=(const HashMap& other) = default;
-
-  /**
-   * Move operator, moves storage.
-   */
-  HashMap& operator=(HashMap&& other) noexcept = default;
-
-  /**
    * Assign from an initialiser list.
    */
   HashMap& operator=(InitialiserList<Pair> il)
@@ -166,6 +146,14 @@ public:
       add(p.key, p.value);
     }
     return *this;
+  }
+
+  /**
+   * Swap instances.
+   */
+  friend void swap(HashMap& a, HashMap& b) noexcept
+  {
+    swap(static_cast<HashSet<Pair, HashFunc>&>(a), static_cast<HashSet<Pair, HashFunc>&>(b));
   }
 
   /**

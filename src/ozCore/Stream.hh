@@ -106,6 +106,11 @@ public:
   Stream& operator=(Stream&& other) noexcept;
 
   /**
+   * Swap instances.
+   */
+  friend void swap(Stream& a, Stream& b) noexcept;
+
+  /**
    * Constant pointer to the beginning of the stream.
    */
   OZ_ALWAYS_INLINE

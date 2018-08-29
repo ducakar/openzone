@@ -150,15 +150,22 @@ Cursor::~Cursor()
 }
 
 Cursor::Cursor(Cursor&& other) noexcept
-  : mode_(other.mode_), frame_(other.frame_), frameDuration_(other.frameDuration_),
-    images_(static_cast<List<Image>&&>(other.images_))
 {
-  OZ_MOVE_CTOR_BODY(Cursor);
+  swap(*this, other);
 }
 
 Cursor& Cursor::operator=(Cursor&& other) noexcept
 {
-  OZ_MOVE_OP_BODY(Cursor);
+  swap(*this, other);
+  return *this;
+}
+
+void swap(Cursor& a, Cursor& b) noexcept
+{
+  swap(a.mode_, b.mode_);
+  swap(a.frame_, b.frame_);
+  swap(a.frameDuration_, b.frameDuration_);
+  swap(a.images_, b.images_);
 }
 
 void Cursor::reset()

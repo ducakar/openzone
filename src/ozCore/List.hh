@@ -134,9 +134,8 @@ public:
    * Move constructor, moves element storage.
    */
   List(List&& other) noexcept
-    : data_(other.data_), size_(other.size_), capacity_(other.capacity_)
   {
-    OZ_MOVE_CTOR_BODY(List);
+    swap(*this, other);
   }
 
   /**
@@ -147,20 +146,20 @@ public:
   List& operator=(const List& other)
   {
     if (&other != this) {
-      Arrays::clear<Elem>(data_ + other.size_, size_ - other.size_);
       size_ = 0;
-
       addAll(other.data_, other.size_);
+      Arrays::clear<Elem>(data_ + other.size_, size_ - other.size_);
     }
     return *this;
   }
 
   /**
-   * Move operator, moves element storage.
+   * Move operator, swaps contents.
    */
   List& operator=(List&& other) noexcept
   {
-    OZ_MOVE_OP_BODY(List);
+    swap(*this, other);
+    return *this;
   }
 
   /**
@@ -175,6 +174,16 @@ public:
 
     addAll(il.begin(), int(il.size()));
     return *this;
+  }
+
+  /**
+   * Swap instances.
+   */
+  friend void swap(List& a, List& b) noexcept
+  {
+    swap(a.data_, b.data_);
+    swap(a.size_, b.size_);
+    swap(a.capacity_, b.capacity_);
   }
 
   /**

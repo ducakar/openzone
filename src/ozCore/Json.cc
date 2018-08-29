@@ -770,24 +770,29 @@ Json::Json(const Json& other)
 }
 
 Json::Json(Json&& other) noexcept
-  : number_(other.number_), comment_(static_cast<String&&>(other.comment_)), type_(other.type_),
-    wasAccessed_(other.wasAccessed_)
 {
-  OZ_MOVE_CTOR_BODY(Json);
+  swap(*this, other);
 }
 
 Json& Json::operator=(const Json& other)
 {
-  if (&other != this) {
-    clear();
-    copyValue(other);
-  }
+  Json temp(other);
+  swap(*this, temp);
   return *this;
 }
 
 Json& Json::operator=(Json&& other) noexcept
 {
-  OZ_MOVE_OP_BODY(Json);
+  swap(*this, other);
+  return *this;
+}
+
+void swap(Json& a, Json& b) noexcept
+{
+  swap(a.number_, b.number_);
+  swap(a.comment_, b.comment_);
+  swap(a.type_, b.type_);
+  swap(a.wasAccessed_, b.wasAccessed_);
 }
 
 bool Json::operator==(const Json& other) const

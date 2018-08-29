@@ -389,15 +389,24 @@ AL::Decoder::~Decoder()
 }
 
 AL::Decoder::Decoder(Decoder&& other) noexcept
-  : samples_(other.samples_), size_(other.size_), capacity_(other.capacity_),
-    format_(other.format_), rate_(other.rate_), stream_(other.stream_)
 {
-  OZ_MOVE_CTOR_BODY(Decoder);
+  swap(*this, other);
 }
 
 AL::Decoder& AL::Decoder::operator=(AL::Decoder&& other) noexcept
 {
-  OZ_MOVE_OP_BODY(Decoder);
+  swap(*this, other);
+  return *this;
+}
+
+void swap(AL::Decoder& a, AL::Decoder& b) noexcept
+{
+  swap(a.samples_, b.samples_);
+  swap(a.size_, b.size_);
+  swap(a.capacity_, b.capacity_);
+  swap(a.format_, b.format_);
+  swap(a.rate_, b.rate_);
+  swap(a.stream_, b.stream_);
 }
 
 bool AL::Decoder::decode()

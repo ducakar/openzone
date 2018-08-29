@@ -61,6 +61,7 @@ public:
 
   Mind(Mind&& other) noexcept;
   Mind& operator=(Mind&& other) noexcept;
+  friend void swap(Mind& a, Mind& b) noexcept;
 
   void update(bool doRegularUpdate);
 

@@ -294,9 +294,8 @@ public:
    * Move constructor, moves storage.
    */
   HashSet(HashSet&& other) noexcept
-    : pool_(static_cast<Pool<Entry>&&>(other.pool_)), data_(other.data_), capacity_(other.capacity_)
   {
-    OZ_MOVE_CTOR_BODY(HashSet);
+    swap(*this, other);
   }
 
   /**
@@ -320,7 +319,8 @@ public:
    */
   HashSet& operator=(HashSet&& other) noexcept
   {
-    OZ_MOVE_OP_BODY(HashSet);
+    swap(*this, other);
+    return *this;
   }
 
   /**
@@ -335,6 +335,16 @@ public:
       add(e);
     }
     return *this;
+  }
+
+  /**
+   * Swap instances.
+   */
+  friend void swap(HashSet& a, HashSet& b) noexcept
+  {
+    swap(a.pool_, b.pool_);
+    swap(a.data_, b.data_);
+    swap(a.capacity_, b.capacity_);
   }
 
   /**

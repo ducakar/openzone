@@ -142,8 +142,11 @@ struct Node
     : transf(Mat4::ID), mesh(-1), name(name_), includeInBounds(true), parent(parent_)
   {}
 
-  ~Node()
+  void free()
   {
+    for (Node* child : children) {
+      child->free();
+    }
     children.free();
   }
 
@@ -930,7 +933,7 @@ void Compiler::destroy()
   currentMesh.indices.clear();
   currentMesh.indices.trim();
 
-  root.children.free();
+  root.free();
   Node::pool.free();
 
   polyIndices.clear();

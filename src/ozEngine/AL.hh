@@ -102,6 +102,11 @@ public:
     Decoder& operator=(Decoder&& other) noexcept;
 
     /**
+     * Swap instances.
+     */
+    friend void swap(Decoder& a, Decoder& b) noexcept;
+
+    /**
      * True iff a stream is opened.
      */
     OZ_ALWAYS_INLINE

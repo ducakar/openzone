@@ -77,14 +77,19 @@ Lua::Result::~Result()
 }
 
 Lua::Result::Result(Result&& other) noexcept
-  : l_(other.l_)
 {
-  OZ_MOVE_CTOR_BODY(Result);
+  swap(*this, other);
 }
 
 Lua::Result& Lua::Result::operator=(Lua::Result&& other) noexcept
 {
-  OZ_MOVE_OP_BODY(Result);
+  swap(*this, other);
+  return *this;
+}
+
+void swap(Lua::Result& a, Lua::Result& b) noexcept
+{
+  swap(a.l_, b.l_);
 }
 
 Lua::Field::Field(lua_State* l, const Field* parent, const char* name)
@@ -520,19 +525,19 @@ Lua::~Lua()
 }
 
 Lua::Lua(Lua&& other) noexcept
-  : l_(other.l_)
 {
-  other.l_ = nullptr;
+  swap(*this, other);
 }
 
 Lua& Lua::operator=(Lua&& other) noexcept
 {
-  if (&other != this) {
-    l_ = other.l_;
-
-    other.l_ = nullptr;
-  }
+  swap(*this, other);
   return *this;
+}
+
+void swap(Lua& a, Lua& b) noexcept
+{
+  swap(a.l_, b.l_);
 }
 
 Lua::Result Lua::operator()(const char* code) const

@@ -80,15 +80,24 @@ PoolAlloc::~PoolAlloc()
 }
 
 PoolAlloc::PoolAlloc(PoolAlloc&& other) noexcept
-  : firstBlock_(other.firstBlock_), freeSlot_(other.freeSlot_), slotSize_(other.slotSize_),
-    blockSlots_(other.blockSlots_), size_(other.size_), capacity_(other.capacity_)
 {
-  OZ_MOVE_CTOR_BODY(PoolAlloc);
+  swap(*this, other);
 }
 
 PoolAlloc& PoolAlloc::operator=(PoolAlloc&& other) noexcept
 {
-  OZ_MOVE_OP_BODY(PoolAlloc);
+  swap(*this, other);
+  return *this;
+}
+
+void swap(PoolAlloc& a, PoolAlloc& b) noexcept
+{
+  swap(a.firstBlock_, b.firstBlock_);
+  swap(a.freeSlot_, b.freeSlot_);
+  swap(a.slotSize_, b.slotSize_);
+  swap(a.blockSlots_, b.blockSlots_);
+  swap(a.size_, b.size_);
+  swap(a.capacity_, b.capacity_);
 }
 
 void* PoolAlloc::allocate()

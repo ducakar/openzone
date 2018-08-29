@@ -65,12 +65,30 @@ Text::Text(Text&& other) noexcept
     lastHash(other.lastHash), texX(other.texX), texY(other.texY), texWidth(other.texWidth),
     texHeight(other.texHeight), texId(other.texId)
 {
-  OZ_MOVE_CTOR_BODY(Text);
+  swap(*this, other);
 }
 
 Text& Text::operator=(Text&& other) noexcept
 {
-  OZ_MOVE_OP_BODY(Text);
+  swap(*this, other);
+  return *this;
+}
+
+void swap(Text& a, Text& b) noexcept
+{
+  using oz::swap;
+
+  swap(a.x, b.x);
+  swap(a.y, b.y);
+  swap(a.width, b.width);
+  swap(a.align, b.align);
+  swap(a.font, b.font);
+  swap(a.lastHash, b.lastHash);
+  swap(a.texX, b.texX);
+  swap(a.texY, b.texY);
+  swap(a.texWidth, b.texWidth);
+  swap(a.texHeight, b.texHeight);
+  swap(a.texId, b.texId);
 }
 
 void Text::setPosition(int x_, int y_)

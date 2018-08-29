@@ -55,14 +55,19 @@ SharedLib::~SharedLib()
 }
 
 SharedLib::SharedLib(SharedLib&& other) noexcept
-  : handle_(other.handle_)
 {
-  OZ_MOVE_CTOR_BODY(SharedLib);
+  swap(*this, other);
 }
 
 SharedLib& SharedLib::operator=(SharedLib&& other) noexcept
 {
-  OZ_MOVE_OP_BODY(SharedLib);
+  swap(*this, other);
+  return *this;
+}
+
+void swap(SharedLib& a, SharedLib& b) noexcept
+{
+  swap(a.handle_, b.handle_);
 }
 
 SharedLib::Function* SharedLib::get(const char* symbol) const

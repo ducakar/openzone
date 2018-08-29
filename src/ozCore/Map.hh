@@ -176,28 +176,6 @@ public:
   {}
 
   /**
-   * Copy constructor, copies elements.
-   */
-  Map(const Map& other) = default;
-
-  /**
-   * Move constructor, moves element storage.
-   */
-  Map(Map&& other) noexcept = default;
-
-  /**
-   * Copy operator, copies elements.
-   *
-   * Existing storage is reused if it suffices.
-   */
-  Map& operator=(const Map& other) = default;
-
-  /**
-   * Move operator, moves element storage.
-   */
-  Map& operator=(Map&& other) noexcept = default;
-
-  /**
    * Assign from an initialiser list.
    *
    * Existing storage is reused if it suffices.
@@ -206,6 +184,14 @@ public:
   {
     Set<Pair>::operator=(il);
     return *this;
+  }
+
+  /**
+   * Swap instances.
+   */
+  friend void swap(Map& a, Map& b) noexcept
+  {
+    swap(static_cast<Set<Pair>&>(a), static_cast<Set<Pair>&>(b));
   }
 
   /**

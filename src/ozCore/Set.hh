@@ -118,28 +118,6 @@ public:
   }
 
   /**
-   * Copy constructor, copies elements.
-   */
-  Set(const Set& other) = default;
-
-  /**
-   * Move constructor, moves element storage.
-   */
-  Set(Set&& other) noexcept = default;
-
-  /**
-   * Copy operator, copies elements.
-   *
-   * Existing storage is reused if it suffices.
-   */
-  Set& operator=(const Set& other) = default;
-
-  /**
-   * Move operator, moves element storage.
-   */
-  Set& operator=(Set&& other) noexcept = default;
-
-  /**
    * Assign from an initialiser list.
    *
    * Existing storage is reused if it suffices.
@@ -150,6 +128,14 @@ public:
     List<Elem>::template sort<LessFunc>();
 
     return *this;
+  }
+
+  /**
+   * Swap instances.
+   */
+  friend void swap(Set& a, Set& b) noexcept
+  {
+    swap(static_cast<List<Elem>&>(a), static_cast<List<Elem>&>(b));
   }
 
   /**

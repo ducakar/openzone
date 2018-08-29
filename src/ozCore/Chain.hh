@@ -154,9 +154,8 @@ public:
    * Move constructor, rebinds elements to the new chain.
    */
   Chain(Chain&& other) noexcept
-    : first_(other.first_)
   {
-    OZ_MOVE_CTOR_BODY(Chain);
+    swap(*this, other);
   }
 
   /**
@@ -164,7 +163,16 @@ public:
    */
   Chain& operator=(Chain&& other) noexcept
   {
-    OZ_MOVE_OP_BODY(Chain);
+    swap(*this, other);
+    return *this;
+  }
+
+  /**
+   * Swap instances.
+   */
+  friend void swap(Chain& a, Chain& b) noexcept
+  {
+    swap(a.first_, b.first_);
   }
 
   /**

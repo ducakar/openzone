@@ -119,9 +119,8 @@ public:
    * Move constructor, rebinds elements to the new chain.
    */
   DChain(DChain&& other) noexcept
-    : Chain<Elem, INDEX>(static_cast<DChain&&>(other)), last_(other.last_)
   {
-    OZ_MOVE_CTOR_BODY(DChain);
+    swap(*this, other);
   }
 
   /**
@@ -129,7 +128,17 @@ public:
    */
   DChain& operator=(DChain&& other) noexcept
   {
-    OZ_MOVE_OP_BODY(DChain);
+    swap(*this, other);
+    return *this;
+  }
+
+  /**
+   * Swap instances.
+   */
+  friend void swap(DChain& a, DChain& b) noexcept
+  {
+    swap(a.first_, b.first_);
+    swap(a.last_, b.last_);
   }
 
   /**

@@ -149,6 +149,11 @@ public:
   Thread& operator=(Thread&& other) noexcept;
 
   /**
+   * Swap instances.
+   */
+  friend void swap(Thread& a, Thread& b) noexcept;
+
+  /**
    * True iff a joinable thread has been started but not yet joined or detached.
    */
   OZ_ALWAYS_INLINE

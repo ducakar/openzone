@@ -96,15 +96,23 @@ Stream::~Stream()
 }
 
 Stream::Stream(Stream&& other) noexcept
-  : pos_(other.pos_), begin_(other.begin_), end_(other.end_), flags_(other.flags_),
-    order_(other.order_)
 {
-  OZ_MOVE_CTOR_BODY(Stream);
+  swap(*this, other);
 }
 
 Stream& Stream::operator=(Stream&& other) noexcept
 {
-  OZ_MOVE_OP_BODY(Stream);
+  swap(*this, other);
+  return *this;
+}
+
+void swap(Stream& a, Stream& b) noexcept
+{
+  swap(a.pos_, b.pos_);
+  swap(a.begin_, b.begin_);
+  swap(a.end_, b.end_);
+  swap(a.flags_, b.flags_);
+  swap(a.order_, b.order_);
 }
 
 void Stream::seek(int offset)

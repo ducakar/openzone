@@ -36,14 +36,22 @@ ImageData::~ImageData()
 }
 
 ImageData::ImageData(ImageData&& other) noexcept
-  : width_(other.width_), height_(other.height_), flags_(other.flags_), pixels_(other.pixels_)
 {
-  OZ_MOVE_CTOR_BODY(ImageData);
+  swap(*this, other);
 }
 
 ImageData& ImageData::operator=(ImageData&& other) noexcept
 {
-  OZ_MOVE_OP_BODY(ImageData);
+  swap(*this, other);
+  return *this;
+}
+
+void swap(ImageData& a, ImageData& b) noexcept
+{
+  swap(a.width_, b.width_);
+  swap(a.height_, b.height_);
+  swap(a.flags_, b.flags_);
+  swap(a.pixels_, b.pixels_);
 }
 
 }

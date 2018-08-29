@@ -157,14 +157,19 @@ Thread::~Thread()
 }
 
 Thread::Thread(Thread&& other) noexcept
-  : descriptor_(other.descriptor_)
 {
-  OZ_MOVE_CTOR_BODY(Thread);
+  swap(*this, other);
 }
 
 Thread& Thread::operator=(Thread&& other) noexcept
 {
-  OZ_MOVE_OP_BODY(Thread);
+  swap(*this, other);
+  return *this;
+}
+
+void swap(Thread& a, Thread& b) noexcept
+{
+  swap(a.descriptor_, b.descriptor_);
 }
 
 void Thread::detach()

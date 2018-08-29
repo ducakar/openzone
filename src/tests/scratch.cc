@@ -29,9 +29,8 @@ struct Foo
   Foo(const Foo&) { Log() << "Foo(const Foo&)"; }
   Foo(Foo&&) noexcept { Log() << "Foo(Foo&&)"; }
 
-  Foo& operator=(const Foo&) { Log() << "Foo(const Foo&)"; return *this; }
-  Foo& operator=(Foo&&) noexcept { Log() << "Foo(Foo&&)"; return *this; }
-
+  Foo& operator=(const Foo&) { Log() << "Foo& operator=(const Foo&)"; return *this; }
+  Foo& operator=(Foo&&) noexcept { Log() << "Foo& operator=(Foo&&)"; return *this; }
   bool operator==(const Foo&) { return true; }
   bool operator<(const Foo&) { return false; }
 };
@@ -154,13 +153,55 @@ public:
 
 };
 
+struct Bar
+{
+  int value = 0;
+
+  Bar() = default;
+
+  Bar(int value)
+    : value(value)
+  {}
+
+  Bar(const Bar& other)
+    : value(other.value)
+  {}
+
+  Bar(Bar&& other)
+    : Bar()
+  {
+    swap(*this, other);
+  }
+
+  Bar& operator=(const Bar& other)
+  {
+    Bar temp(other);
+    swap(*this, temp);
+    return *this;
+  }
+
+  Bar& operator=(Bar&& other)
+  {
+    swap(*this, other);
+    return *this;
+  }
+
+  friend void swap(Bar& a, Bar& b)
+  {
+    swap(a.value, b.value);
+  }
+};
+
 int main()
 {
   System::init();
-  Dur a(-8, 500000000);
-  Dur b(-2, 800000000);
+//  Dur a(-8, 500000000);
+//  Dur b(-2, 800000000);
 
-  Log() << (a * -6).t();
-  Log() << (b * -6).t();
+//  Log() << (a * -6).t();
+//  Log() << (b * -6).t();
+
+  Set<int> a, b;
+  swap(a, b);
   return 0;
 }

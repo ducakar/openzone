@@ -78,6 +78,11 @@ public:
   ImageData& operator=(ImageData&& other) noexcept;
 
   /**
+   * Swap instances.
+   */
+  friend void swap(ImageData& a, ImageData& b) noexcept;
+
+  /**
    * Width.
    */
   OZ_ALWAYS_INLINE

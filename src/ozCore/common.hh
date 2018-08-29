@@ -101,32 +101,6 @@
 #define OZ_WEAK [[gnu::weak]]
 
 /**
- * @def OZ_MOVE_CTOR_BODY
- * Generic move constructor implementation.
- *
- * It assumes the type has default constructor that initialises the object into the same state as
- * the source is left in after move and the destructor is a NOOP on a default constructed instance.
- *
- * @sa `OZ_MOVE_OP_BODY`
- */
-#define OZ_MOVE_CTOR_BODY(Type) \
-  new(&other) Type()
-
-/**
- * @def OZ_MOVE_OP_BODY
- * Generic move operator implementation.
- *
- * It is based on same assumptions as `OZ_MOVE_CTOR_BODY` and requires move constructor to be
- * implemented. It works correctly for `x = std::move(x)`.
- *
- * @sa `OZ_MOVE_CTOR_BODY`
- */
-#define OZ_MOVE_OP_BODY(Type) \
-  Type temp(static_cast<Type&&>(*this)); \
-  new(this) Type(static_cast<Type&&>(other)); \
-  return *this
-
-/**
  * Top-level OpenZone namespace.
  */
 namespace oz
@@ -209,6 +183,7 @@ static_assert(sizeof(double) == 8, "sizeof(double) should be 8");
  * operator!= expressed in terms of operator==.
  */
 template <typename Type>
+OZ_ALWAYS_INLINE
 inline constexpr bool operator!=(const Type& a, const Type& b)
 {
   return !(a == b);
@@ -218,6 +193,7 @@ inline constexpr bool operator!=(const Type& a, const Type& b)
  * operator<= expressed in terms of operator<.
  */
 template <typename Type>
+OZ_ALWAYS_INLINE
 inline constexpr bool operator<=(const Type& a, const Type& b)
 {
   return !(b < a);
@@ -227,6 +203,7 @@ inline constexpr bool operator<=(const Type& a, const Type& b)
  * operator> expressed in terms of operator<.
  */
 template <typename Type>
+OZ_ALWAYS_INLINE
 inline constexpr bool operator>(const Type& a, const Type& b)
 {
   return b < a;
@@ -236,6 +213,7 @@ inline constexpr bool operator>(const Type& a, const Type& b)
  * operator>= expressed in terms of operator<.
  */
 template <typename Type>
+OZ_ALWAYS_INLINE
 inline constexpr bool operator>=(const Type& a, const Type& b)
 {
   return !(a < b);
@@ -248,10 +226,20 @@ template <typename Value>
 OZ_ALWAYS_INLINE
 inline void swap(Value& a, Value& b) noexcept
 {
-  Value t(static_cast<Value&&>(a));
-
+  Value temp(static_cast<Value&&>(a));
   a = static_cast<Value&&>(b);
-  b = static_cast<Value&&>(t);
+  b = static_cast<Value&&>(temp);
+}
+
+/**
+ * Swap elements of two static arrays.
+ */
+template <typename Elem, size_t SIZE>
+inline void swap(Elem (& a)[SIZE], Elem (& b)[SIZE]) noexcept
+{
+  for (size_t i = 0; i < SIZE; ++i) {
+    swap(a[i], b[i]);
+  }
 }
 
 /**

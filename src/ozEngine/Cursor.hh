@@ -124,6 +124,11 @@ public:
   Cursor& operator=(Cursor&& other) noexcept;
 
   /**
+   * Swap instances.
+   */
+  friend void swap(Cursor& a, Cursor& b) noexcept;
+
+  /**
    * True iff loaded.
    */
   bool isValid() const

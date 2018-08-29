@@ -33,24 +33,24 @@ static const SDL_Color WHITE_COLOUR = {0xff, 0xff, 0xff, 0xff};
 
 void Font::close()
 {
-  if (handle != nullptr) {
-    TTF_Font* font = static_cast<TTF_Font*>(handle);
+  if (handle_ != nullptr) {
+    TTF_Font* font = static_cast<TTF_Font*>(handle_);
 
     TTF_CloseFont(font);
-    handle = nullptr;
+    handle_ = nullptr;
   }
 
-  fileBuffer.free();
+  fileBuffer_.free();
 }
 
 Font::Font(const File& file, int height)
-  : fontHeight(height), fileBuffer(0)
+  : fontHeight_(height), fileBuffer_(0)
 {
-  if (!file.read(&fileBuffer)) {
+  if (!file.read(&fileBuffer_)) {
     OZ_ERROR("oz::Font: Failed to read font file `%s'", file.c());
   }
 
-  SDL_RWops* rwOps = SDL_RWFromConstMem(fileBuffer.begin(), fileBuffer.capacity());
+  SDL_RWops* rwOps = SDL_RWFromConstMem(fileBuffer_.begin(), fileBuffer_.capacity());
   TTF_Font*  font  = TTF_OpenFontRW(rwOps, true, height);
 
   if (font == nullptr) {
@@ -59,7 +59,7 @@ Font::Font(const File& file, int height)
 
   TTF_SetFontHinting(font, TTF_HINTING_MONO);
 
-  handle = font;
+  handle_ = font;
 }
 
 Font::~Font()
@@ -68,27 +68,33 @@ Font::~Font()
 }
 
 Font::Font(Font&& other) noexcept
-  : handle(other.handle), fontHeight(other.fontHeight),
-    fileBuffer(static_cast<Stream&&>(other.fileBuffer))
 {
-  OZ_MOVE_CTOR_BODY(Font);
+  swap(*this, other);
 }
 
 Font& Font::operator=(Font&& other) noexcept
 {
-  OZ_MOVE_OP_BODY(Font);
+  swap(*this, other);
+  return *this;
+}
+
+void swap(Font& a, Font& b) noexcept
+{
+  swap(a.handle_, b.handle_);
+  swap(a.fontHeight_, b.fontHeight_);
+  swap(a.fileBuffer_, b.fileBuffer_);
 }
 
 void Font::sizeOf(const char* s, int* width, int* height) const
 {
-  TTF_Font* font = static_cast<TTF_Font*>(handle);
+  TTF_Font* font = static_cast<TTF_Font*>(handle_);
 
   TTF_SizeUTF8(font, s, width, height);
 }
 
 void Font::upload(const char* s, int* width, int* height) const
 {
-  TTF_Font*    font    = static_cast<TTF_Font*>(handle);
+  TTF_Font*    font    = static_cast<TTF_Font*>(handle_);
   SDL_Surface* surface = width != nullptr && *width > 0
                          ? TTF_RenderUTF8_Blended_Wrapped(font, s, WHITE_COLOUR, *width)
                          : TTF_RenderUTF8_Blended(font, s, WHITE_COLOUR);

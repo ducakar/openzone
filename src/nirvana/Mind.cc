@@ -56,14 +56,21 @@ Mind::~Mind()
 }
 
 Mind::Mind(Mind&& other) noexcept
-  : flags(other.flags), side(other.side), bot(other.bot)
 {
-  OZ_MOVE_CTOR_BODY(Mind);
+  swap(*this, other);
 }
 
 Mind& Mind::operator=(Mind&& other) noexcept
 {
-  OZ_MOVE_OP_BODY(Mind);
+  swap(*this, other);
+  return *this;
+}
+
+void swap(Mind& a, Mind& b) noexcept
+{
+  swap(a.flags, b.flags);
+  swap(a.side, b.side);
+  swap(a.bot, b.bot);
 }
 
 void Mind::update(bool doRegularUpdate)
