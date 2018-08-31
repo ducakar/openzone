@@ -159,8 +159,8 @@ struct Bar
 
   Bar() = default;
 
-  Bar(int value)
-    : value(value)
+  Bar(int value_)
+    : value(value_)
   {}
 
   Bar(const Bar& other)

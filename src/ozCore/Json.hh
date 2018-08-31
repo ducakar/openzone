@@ -100,6 +100,9 @@ public:
 
 private:
 
+  using Array = List<Json>;
+  using Object = Map<String, Json>;
+
   class Parser;
   class Formatter;
 
@@ -107,13 +110,15 @@ private:
 
   union
   {
-    bool       boolean_;             ///< Boolean value storage.
-    double     number_      = 0.0;   ///< Number value storage.
-    void*      data_;                ///< Pointer to other, complex, value storage.
+    bool       boolean_;               ///< Boolean value storage.
+    double     number_;                ///< Number value storage.
+    String*    string_;                ///< Pointer to string value storage.
+    Array*     array_;                 ///< Pointer to array value storage.
+    Object*    object_;                ///< Pointer to object value storage.
   };
-  String       comment_;             ///< Comment.
-  Type         type_        = NIL;   ///< Value type, `Json::Type`.
-  mutable bool wasAccessed_ = false; ///< For warnings about unused variables.
+  String       comment_;               ///< Comment.
+  Type         type_        = NIL;     ///< Value type, `Json::Type`.
+  mutable bool wasAccessed_ = false;   ///< For warnings about unused variables.
 
 private:
 
