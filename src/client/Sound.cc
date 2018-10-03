@@ -181,8 +181,8 @@ void Sound::soundRun()
   soundAuxSemaphore.wait();
 
   while (isSoundAlive.load<RELAXED>()) {
-    Instant currentInstant = Instant::now();
-    Instant beginInstant = currentInstant;
+    Instant<STEADY> currentInstant = Instant<STEADY>::now();
+    Instant<STEADY> beginInstant   = currentInstant;
 
     float orientation[] = {
       camera.at.x, camera.at.y, camera.at.z,
@@ -206,13 +206,13 @@ void Sound::soundRun()
       }
     }
 
-    currentInstant = Instant::now();
+    currentInstant = Instant<STEADY>::now();
     effectsDuration += currentInstant - beginInstant ;
     beginInstant  = currentInstant;
 
     updateMusic();
 
-    currentInstant = Instant::now();
+    currentInstant = Instant<STEADY>::now();
     musicDuration += currentInstant - beginInstant ;
 
     soundMainSemaphore.post();

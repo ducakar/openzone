@@ -78,13 +78,13 @@ int Client::main()
 
   SDL_Event event;
 
-  bool     isAlive   = true;
-  bool     isActive  = true;
+  bool            isAlive   = true;
+  bool            isActive  = true;
   // Time spent on the current frame so far.
-  Duration timeSpent = Duration::ZERO;
-  Instant  timeZero  = Instant::now();
+  Duration        timeSpent = Duration::ZERO;
+  Instant<STEADY> timeZero  = Instant<STEADY>::now();
   // Time at the end of the last frame.
-  Instant  timeLast  = timeZero;
+  Instant<STEADY> timeLast  = timeZero;
 
   initFlags |= INIT_MAIN_LOOP;
 
@@ -254,7 +254,7 @@ int Client::main()
     if (!isActive) {
       Thread::sleepFor(timer.realTickDuration);
 
-      timeSpent = Instant::now() - timeLast;
+      timeSpent = Instant<STEADY>::now() - timeLast;
       timeLast += timeSpent;
 
       continue;
@@ -278,11 +278,11 @@ int Client::main()
 
       stage->load();
 
-      timeLast = Instant::now();
+      timeLast = Instant<STEADY>::now();
       continue;
     }
 
-    timeSpent = Instant::now() - timeLast;
+    timeSpent = Instant<STEADY>::now() - timeLast;
 
     // Skip rendering graphics, only play sounds if there's not enough time left.
     if (timeSpent >= timer.realTickDuration && timer.frameDuration < 100_ms) {
@@ -293,7 +293,7 @@ int Client::main()
       timer.frame();
 
       // If there's still some time left, sleep.
-      timeSpent = Instant::now() - timeLast;
+      timeSpent = Instant<STEADY>::now() - timeLast;
 
       if (timeSpent < timer.realTickDuration) {
         stage->wait(timer.realTickDuration - timeSpent);

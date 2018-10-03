@@ -170,7 +170,7 @@ int main()
 
   SList<int, MAX> list(MAX);
 
-  Instant t0 = Instant::now();
+  Instant t0 = Instant<STEADY>::now();
 
   for (int i = 0; i < TESTS; ++i) {
     for (int& j : list) {
@@ -183,7 +183,7 @@ int main()
     //oaSort<int>(list.begin(), 0, MAX);
   }
 
-  Log() << (Instant::now() - t0).ms() << " ms";
+  Log() << (Instant<STEADY>::now() - t0).ms() << " ms";
   Log::printMemoryLeaks();
   return 0;
 }

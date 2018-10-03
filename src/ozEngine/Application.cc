@@ -132,12 +132,12 @@ void Application::run(Stage* initialStage)
     OZ_ERROR("oz::Application: Window creation failed");
   }
 
-  uint     fps        = config["timing"]["fps"].get(defaults.timing.fps);
-  uint     nTicksInSecond     = 0;
-  uint     nTicksInFrame = 0;
-  Duration tickTime   = 0_s;
-  Instant  timeLast   = Instant::now();
-  Duration timeSpent  = 0_s;
+  uint            fps            = config["timing"]["fps"].get(defaults.timing.fps);
+  uint            nTicksInSecond = 0;
+  uint            nTicksInFrame  = 0;
+  Duration        tickTime       = 0_s;
+  Duration        timeSpent      = 0_s;
+  Instant<STEADY> timeLast       = Instant<STEADY>::now();
 
   do {
     // read input & events
@@ -243,7 +243,7 @@ void Application::run(Stage* initialStage)
     if (!Window::isActive()) {
       Thread::sleepFor(1_s / fps);
 
-      timeSpent = Instant::now() - timeLast;
+      timeSpent = Instant<STEADY>::now() - timeLast;
       timeLast += timeSpent;
       continue;
     }
@@ -263,7 +263,7 @@ void Application::run(Stage* initialStage)
 
       currentStage->load();
 
-      timeLast = Instant::now();
+      timeLast = Instant<STEADY>::now();
       continue;
     }
 
@@ -273,7 +273,7 @@ void Application::run(Stage* initialStage)
     currentStage->update();
 
     nTicksInFrame += 1;
-    timeSpent      = Instant::now() - timeLast;
+    timeSpent      = Instant<STEADY>::now() - timeLast;
 
     // Skip rendering graphics, only play sounds if there's not enough time left.
     if (timeSpent >= tickTime) {
@@ -283,7 +283,7 @@ void Application::run(Stage* initialStage)
       currentStage->present(true);
 
       nTicksInFrame = 0;
-      timeSpent     = Instant::now() - timeLast;
+      timeSpent     = Instant<STEADY>::now() - timeLast;
 
       // Sleep if there's still some time left.
       if (timeSpent < tickTime) {

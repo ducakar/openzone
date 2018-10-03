@@ -34,6 +34,15 @@ namespace oz
 {
 
 /**
+ * Clock type.
+ */
+enum Clock
+{
+  STEADY, ///< Monotonic, without non-continuouties, does not include system stand-by time.
+  WALL    ///< Wall-clock.
+};
+
+/**
  * %Time instant.
  *
  * The time is internally stored as nanoseconds (64-bit signed integer) from the UNIX epoch
@@ -41,6 +50,7 @@ namespace oz
  *
  * @sa `oz::Duration`
  */
+template <Clock CLOCK>
 class Instant : private Duration
 {
 public:
@@ -150,5 +160,11 @@ public:
   static Instant now();
 
 };
+
+template <>
+Instant<STEADY> Instant<STEADY>::now();
+
+template <>
+Instant<WALL> Instant<WALL>::now();
 
 }

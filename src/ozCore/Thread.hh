@@ -70,9 +70,14 @@ public:
   static void sleepFor(Duration duration);
 
   /**
-   * Sleep until a given time instant.
+   * Sleep until a given monotonic time instant.
    */
-  static void sleepUntil(Instant instant);
+  static void sleepUntil(Instant<STEADY> instant);
+
+  /**
+   * Sleep until a given wall-clock time instant.
+   */
+  static void sleepUntil(Instant<WALL> instant);
 
   /**
    * Get current thread's name.

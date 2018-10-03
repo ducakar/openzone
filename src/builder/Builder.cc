@@ -749,7 +749,7 @@ int Builder::main(int argc, char** argv)
   context.init();
   compiler.init();
 
-  Instant beginInstant = Instant::now();
+  Instant<STEADY> beginInstant = Instant<STEADY>::now();
 
   // copy package README/COPYING and credits
   copyFiles("@", ".", "txt", false);
@@ -821,7 +821,7 @@ int Builder::main(int argc, char** argv)
 
   packArchive(pkgName, useCompression, use7zip);
 
-  Instant endInstant = Instant::now();
+  Instant<STEADY> endInstant = Instant<STEADY>::now();
   Log::println("Build time: %.2f s", (endInstant - beginInstant).t());
 
   compiler.destroy();

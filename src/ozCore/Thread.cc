@@ -113,13 +113,23 @@ void Thread::sleepFor(Duration duration)
 # endif
 }
 
-void Thread::sleepUntil(Instant instant)
+void Thread::sleepUntil(Instant<STEADY> instant)
 {
   timespec ts = toTimespec(instant.fromEpoch());
 # ifdef __native_client__
   nanosleep(&ts, nullptr);
 # else
   clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &ts, nullptr);
+# endif
+}
+
+void Thread::sleepUntil(Instant<WALL> instant)
+{
+  timespec ts = toTimespec(instant.fromEpoch());
+# ifdef __native_client__
+  nanosleep(&ts, nullptr);
+# else
+  clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &ts, nullptr);
 # endif
 }
 
