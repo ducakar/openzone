@@ -36,6 +36,7 @@ ImageData::~ImageData()
 }
 
 ImageData::ImageData(ImageData&& other) noexcept
+  : ImageData()
 {
   swap(*this, other);
 }

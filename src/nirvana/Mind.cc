@@ -56,6 +56,7 @@ Mind::~Mind()
 }
 
 Mind::Mind(Mind&& other) noexcept
+  : Mind()
 {
   swap(*this, other);
 }

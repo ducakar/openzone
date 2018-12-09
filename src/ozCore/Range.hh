@@ -36,10 +36,15 @@ namespace oz
 /**
  * Container for begin-end iterator pair.
  */
-template <typename BeginIterator, typename EndIterator, typename ElemType>
+template <typename BeginIterator, typename EndIterator>
 class Range
 {
 public:
+
+  /**
+   * Element type.
+   */
+  using Elem = decltype(*BeginIterator());
 
   /**
    * Begin iterator type.
@@ -50,11 +55,6 @@ public:
    * End iterator type.
    */
   using End = EndIterator;
-
-  /**
-   * Element type.
-   */
-  using Elem = ElemType;
 
 private:
 
@@ -122,6 +122,16 @@ template <class Container>
 inline typename Container::RangeType range(Container& container) noexcept
 {
   return typename Container::RangeType(container.begin(), container.end());
+}
+
+/**
+ * Range to access to a range of elements between two iterators.
+ */
+template <class BeginIterator, class EndIterator>
+inline auto range(BeginIterator begin, EndIterator end)
+  -> Range<BeginIterator, EndIterator>
+{
+  return Range<BeginIterator, EndIterator>(begin, end);
 }
 
 }

@@ -68,6 +68,7 @@ Font::~Font()
 }
 
 Font::Font(Font&& other) noexcept
+  : Font()
 {
   swap(*this, other);
 }

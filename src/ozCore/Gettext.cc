@@ -55,9 +55,9 @@ Gettext::Gettext() = default;
 
 Gettext::~Gettext() = default;
 
-Gettext::Gettext(Gettext&& other) noexcept = default;
+Gettext::Gettext(Gettext&&) noexcept = default;
 
-Gettext& Gettext::operator=(Gettext&& other) noexcept = default;
+Gettext& Gettext::operator=(Gettext&&) noexcept = default;
 
 bool Gettext::contains(const char* message) const
 {

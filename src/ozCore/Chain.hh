@@ -132,12 +132,12 @@ public:
   /**
    * %Range with constant access to elements.
    */
-  using CRangeType = Range<ChainIterator<const Elem>, nullptr_t, const Elem>;
+  using CRangeType = Range<ChainIterator<const Elem>, nullptr_t>;
 
   /**
    * %Range with non-constant access to elements.
    */
-  using RangeType = Range<ChainIterator<Elem>, nullptr_t, Elem>;
+  using RangeType = Range<ChainIterator<Elem>, nullptr_t>;
 
 protected:
 
@@ -154,6 +154,7 @@ public:
    * Move constructor, rebinds elements to the new chain.
    */
   Chain(Chain&& other) noexcept
+    : Chain()
   {
     swap(*this, other);
   }

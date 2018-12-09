@@ -77,6 +77,7 @@ Lua::Result::~Result()
 }
 
 Lua::Result::Result(Result&& other) noexcept
+  : Lua::Result()
 {
   swap(*this, other);
 }
@@ -525,6 +526,7 @@ Lua::~Lua()
 }
 
 Lua::Lua(Lua&& other) noexcept
+  : Lua()
 {
   swap(*this, other);
 }

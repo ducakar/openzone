@@ -157,6 +157,7 @@ Thread::~Thread()
 }
 
 Thread::Thread(Thread&& other) noexcept
+  : Thread()
 {
   swap(*this, other);
 }

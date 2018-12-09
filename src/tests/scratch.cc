@@ -33,6 +33,9 @@ struct Foo
   Foo& operator=(Foo&&) noexcept { Log() << "Foo& operator=(Foo&&)"; return *this; }
   bool operator==(const Foo&) { return true; }
   bool operator<(const Foo&) { return false; }
+
+  Foo* prev[1];
+  Foo* next[1];
 };
 
 class Dur
@@ -195,13 +198,12 @@ struct Bar
 int main()
 {
   System::init();
-//  Dur a(-8, 500000000);
-//  Dur b(-2, 800000000);
-
-//  Log() << (a * -6).t();
-//  Log() << (b * -6).t();
-
-  Set<int> a, b;
-  swap(a, b);
+  DChain<Foo> c1;
+  c1.add(new Foo{});
+  for (auto& i : range(c1.begin(), c1.end())) {
+    i.next[0] = nullptr;
+    Log() << &i;
+  }
+  c1.free();
   return 0;
 }

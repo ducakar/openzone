@@ -150,6 +150,7 @@ Cursor::~Cursor()
 }
 
 Cursor::Cursor(Cursor&& other) noexcept
+  : Cursor()
 {
   swap(*this, other);
 }

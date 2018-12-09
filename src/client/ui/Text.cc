@@ -61,9 +61,7 @@ Text::~Text()
 }
 
 Text::Text(Text&& other) noexcept
-  : x(other.x), y(other.y), width(other.width), align(other.align), font(other.font),
-    lastHash(other.lastHash), texX(other.texX), texY(other.texY), texWidth(other.texWidth),
-    texHeight(other.texHeight), texId(other.texId)
+  : Text()
 {
   swap(*this, other);
 }

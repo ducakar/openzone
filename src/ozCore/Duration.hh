@@ -199,7 +199,7 @@ public:
   }
 
   /**
-   * Divide the duration by anoter duration.
+   * Divide the duration by another duration.
    */
   OZ_ALWAYS_INLINE
   constexpr int64 operator/(const Duration& d) const
@@ -208,7 +208,7 @@ public:
   }
 
   /**
-   * Remainder of division by anoter duration.
+   * Remainder of division by another duration.
    */
   OZ_ALWAYS_INLINE
   constexpr Duration operator%(const Duration& d) const

@@ -80,6 +80,7 @@ PoolAlloc::~PoolAlloc()
 }
 
 PoolAlloc::PoolAlloc(PoolAlloc&& other) noexcept
+  : PoolAlloc()
 {
   swap(*this, other);
 }

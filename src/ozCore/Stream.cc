@@ -96,6 +96,7 @@ Stream::~Stream()
 }
 
 Stream::Stream(Stream&& other) noexcept
+  : Stream()
 {
   swap(*this, other);
 }

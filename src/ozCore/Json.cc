@@ -751,6 +751,7 @@ Json::Json(const Json& other)
 }
 
 Json::Json(Json&& other) noexcept
+  : Json()
 {
   swap(*this, other);
 }

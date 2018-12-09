@@ -55,6 +55,7 @@ SharedLib::~SharedLib()
 }
 
 SharedLib::SharedLib(SharedLib&& other) noexcept
+  : SharedLib()
 {
   swap(*this, other);
 }

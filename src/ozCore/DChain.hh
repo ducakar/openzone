@@ -119,6 +119,7 @@ public:
    * Move constructor, rebinds elements to the new chain.
    */
   DChain(DChain&& other) noexcept
+    : DChain()
   {
     swap(*this, other);
   }

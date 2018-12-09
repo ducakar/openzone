@@ -134,6 +134,7 @@ public:
    * Move constructor, moves element storage.
    */
   List(List&& other) noexcept
+    : List()
   {
     swap(*this, other);
   }

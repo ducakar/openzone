@@ -146,12 +146,12 @@ public:
   /**
    * %Range with constant access to elements.
    */
-  using CRangeType = Range<HashIterator<const Entry, const Elem>, nullptr_t, const Elem>;
+  using CRangeType = Range<HashIterator<const Entry, const Elem>, nullptr_t>;
 
   /**
    * %Range with non-constant access to elements.
    */
-  using RangeType = Range<HashIterator<Entry, Elem>, nullptr_t, Elem>;
+  using RangeType = Range<HashIterator<Entry, Elem>, nullptr_t>;
 
 protected:
 
@@ -294,6 +294,7 @@ public:
    * Move constructor, moves storage.
    */
   HashSet(HashSet&& other) noexcept
+    : HashSet()
   {
     swap(*this, other);
   }

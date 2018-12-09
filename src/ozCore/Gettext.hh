@@ -78,7 +78,7 @@ public:
   /**
    * Move operator.
    */
-  Gettext& operator=(Gettext&& other) noexcept;
+  Gettext& operator=(Gettext&&) noexcept;
 
   /**
    * Number of messages it contains.

@@ -99,24 +99,24 @@ public:
   /**
    * Copy constructor, copies elements.
    */
-  Heap(const Heap& other) = default;
+  Heap(const Heap&) = default;
 
   /**
    * Move constructor, moves element storage.
    */
-  Heap(Heap&& other) noexcept = default;
+  Heap(Heap&&) noexcept = default;
 
   /**
    * Copy operator, copies elements.
    *
    * Existing storage is reused if it suffices.
    */
-  Heap& operator=(const Heap& other) = default;
+  Heap& operator=(const Heap&) = default;
 
   /**
    * Move operator, moves element storage.
    */
-  Heap& operator=(Heap&& other) noexcept = default;
+  Heap& operator=(Heap&&) noexcept = default;
 
   /**
    * Assign from an initialiser list.

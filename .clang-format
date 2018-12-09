@@ -26,5 +26,4 @@ FixNamespaceComments: false
 IndentCaseLabels: true
 PointerAlignment: Left
 SpaceAfterCStyleCast: true
-SpaceAfterTemplateKeyword: false
 ...
