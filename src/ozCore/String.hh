@@ -259,6 +259,27 @@ public:
    */
   static double parseDouble(const char* s, const char** end = nullptr);
 
+  /**
+   * Create a string in sprintf-like way.
+   */
+  OZ_PRINTF_FORMAT(1, 2)
+  static String format(const char* s, ...);
+
+  /**
+   * Create a string in vsprintf-like way.
+   */
+  OZ_PRINTF_FORMAT(1, 0)
+  static String vformat(const char* s, va_list ap);
+
+  /**
+   * Generate a string representing the number and optionally add a SI unit prefix.
+   *
+   * It adds a space after the number and, when neccessary, it multiplies the number with an
+   * exponent of 1000 and adds a 'm', 'k', 'M' or 'G' unit prefix after the space.
+   */
+  OZ_PRINTF_FORMAT(2, 0)
+  static String si(double e, const char* format = "%.3g");
+
   /*
    * Functions that operate on a String object.
    */
@@ -349,25 +370,9 @@ public:
   }
 
   /**
-   * Create a string in sprintf-like way.
+   * Swap instances.
    */
-  OZ_PRINTF_FORMAT(1, 2)
-  static String format(const char* s, ...);
-
-  /**
-   * Create a string in vsprintf-like way.
-   */
-  OZ_PRINTF_FORMAT(1, 0)
-  static String vformat(const char* s, va_list ap);
-
-  /**
-   * Generate a string representing the number and optionally add a SI unit prefix.
-   *
-   * It adds a space after the number and, when neccessary, it multiplies the number with an
-   * exponent of 1000 and adds a 'm', 'k', 'M' or 'G' unit prefix after the space.
-   */
-  OZ_PRINTF_FORMAT(2, 0)
-  static String si(double e, const char* format = "%.3g");
+  friend void swap(String& a, String& b) noexcept;
 
   /**
    * Same as `strcmp() == 0`.

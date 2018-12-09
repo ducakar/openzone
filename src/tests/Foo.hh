@@ -17,50 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file matrix/Matrix.hh
- */
+#include <ozCore/ozCore.hh>
 
-#pragma once
-
-#include <matrix/common.hh>
-
-namespace oz
+struct Foo
 {
+  Foo() { oz::Log() << "Foo()"; }
+  ~Foo() { oz::Log() << "~Foo()"; }
 
-class Matrix
-{
-private:
+  Foo(const Foo&) { oz::Log() << "Foo(const Foo&)"; }
+  Foo(Foo&&) noexcept { oz::Log() << "Foo(Foo&&)"; }
 
-  static constexpr float MAX_VELOCITY2 = 1000.0f * 1000.0f;
-
-  int maxStructs;
-  int maxEvents;
-  int maxObjects;
-  int maxDynamics;
-  int maxWeapons;
-  int maxBots;
-  int maxVehicles;
-  int maxFrags;
-
-public:
-
-  void update();
-
-  void read(Stream* is);
-  void read(const Json& json);
-
-  void write(Stream* os) const;
-  Json write() const;
-
-  void load();
-  void unload();
-
-  void init();
-  void destroy();
-
+  Foo& operator=(const Foo&) { oz::Log() << "Foo& operator=(const Foo&)"; return *this; }
+  Foo& operator=(Foo&&) noexcept { oz::Log() << "Foo& operator=(Foo&&)"; return *this; }
+  bool operator==(const Foo&) { return true; }
+  bool operator<(const Foo&) { return false; }
 };
-
-extern Matrix matrix;
-
-}

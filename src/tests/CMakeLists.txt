@@ -24,7 +24,7 @@ target_link_libraries(opustest ozEngine ozCore)
 add_executable(quicksort quicksort.cc)
 target_link_libraries(quicksort ozCore)
 
-add_executable(scratch scratch.cc)
+add_executable(scratch scratch.cc Foo.hh)
 target_link_libraries(scratch ozCore)
 
 add_executable(simd simd.cc)

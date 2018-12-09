@@ -249,6 +249,50 @@ double String::parseDouble(const char* s, const char** end)
   return strtod(s, const_cast<char**>(end));
 }
 
+String String::format(const char* s, ...)
+{
+  va_list ap;
+  va_start(ap, s);
+
+  char localBuffer[LOCAL_BUFFER_SIZE];
+  int  length = vsnprintf(localBuffer, LOCAL_BUFFER_SIZE, s, ap);
+
+  va_end(ap);
+
+  return String(localBuffer, length);
+}
+
+String String::vformat(const char* s, va_list ap)
+{
+  char localBuffer[LOCAL_BUFFER_SIZE];
+  int  length = vsnprintf(localBuffer, LOCAL_BUFFER_SIZE, s, ap);
+
+  return String(localBuffer, length);
+}
+
+String String::si(double e, const char* format)
+{
+  const char PREFIXES[] = "m kMG";
+  char       suffix[]   = " \0";
+
+  int nGroups = 0;
+  if (e < 1.0) {
+    e *= 1000.0;
+    --nGroups;
+  }
+  else {
+    for (; nGroups < 3 && e >= 1000.0; ++nGroups) {
+      e /= 1000.0;
+    }
+  }
+
+  if (nGroups != 0) {
+    suffix[1] = PREFIXES[nGroups + 1];
+  }
+
+  return String(e, format) + suffix;
+}
+
 String::String(const char* s, int length)
 {
   char* begin = resize(length, false);
@@ -300,17 +344,9 @@ String::String(const String& other)
 {}
 
 String::String(String&& other) noexcept
-  : size_(other.size_)
+  : String()
 {
-  if (size_ >= STATIC_SIZE) {
-    data_ = other.data_;
-  }
-  else {
-    memcpy(staticData_, &other.staticData_, other.size_ + 1);
-  }
-
-  other.size_          = 0;
-  other.staticData_[0] = '\0';
+  swap(*this, other);
 }
 
 String& String::operator=(const String& other)
@@ -323,67 +359,14 @@ String& String::operator=(const String& other)
 
 String& String::operator=(String&& other) noexcept
 {
-  if (&other != this) {
-    if (size_ >= STATIC_SIZE) {
-      delete[] data_;
-    }
-
-    size_ = other.size_;
-    if (size_ >= STATIC_SIZE) {
-      data_ = other.data_;
-    }
-    else {
-      memcpy(staticData_, &other.staticData_, other.size_ + 1);
-    }
-
-    other.size_          = 0;
-    other.staticData_[0] = '\0';
-  }
+  swap(*this, other);
   return *this;
 }
 
-String String::format(const char* s, ...)
+void swap(String& a, String& b) noexcept
 {
-  va_list ap;
-  va_start(ap, s);
-
-  char localBuffer[LOCAL_BUFFER_SIZE];
-  int  length = vsnprintf(localBuffer, LOCAL_BUFFER_SIZE, s, ap);
-
-  va_end(ap);
-
-  return String(localBuffer, length);
-}
-
-String String::vformat(const char* s, va_list ap)
-{
-  char localBuffer[LOCAL_BUFFER_SIZE];
-  int  length = vsnprintf(localBuffer, LOCAL_BUFFER_SIZE, s, ap);
-
-  return String(localBuffer, length);
-}
-
-String String::si(double e, const char* format)
-{
-  const char PREFIXES[] = "m kMG";
-  char       suffix[]   = " \0";
-
-  int nGroups = 0;
-  if (e < 1.0) {
-    e *= 1000.0;
-    --nGroups;
-  }
-  else {
-    for (; nGroups < 3 && e >= 1000.0; ++nGroups) {
-      e /= 1000.0;
-    }
-  }
-
-  if (nGroups != 0) {
-    suffix[1] = PREFIXES[nGroups + 1];
-  }
-
-  return String(e, format) + suffix;
+  swap(a.size_, b.size_);
+  swap(a.staticData_, b.staticData_);
 }
 
 int String::index(char ch, int start) const

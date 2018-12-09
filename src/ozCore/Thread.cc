@@ -133,20 +133,17 @@ bool Thread::isMain()
   return pthread_equal(pthread_self(), MAIN_THREAD) != 0;
 }
 
-Thread::Descriptor* Thread::start(const char* name, Main* main, void* data)
+Thread::Thread(const char* name, Main* main, void* data)
+  : descriptor_(new Descriptor)
 {
-  Descriptor* descriptor = new Descriptor;
+  descriptor_->name = name;
+  descriptor_->main = main;
+  descriptor_->data = data;
+  descriptor_->lock.lock();
 
-  descriptor->name = name;
-  descriptor->main = main;
-  descriptor->data = data;
-  descriptor->lock.lock();
-
-  if (pthread_create(&descriptor->thread, nullptr, Descriptor::mainWrapper, descriptor) != 0) {
+  if (pthread_create(&descriptor_->thread, nullptr, Descriptor::mainWrapper, descriptor_) != 0) {
     OZ_ERROR("oz::Thread: Thread creation failed");
   }
-
-  return descriptor;
 }
 
 Thread::~Thread()

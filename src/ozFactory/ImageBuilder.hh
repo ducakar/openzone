@@ -70,6 +70,8 @@ public:
   /// Use fastest but low-quality filters.
   static constexpr int FAST_BIT = 0x100;
 
+public:
+
   static int   options; ///< Bitfield to control compression, mipmap generation etc.
   static float scale;   ///< Scale to resize images.
 

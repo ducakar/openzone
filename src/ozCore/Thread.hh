@@ -107,31 +107,7 @@ public:
    * @param main pointer to the thread's main function.
    * @param data pointer to user data, passed to the thread's main function.
    */
-  explicit Thread(const char* name, Main* main, void* data = nullptr)
-    : descriptor_(start(name, main, data))
-  {}
-
-  /**
-   * Alternate constructor that accepts an arbitrary (lambda) function.
-   */
-  template <typename Function>
-  explicit Thread(const char* name, Function function)
-  {
-    struct MainWrapper
-    {
-      Function function;
-
-      void main(void* data)
-      {
-        const MainWrapper* mw = static_cast<const MainWrapper*>(data);
-
-        mw->function();
-      }
-    };
-    MainWrapper mw = {function};
-
-    descriptor_ = start(name, MainWrapper::main, &mw);
-  }
+  explicit Thread(const char* name, Main* main, void* data = nullptr);
 
   /**
    * Join started but not yet joined thread if present.

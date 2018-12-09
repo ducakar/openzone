@@ -57,7 +57,7 @@ bool Bitset::isAllSet() const
 
 bool Bitset::isAnySet() const
 {
-  for (int64 u : data_) {
+  for (uint64 u : data_) {
     if (u != 0) {
       return true;
     }

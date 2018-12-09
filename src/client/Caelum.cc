@@ -27,11 +27,6 @@ namespace oz::client
 
 const char* const Caelum::SKYBOX_FACES[] = {"+x", "-x", "+y", "-y", "+z", "-z"};
 
-Caelum::Caelum()
-  : lightDir(0.0f, 0.0f, 1.0f), diffuseColour(1.0f, 1.0f, 1.0f, 1.0f),
-    ambientColour(1.0f, 1.0f, 1.0f, 1.0f), caelumColour(1.0f, 1.0f, 1.0f, 1.0f)
-{}
-
 void Caelum::update()
 {
   if (id == -1) {
@@ -181,8 +176,8 @@ void Caelum::unload()
   glDeleteTextures(1, &sunTexId);
   glDeleteTextures(1, &moonTexId);
 
-  sunTexId = 0;
-  moonTexId = 0;
+  sunTexId      = 0;
+  moonTexId     = 0;
 
   lightDir      = Vec3(0.0f, 0.0f, 1.0f);
 

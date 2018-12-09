@@ -30,7 +30,7 @@ struct Vertex
   int16 texCoord[2];
 };
 
-const Vertex VERTICES[] = {
+static const Vertex VERTICES[] = {
   // filled rectangle (base index 0)
   {{0.0f, 0.0f, 0.0f}, {0, 1}},
   {{1.0f, 0.0f, 0.0f}, {1, 1}},
@@ -112,7 +112,7 @@ const Vertex VERTICES[] = {
   {{-1.0f, +1.0f, -1.0f}, {0, 0}}
 };
 
-const uint16 INDICES[] = {
+static const uint16 INDICES[] = {
   /*
    * Full box (GL_TRIANGLE_STRIP)
    */

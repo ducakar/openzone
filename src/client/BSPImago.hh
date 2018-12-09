@@ -41,8 +41,8 @@ private:
 
 public:
 
-  Vec4       waterFogColour;
-  Vec4       lavaFogColour;
+  Vec4      waterFogColour;
+  Vec4      lavaFogColour;
 
 public:
 

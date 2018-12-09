@@ -51,16 +51,16 @@ function build()
     if [[ ! -d build/$platform-$buildType ]]; then
       mkdir -p build/$platform-$buildType
       if [[ $platform == Emscripten ]]; then
-	( cd build/$platform-$buildType && emcmake cmake -Wdev --warn-uninitialized \
-	  -G Ninja \
-	  -D CMAKE_BUILD_TYPE=$buildType \
-	  ../.. )
+        ( cd build/$platform-$buildType && emcmake cmake -Wdev --warn-uninitialized \
+          -G Ninja \
+          -D CMAKE_BUILD_TYPE=$buildType \
+          ../.. )
       else
-	( cd build/$platform-$buildType && cmake -Wdev --warn-uninitialized \
-	  -G Ninja \
-	  -D CMAKE_TOOLCHAIN_FILE=../../cmake/$platform.Toolchain.cmake \
-	  -D CMAKE_BUILD_TYPE=$buildType \
-	  ../.. )
+        ( cd build/$platform-$buildType && cmake -Wdev --warn-uninitialized \
+          -G Ninja \
+          -D CMAKE_TOOLCHAIN_FILE=../../cmake/$platform.Toolchain.cmake \
+          -D CMAKE_BUILD_TYPE=$buildType \
+          ../.. )
       fi
     fi
     (( $1 )) || ( cd build/$platform-$buildType && time ninja )

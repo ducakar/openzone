@@ -237,8 +237,12 @@ inline void swap(Value& a, Value& b) noexcept
 template <typename Elem, size_t SIZE>
 inline void swap(Elem (& a)[SIZE], Elem (& b)[SIZE]) noexcept
 {
-  for (size_t i = 0; i < SIZE; ++i) {
-    swap(a[i], b[i]);
+  const Elem* aEnd   = a + SIZE;
+  Elem*       aBegin = a;
+  Elem*       bBegin = b;
+
+  while (aBegin != aEnd) {
+    swap(*aBegin++, *bBegin++);
   }
 }
 
@@ -382,7 +386,7 @@ struct Hash<const char*>
    */
   int operator()(const char* s) const
   {
-    uint value = EMPTY;
+    int value = EMPTY;
 
     while (*s != '\0') {
       value = (value * 16777619) ^ int(*s);

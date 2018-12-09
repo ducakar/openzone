@@ -389,7 +389,7 @@ AL::Decoder::~Decoder()
 }
 
 AL::Decoder::Decoder(Decoder&& other) noexcept
-  : AL::Decoder()
+  : Decoder()
 {
   swap(*this, other);
 }

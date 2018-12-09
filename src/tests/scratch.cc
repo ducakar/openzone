@@ -19,27 +19,19 @@
 
 #include <ozCore/ozCore.hh>
 
+#include "Foo.hh"
+#include <algorithm>
+#include <iostream>
+#include <tuple>
+
 using namespace oz;
-
-struct Foo
-{
-  Foo() { Log() << "Foo()"; }
-  ~Foo() { Log() << "~Foo()"; }
-
-  Foo(const Foo&) { Log() << "Foo(const Foo&)"; }
-  Foo(Foo&&) noexcept { Log() << "Foo(Foo&&)"; }
-
-  Foo& operator=(const Foo&) { Log() << "Foo& operator=(const Foo&)"; return *this; }
-  Foo& operator=(Foo&&) noexcept { Log() << "Foo& operator=(Foo&&)"; return *this; }
-  bool operator==(const Foo&) { return true; }
-  bool operator<(const Foo&) { return false; }
-
-  Foo* prev[1];
-  Foo* next[1];
-};
 
 class Dur
 {
+public:
+
+  static constexpr long NS_PER_SEC = 1000000000;
+
 private:
 
   int64 s_  = 0;
@@ -50,7 +42,7 @@ private:
   OZ_ALWAYS_INLINE
   static constexpr Dur wrapped(int64 s, long ns)
   {
-    return Dur(s + ns / 1000000000, ns % 1000000000);
+    return Dur(s + int64(ns / NS_PER_SEC), ns % NS_PER_SEC);
   }
 
 public:
@@ -61,12 +53,8 @@ public:
   OZ_ALWAYS_INLINE
   explicit constexpr Dur(int64 s, long ns)
     : s_(s), ns_(ns)
-  {}
-
-  OZ_ALWAYS_INLINE
-  constexpr long ns() const
   {
-    return ns_;
+    OZ_ASSERT(ns < NS_PER_SEC);
   }
 
   OZ_ALWAYS_INLINE
@@ -76,10 +64,17 @@ public:
   }
 
   OZ_ALWAYS_INLINE
-  constexpr float t() const
+  constexpr long ns() const
+  {
+    return ns_;
+  }
+
+  OZ_ALWAYS_INLINE
+  constexpr double t() const
   {
     OZ_ASSERT(ns_ >= 0);
-    return float(s_) + float(ns_) * 1e-9f;
+
+    return double(s_) + double(ns_) / NS_PER_SEC;
   }
 
   OZ_ALWAYS_INLINE
@@ -103,7 +98,7 @@ public:
   OZ_ALWAYS_INLINE
   constexpr Dur operator-() const
   {
-    return wrapped(~s_, 1000000000 - ns_);
+    return Dur(~s_, NS_PER_SEC - ns_);
   }
 
   OZ_ALWAYS_INLINE
@@ -115,15 +110,16 @@ public:
   OZ_ALWAYS_INLINE
   constexpr Dur operator-(const Dur& d) const
   {
-    return wrapped(s_ + ~d.s_, ns_ + 1000000000 - d.ns_);
+    return wrapped(s_ + ~d.s_, ns_ + NS_PER_SEC - d.ns_);
   }
 
   OZ_ALWAYS_INLINE
   constexpr Dur operator*(int i) const
   {
-    int64 nsProd = int64(ns_) * i + oz::abs(i) * 1000000000;
-    int64 sProd  = s_ * i - oz::abs(i);
-    return Dur(sProd + nsProd / 1000000000, (nsProd + 1000000000) % 1000000000);
+    int64 absI = abs<int>(i);
+    int64 s    = i * s_ - absI;
+    int64 ns   = absI * NS_PER_SEC + int64(i) * ns_;
+    return Dur(s + ns / NS_PER_SEC, ns % NS_PER_SEC);
   }
 
   OZ_ALWAYS_INLINE
@@ -131,26 +127,28 @@ public:
   {
 #if 0
     int64 sRem   = s_ % i;
-    int64 nsQuot = (ns_ + sRem * 1000000000) / i;
+    int64 nsQuot = (ns_ + sRem * NS_PER_SEC) / i;
     int64 sQuot  = s_ / i;
-    return D(sQuot, nsQuot % 1000000000);
+    return D(sQuot, nsQuot % NS_PER_SEC);
 #else
     int64 sRem = ~s_ % i;
-    int64 nsQuot = (1000000000 - ns_ + sRem * 1000000000) / i;
+    int64 nsQuot = (NS_PER_SEC - ns_ + sRem * NS_PER_SEC) / i;
     int64 sQuot = ~s_ / i;
-    return Dur(~sQuot, (1000000000 - nsQuot) % 1000000000);
+    return Dur(~sQuot, (NS_PER_SEC - nsQuot) % NS_PER_SEC);
 #endif
   }
 
   OZ_ALWAYS_INLINE
-  constexpr Dur operator%(int i) const
+  constexpr Dur operator/(const Dur&) const
   {
+    // TODO
     return Dur(0, 0);
   }
 
   OZ_ALWAYS_INLINE
-  constexpr Dur operator%(const Dur& d) const
+  constexpr Dur operator%(const Dur&) const
   {
+    // TODO
     return Dur(0, 0);
   }
 
@@ -198,12 +196,15 @@ struct Bar
 int main()
 {
   System::init();
-  DChain<Foo> c1;
-  c1.add(new Foo{});
-  for (auto& i : range(c1.begin(), c1.end())) {
-    i.next[0] = nullptr;
-    Log() << &i;
-  }
-  c1.free();
+  Dur a(-8, 500000000);
+  Dur b(-2, 800000000);
+
+  Log() << (-a * 6).t();
+  Log() << (-b * 6).t();
+
+  int a1[] = {1, 2, 3, 4};
+  int a2[] = {2, 3, 4, 5};
+
+  oz::swap(a1, a2);
   return 0;
 }

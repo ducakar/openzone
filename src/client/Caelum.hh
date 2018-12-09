@@ -52,28 +52,26 @@ private:
 
   uint  sunTexId          = 0;
   uint  moonTexId         = 0;
-  uint  skyboxTexIds[6];
-  int   celestialShaderId;
+  uint  skyboxTexIds[6]   = {};
+  int   celestialShaderId = -1;
 
 public:
 
-  float angle;
-  float ratio;
-  Vec3  originalLightDir;
-  Vec3  axis;
-  Vec3  lightDir;
+  float angle            = {};
+  float ratio            = 0.0f;
+  Vec3  originalLightDir = Vec3(-1.0f, 0.0f, 0.0f);
+  Vec3  axis             = Vec3(0.0f, 1.0f, 0.0f);
+  Vec3  lightDir         = Vec3(0.0f, 0.0f, 1.0f);
 
-  Vec4  diffuseColour;
-  Vec4  ambientColour;
-  Vec4  caelumColour;
-  Vec4  nightColour;
-  float nightLuminance;
+  Vec4  diffuseColour    = Vec4::ONE;
+  Vec4  ambientColour    = Vec4::ONE;
+  Vec4  caelumColour     = Vec4::ONE;
+  Vec4  nightColour      = Vec4::ONE;
+  float nightLuminance   = 1.0f;
 
-  int   id = -1;
+  int   id               = -1;
 
 public:
-
-  Caelum();
 
   void update();
   void draw();

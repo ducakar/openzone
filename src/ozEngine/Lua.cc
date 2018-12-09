@@ -77,7 +77,7 @@ Lua::Result::~Result()
 }
 
 Lua::Result::Result(Result&& other) noexcept
-  : Lua::Result()
+  : Result()
 {
   swap(*this, other);
 }

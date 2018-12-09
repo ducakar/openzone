@@ -63,15 +63,15 @@ public:
   DChain<Area> children;
 
   // absolute x and y, not relative to parent
-  int          x;
-  int          y;
+  int          x        = 0;
+  int          y        = 0;
   int          width;
   int          height;
 
 protected:
 
-  int          defaultX;
-  int          defaultY;
+  int          defaultX = 0;
+  int          defaultY = 0;
 
 protected:
 

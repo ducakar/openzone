@@ -34,9 +34,9 @@
 #endif
 
 #define OZ_VAARGS_BUFFER(buffer) \
-  char buffer[OUT_BUFFER_SIZE]; \
   va_list ap; \
   va_start(ap, s); \
+  char buffer[OUT_BUFFER_SIZE]; \
   vsnprintf(buffer, OUT_BUFFER_SIZE, s, ap); \
   va_end(ap);
 

@@ -471,19 +471,19 @@ void System::trap()
 
 void System::bell()
 {
-  if (!hasBellThread.load<ACQUIRE>()) {
-    if (pthread_mutex_trylock(&bellMutex) == 0) {
-      if (!hasBellThread.load<RELAXED>()) {
-        pthread_t      bellThread;
-        pthread_attr_t bellThreadAttr;
+  if (!hasBellThread.load<ACQUIRE>() &&
+      pthread_mutex_trylock(&bellMutex) == 0)
+  {
+    if (!hasBellThread.load<RELAXED>()) {
+      pthread_t      bellThread;
+      pthread_attr_t bellThreadAttr;
 
-        pthread_attr_setdetachstate(&bellThreadAttr, PTHREAD_CREATE_DETACHED);
-        if (pthread_create(&bellThread, nullptr, bellMain, nullptr) == 0) {
-          hasBellThread.store<RELEASE>(true);
-        }
+      pthread_attr_setdetachstate(&bellThreadAttr, PTHREAD_CREATE_DETACHED);
+      if (pthread_create(&bellThread, nullptr, bellMain, nullptr) == 0) {
+        hasBellThread.store<RELEASE>(true);
       }
-      pthread_mutex_unlock(&bellMutex);
     }
+    pthread_mutex_unlock(&bellMutex);
   }
 }
 

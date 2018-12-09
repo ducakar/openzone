@@ -30,7 +30,7 @@ StrategicProxy Camera::strategic;
 UnitProxy      Camera::unit;
 CinematicProxy Camera::cinematic;
 
-Proxy* const PROXIES[] = {
+static Proxy* const PROXIES[] = {
   nullptr,
   &Camera::strategic,
   &Camera::unit,
