@@ -55,6 +55,13 @@ class Atomic
 {
 public:
 
+  /**
+   * Wrapped value type.
+   */
+  using Value = Type;
+
+public:
+
   Type value; ///< Value of the atomic variable (for non-atomic access, without memory barriers).
 
 public:
@@ -155,6 +162,29 @@ public:
                   "Unsupported memory order");
 
     return __atomic_exchange_n(&value, desired, MEMORY_ORDER);
+  }
+
+  /**
+   * Atomically compare and conditionally exchange a value. If the current value matches `*expected`
+   * replace it with `desired` using `SUCCESS_MEMORY_ORDER`. On failure, load the current value into
+   * `expected` using `FAILURE_MEMORY_ORDER`.
+   * Unless `STRONG` is true the comparison may spuriously fail even when values are equal but may
+   * yield better berformace.
+   *
+   * Same as `std::atomic_compare_echange_weak()` or `std::atomic_compare_echange_strong()`.
+   * All memory orders are allowed for `SUCCESS_MEMORY_ORDER`, while `FAILURE_MEMORY_ORDER` must be
+   * weaker than `SUCCESS_MEMORY_ORDER` and must not be `RELEASE` or `ACQ_REL`.
+   */
+  template <MemoryOrder SUCCESS_MEMORY_ORDER, MemoryOrder FAILURE_MEMORY_ORDER, bool STRONG = false>
+  bool compareExchange(Type* expected, Type desired) noexcept
+  {
+    static_assert(FAILURE_MEMORY_ORDER != RELEASE &&
+                  FAILURE_MEMORY_ORDER != ACQ_REL &&
+                  FAILURE_MEMORY_ORDER <= SUCCESS_MEMORY_ORDER,
+                  "Unsupported memory order");
+
+    return __atomic_compare_exchange_n(&value, expected, desired, !STRONG, SUCCESS_MEMORY_ORDER,
+                                       FAILURE_MEMORY_ORDER);
   }
 
   /**
