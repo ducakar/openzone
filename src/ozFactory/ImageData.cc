@@ -47,12 +47,4 @@ ImageData& ImageData::operator=(ImageData&& other) noexcept
   return *this;
 }
 
-void swap(ImageData& a, ImageData& b) noexcept
-{
-  swap(a.width_, b.width_);
-  swap(a.height_, b.height_);
-  swap(a.flags_, b.flags_);
-  swap(a.pixels_, b.pixels_);
-}
-
 }

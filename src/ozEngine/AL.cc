@@ -400,16 +400,6 @@ AL::Decoder& AL::Decoder::operator=(AL::Decoder&& other) noexcept
   return *this;
 }
 
-void swap(AL::Decoder& a, AL::Decoder& b) noexcept
-{
-  swap(a.samples_, b.samples_);
-  swap(a.size_, b.size_);
-  swap(a.capacity_, b.capacity_);
-  swap(a.format_, b.format_);
-  swap(a.rate_, b.rate_);
-  swap(a.stream_, b.stream_);
-}
-
 bool AL::Decoder::decode()
 {
   if (stream_ != nullptr && !stream_->decode(this)) {

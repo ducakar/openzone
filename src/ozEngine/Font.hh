@@ -79,11 +79,6 @@ public:
   Font& operator=(Font&& other) noexcept;
 
   /**
-   * Swap instances.
-   */
-  friend void swap(Font& a, Font& b) noexcept;
-
-  /**
    * Height.
    */
   int height() const

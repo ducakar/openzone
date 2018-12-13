@@ -108,11 +108,6 @@ public:
   SharedLib& operator=(SharedLib&& other) noexcept;
 
   /**
-   * Swap instances.
-   */
-  friend void swap(SharedLib& a, SharedLib& b) noexcept;
-
-  /**
    * True iff successfully opened.
    */
   OZ_ALWAYS_INLINE

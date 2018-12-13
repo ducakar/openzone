@@ -187,14 +187,6 @@ public:
   }
 
   /**
-   * Swap instances.
-   */
-  friend void swap(Map& a, Map& b) noexcept
-  {
-    swap(static_cast<Set<Pair>&>(a), static_cast<Set<Pair>&>(b));
-  }
-
-  /**
    * True iff respective elements are equal.
    */
   bool operator==(const Map& other) const

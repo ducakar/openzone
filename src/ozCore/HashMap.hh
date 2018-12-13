@@ -149,14 +149,6 @@ public:
   }
 
   /**
-   * Swap instances.
-   */
-  friend void swap(HashMap& a, HashMap& b) noexcept
-  {
-    swap(static_cast<HashSet<Pair, HashFunc>&>(a), static_cast<HashSet<Pair, HashFunc>&>(b));
-  }
-
-  /**
    * True iff contained elements are equal.
    */
   bool operator==(const HashMap& other) const

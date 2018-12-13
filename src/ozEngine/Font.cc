@@ -79,13 +79,6 @@ Font& Font::operator=(Font&& other) noexcept
   return *this;
 }
 
-void swap(Font& a, Font& b) noexcept
-{
-  swap(a.handle_, b.handle_);
-  swap(a.fontHeight_, b.fontHeight_);
-  swap(a.fileBuffer_, b.fileBuffer_);
-}
-
 void Font::sizeOf(const char* s, int* width, int* height) const
 {
   TTF_Font* font = static_cast<TTF_Font*>(handle_);

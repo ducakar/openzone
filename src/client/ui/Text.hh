@@ -59,7 +59,6 @@ public:
   ~Text();
   Text(Text&& other) noexcept;
   Text& operator=(Text&& other) noexcept;
-  friend void swap(Text& a, Text& b) noexcept;
 
   void setPosition(int x_, int y_);
   void setWidth(int width_);

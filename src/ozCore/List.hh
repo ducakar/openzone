@@ -178,16 +178,6 @@ public:
   }
 
   /**
-   * Swap instances.
-   */
-  friend void swap(List& a, List& b) noexcept
-  {
-    swap(a.data_, b.data_);
-    swap(a.size_, b.size_);
-    swap(a.capacity_, b.capacity_);
-  }
-
-  /**
    * True iff respective elements are equal.
    */
   bool operator==(const List& other) const

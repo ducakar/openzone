@@ -134,15 +134,6 @@ public:
   }
 
   /**
-   * Swap instances.
-   */
-  friend void swap(DChain& a, DChain& b) noexcept
-  {
-    swap(a.first_, b.first_);
-    swap(a.last_, b.last_);
-  }
-
-  /**
    * Pointer to the last element.
    */
   OZ_ALWAYS_INLINE

@@ -175,11 +175,6 @@ Thread& Thread::operator=(Thread&& other) noexcept
   return *this;
 }
 
-void swap(Thread& a, Thread& b) noexcept
-{
-  swap(a.descriptor_, b.descriptor_);
-}
-
 void Thread::detach()
 {
   if (descriptor_ == nullptr) {

@@ -768,14 +768,6 @@ Json& Json::operator=(Json&& other) noexcept
   return *this;
 }
 
-void swap(Json& a, Json& b) noexcept
-{
-  swap(a.number_, b.number_);
-  swap(a.comment_, b.comment_);
-  swap(a.type_, b.type_);
-  swap(a.wasAccessed_, b.wasAccessed_);
-}
-
 bool Json::operator==(const Json& other) const
 {
   if (type_ != other.type_) {

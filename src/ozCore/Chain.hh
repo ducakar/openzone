@@ -169,14 +169,6 @@ public:
   }
 
   /**
-   * Swap instances.
-   */
-  friend void swap(Chain& a, Chain& b) noexcept
-  {
-    swap(a.first_, b.first_);
-  }
-
-  /**
    * STL-style constant begin iterator.
    */
   OZ_ALWAYS_INLINE

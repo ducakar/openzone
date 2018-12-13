@@ -88,11 +88,6 @@ Lua::Result& Lua::Result::operator=(Lua::Result&& other) noexcept
   return *this;
 }
 
-void swap(Lua::Result& a, Lua::Result& b) noexcept
-{
-  swap(a.l_, b.l_);
-}
-
 Lua::Field::Field(lua_State* l, const Field* parent, const char* name)
   : l_(l), parent_(parent), name_(name), index_(0)
 {}
@@ -535,11 +530,6 @@ Lua& Lua::operator=(Lua&& other) noexcept
 {
   swap(*this, other);
   return *this;
-}
-
-void swap(Lua& a, Lua& b) noexcept
-{
-  swap(a.l_, b.l_);
 }
 
 Lua::Result Lua::operator()(const char* code) const

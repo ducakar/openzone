@@ -91,16 +91,6 @@ PoolAlloc& PoolAlloc::operator=(PoolAlloc&& other) noexcept
   return *this;
 }
 
-void swap(PoolAlloc& a, PoolAlloc& b) noexcept
-{
-  swap(a.firstBlock_, b.firstBlock_);
-  swap(a.freeSlot_, b.freeSlot_);
-  swap(a.slotSize_, b.slotSize_);
-  swap(a.blockSlots_, b.blockSlots_);
-  swap(a.size_, b.size_);
-  swap(a.capacity_, b.capacity_);
-}
-
 void* PoolAlloc::allocate()
 {
   ++size_;

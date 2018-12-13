@@ -50,7 +50,7 @@ private:
 public:
 
   /**
-   * Create a barrier for synchonising a given number of threads.
+   * Create a barrier for synchronising a given number of threads.
    */
   explicit Barrier(int count);
 

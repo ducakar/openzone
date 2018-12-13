@@ -138,11 +138,6 @@ public:
     Result& operator=(Result&& other) noexcept;
 
     /**
-     * Swap instances.
-     */
-    friend void swap(Result& a, Result& b) noexcept;
-
-    /**
      * Return the first value on the stack as a bool.
      */
     operator bool() const
@@ -578,11 +573,6 @@ public:
    * Move operator.
    */
   Lua& operator=(Lua&& other) noexcept;
-
-  /**
-   * Swap instances.
-   */
-  friend void swap(Lua& a, Lua& b) noexcept;
 
   /**
    * Execute a chunk of code.

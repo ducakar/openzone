@@ -272,11 +272,6 @@ public:
   Json& operator=(Json&& other) noexcept;
 
   /**
-   * Swap instances.
-   */
-  friend void swap(Json& a, Json& b) noexcept;
-
-  /**
    * Equality.
    */
   bool operator==(const Json& other) const;

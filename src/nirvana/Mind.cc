@@ -67,13 +67,6 @@ Mind& Mind::operator=(Mind&& other) noexcept
   return *this;
 }
 
-void swap(Mind& a, Mind& b) noexcept
-{
-  swap(a.flags, b.flags);
-  swap(a.side, b.side);
-  swap(a.bot, b.bot);
-}
-
 void Mind::update(bool doRegularUpdate)
 {
   Bot* botObj = orbis.obj<Bot>(bot);

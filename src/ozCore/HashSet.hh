@@ -339,16 +339,6 @@ public:
   }
 
   /**
-   * Swap instances.
-   */
-  friend void swap(HashSet& a, HashSet& b) noexcept
-  {
-    swap(a.pool_, b.pool_);
-    swap(a.data_, b.data_);
-    swap(a.capacity_, b.capacity_);
-  }
-
-  /**
    * True iff contained elements are equal.
    */
   bool operator==(const HashSet& other) const

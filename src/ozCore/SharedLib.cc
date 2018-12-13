@@ -66,11 +66,6 @@ SharedLib& SharedLib::operator=(SharedLib&& other) noexcept
   return *this;
 }
 
-void swap(SharedLib& a, SharedLib& b) noexcept
-{
-  swap(a.handle_, b.handle_);
-}
-
 SharedLib::Function* SharedLib::get(const char* symbol) const
 {
   if (handle_ == nullptr) {

@@ -220,30 +220,19 @@ inline constexpr bool operator>=(const Type& a, const Type& b)
 }
 
 /**
- * Swap values of two variables.
+ * Swap contents of two variables.
+ *
+ * This performs raw byte copy, so all object must be oblivious of their memory
+ * location.
  */
 template <typename Value>
 OZ_ALWAYS_INLINE
 inline void swap(Value& a, Value& b) noexcept
 {
-  Value temp(static_cast<Value&&>(a));
-  a = static_cast<Value&&>(b);
-  b = static_cast<Value&&>(temp);
-}
-
-/**
- * Swap elements of two static arrays.
- */
-template <typename Elem, size_t SIZE>
-inline void swap(Elem (& a)[SIZE], Elem (& b)[SIZE]) noexcept
-{
-  const Elem* aEnd   = a + SIZE;
-  Elem*       aBegin = a;
-  Elem*       bBegin = b;
-
-  while (aBegin != aEnd) {
-    swap(*aBegin++, *bBegin++);
-  }
+  char temp[sizeof(Value)];
+  __builtin_memcpy(temp, static_cast<void*>(&a), sizeof(Value));
+  __builtin_memcpy(static_cast<void*>(&a), static_cast<void*>(&b), sizeof(Value));
+  __builtin_memcpy(static_cast<void*>(&b), temp, sizeof(Value));
 }
 
 /**

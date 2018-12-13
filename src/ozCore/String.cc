@@ -363,12 +363,6 @@ String& String::operator=(String&& other) noexcept
   return *this;
 }
 
-void swap(String& a, String& b) noexcept
-{
-  swap(a.size_, b.size_);
-  swap(a.staticData_, b.staticData_);
-}
-
 int String::index(char ch, int start) const
 {
   return index(begin(), ch, start);

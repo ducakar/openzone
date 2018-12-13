@@ -161,14 +161,6 @@ Cursor& Cursor::operator=(Cursor&& other) noexcept
   return *this;
 }
 
-void swap(Cursor& a, Cursor& b) noexcept
-{
-  swap(a.mode_, b.mode_);
-  swap(a.frame_, b.frame_);
-  swap(a.frameDuration_, b.frameDuration_);
-  swap(a.images_, b.images_);
-}
-
 void Cursor::reset()
 {
   frame_         = 0;

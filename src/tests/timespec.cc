@@ -153,45 +153,6 @@ public:
 
 };
 
-struct Bar
-{
-  int value = 0;
-
-  Bar() = default;
-
-  Bar(int value_)
-    : value(value_)
-  {}
-
-  Bar(const Bar& other)
-    : value(other.value)
-  {}
-
-  Bar(Bar&& other)
-    : Bar()
-  {
-    swap(*this, other);
-  }
-
-  Bar& operator=(const Bar& other)
-  {
-    Bar temp(other);
-    swap(*this, temp);
-    return *this;
-  }
-
-  Bar& operator=(Bar&& other)
-  {
-    swap(*this, other);
-    return *this;
-  }
-
-  friend void swap(Bar& a, Bar& b)
-  {
-    swap(a.value, b.value);
-  }
-};
-
 int main()
 {
   System::init();
@@ -200,8 +161,5 @@ int main()
 
 //  Log() << (a * -6).t();
 //  Log() << (b * -6).t();
-
-  Set<int> a, b;
-  swap(a, b);
   return 0;
 }

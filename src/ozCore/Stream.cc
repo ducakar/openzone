@@ -107,15 +107,6 @@ Stream& Stream::operator=(Stream&& other) noexcept
   return *this;
 }
 
-void swap(Stream& a, Stream& b) noexcept
-{
-  swap(a.pos_, b.pos_);
-  swap(a.begin_, b.begin_);
-  swap(a.end_, b.end_);
-  swap(a.flags_, b.flags_);
-  swap(a.order_, b.order_);
-}
-
 void Stream::seek(int offset)
 {
   if (offset < 0 || int(end_ - begin_) < offset) {

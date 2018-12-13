@@ -130,14 +130,6 @@ public:
   }
 
   /**
-   * Swap instances.
-   */
-  friend void swap(File& a, File& b) noexcept
-  {
-    swap(static_cast<String&>(a), static_cast<String&>(b));
-  }
-
-  /**
    * True iff VFS file path.
    */
   OZ_ALWAYS_INLINE

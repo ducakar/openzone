@@ -370,11 +370,6 @@ public:
   }
 
   /**
-   * Swap instances.
-   */
-  friend void swap(String& a, String& b) noexcept;
-
-  /**
    * Same as `strcmp() == 0`.
    */
   bool operator==(const String& other) const

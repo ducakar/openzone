@@ -131,14 +131,6 @@ public:
   }
 
   /**
-   * Swap instances.
-   */
-  friend void swap(Set& a, Set& b) noexcept
-  {
-    swap(static_cast<List<Elem>&>(a), static_cast<List<Elem>&>(b));
-  }
-
-  /**
    * True iff respective elements are equal.
    */
   bool operator==(const Set& other) const
