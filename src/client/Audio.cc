@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2016 Davorin Učakar
+ * Copyright © 2002-2019 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,12 +82,12 @@ void Audio::playContSound(int sound, float volume, const Object* parent) const
   uint                 srcId;
 
   if (contSource == nullptr) {
-    contSource = context.addContSource(sound, key);
-    if (contSource == nullptr) {
+    Context::ContSource* newSource = context.addContSource(sound, key);
+    if (newSource == nullptr) {
       return;
     }
 
-    srcId = contSource->id;
+    srcId = newSource->id;
 
     alSourcei(srcId, AL_LOOPING, AL_TRUE);
     alSourcef(srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR);
@@ -172,12 +172,12 @@ void Audio::playEngineSound(int sound, float volume, float pitch, const Object* 
   uint                 srcId;
 
   if (contSource == nullptr) {
-    contSource = context.addContSource(sound, key);
-    if (contSource == nullptr) {
+    Context::ContSource* newSource = context.addContSource(sound, key);
+    if (newSource == nullptr) {
       return;
     }
 
-    srcId = contSource->id;
+    srcId = newSource->id;
 
     alSourcei(srcId, AL_LOOPING, AL_TRUE);
     alSourcef(srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR);

@@ -1,7 +1,7 @@
 /*
  * ozCore - OpenZone Core Library.
  *
- * Copyright © 2002-2016 Davorin Učakar
+ * Copyright © 2002-2019 Davorin Učakar
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -128,8 +128,7 @@ inline typename Container::RangeType range(Container& container) noexcept
  * Range to access to a range of elements between two iterators.
  */
 template <class BeginIterator, class EndIterator>
-inline auto range(BeginIterator begin, EndIterator end)
-  -> Range<BeginIterator, EndIterator>
+inline Range<BeginIterator, EndIterator> range(BeginIterator begin, EndIterator end)
 {
   return Range<BeginIterator, EndIterator>(begin, end);
 }

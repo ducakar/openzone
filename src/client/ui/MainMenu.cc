@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2016 Davorin Učakar
+ * Copyright © 2002-2019 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@ void MainMenu::onRealign()
   height = camera.height;
 
   copyright.setWidth(width - 280);
-  copyright.setText("OpenZone © 2002-2016 Davorin Učakar. %s",
+  copyright.setText("OpenZone © 2002-2019 Davorin Učakar. %s",
                     OZ_GETTEXT("Licensed under GNU GPL 3.0. Game data archives and libraries"
                                " distributed with OpenZone are work of various authors and use"
                                " separate licences. For more details see doc/README.html and"

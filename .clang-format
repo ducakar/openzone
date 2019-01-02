@@ -5,7 +5,7 @@ AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
 AllowShortFunctionsOnASingleLine: None
 AlwaysBreakTemplateDeclarations: true
-BraceWrapping:   
+BraceWrapping:
   AfterClass:      true
   AfterEnum:       true
   AfterFunction:   true
