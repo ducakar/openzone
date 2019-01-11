@@ -182,7 +182,7 @@ public:
    * `size` is used as both width and height. For best result it should be a multiple of 12.
    * It is meant for use in UI, so it uses `GL_LINEAR`/`GL_LINEAR` filters with no compression.
    */
-  static void textureDataIdenticon(int hash, int size, const Vec4& backgroundColour);
+  static void textureDataIdenticon(uint hash, int size, const Vec4& backgroundColour);
 
   /**
    * Initialise function pointers on Windows.

@@ -32,6 +32,11 @@ static const char* const ENV_VARS[]    = {"LC_ALL", "LC_MESSAGES", "LANG"};
 static const uint        GETTEXT_MAGIC = 0x950412de;
 static const int         MAX_MESSAGES  = 1 << 16;
 
+static inline uint bucketIndex(const char* message, int size)
+{
+  return Hash<const char*>()(message) % uint(size);
+}
+
 struct Gettext::Message
 {
   int      original;
@@ -65,7 +70,7 @@ bool Gettext::contains(const char* message) const
     return false;
   }
 
-  uint index = uint(Hash<const char*>()(message)) % uint(buckets_.size());
+  uint index = bucketIndex(message, buckets_.size());
 
   for (const Message* m = buckets_[index]; m != nullptr; m = m->next) {
     if (String::equals(&strings_[m->original], message)) {
@@ -81,7 +86,7 @@ const char* Gettext::get(const char* message) const
     return message;
   }
 
-  uint index = uint(Hash<const char*>()(message)) % uint(buckets_.size());
+  uint index = bucketIndex(message, buckets_.size());
 
   for (const Message* m = buckets_[index]; m != nullptr; m = m->next) {
     if (String::equals(&strings_[m->original], message)) {
@@ -165,9 +170,9 @@ bool Gettext::import(const File& file)
       continue;
     }
 
-    uint index = uint(Hash<const char*>()(original)) % uint(buckets_.size());
+    uint index = bucketIndex(original, buckets_.size());
 
-    message.next = buckets_[index];
+    message.next    = buckets_[index];
     buckets_[index] = &message;
   }
 

@@ -1,4 +1,6 @@
-#include <iostream>
+#include <ozCore/ozCore.hh>
+
+using namespace oz;
 
 int main()
 {

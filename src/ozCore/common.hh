@@ -109,7 +109,33 @@ namespace oz
 /**
  * Internal helpers.
  */
-namespace detail {}
+namespace detail
+{
+
+/**
+ * Extract referred type for reference or temporary types, identity otherwise.
+ *
+ * Same as `std::remove_reference`.
+ */
+template <typename Type>
+struct StripRef
+{
+  using Bare = Type;
+};
+
+template <typename Type>
+struct StripRef<Type&>
+{
+  using Bare = Type;
+};
+
+template <typename Type>
+struct StripRef<Type&&>
+{
+  using Bare = Type;
+};
+
+}
 
 /**
  * Null pointer type.
@@ -128,6 +154,8 @@ using ptrdiff_t = std::ptrdiff_t;
 
 /**
  * Initialiser list.
+ *
+ * Alias for `std::initializer_list`.
  */
 template <typename Elem>
 using InitialiserList = std::initializer_list<Elem>;
@@ -355,9 +383,9 @@ struct Hash
    * Return value as integer.
    */
   OZ_ALWAYS_INLINE
-  constexpr int operator()(const Number& value) const
+  constexpr uint operator()(const Number& value) const
   {
-    return int(value);
+    return uint(value);
   }
 };
 
@@ -368,17 +396,17 @@ template <>
 struct Hash<const char*>
 {
   /// %Hash value for an empty string.
-  static constexpr int EMPTY = int(2166136261);
+  static constexpr uint EMPTY = 2166136261;
 
   /**
    * FNV hash function.
    */
-  int operator()(const char* s) const
+  uint operator()(const char* s) const
   {
-    int value = EMPTY;
+    uint value = EMPTY;
 
     while (*s != '\0') {
-      value = (value * 16777619) ^ int(*s);
+      value = (value * 16777619) ^ uint(*s);
       ++s;
     }
     return value;

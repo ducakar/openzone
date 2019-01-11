@@ -42,7 +42,7 @@ int main(int, char**)
   SDL_Init(SDL_INIT_VIDEO);
   Window::create("test", 800, 800);
 
-  Instant t0 = Instant::now();
+  Instant t0 = Instant<STEADY>::now();
 
   TerraBuilder::addGradientPoint(Vec4(0.00f, 0.00f, 0.10f, -1.00f));
   TerraBuilder::addGradientPoint(Vec4(0.00f, 0.20f, 0.40f, -0.20f));
@@ -57,7 +57,7 @@ int main(int, char**)
 
   ImageBuilder::createDDS(&image, 1, "drek.dds");
 
-  Log() << "populate time: " << (Instant::now() - t0).ms() << " ms";
+  Log() << "populate time: " << (Instant<STEADY>::now() - t0).ms() << " ms";
 
   bool      isAlive = true;
   SDL_Event event;

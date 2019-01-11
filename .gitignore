@@ -1,6 +1,7 @@
 /CMakeLists.txt.user*
 /*.kdev4
 *.kate-swp
+/.vscode
 /.project
 /.cproject
 /.settings

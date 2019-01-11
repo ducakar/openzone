@@ -59,7 +59,7 @@ protected:
   struct Entry
   {
     Entry* next; ///< Next entry in a bucket.
-    int    hash; ///< Cached hash.
+    uint   hash; ///< Cached hash.
     Elem   elem; ///< Element (or key-value pair).
 
     OZ_PLACEMENT_POOL_ALLOC(Entry)
@@ -181,7 +181,7 @@ protected:
         Entry* next  = nullptr;
 
         while (chain != nullptr) {
-          uint index = uint(chain->hash) % uint(newCapacity);
+          uint index = chain->hash % uint(newCapacity);
 
           next = chain->next;
           chain->next = newData[index];
@@ -226,8 +226,8 @@ protected:
   {
     ensureCapacity(pool_.size() + 1);
 
-    int    h     = HashFunc()(elem);
-    uint   index = uint(h) % uint(capacity_);
+    uint   hash  = HashFunc()(elem);
+    uint   index = hash % uint(capacity_);
     Entry* entry = data_[index];
 
     while (entry != nullptr) {
@@ -240,7 +240,7 @@ protected:
       entry = entry->next;
     }
 
-    data_[index] = new(&pool_) Entry{data_[index], h, static_cast<Elem_&&>(elem)};
+    data_[index] = new(&pool_) Entry{data_[index], hash, static_cast<Elem_&&>(elem)};
     return *data_[index];
   }
 
@@ -457,8 +457,8 @@ public:
       return false;
     }
 
-    int    h     = HashFunc()(key);
-    uint   index = uint(h) % uint(capacity_);
+    uint   hash  = HashFunc()(key);
+    uint   index = hash % uint(capacity_);
     Entry* entry = data_[index];
 
     while (entry != nullptr) {
@@ -501,8 +501,8 @@ public:
       return false;
     }
 
-    int     h     = HashFunc()(key);
-    uint    index = uint(h) % uint(capacity_);
+    uint    hash  = HashFunc()(key);
+    uint    index = hash % uint(capacity_);
     Entry*  entry = data_[index];
     Entry** prev  = &data_[index];
 

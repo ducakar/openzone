@@ -76,8 +76,8 @@ private:
   {
     ensureCapacity(pool_.size() + 1);
 
-    int    h     = HashFunc()(key);
-    uint   index = uint(h) % uint(capacity_);
+    uint   hash  = HashFunc()(key);
+    uint   index = hash % uint(capacity_);
     Entry* entry = data_[index];
 
     while (entry != nullptr) {
@@ -90,8 +90,8 @@ private:
       entry = entry->next;
     }
 
-    data_[index] = new(&pool_) Entry {
-      data_[index], h, {static_cast<Key_&&>(key), static_cast<Value_&&>(value)}
+    data_[index] = new(&pool_) Entry{
+      data_[index], hash, {static_cast<Key_&&>(key), static_cast<Value_&&>(value)}
     };
     return data_[index]->elem;
   }
@@ -179,8 +179,8 @@ public:
       return nullptr;
     }
 
-    int    h     = HashFunc()(key);
-    uint   index = uint(h) % uint(capacity_);
+    uint   hash  = HashFunc()(key);
+    uint   index = hash % uint(capacity_);
     Entry* entry = data_[index];
 
     while (entry != nullptr) {

@@ -322,7 +322,7 @@ int GL::textureDataFromFile(const File& file, int bias)
   return file.read(&is) ? textureDataFromStream(&is, bias) : 0;
 }
 
-void GL::textureDataIdenticon(int hash, int size, const Vec4& backgroundColour)
+void GL::textureDataIdenticon(uint hash, int size, const Vec4& backgroundColour)
 {
   bool grid[5][5];
 

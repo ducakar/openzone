@@ -44,7 +44,7 @@ public:
   /**
    * Element type.
    */
-  using Elem = decltype(*BeginIterator());
+  using Elem = typename detail::StripRef<decltype(*BeginIterator())>::Bare;
 
   /**
    * Begin iterator type.

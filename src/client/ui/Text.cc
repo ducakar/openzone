@@ -113,7 +113,7 @@ void Text::setTextv(const char* s, va_list ap)
     clear();
   }
   else {
-    int newHash = Hash<const char*>()(buffer);
+    uint newHash = Hash<const char*>()(buffer);
 
     if (newHash != lastHash) {
       lastHash = newHash;

@@ -37,7 +37,7 @@ private:
   int   width     = 0;
   int   align     = Area::ALIGN_NONE;
   Font* font      = nullptr;
-  int   lastHash  = Hash<const char*>::EMPTY;
+  uint  lastHash  = Hash<const char*>::EMPTY;
 
   int   texX      = 0;
   int   texY      = 0;
