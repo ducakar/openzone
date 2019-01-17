@@ -244,4 +244,7 @@ public:
 
 };
 
+template <typename Type>
+Atomic(Type) -> Atomic<Type>;
+
 }

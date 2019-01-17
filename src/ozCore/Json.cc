@@ -726,13 +726,13 @@ Json::Json(const Mat4& m, const char* comment)
   : Json(m, 16, comment)
 {}
 
-Json::Json(InitialiserList<Json> il, const char* comment)
+Json::Json(initializer_list<Json> il, const char* comment)
   : array_(new Array()), comment_(comment), type_(ARRAY)
 {
   array_->addAll(il.begin(), int(il.size()));
 }
 
-Json::Json(InitialiserList<Pair> il, const char* comment)
+Json::Json(initializer_list<Pair> il, const char* comment)
   : object_(new Object()), comment_(comment), type_(OBJECT)
 {
   for (const auto& i : il) {

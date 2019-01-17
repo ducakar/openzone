@@ -140,25 +140,24 @@ struct StripRef<Type&&>
 /**
  * Null pointer type.
  */
-using nullptr_t = std::nullptr_t;
+using std::nullptr_t;
 
 /**
  * Platform-dependent unsigned integer type for memory offsets and sizes.
  */
-using size_t = std::size_t;
+using std::size_t;
 
 /**
  * Platform-dependent signed integer type for memory offsets and pointer differences.
  */
-using ptrdiff_t = std::ptrdiff_t;
+using std::ptrdiff_t;
 
 /**
  * Initialiser list.
  *
  * Alias for `std::initializer_list`.
  */
-template <typename Elem>
-using InitialiserList = std::initializer_list<Elem>;
+using std::initializer_list;
 
 /**
  * Signed byte.

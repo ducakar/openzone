@@ -86,7 +86,7 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  Heap(InitialiserList<Elem> il)
+  Heap(initializer_list<Elem> il)
     : List<Elem>(int(il.size()))
   {
     size_ = 0;
@@ -123,7 +123,7 @@ public:
    *
    * Existing storage is reused if it suffices.
    */
-  Heap& operator=(InitialiserList<Elem> il)
+  Heap& operator=(initializer_list<Elem> il)
   {
     clear();
     ensureCapacity(int(il.size()));

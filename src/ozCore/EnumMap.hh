@@ -69,7 +69,7 @@ public:
   /**
    * Create enumerator mapping from an array.
    */
-  EnumMapImpl(InitialiserList<Pair> l);
+  EnumMapImpl(initializer_list<Pair> l);
 
   /**
    * Number of enumerator values.
@@ -133,7 +133,7 @@ public:
   /**
    * Create enumerator mapping from an initialiser list.
    */
-  EnumMap(InitialiserList<Pair> l)
+  EnumMap(initializer_list<Pair> l)
     : EnumMapImpl(l)
   {}
 

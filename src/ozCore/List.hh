@@ -111,7 +111,7 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  List(InitialiserList<Elem> il)
+  List(initializer_list<Elem> il)
     : List(il.begin(), int(il.size()))
   {}
 
@@ -168,7 +168,7 @@ public:
    *
    * Existing storage is reused if it suffices.
    */
-  List& operator=(InitialiserList<Elem> il)
+  List& operator=(initializer_list<Elem> il)
   {
     Arrays::clear<Elem>(data_ + il.size(), size_ - il.size());
     size_ = 0;

@@ -95,14 +95,14 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  SList(InitialiserList<Elem> il)
+  SList(initializer_list<Elem> il)
     : SList(il.begin(), int(il.size()))
   {}
 
   /**
    * Assign from an initialiser list.
    */
-  SList& operator=(InitialiserList<Elem> il)
+  SList& operator=(initializer_list<Elem> il)
   {
     if (il.size() < size_) {
       Arrays::clear(data_ + il.size(), size_ - il.size());

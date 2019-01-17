@@ -346,7 +346,7 @@ public:
     int a = -1;
     int b = size;
 
-    // The algorithm ensures that (a == -1 or array[a] <= key) and (b == size or key < array[b]),
+    // The algorithm ensures that (a == -1 or array[a] < key) and (b == size or key <= array[b]),
     // so the key may only lie on position a or nowhere.
     while (b - a > 1) {
       int c = (a + b) / 2;
