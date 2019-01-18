@@ -57,9 +57,14 @@ private:
 public:
 
   /**
+   * Create semaphore with initial value 0.
+   */
+  Semaphore();
+
+  /**
    * Create and initialise semaphore.
    */
-  explicit Semaphore(int initialValue = 0, int maxValue = INT_MAX);
+  explicit Semaphore(uint initialValue);
 
   /**
    * Destroy semaphore.
@@ -79,41 +84,29 @@ public:
   /**
    * Get current counter value.
    */
-  int counter() const;
+  uint counter() const;
 
   /**
-   * Atomically increment counter and signal waiting threads.
+   * Atomically increment counter and signal a waiting thread.
    *
-   * If counter needs to be increased past `INT_MAX` this method fails with counter remaining intact
-   * and no signals are sent to the waiting threads.
+   * If counter needs to be increased past `UINT_MAX` this method fails with counter remaining
+   * intact and no signal is sent to the waiting threads.
    *
    * @return Counter has been successfully increased.
    */
-  bool post(int increment = 1);
+  bool post();
 
   /**
    * Wait until counter becomes positive. Then atomically decrement it and resume.
    */
-  void wait(int decrement = 1);
-
-  /**
-   * Wait until counter becomes positive. Then atomically zero it and resume.
-   */
-  void waitAll();
+  void wait();
 
   /**
    * Atomically check if counter is positive and decrement it if it is.
    *
    * @return True iff counter was decremented.
    */
-  bool tryWait(int decrement = 1);
-
-  /**
-   * Atomically check if counter is positive and zero it if it is.
-   *
-   * @return True iff counter was zeroed.
-   */
-  bool tryWaitAll();
+  bool tryWait();
 
 };
 

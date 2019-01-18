@@ -32,24 +32,19 @@ namespace oz
 
 struct Semaphore::Descriptor
 {
-  pthread_mutex_t mutex    = PTHREAD_MUTEX_INITIALIZER;
-  pthread_cond_t  cond     = PTHREAD_COND_INITIALIZER;
+  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_cond_t  cond  = PTHREAD_COND_INITIALIZER;
   Atomic<uint>    value;
-  uint            maxValue;
 };
 
-Semaphore::Semaphore(int initialValue, int maxValue)
+Semaphore::Semaphore()
+  : Semaphore(0)
+{}
+
+Semaphore::Semaphore(uint initialValue)
   : descriptor_(new Descriptor)
 {
-  if (initialValue < 0) {
-    OZ_ERROR("oz::Semaphore: Initial value value must be >= 0");
-  }
-  if (maxValue <= 0) {
-    OZ_ERROR("oz::Semaphore: Maximum value must be > 0");
-  }
-
   descriptor_->value.value = initialValue;
-  descriptor_->maxValue    = maxValue;
 }
 
 Semaphore::~Semaphore()
@@ -59,93 +54,56 @@ Semaphore::~Semaphore()
   delete descriptor_;
 }
 
-int Semaphore::counter() const
+uint Semaphore::counter() const
 {
   return descriptor_->value.load<RELAXED>();
 }
 
-bool Semaphore::post(int increment)
+bool Semaphore::post()
 {
-  OZ_ASSERT(increment > 0);
-
-  bool isSuccessful = false;
-
-  pthread_mutex_lock(&descriptor_->mutex);
-
-  if (descriptor_->value.value + uint(increment) <= descriptor_->maxValue) {
-    descriptor_->value.value += increment;
-    isSuccessful = true;
-  }
-
-  pthread_mutex_unlock(&descriptor_->mutex);
-
-  if (isSuccessful) {
-    if (increment == 1) {
-      pthread_cond_signal(&descriptor_->cond);
-    }
-    else {
-      pthread_cond_broadcast(&descriptor_->cond);
-    }
-  }
-  return isSuccessful;
-}
-
-void Semaphore::wait(int decrement)
-{
-  OZ_ASSERT(decrement > 0);
-
-  pthread_mutex_lock(&descriptor_->mutex);
-
-  while (descriptor_->value.value < uint(decrement)) {
-    pthread_cond_wait(&descriptor_->cond, &descriptor_->mutex);
-  }
-  descriptor_->value.value -= decrement;
-
-  pthread_mutex_unlock(&descriptor_->mutex);
-}
-
-void Semaphore::waitAll()
-{
-  pthread_mutex_lock(&descriptor_->mutex);
-
-  while (descriptor_->value.value != 0) {
-    pthread_cond_wait(&descriptor_->cond, &descriptor_->mutex);
-  }
-  descriptor_->value.value = 0;
-
-  pthread_mutex_unlock(&descriptor_->mutex);
-}
-
-bool Semaphore::tryWait(int decrement)
-{
-  OZ_ASSERT(decrement > 0);
-
   bool hasSucceeded = false;
 
   pthread_mutex_lock(&descriptor_->mutex);
 
-  if (descriptor_->value.value >= uint(decrement)) {
-    descriptor_->value.value -= decrement;
+  if (descriptor_->value.value != UINT_MAX) {
+    ++descriptor_->value.value;
     hasSucceeded = true;
   }
 
   pthread_mutex_unlock(&descriptor_->mutex);
 
+  if (hasSucceeded) {
+    pthread_cond_signal(&descriptor_->cond);
+  }
   return hasSucceeded;
 }
 
-bool Semaphore::tryWaitAll()
+void Semaphore::wait()
+{
+  pthread_mutex_lock(&descriptor_->mutex);
+
+  while (descriptor_->value.value == 0) {
+    pthread_cond_wait(&descriptor_->cond, &descriptor_->mutex);
+  }
+  --descriptor_->value.value;
+
+  pthread_mutex_unlock(&descriptor_->mutex);
+}
+
+bool Semaphore::tryWait()
 {
   bool hasSucceeded = false;
 
-  pthread_mutex_lock(&descriptor_->mutex);
+  if (descriptor_->value.load<ACQUIRE>() != 0) {
+    pthread_mutex_lock(&descriptor_->mutex);
 
-  if (descriptor_->value.value != 0) {
-    descriptor_->value.value = 0;
-    hasSucceeded = true;
+    if (descriptor_->value.value != 0) {
+      --descriptor_->value.value;
+      hasSucceeded = true;
+    }
+
+    pthread_mutex_unlock(&descriptor_->mutex);
   }
-
-  pthread_mutex_unlock(&descriptor_->mutex);
 
   return hasSucceeded;
 }
