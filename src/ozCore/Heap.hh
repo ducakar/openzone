@@ -50,8 +50,8 @@ class Heap : private List<Elem>
 {
 public:
 
-  using typename List<Elem>::CIterator;
-  using typename List<Elem>::Iterator;
+  using typename List<Elem>::CRangeType;
+  using typename List<Elem>::RangeType;
 
 private:
 
@@ -92,7 +92,7 @@ public:
     size_ = 0;
 
     for (const Elem& e : il) {
-      add(e);
+      push(e);
     }
   }
 
@@ -129,8 +129,9 @@ public:
     ensureCapacity(int(il.size()));
 
     for (const Elem& e : il) {
-      add(e);
+      push(e);
     }
+    return *this;
   }
 
   /**
