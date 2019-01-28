@@ -38,10 +38,10 @@
 template <class CRangeA, class CRangeB>
 inline bool iEquals(CRangeA rangeA, CRangeB rangeB)
 {
-  auto& iterA = rangeA.begin();
-  auto& endA  = rangeA.end();
-  auto& iterB = rangeB.begin();
-  auto& endB  = rangeB.end();
+  auto iterA = rangeA.begin();
+  auto endA  = rangeA.end();
+  auto iterB = rangeB.begin();
+  auto endB  = rangeB.end();
 
   for (; iterA != endA && iterB != endB && *iterA == *iterB; ++iterA, ++iterB);
   return iterA == endA && iterB == endB;

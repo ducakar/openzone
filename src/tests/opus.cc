@@ -26,18 +26,18 @@
 
 using namespace oz;
 
-static const int    FRAME_SIZE = 120 * 48;
-static const int    OGG_BUFFER = 4 * 1024;
+static constexpr int FRAME_SIZE = 120 * 48;
+static constexpr int OGG_BUFFER = 4 * 1024;
 
-static List<float>  samples;
-static int          nSamples = 0;
+static List<float>   samples;
+static int           nSamples = 0;
 
-static ALuint       buffers[2];
-static ALuint       source;
-static Semaphore    decodeMainSemaphore;
-static Semaphore    decodeThreadSemaphore;
-static Thread       decodeThread;
-static Atomic<bool> isDecoderAlive = {true};
+static ALuint        buffers[2];
+static ALuint        source;
+static Semaphore     decodeMainSemaphore;
+static Semaphore     decodeThreadSemaphore;
+static Thread        decodeThread;
+static Atomic<bool>  isDecoderAlive = {true};
 
 static void decoderMain(void*)
 {

@@ -34,7 +34,7 @@ using namespace oz;
 # define CreateVecX(x, y, z, w) Vec4(x, y, z, w)
 #endif
 
-static const int MAX = 10000;
+static constexpr int MAX = 10000;
 
 static VecX a[MAX];
 static VecX b[MAX];

@@ -140,13 +140,13 @@ public:
   }
 
   OZ_ALWAYS_INLINE
-  constexpr Dur operator%(int i) const
+  constexpr Dur operator%(int) const
   {
     return Dur(0, 0);
   }
 
   OZ_ALWAYS_INLINE
-  constexpr Dur operator%(const Dur& d) const
+  constexpr Dur operator%(const Dur&) const
   {
     return Dur(0, 0);
   }

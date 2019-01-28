@@ -60,11 +60,11 @@
 namespace oz
 {
 
-static const float BELL_TIME       = 0.30f;
-static const float BELL_FREQUENCY  = 1000.0f;
-static const int   BELL_RATE       = 44100;
-static const int   BELL_SAMPLES    = int(BELL_TIME * float(BELL_RATE));
-static const int   INITIALISED_BIT = 0x80;
+static constexpr float BELL_TIME       = 0.30f;
+static constexpr float BELL_FREQUENCY  = 1000.0f;
+static constexpr int   BELL_RATE       = 44100;
+static constexpr int   BELL_SAMPLES    = int(BELL_TIME * float(BELL_RATE));
+static constexpr int   INITIALISED_BIT = 0x80;
 
 enum BellState
 {

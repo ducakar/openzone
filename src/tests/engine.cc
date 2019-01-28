@@ -35,7 +35,7 @@ int main(int argc, char** argv)
   uint texId;
   glGenTextures(1, &texId);
   glBindTexture(GL_TEXTURE_2D, texId);
-  GL::textureDataIdenticon(Hash<const char*>()("Davorin"), 600, Vec4(0.20f, 0.30f, 0.25f, 1.00f));
+  GL::textureDataIdenticon(hash("Davorin"), 600, Vec4(0.20f, 0.30f, 0.25f, 1.00f));
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
   Cursor cursor(file, Cursor::SYSTEM);

@@ -203,7 +203,7 @@ class AL::Decoder::OpusStream : public AL::Decoder::StreamBase
 private:
 
   OZ_INTERNAL
-  static const int FRAME_SIZE = 120 * 48;
+  static constexpr int FRAME_SIZE = 120 * 48;
 
   OggOpusFile* opFile_ = nullptr;
 
@@ -243,8 +243,6 @@ public:
   bool decode(AL::Decoder* decoder) override;
 
 };
-
-const int AL::Decoder::OpusStream::FRAME_SIZE;
 
 AL::Decoder::OpusStream::~OpusStream()
 {

@@ -36,15 +36,12 @@
 namespace oz
 {
 
-static const int DDSD_MIPMAPCOUNT_BIT = 0x00020000;
-
-static const int DDPF_ALPHAPIXELS     = 0x00000001;
-static const int DDPF_FOURCC          = 0x00000004;
-static const int DDPF_RGB             = 0x00000040;
-
-static const int DDSCAPS2_CUBEMAP     = 0x00000200;
-
-static const GLenum CUBE_MAP_ENUMS[]  = {
+static constexpr int    DDSD_MIPMAPCOUNT_BIT = 0x00020000;
+static constexpr int    DDPF_ALPHAPIXELS     = 0x00000001;
+static constexpr int    DDPF_FOURCC          = 0x00000004;
+static constexpr int    DDPF_RGB             = 0x00000040;
+static constexpr int    DDSCAPS2_CUBEMAP     = 0x00000200;
+static constexpr GLenum CUBE_MAP_ENUMS[]     = {
   GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
   GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
   GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z

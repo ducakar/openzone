@@ -41,10 +41,7 @@ class Range
 {
 public:
 
-  /**
-   * Element type.
-   */
-  using Elem = typename detail::StripRef<decltype(*BeginIterator())>::Bare;
+  using Elem = typename BeginIterator::Elem;
 
   /**
    * Begin iterator type.
@@ -81,7 +78,7 @@ public:
    * Begin iterator.
    */
   OZ_ALWAYS_INLINE
-  BeginIterator& begin() noexcept
+  BeginIterator begin() noexcept
   {
     return begin_;
   }
@@ -90,7 +87,68 @@ public:
    * End iterator.
    */
   OZ_ALWAYS_INLINE
-  EndIterator& end() noexcept
+  EndIterator end() noexcept
+  {
+    return end_;
+  }
+
+};
+
+/**
+ * Container for begin-end iterator pair, specialised for the case the iterators are pointers.
+ */
+template <typename ElemType>
+class Range<ElemType*, ElemType*>
+{
+public:
+
+  using Elem = ElemType;
+
+  /**
+   * Begin iterator type.
+   */
+  using Begin = Elem*;
+
+  /**
+   * End iterator type.
+   */
+  using End = Elem*;
+
+private:
+
+  Elem* begin_ = nullptr; ///< Begin iterator.
+  Elem* end_   = nullptr; ///< End iterator.
+
+public:
+
+  /**
+   * Create empty range with both iterators invalid.
+   */
+  OZ_ALWAYS_INLINE
+  Range() noexcept = default;
+
+  /**
+   * Create range for given iterators.
+   */
+  OZ_ALWAYS_INLINE
+  explicit Range(Elem* begin, Elem* end) noexcept
+    : begin_(begin), end_(end)
+  {}
+
+  /**
+   * Begin iterator.
+   */
+  OZ_ALWAYS_INLINE
+  Elem* begin() noexcept
+  {
+    return begin_;
+  }
+
+  /**
+   * End iterator.
+   */
+  OZ_ALWAYS_INLINE
+  Elem* end() noexcept
   {
     return end_;
   }

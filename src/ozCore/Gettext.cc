@@ -28,9 +28,9 @@
 namespace oz
 {
 
-static const char* const ENV_VARS[]    = {"LC_ALL", "LC_MESSAGES", "LANG"};
-static const uint        GETTEXT_MAGIC = 0x950412de;
-static const int         MAX_MESSAGES  = 1 << 16;
+static constexpr const char* ENV_VARS[]    = {"LC_ALL", "LC_MESSAGES", "LANG"};
+static constexpr uint        GETTEXT_MAGIC = 0x950412de;
+static constexpr int         MAX_MESSAGES  = 1 << 16;
 
 static inline uint bucketIndex(const char* message, int size)
 {

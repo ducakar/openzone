@@ -50,10 +50,10 @@
 namespace oz
 {
 
-static const int  OUT_BUFFER_SIZE      = 4096;
-static const int  INDENT_SPACES        = 2;
-static const char INDENT_BUFFER[49]    = "                                                ";
-static const int  INDENT_BUFFER_LENGTH = sizeof(INDENT_BUFFER) - 1;
+static constexpr int  OUT_BUFFER_SIZE      = 4096;
+static constexpr int  INDENT_SPACES        = 2;
+static constexpr char INDENT_BUFFER[49]    = "                                                ";
+static constexpr int  INDENT_BUFFER_LENGTH = sizeof(INDENT_BUFFER) - 1;
 
 static File  logFile;
 static FILE* logFileStream = nullptr;

@@ -109,33 +109,7 @@ namespace oz
 /**
  * Internal helpers.
  */
-namespace detail
-{
-
-/**
- * Extract referred type for reference or temporary types, identity otherwise.
- *
- * Same as `std::remove_reference`.
- */
-template <typename Type>
-struct StripRef
-{
-  using Bare = Type;
-};
-
-template <typename Type>
-struct StripRef<Type&>
-{
-  using Bare = Type;
-};
-
-template <typename Type>
-struct StripRef<Type&&>
-{
-  using Bare = Type;
-};
-
-}
+namespace detail {}
 
 /**
  * Null pointer type.
@@ -325,7 +299,7 @@ inline constexpr const Value& clamp(const Value& c, const Value& a, const Value&
 /**
  * Generic `Less` function object, defaults to `operator<`.
  */
-template <typename Type = void>
+template <typename Type>
 struct Less
 {
   /**
@@ -342,7 +316,7 @@ struct Less
 /**
  * Generic greater function object, calls inverted `Less` function.
  */
-template <typename Type = void>
+template <typename Type>
 struct Greater
 {
   /**
@@ -400,7 +374,7 @@ struct Hash<const char*>
   /**
    * FNV hash function.
    */
-  uint operator()(const char* s) const
+  constexpr uint operator()(const char* s) const
   {
     uint value = EMPTY;
 
@@ -411,5 +385,25 @@ struct Hash<const char*>
     return value;
   }
 };
+
+template <>
+struct Hash<char*> : Hash<const char*>
+{};
+
+template <size_t SIZE>
+struct Hash<const char[SIZE]> : Hash<const char*>
+{};
+
+template <size_t SIZE>
+struct Hash<char[SIZE]> : Hash<const char*>
+{};
+
+/**
+ * Shortcut for calling `Hash<Type>()(value)`.
+ */
+template <typename Value>
+inline constexpr uint hash(Value value) {
+  return Hash<Value>()(value);
+}
 
 }

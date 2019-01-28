@@ -33,22 +33,19 @@
 namespace oz::client::ui
 {
 
-static const int  SLOT_SIZE      = 78;
-
-static const Mat4 OVERLAY_GREEN  = Mat4(0.0f, 1.0f, 0.0f, 0.0f,
-                                        0.0f, 1.0f, 0.0f, 0.0f,
-                                        0.0f, 1.0f, 0.0f, 0.0f,
-                                        0.0f, 0.0f, 0.0f, 0.5f);
-
-static const Mat4 OVERLAY_YELLOW = Mat4(0.8f, 0.8f, 0.0f, 0.0f,
-                                        0.8f, 0.8f, 0.0f, 0.0f,
-                                        0.8f, 0.8f, 0.0f, 0.0f,
-                                        0.0f, 0.0f, 0.0f, 0.5f);
-
-static const Mat4 OVERLAY_RED    = Mat4(1.0f, 0.0f, 0.0f, 0.0f,
-                                        1.0f, 0.0f, 0.0f, 0.0f,
-                                        1.0f, 0.0f, 0.0f, 0.0f,
-                                        0.0f, 0.0f, 0.0f, 0.5f);
+static constexpr int  SLOT_SIZE      = 78;
+static constexpr Mat4 OVERLAY_GREEN  = Mat4(0.0f, 1.0f, 0.0f, 0.0f,
+                                            0.0f, 1.0f, 0.0f, 0.0f,
+                                            0.0f, 1.0f, 0.0f, 0.0f,
+                                            0.0f, 0.0f, 0.0f, 0.5f);
+static constexpr Mat4 OVERLAY_YELLOW = Mat4(0.8f, 0.8f, 0.0f, 0.0f,
+                                            0.8f, 0.8f, 0.0f, 0.0f,
+                                            0.8f, 0.8f, 0.0f, 0.0f,
+                                            0.0f, 0.0f, 0.0f, 0.5f);
+static constexpr Mat4 OVERLAY_RED    = Mat4(1.0f, 0.0f, 0.0f, 0.0f,
+                                            1.0f, 0.0f, 0.0f, 0.0f,
+                                            1.0f, 0.0f, 0.0f, 0.0f,
+                                            0.0f, 0.0f, 0.0f, 0.5f);
 
 void BuildFrame::overlayCallback(Area* area, const Vec3& ray)
 {

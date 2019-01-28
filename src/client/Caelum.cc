@@ -25,7 +25,16 @@
 namespace oz::client
 {
 
-const char* const Caelum::SKYBOX_FACES[] = {"+x", "-x", "+y", "-y", "+z", "-z"};
+static constexpr float DAY_BIAS     = 0.40f;
+static constexpr float DIFFUSE_COEF = 0.80f;
+static constexpr float AMBIENT_COEF = 0.40f;
+
+static constexpr float RED_COEF     = +0.05f;
+static constexpr float GREEN_COEF   = -0.05f;
+static constexpr float BLUE_COEF    = -0.10f;
+
+static constexpr Vec4  DAY_COLOUR   = Vec4(0.45f, 0.55f, 0.95f, 1.0f);
+static constexpr Vec4  NIGHT_COLOUR = Vec4(0.02f, 0.02f, 0.05f, 1.0f);
 
 void Caelum::update()
 {

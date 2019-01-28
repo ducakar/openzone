@@ -30,7 +30,7 @@
 namespace oz::client
 {
 
-static const int LOG_BUFFER_SIZE = 8192;
+static constexpr int LOG_BUFFER_SIZE = 8192;
 
 static char   logBuffer[LOG_BUFFER_SIZE];
 static String defines;

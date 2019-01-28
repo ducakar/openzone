@@ -50,8 +50,8 @@ static const Mat4 ROTATIONS[] =
         0.0f,  0.0f,  0.0f,  1.0f),
 };
 
-//static const Entity::State OPPOSITE_STATES[] = {Entity::CLOSING, Entity::OPENING};
-//static const Entity::State END_STATES[]      = {Entity::OPEN, Entity::CLOSED};
+//static constexpr Entity::State OPPOSITE_STATES[] = {Entity::CLOSING, Entity::OPENING};
+//static constexpr Entity::State END_STATES[]      = {Entity::OPEN, Entity::CLOSED};
 
 const Entity::Handler Entity::HANDLERS[] = {
   &Entity::staticHandler,

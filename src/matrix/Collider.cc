@@ -22,7 +22,7 @@
 namespace oz
 {
 
-static const Vec3 NORMALS[] =
+static constexpr Vec3 NORMALS[] =
 {
   Vec3(+1.0f,  0.0f,  0.0f),
   Vec3(-1.0f,  0.0f,  0.0f),
