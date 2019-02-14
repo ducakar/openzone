@@ -1,18 +1,16 @@
+# OpenZone #
+
 ![logo](http://ducakar.github.io/openzone-web/img/title.jpg)
 
-OpenZone
-========
+Simple cross-platform FPS/RTS game engine.
+[http://ducakar.github.io/openzone/](http://ducakar.github.io/openzone/).
 
-Simple cross-platform FPS/RTS game engine. http://ducakar.github.io/openzone/.
-
-Running
--------
+## Running ##
 
 For standalone packages, run `bin/<platform>/openzone` executable to start the game, where
 `<platform>` is your operating system-instruction set pair.
 
-Building
---------
+## Building ##
 
 Building is currently only supported under Linux. You can build Linux/Unix, Windows (MinGW) and
 Native Client ports. Android port in still under development. See `cmake/*.Toolchain.cmake` files
@@ -117,8 +115,7 @@ You may also want to adjust several options when configuring CMake build system:
   developing OpenZone. You don't need this.
   `OFF` by default.
 
-Tools
------
+## Tools ##
 
 ### `ozBuild -CAZ <pkgSrc>` ###
 
@@ -164,8 +161,7 @@ should be saved as `<pkgSrc>/mission/<missionName>/lingua/<lang>.po`.
 Note that ozbase is a special package and its POT catalogue template should be generated with
 gettext-ozbase.sh Bash script instead.
 
-Scripts
--------
+## Scripts ##
 
 The following helper scripts are located in the root directory of the source tree.
 
@@ -279,14 +275,13 @@ compile a BSP structures for OpenZone.
 
 ### `run.sh [wine | wine64] [<openzoneOptions>]` ###
 
-Linux-x86_64-Clang client is launched by default. <options> are passed to the client command line.
+Linux-x86_64-Clang client is launched by default. `<options>` are passed to the client command line.
 The following alternative launches are available:
 
 - `wine`: Installs and launches standalone Windows i686 port via Wine.
 - `wine64`: Installs and launches standalone Windows x86-64 port via Wine.
 
-Documentation
--------------
+## Documentation ##
 
 To generate documentation from source code with Doxygen, run
 
@@ -301,8 +296,7 @@ see documentation once it is generated.
 
 Currently only liboz documentation is complete.
 
-Legal
------
+## Legal ##
 
 OpenZone engine is licensed under GNU General Public License version 3 or (at your option) any later
 version (see `COPYING` file). liboz library (`src/ozCore`, `src/ozEngine` and `src/ozFactory`
