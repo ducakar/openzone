@@ -60,7 +60,7 @@ private:
   /**
    * Internal helper to construct and start a new thread.
    */
-  static Descriptor* start(const char* name, Main* main, void* data = nullptr);
+  void create(const char* name, Main* main, void* data = nullptr);
 
 public:
 
@@ -112,7 +112,27 @@ public:
    * @param main pointer to the thread's main function.
    * @param data pointer to user data, passed to the thread's main function.
    */
-  explicit Thread(const char* name, Main* main, void* data = nullptr);
+  explicit Thread(const char* name, Main* main, void* data = nullptr)
+  {
+    create(name, main, data);
+  }
+
+  template <typename Main>
+  explicit Thread(const char* name, Main main)
+  {
+    struct CallWrapper
+    {
+      Main callable;
+
+      static void main(void* data)
+      {
+        CallWrapper* cw = static_cast<CallWrapper*>(data);
+        cw->callable();
+        delete cw;
+      }
+    };
+    create(name, CallWrapper::main, new CallWrapper{main});
+  }
 
   /**
    * Join started but not yet joined thread if present.

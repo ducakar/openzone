@@ -35,6 +35,8 @@ namespace oz
 
 /**
  * Container for begin-end iterator pair.
+ *
+ * `BeginIterator` must derive from `IteratorBase`.
  */
 template <typename BeginIterator, typename EndIterator>
 class Range

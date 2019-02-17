@@ -45,12 +45,20 @@ static const String               MAIN_NAME    = "MAIN";
 static const pthread_t            MAIN_THREAD  = pthread_self();
 static thread_local const String* threadName   = &UNKNOWN_NAME;
 
+static timespec toTimespec(Duration duration)
+{
+  int64 ns = duration.ns() % 1000000000 + 1000000000;
+  int64 s  = duration.ns() / 1000000000 - 1;
+
+  return timespec{s + ns / 1000000000, long(ns % 1000000000)};
+}
+
 struct Thread::Descriptor
 {
   pthread_t   thread;
-  const char* name;
   Main*       main;
   void*       data;
+  const char* name;
   SpinLock    lock;
 
   OZ_INTERNAL
@@ -95,12 +103,17 @@ void* Thread::Descriptor::mainWrapper(void* handle)
   return nullptr;
 }
 
-static timespec toTimespec(Duration duration)
+void Thread::create(const char* name, Main* main, void* data)
 {
-  int64 ns = duration.ns() % 1000000000 + 1000000000;
-  int64 s  = duration.ns() / 1000000000 - 1;
+  descriptor_ = new Descriptor;
+  descriptor_->main = main;
+  descriptor_->data = data;
+  descriptor_->name = name;
+  descriptor_->lock.lock();
 
-  return timespec{s + ns / 1000000000, long(ns % 1000000000)};
+  if (pthread_create(&descriptor_->thread, nullptr, Descriptor::mainWrapper, descriptor_) != 0) {
+    OZ_ERROR("oz::Thread: Thread creation failed");
+  }
 }
 
 void Thread::sleepFor(Duration duration)
@@ -141,19 +154,6 @@ const String& Thread::name()
 bool Thread::isMain()
 {
   return pthread_equal(pthread_self(), MAIN_THREAD) != 0;
-}
-
-Thread::Thread(const char* name, Main* main, void* data)
-  : descriptor_(new Descriptor)
-{
-  descriptor_->name = name;
-  descriptor_->main = main;
-  descriptor_->data = data;
-  descriptor_->lock.lock();
-
-  if (pthread_create(&descriptor_->thread, nullptr, Descriptor::mainWrapper, descriptor_) != 0) {
-    OZ_ERROR("oz::Thread: Thread creation failed");
-  }
 }
 
 Thread::~Thread()
