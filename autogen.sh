@@ -12,7 +12,6 @@
 components=(src/ozCore src/ozEngine src/ozFactory src/unittest
             src/common src/matrix src/nirvana src/client src/builder)
 version=`sed -r '/^set\(OZ_VERSION / !d; s|.* ([0-9.]+)\)|\1|' CMakeLists.txt`
-root=`pwd`
 
 # Generate CMakeLists.txt files.
 for component in ${components[@]}; do
@@ -23,8 +22,6 @@ for component in ${components[@]}; do
   sources=`echo *.{hh,cc} */*.{hh,cc}`
   # Remove uninstantiated *.hh, *.cc, */*.hh and */*.cc expressions.
   sources=`echo $sources | sed -r 's|(\*/)?\*\.[^ ]*||g'`
-  # Remove duplicated spaces that may have been introduced by the previous removals.
-  sources=`echo $sources | sed -r 's| +| |g'`
   # Make file list newline-separated and indented.
   sources=`echo $sources | sed -r 's| |\\\\n  |g'`
 
@@ -32,7 +29,7 @@ for component in ${components[@]}; do
   sed -r '/^#BEGIN SOURCES$/,/^#END SOURCES$/ c\#BEGIN SOURCES\n  '"$sources"'\n#END SOURCES' \
       -i CMakeLists.txt
 
-  cd $root
+  cd -
 done
 
 # Fix version numbers.

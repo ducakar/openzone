@@ -45,7 +45,7 @@ The following development tools are required:
 - CMake
 - Ninja (optional, recommended)
 - LLVM/Clang (optional, recommended)
-- MinGW-w64 (optional, for building Windows-i686 and Windows-x86_64 ports)
+- MinGW-w64 (optional, for building Windows-x86_64 port)
 - NaCl SDK (optional, for building PNaCl port)
 
 ### Quick Build Instructions ###
@@ -83,8 +83,8 @@ platforms and whether you want to make debug or a release build.
 Build scripts use Ninja as low-level build system instead of Make which is the default for CMake.
 
 For building Linux and Windows builds, all required libraries need to be installed on your system.
-MinGW64 is searched for in `/usr/i686-w64-mingw32` and `/usr/x86_64-w64-mingw32` by default. You may
-change that in `cmake/Windows-*.Toolchain.cmake`.
+MinGW64 is searched for in `/usr/x86_64-w64-mingw32` by default. You may change that in
+`cmake/Windows-*.Toolchain.cmake`.
 
 You may also want to adjust several options when configuring CMake build system:
 
@@ -216,14 +216,12 @@ Extracts internal strings for localisation from OpenZone source code and appends
 
 ### `lib.sh [clean]` ###
 
-Copy all libraries OpenZone depends on to `lib/<platform>` directories (currently Linux-x86_64,
-Linux-i686 and Windows-i686). Those are required to create standalone build (see `OZ_BUNDLE` cmake
-option) that can be distributed in a ZIP archive (i.e. no installation required, all dependencies
-included).
+Copy all libraries OpenZone depends on to `lib/<platform>` directories (currently Linux-x86_64 and
+Windows-x86_64). Those are required to create standalone build (see `OZ_BUNDLE` cmake option) that
+can be distributed in a ZIP archive (i.e. no installation required, all dependencies included).
 
-This script is currently Arch Linux-specific and assumes one has all 64-bit, 32-bit (`lib32-*`) and
-MinGW (`mingw32-*`) versions of all necessary libraries installed. Many of those packages must be
-built from AUR.
+This script is currently Arch Linux-specific and assumes one has both Linux and MinGW versions of
+all necessary libraries installed. Many of those packages must be built from AUR.
 
 The following commands may be given (`build` is assumed if none):
 
@@ -251,8 +249,8 @@ One of the following commands must be given:
   `share/openzone` directory are included.
 - `datasrc`: Create source data archive `openzone-datasrc-<version>.tar.xz`. All source data
   packages found in `data` directory are included.
-- `bundle`: Create a 7zip archive that contains Linux-x86_64, Linux-i686 and Windows-i686 standalone
-  builds and compiled game data packages found in `share/openzone`.
+- `bundle`: Create a 7zip archive that contains Linux-x86_64, Windows-x86_64 standalone builds and
+  compiled game data packages found in `share/openzone`.
 
 ### `ports.sh [clean | buildclean | fetch]` ###
 
@@ -278,8 +276,7 @@ compile a BSP structures for OpenZone.
 Linux-x86_64-Clang client is launched by default. `<options>` are passed to the client command line.
 The following alternative launches are available:
 
-- `wine`: Installs and launches standalone Windows i686 port via Wine.
-- `wine64`: Installs and launches standalone Windows x86-64 port via Wine.
+- `wine`: Installs and launches standalone Windows x86_64 port via Wine.
 
 ## Documentation ##
 
