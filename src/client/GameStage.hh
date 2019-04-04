@@ -67,12 +67,12 @@ public:
 
 private:
 
-  static void saveMain(void*);
+  static void* saveMain(void*);
 
   void read();
   void write();
 
-  static void auxMain(void*);
+  static void* auxMain(void*);
   void auxRun();
 
 public:

@@ -27,9 +27,10 @@
 namespace oz::client
 {
 
-void Loader::preloadMain(void*)
+void* Loader::preloadMain(void*)
 {
   loader.preloadRun();
+  return nullptr;
 }
 
 void Loader::updateRender()

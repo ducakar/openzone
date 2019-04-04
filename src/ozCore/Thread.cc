@@ -92,7 +92,7 @@ void* Thread::Descriptor::mainWrapper(void* handle)
 
 #endif
 
-  main(data);
+  void* result = main(data);
 
 #ifdef __ANDROID__
   if (javaVM != nullptr) {
@@ -100,7 +100,7 @@ void* Thread::Descriptor::mainWrapper(void* handle)
   }
 #endif
 
-  return nullptr;
+  return result;
 }
 
 void Thread::create(const char* name, Main* main, void* data)
@@ -193,18 +193,22 @@ void Thread::detach()
   descriptor_ = nullptr;
 }
 
-void Thread::join()
+void* Thread::join()
 {
   if (descriptor_ == nullptr) {
     OZ_ERROR("oz::Thread: Joining invalid thread");
   }
 
-  if (pthread_join(descriptor_->thread, nullptr) != 0) {
+  void* result = nullptr;
+
+  if (pthread_join(descriptor_->thread, &result) != 0) {
     OZ_ERROR("oz::Thread: Join failed");
   }
 
   delete descriptor_;
   descriptor_ = nullptr;
+
+  return result;
 }
 
 }

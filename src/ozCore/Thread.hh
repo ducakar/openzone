@@ -47,7 +47,7 @@ public:
 public:
 
   /// %Thread's main function type.
-  using Main = void (void* data);
+  using Main = void* (void* data);
 
 private:
 
@@ -117,21 +117,22 @@ public:
     create(name, main, data);
   }
 
-  template <typename Main>
-  explicit Thread(const char* name, Main main)
+  template <typename Callable>
+  explicit Thread(const char* name, Callable callable)
   {
     struct CallWrapper
     {
-      Main callable;
+      Callable callable;
 
-      static void main(void* data)
+      static void* main(void* data)
       {
         CallWrapper* cw = static_cast<CallWrapper*>(data);
         cw->callable();
         delete cw;
+        return nullptr;
       }
     };
-    create(name, CallWrapper::main, new CallWrapper{main});
+    create(name, CallWrapper::main, new CallWrapper{callable});
   }
 
   /**
@@ -166,7 +167,7 @@ public:
   /**
    * Wait for a joinable thread to finish execution and release its resources.
    */
-  void join();
+  void* join();
 
 };
 

@@ -51,7 +51,7 @@ private:
   void read();
   void write() const;
 
-  static void auxMain(void*);
+  static void* auxMain(void*);
   void auxRun();
 
 public:

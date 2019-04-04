@@ -72,8 +72,8 @@ public:
 
 private:
 
-  static void musicMain(void*);
-  static void soundMain(void*);
+  static void* musicMain(void*);
+  static void* soundMain(void*);
 
   void musicRun();
 

@@ -59,9 +59,10 @@ struct Render::DrawEntry
   }
 };
 
-void Render::effectsMain(void*)
+void* Render::effectsMain(void*)
 {
   render.effectsRun();
+  return nullptr;
 }
 
 void Render::cellEffects(int cellX, int cellY)

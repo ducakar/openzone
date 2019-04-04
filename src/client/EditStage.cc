@@ -72,9 +72,10 @@ void EditStage::write() const
   }
 }
 
-void EditStage::auxMain(void*)
+void* EditStage::auxMain(void*)
 {
   editStage.auxRun();
+  return nullptr;
 }
 
 void EditStage::auxRun()

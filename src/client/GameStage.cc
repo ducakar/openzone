@@ -39,7 +39,7 @@
 namespace oz::client
 {
 
-void GameStage::saveMain(void*)
+void* GameStage::saveMain(void*)
 {
   Log::print("Saving state to %s ...", gameStage.saveFile.c());
 
@@ -53,6 +53,8 @@ void GameStage::saveMain(void*)
 
   gameStage.saveStream.free();
   gameStage.saveFile = "";
+
+  return nullptr;
 }
 
 void GameStage::read()
@@ -102,9 +104,10 @@ void GameStage::write()
   saveThread = Thread("save", saveMain);
 }
 
-void GameStage::auxMain(void*)
+void* GameStage::auxMain(void*)
 {
   gameStage.auxRun();
+  return nullptr;
 }
 
 void GameStage::auxRun()

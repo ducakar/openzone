@@ -150,7 +150,7 @@ int Context::speakCallback(int16* samples, int nSamples, void*)
   return 0;
 }
 
-void Context::speakMain(void*)
+void* Context::speakMain(void*)
 {
   espeak_Synth(speakSource.text, speakSource.text.length(), 0, POS_CHARACTER, 0, espeakCHARS_UTF8,
                nullptr, nullptr);
@@ -167,6 +167,8 @@ void Context::speakMain(void*)
 
   speakSource.owner.store<RELAXED>(-1);
   speakSource.isAlive.store<RELAXED>(false);
+
+  return nullptr;
 }
 
 Context::Source* Context::addSource(int sound)

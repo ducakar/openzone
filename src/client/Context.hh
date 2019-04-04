@@ -156,7 +156,7 @@ public:
 private:
 
   static int speakCallback(int16* samples, int nSamples, void*);
-  static void speakMain(void*);
+  static void* speakMain(void*);
 
   Source* addSource(int sound);
   void removeSource(Source* source, Source* prev);

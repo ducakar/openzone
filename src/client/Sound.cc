@@ -28,14 +28,16 @@
 namespace oz::client
 {
 
-void Sound::musicMain(void*)
+void* Sound::musicMain(void*)
 {
   sound.musicRun();
+  return nullptr;
 }
 
-void Sound::soundMain(void*)
+void* Sound::soundMain(void*)
 {
   sound.soundRun();
+  return nullptr;
 }
 
 void Sound::musicRun()

@@ -74,7 +74,7 @@ private:
 
 private:
 
-  static void preloadMain(void*);
+  static void* preloadMain(void*);
 
   // Clean unused imagines.
   void updateRender();

@@ -76,7 +76,7 @@ static void onFlushComplete(void*, int)
 
 #endif
 
-static void screenshotMain(void* data)
+static void* screenshotMain(void* data)
 {
   const ScreenshotInfo* info = static_cast<const ScreenshotInfo*>(data);
 
@@ -84,7 +84,7 @@ static void screenshotMain(void* data)
   FILE*  file = fopen(path, "wb");
 
   if (file == nullptr) {
-    return;
+    return nullptr;
   }
 
   int         stride  = Alloc::alignUp<int>(info->width * 3, 4);
@@ -106,6 +106,8 @@ static void screenshotMain(void* data)
 
   delete[] info->pixels;
   delete info;
+
+  return nullptr;
 }
 
 int          Window::screenWidth  = 0;
