@@ -57,7 +57,7 @@ static LuaState ls;
  */
 static int ozError(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   const char* message = l_tostring(1);
   OZ_ERROR("%s", message);
@@ -72,7 +72,7 @@ static int ozError(lua_State* l)
  */
 static int ozPrintln(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   OZ_ASSERT(ls.envName != nullptr);
 

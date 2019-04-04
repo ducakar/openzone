@@ -128,23 +128,23 @@ Object::Object(const ObjectClass* clazz_, int index_, const Json& json)
   clazz      = clazz_;
 
   for (const Json& flagJson : json["flags"].arrayCRange()) {
-    OZ_FLAG_READ(DYNAMIC_BIT,      "dynamic"  );
-    OZ_FLAG_READ(WEAPON_BIT,       "weapon"   );
-    OZ_FLAG_READ(BOT_BIT,          "bot"      );
-    OZ_FLAG_READ(VEHICLE_BIT,      "vehicle"  );
-    OZ_FLAG_READ(ITEM_BIT,         "item"     );
-    OZ_FLAG_READ(BROWSABLE_BIT,    "browsable");
-    OZ_FLAG_READ(LUA_BIT,          "lua"      );
-    OZ_FLAG_READ(DESTROY_FUNC_BIT, "onDestroy");
-    OZ_FLAG_READ(USE_FUNC_BIT,     "onUse"    );
-    OZ_FLAG_READ(UPDATE_FUNC_BIT,  "onUpdate" );
-    OZ_FLAG_READ(STATUS_FUNC_BIT,  "getStatus");
-    OZ_FLAG_READ(DEVICE_BIT,       "device"   );
-    OZ_FLAG_READ(IMAGO_BIT,        "imago"    );
-    OZ_FLAG_READ(AUDIO_BIT,        "audio"    );
-    OZ_FLAG_READ(SOLID_BIT,        "solid"    );
-    OZ_FLAG_READ(CYLINDER_BIT,     "cylinder" );
-    OZ_FLAG_READ(WIDE_CULL_BIT,    "wideCull" );
+    OZ_FLAG_READ(DYNAMIC_BIT,      "dynamic"  )
+    OZ_FLAG_READ(WEAPON_BIT,       "weapon"   )
+    OZ_FLAG_READ(BOT_BIT,          "bot"      )
+    OZ_FLAG_READ(VEHICLE_BIT,      "vehicle"  )
+    OZ_FLAG_READ(ITEM_BIT,         "item"     )
+    OZ_FLAG_READ(BROWSABLE_BIT,    "browsable")
+    OZ_FLAG_READ(LUA_BIT,          "lua"      )
+    OZ_FLAG_READ(DESTROY_FUNC_BIT, "onDestroy")
+    OZ_FLAG_READ(USE_FUNC_BIT,     "onUse"    )
+    OZ_FLAG_READ(UPDATE_FUNC_BIT,  "onUpdate" )
+    OZ_FLAG_READ(STATUS_FUNC_BIT,  "getStatus")
+    OZ_FLAG_READ(DEVICE_BIT,       "device"   )
+    OZ_FLAG_READ(IMAGO_BIT,        "imago"    )
+    OZ_FLAG_READ(AUDIO_BIT,        "audio"    )
+    OZ_FLAG_READ(SOLID_BIT,        "solid"    )
+    OZ_FLAG_READ(CYLINDER_BIT,     "cylinder" )
+    OZ_FLAG_READ(WIDE_CULL_BIT,    "wideCull" )
   }
 
   if (flags & WEST_EAST_MASK) {
@@ -199,23 +199,23 @@ Json Object::write() const
 
   Json& flagsJson = json.add("flags", Json::ARRAY);
 
-  OZ_FLAG_WRITE(DYNAMIC_BIT,      "dynamic"  );
-  OZ_FLAG_WRITE(WEAPON_BIT,       "weapon"   );
-  OZ_FLAG_WRITE(BOT_BIT,          "bot"      );
-  OZ_FLAG_WRITE(VEHICLE_BIT,      "vehicle"  );
-  OZ_FLAG_WRITE(ITEM_BIT,         "item"     );
-  OZ_FLAG_WRITE(BROWSABLE_BIT,    "browsable");
-  OZ_FLAG_WRITE(LUA_BIT,          "lua"      );
-  OZ_FLAG_WRITE(DESTROY_FUNC_BIT, "onDestroy");
-  OZ_FLAG_WRITE(USE_FUNC_BIT,     "onUse"    );
-  OZ_FLAG_WRITE(UPDATE_FUNC_BIT,  "onUpdate" );
-  OZ_FLAG_WRITE(STATUS_FUNC_BIT,  "getStatus");
-  OZ_FLAG_WRITE(DEVICE_BIT,       "device"   );
-  OZ_FLAG_WRITE(IMAGO_BIT,        "imago"    );
-  OZ_FLAG_WRITE(AUDIO_BIT,        "audio"    );
-  OZ_FLAG_WRITE(SOLID_BIT,        "solid"    );
-  OZ_FLAG_WRITE(CYLINDER_BIT,     "cylinder" );
-  OZ_FLAG_WRITE(WIDE_CULL_BIT,    "wideCull" );
+  OZ_FLAG_WRITE(DYNAMIC_BIT,      "dynamic"  )
+  OZ_FLAG_WRITE(WEAPON_BIT,       "weapon"   )
+  OZ_FLAG_WRITE(BOT_BIT,          "bot"      )
+  OZ_FLAG_WRITE(VEHICLE_BIT,      "vehicle"  )
+  OZ_FLAG_WRITE(ITEM_BIT,         "item"     )
+  OZ_FLAG_WRITE(BROWSABLE_BIT,    "browsable")
+  OZ_FLAG_WRITE(LUA_BIT,          "lua"      )
+  OZ_FLAG_WRITE(DESTROY_FUNC_BIT, "onDestroy")
+  OZ_FLAG_WRITE(USE_FUNC_BIT,     "onUse"    )
+  OZ_FLAG_WRITE(UPDATE_FUNC_BIT,  "onUpdate" )
+  OZ_FLAG_WRITE(STATUS_FUNC_BIT,  "getStatus")
+  OZ_FLAG_WRITE(DEVICE_BIT,       "device"   )
+  OZ_FLAG_WRITE(IMAGO_BIT,        "imago"    )
+  OZ_FLAG_WRITE(AUDIO_BIT,        "audio"    )
+  OZ_FLAG_WRITE(SOLID_BIT,        "solid"    )
+  OZ_FLAG_WRITE(CYLINDER_BIT,     "cylinder" )
+  OZ_FLAG_WRITE(WIDE_CULL_BIT,    "wideCull" )
 
   switch (flags & HEADING_MASK) {
     case NORTH: {

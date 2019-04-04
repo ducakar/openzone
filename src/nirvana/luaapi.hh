@@ -53,7 +53,7 @@ static NirvanaLuaState ns;
 
 static int ozForceUpdate(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   ns.mind->flags |= Mind::FORCE_UPDATE_BIT;
   return 0;
@@ -65,7 +65,7 @@ static int ozForceUpdate(lua_State* l)
 
 static int ozSelfIsCut(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushbool(ns.self->cell == nullptr);
   return 1;
@@ -73,7 +73,7 @@ static int ozSelfIsCut(lua_State* l)
 
 static int ozSelfGetIndex(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushint(ns.self->index);
   return 1;
@@ -81,7 +81,7 @@ static int ozSelfGetIndex(lua_State* l)
 
 static int ozSelfGetPos(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   if (ns.self->cell == nullptr) {
     Object* parent = orbis.obj(ns.self->parent);
@@ -102,7 +102,7 @@ static int ozSelfGetPos(lua_State* l)
 
 static int ozSelfGetDim(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushfloat(ns.self->dim.x);
   l_pushfloat(ns.self->dim.y);
@@ -112,7 +112,7 @@ static int ozSelfGetDim(lua_State* l)
 
 static int ozSelfHasFlag(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   l_pushbool(ns.self->flags & l_toint(1));
   return 1;
@@ -120,7 +120,7 @@ static int ozSelfHasFlag(lua_State* l)
 
 static int ozSelfGetHeading(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushint(ns.self->flags & Object::HEADING_MASK);
   return 1;
@@ -128,7 +128,7 @@ static int ozSelfGetHeading(lua_State* l)
 
 static int ozSelfGetClassName(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushstring(ns.self->clazz->name);
   return 1;
@@ -136,7 +136,7 @@ static int ozSelfGetClassName(lua_State* l)
 
 static int ozSelfMaxLife(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushfloat(ns.self->clazz->life);
   return 1;
@@ -144,7 +144,7 @@ static int ozSelfMaxLife(lua_State* l)
 
 static int ozSelfGetLife(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushfloat(ns.self->life);
   return 1;
@@ -152,7 +152,7 @@ static int ozSelfGetLife(lua_State* l)
 
 static int ozSelfDefaultResistance(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushfloat(ns.self->clazz->resistance);
   return 1;
@@ -160,7 +160,7 @@ static int ozSelfDefaultResistance(lua_State* l)
 
 static int ozSelfGetResistance(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushfloat(ns.self->resistance);
   return 1;
@@ -168,7 +168,7 @@ static int ozSelfGetResistance(lua_State* l)
 
 static int ozSelfGetParent(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   const Object* parent = orbis.obj(ns.self->parent);
 
@@ -178,7 +178,7 @@ static int ozSelfGetParent(lua_State* l)
 
 static int ozSelfGetVelocity(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushfloat(ns.self->velocity.x);
   l_pushfloat(ns.self->velocity.y);
@@ -188,7 +188,7 @@ static int ozSelfGetVelocity(lua_State* l)
 
 static int ozSelfGetMomentum(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushfloat(ns.self->momentum.x);
   l_pushfloat(ns.self->momentum.y);
@@ -198,7 +198,7 @@ static int ozSelfGetMomentum(lua_State* l)
 
 static int ozSelfGetMass(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushfloat(ns.self->mass);
   return 1;
@@ -206,7 +206,7 @@ static int ozSelfGetMass(lua_State* l)
 
 static int ozSelfGetLift(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushfloat(ns.self->lift);
   return 1;
@@ -214,7 +214,7 @@ static int ozSelfGetLift(lua_State* l)
 
 static int ozSelfGetName(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushstring(ns.self->name);
   return 1;
@@ -222,7 +222,7 @@ static int ozSelfGetName(lua_State* l)
 
 static int ozSelfGetMind(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushstring(ns.self->mind);
   return 1;
@@ -230,7 +230,7 @@ static int ozSelfGetMind(lua_State* l)
 
 static int ozSelfHasState(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   l_pushbool(ns.self->state & l_toint(1));
   return 1;
@@ -238,7 +238,7 @@ static int ozSelfHasState(lua_State* l)
 
 static int ozSelfGetEyePos(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushfloat(ns.self->p.x);
   l_pushfloat(ns.self->p.y);
@@ -248,7 +248,7 @@ static int ozSelfGetEyePos(lua_State* l)
 
 static int ozSelfGetH(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushfloat(Math::deg(ns.self->h));
   return 1;
@@ -256,7 +256,7 @@ static int ozSelfGetH(lua_State* l)
 
 static int ozSelfSetH(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   ns.self->h = Math::rad(l_tofloat(1));
   ns.self->h = angleWrap(ns.self->h);
@@ -265,7 +265,7 @@ static int ozSelfSetH(lua_State* l)
 
 static int ozSelfAddH(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   ns.self->h += Math::rad(l_tofloat(1));
   ns.self->h  = angleWrap(ns.self->h);
@@ -274,7 +274,7 @@ static int ozSelfAddH(lua_State* l)
 
 static int ozSelfGetV(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushfloat(Math::deg(ns.self->v));
   return 1;
@@ -282,7 +282,7 @@ static int ozSelfGetV(lua_State* l)
 
 static int ozSelfSetV(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   ns.self->v = Math::rad(l_tofloat(1));
   ns.self->v = clamp(ns.self->v, 0.0f, Math::TAU / 2.0f);
@@ -291,7 +291,7 @@ static int ozSelfSetV(lua_State* l)
 
 static int ozSelfAddV(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   ns.self->v += Math::rad(l_tofloat(1));
   ns.self->v  = clamp(ns.self->v, 0.0f, Math::TAU / 2.0f);
@@ -300,7 +300,7 @@ static int ozSelfAddV(lua_State* l)
 
 static int ozSelfGetDir(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   // {hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine}
   float hvsc[6];
@@ -320,7 +320,7 @@ static int ozSelfGetDir(lua_State* l)
 
 static int ozSelfMaxStamina(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   const BotClass* clazz = static_cast<const BotClass*>(ns.self->clazz);
 
@@ -330,7 +330,7 @@ static int ozSelfMaxStamina(lua_State* l)
 
 static int ozSelfGetStamina(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushfloat(ns.self->stamina);
   return 1;
@@ -338,7 +338,7 @@ static int ozSelfGetStamina(lua_State* l)
 
 static int ozSelfGetCargo(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   const Object* cargo = orbis.obj(ns.self->cargo);
 
@@ -348,7 +348,7 @@ static int ozSelfGetCargo(lua_State* l)
 
 static int ozSelfGetWeaponItem(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   const Object* weapon = orbis.obj(ns.self->weapon);
 
@@ -358,7 +358,7 @@ static int ozSelfGetWeaponItem(lua_State* l)
 
 static int ozSelfSetWeaponItem(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   int item = l_toint(1);
   if (item == -1) {
@@ -393,9 +393,9 @@ static int ozSelfSetWeaponItem(lua_State* l)
 
 static int ozSelfCanReachEntity(lua_State* l)
 {
-  ARG(2);
-  STR_INDEX(l_toint(1));
-  ENT_INDEX(l_toint(2));
+  ARG(2)
+  STR_INDEX(l_toint(1))
+  ENT_INDEX(l_toint(2))
 
   l_pushbool(ns.self->canReach(ent));
   return 1;
@@ -403,8 +403,8 @@ static int ozSelfCanReachEntity(lua_State* l)
 
 static int ozSelfCanReachObj(lua_State* l)
 {
-  ARG(1);
-  OBJ_INDEX(l_toint(1));
+  ARG(1)
+  OBJ_INDEX(l_toint(1))
 
   l_pushbool(ns.self->canReach(obj));
   return 1;
@@ -412,7 +412,7 @@ static int ozSelfCanReachObj(lua_State* l)
 
 static int ozSelfAction(lua_State* l)
 {
-  VARG(1, 3);
+  VARG(1, 3)
 
   int action = l_toint(1);
   int arg1   = l_toint(2);
@@ -432,7 +432,7 @@ static int ozSelfAction(lua_State* l)
 
 static int ozSelfClearActions(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   ns.self->actions = 0;
   return 0;
@@ -440,7 +440,7 @@ static int ozSelfClearActions(lua_State* l)
 
 static int ozSelfBindItems(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   ms.objIndex = 0;
   ms.objects.clear();
@@ -455,7 +455,7 @@ static int ozSelfBindItems(lua_State* l)
 
 static int ozSelfBindItem(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   int index = l_toint(1);
 
@@ -470,7 +470,7 @@ static int ozSelfBindItem(lua_State* l)
 
 static int ozSelfOverlaps(lua_State* l)
 {
-  ARG(2);
+  ARG(2)
 
   int  flags = l_toint(1);
   AABB aabb  = AABB(*ns.self, l_tofloat(2));
@@ -490,7 +490,7 @@ static int ozSelfOverlaps(lua_State* l)
 
 static int ozSelfBindOverlaps(lua_State* l)
 {
-  ARG(2);
+  ARG(2)
 
   int  flags = l_toint(1);
   AABB aabb  = AABB(*ns.self, l_tofloat(2));
@@ -535,7 +535,7 @@ static int ozSelfBindOverlaps(lua_State* l)
 
 static int ozMindGetSide(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushint(ns.mind->side);
   return 1;
@@ -543,7 +543,7 @@ static int ozMindGetSide(lua_State* l)
 
 static int ozMindSetSide(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   ns.mind->side = l_toint(1);
   return 0;
@@ -555,7 +555,7 @@ static int ozMindSetSide(lua_State* l)
 
 static int ozQuestAdd(lua_State* l)
 {
-  ARG(6);
+  ARG(6)
 
   questList.add(l_tostring(1),
                 l_tostring(2),
@@ -568,7 +568,7 @@ static int ozQuestAdd(lua_State* l)
 
 static int ozQuestEnd(lua_State* l)
 {
-  ARG(2);
+  ARG(2)
 
   int id = l_toint(1);
   if (uint(id) >= uint(questList.quests.size())) {
@@ -585,7 +585,7 @@ static int ozQuestEnd(lua_State* l)
 
 static int ozTechEnable(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   const char* technology = l_tostring(1);
 
@@ -595,7 +595,7 @@ static int ozTechEnable(lua_State* l)
 
 static int ozTechDisable(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   const char* technology = l_tostring(1);
 
@@ -605,7 +605,7 @@ static int ozTechDisable(lua_State* l)
 
 static int ozTechEnableAll(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   techGraph.enableAll();
   return 0;
@@ -613,7 +613,7 @@ static int ozTechEnableAll(lua_State* l)
 
 static int ozTechDisableAll(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   techGraph.disableAll();
   return 0;
@@ -625,7 +625,7 @@ static int ozTechDisableAll(lua_State* l)
 
 static int ozNirvanaRemoveDevice(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   int index = l_toint(1);
   const Device* const* device = nirvana.devices.find(index);
@@ -645,8 +645,8 @@ static int ozNirvanaAddMemo(lua_State* l)
 {
   int index = l_toint(1);
 
-  ARG(2);
-  OBJ_INDEX(index);
+  ARG(2)
+  OBJ_INDEX(index)
 
   if (nirvana.devices.contains(index)) {
     ERROR("object already has a device");

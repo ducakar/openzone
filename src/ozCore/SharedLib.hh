@@ -35,14 +35,14 @@
  * Declare pointer to function for a given function definition.
  */
 #define OZ_DL_DECLARE(func) \
-  decltype(::func)* func
+  decltype(::func)* func;
 
 /**
  * @def OZ_DL_DEFINE
  * Define pointer to function (initially `nullptr`) for a given function definition.
  */
 #define OZ_DL_DEFINE(func) \
-  decltype(::func)* func = nullptr
+  decltype(::func)* func = nullptr;
 
 /**
  * @def OZ_DL_LOAD

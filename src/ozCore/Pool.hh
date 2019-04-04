@@ -216,6 +216,11 @@ public:
     : PoolAlloc(sizeof(Elem), blockSlots)
   {}
 
+  void free()
+  {
+    PoolAlloc::free();
+  }
+
 };
 
 }

@@ -106,7 +106,7 @@ void Log::putsRaw(const char* s)
 {
   OZ_PRINT_BOTH(
     fputs(s, stream);
-  );
+  )
 }
 
 void Log::vprintRaw(const char* s, va_list ap)
@@ -119,21 +119,21 @@ void Log::vprintRaw(const char* s, va_list ap)
 
 void Log::printRaw(const char* s, ...)
 {
-  OZ_VAARGS_BUFFER(buffer);
+  OZ_VAARGS_BUFFER(buffer)
 
   putsRaw(buffer);
 }
 
 void Log::print(const char* s, ...)
 {
-  OZ_VAARGS_BUFFER(buffer);
+  OZ_VAARGS_BUFFER(buffer)
 
   const char* indent = getIndent();
 
   OZ_PRINT_BOTH(
     fputs(indent, stream);
     fputs(buffer, stream);
-  );
+  )
 }
 
 void Log::print()
@@ -142,23 +142,23 @@ void Log::print()
 
   OZ_PRINT_BOTH(
     fputs(indent, stream);
-  );
+  )
 }
 
 void Log::printEnd(const char* s, ...)
 {
-  OZ_VAARGS_BUFFER(buffer);
+  OZ_VAARGS_BUFFER(buffer)
 
   OZ_PRINT_BOTH(
     fputs(buffer, stream);
     fputc('\n', stream);
     fflush(stream);
-  );
+  )
 }
 
 void Log::println(const char* s, ...)
 {
-  OZ_VAARGS_BUFFER(buffer);
+  OZ_VAARGS_BUFFER(buffer)
 
   const char* indent = getIndent();
 
@@ -167,7 +167,7 @@ void Log::println(const char* s, ...)
     fputs(buffer, stream);
     fputc('\n', stream);
     fflush(stream);
-  );
+  )
 }
 
 void Log::println()
@@ -175,7 +175,7 @@ void Log::println()
   OZ_PRINT_BOTH(
     fputc('\n', stream);
     fflush(stream);
-  );
+  )
 }
 
 bool Log::printMemorySummary()
@@ -458,7 +458,7 @@ const Log& Log::operator<<(const Stream& is) const
 {
   OZ_PRINT_BOTH(
     fwrite(is.begin(), 1, is.capacity(), stream);
-  );
+  )
   return *this;
 }
 

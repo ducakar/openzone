@@ -28,7 +28,7 @@
 #include <cstring>
 
 #define OZ_PARSE_ERROR(charBias, message) \
-  OZ_ERROR("oz::Json: " message " at %s:%d:%d", path_, line_, column_ + (charBias));
+  OZ_ERROR("oz::Json: " message " at %s:%d:%d", path_, line_, column_ + (charBias))
 
 static_assert(sizeof(double) >= sizeof(void*),
               "Pointer must fit into double for internal oz::Json union to work properly");

@@ -362,20 +362,20 @@ enum PulseStatus
 
 static PulseStatus pulseStatus = NOT_INITIALISED;
 
-static OZ_DL_DEFINE(pa_simple_new);
-static OZ_DL_DEFINE(pa_simple_free);
-static OZ_DL_DEFINE(pa_simple_write);
-static OZ_DL_DEFINE(pa_simple_drain);
+static OZ_DL_DEFINE(pa_simple_new)
+static OZ_DL_DEFINE(pa_simple_free)
+static OZ_DL_DEFINE(pa_simple_write)
+static OZ_DL_DEFINE(pa_simple_drain)
 
 static void initialisePulse()
 {
   SharedLib libPulseSimple("libpulse-simple.so.0");
 
   if (libPulseSimple.isOpened()) {
-    OZ_DL_LOAD(libPulseSimple, pa_simple_new);
-    OZ_DL_LOAD(libPulseSimple, pa_simple_free);
-    OZ_DL_LOAD(libPulseSimple, pa_simple_write);
-    OZ_DL_LOAD(libPulseSimple, pa_simple_drain);
+    OZ_DL_LOAD(libPulseSimple, pa_simple_new)
+    OZ_DL_LOAD(libPulseSimple, pa_simple_free)
+    OZ_DL_LOAD(libPulseSimple, pa_simple_write)
+    OZ_DL_LOAD(libPulseSimple, pa_simple_drain)
 
     pulseStatus = INITIALISED;
   }

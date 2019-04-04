@@ -54,7 +54,7 @@ static ClientLuaState cs;
 
 static int ozGettext(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   l_pushstring(cs.missionLingua.get(l_tostring(1)));
   return 1;
@@ -66,7 +66,7 @@ static int ozGettext(lua_State* l)
 
 static int ozOrbisAddPlayer(lua_State* l)
 {
-  VARG(4, 6);
+  VARG(4, 6)
 
   AddMode mode    = AddMode(l_toint(1));
   Point   p       = Point(l_tofloat(2), l_tofloat(3), l_tofloat(4));
@@ -133,7 +133,7 @@ static int ozOrbisAddPlayer(lua_State* l)
 
 static int ozCameraMoveTo(lua_State* l)
 {
-  ARG(5);
+  ARG(5)
 
   float h = Math::rad(l_tofloat(4));
   float v = Math::rad(l_tofloat(5));
@@ -148,7 +148,7 @@ static int ozCameraMoveTo(lua_State* l)
 
 static int ozCameraWarpTo(lua_State* l)
 {
-  ARG(5);
+  ARG(5)
 
   float h   = Math::rad(l_tofloat(4));
   float v   = Math::rad(l_tofloat(5));
@@ -166,7 +166,7 @@ static int ozCameraWarpTo(lua_State* l)
 
 static int ozCameraGetBot(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushint(camera.bot);
   return 1;
@@ -174,8 +174,8 @@ static int ozCameraGetBot(lua_State* l)
 
 static int ozCameraSetBot(lua_State* l)
 {
-  ARG(1);
-  BOT_INDEX(l_toint(1));
+  ARG(1)
+  BOT_INDEX(l_toint(1))
 
   camera.rotateTo(Quat::rotationZXZ(bot->h, bot->v, 0.0f));
   camera.moveTo(Point(bot->p.x, bot->p.y, bot->p.z + bot->camZ));
@@ -186,8 +186,8 @@ static int ozCameraSetBot(lua_State* l)
 
 static int ozCameraAddSwitchableBot(lua_State* l)
 {
-  ARG(1);
-  BOT_INDEX(l_toint(1));
+  ARG(1)
+  BOT_INDEX(l_toint(1))
 
   camera.switchableUnits.add(bot->index);
   return 0;
@@ -195,8 +195,8 @@ static int ozCameraAddSwitchableBot(lua_State* l)
 
 static int ozCameraClearSwitchableBots(lua_State* l)
 {
-  ARG(1);
-  BOT_INDEX(l_toint(1));
+  ARG(1)
+  BOT_INDEX(l_toint(1))
 
   camera.switchableUnits.clear();
   camera.switchableUnits.trim();
@@ -205,7 +205,7 @@ static int ozCameraClearSwitchableBots(lua_State* l)
 
 static int ozCameraAllowReincarnation(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   camera.allowReincarnation = l_tobool(1);
   return 0;
@@ -213,7 +213,7 @@ static int ozCameraAllowReincarnation(lua_State* l)
 
 static int ozCameraSetState(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   camera.setState(Camera::State(l_toint(1)));
   return 0;
@@ -221,7 +221,7 @@ static int ozCameraSetState(lua_State* l)
 
 static int ozCameraExecuteSequence(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   String file = String::format("@mission/%s/%s.sequence.json", cs.mission.c(), l_tostring(1));
 
@@ -236,7 +236,7 @@ static int ozCameraExecuteSequence(lua_State* l)
 
 static int ozProfileGetName(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushstring(profile.name);
   return 1;
@@ -244,7 +244,7 @@ static int ozProfileGetName(lua_State* l)
 
 static int ozProfileSetName(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   profile.name = l_tostring(1);
   return 0;
@@ -252,7 +252,7 @@ static int ozProfileSetName(lua_State* l)
 
 static int ozProfileGetClass(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushstring(profile.clazz == nullptr ? String::EMPTY : profile.clazz->name);
   return 1;
@@ -260,7 +260,7 @@ static int ozProfileGetClass(lua_State* l)
 
 static int ozProfileSetClass(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   const char* sClazz = l_tostring(1);
   if (String::isEmpty(sClazz)) {
@@ -274,7 +274,7 @@ static int ozProfileSetClass(lua_State* l)
 
 static int ozProfileGetItems(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_newtable();
 
@@ -290,7 +290,7 @@ static int ozProfileGetItems(lua_State* l)
 
 static int ozProfileSetItems(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   profile.items.clear();
 
@@ -312,7 +312,7 @@ static int ozProfileSetItems(lua_State* l)
 
 static int ozProfileGetWeaponItem(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushint(profile.weaponItem);
   return 1;
@@ -320,7 +320,7 @@ static int ozProfileGetWeaponItem(lua_State* l)
 
 static int ozProfileSetWeaponItem(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   int item = l_toint(1);
   if (item == -1 || profile.clazz == nullptr) {
@@ -351,7 +351,7 @@ static int ozProfileSetWeaponItem(lua_State* l)
 
 static int ozUIBell(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   if (ui::style.sounds.bell != -1) {
     context.playSample(ui::style.sounds.bell);
@@ -361,7 +361,7 @@ static int ozUIBell(lua_State* l)
 
 static int ozUIBuildFrame(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   camera.strategic.hasBuildFrame = l_tobool(1);
   return 0;

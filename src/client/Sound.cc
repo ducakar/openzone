@@ -454,12 +454,12 @@ void Sound::initLibs()
     Log::printEnd(" Not found, speech synthesis not supported");
   }
   else {
-    OZ_DL_LOAD(libeSpeak, espeak_Initialize);
-    OZ_DL_LOAD(libeSpeak, espeak_Terminate);
-    OZ_DL_LOAD(libeSpeak, espeak_SetParameter);
-    OZ_DL_LOAD(libeSpeak, espeak_SetVoiceByName);
-    OZ_DL_LOAD(libeSpeak, espeak_SetSynthCallback);
-    OZ_DL_LOAD(libeSpeak, espeak_Synth);
+    OZ_DL_LOAD(libeSpeak, espeak_Initialize)
+    OZ_DL_LOAD(libeSpeak, espeak_Terminate)
+    OZ_DL_LOAD(libeSpeak, espeak_SetParameter)
+    OZ_DL_LOAD(libeSpeak, espeak_SetVoiceByName)
+    OZ_DL_LOAD(libeSpeak, espeak_SetSynthCallback)
+    OZ_DL_LOAD(libeSpeak, espeak_Synth)
 
     Log::printEnd(" OK, speech synthesis supported");
   }

@@ -65,13 +65,13 @@ struct Foo : oz::DChainNode<Foo>
   Foo(const Foo& f)
     : value(f.value)
   {
-    OZ_CHECK(allowCopy);
+    OZ_CHECK(allowCopy)
   }
 
   Foo(Foo&& f)
     : value(f.value)
   {
-    OZ_CHECK(allowMove);
+    OZ_CHECK(allowMove)
 
     f.value = -1;
   }
@@ -82,7 +82,7 @@ struct Foo : oz::DChainNode<Foo>
 
   Foo& operator=(const Foo& f)
   {
-    OZ_CHECK(allowCopy);
+    OZ_CHECK(allowCopy)
 
     if (this != &f) {
       value = f.value;
@@ -92,7 +92,7 @@ struct Foo : oz::DChainNode<Foo>
 
   Foo& operator=(Foo&& f)
   {
-    OZ_CHECK(allowMove);
+    OZ_CHECK(allowMove)
 
     if (this != &f) {
       value = f.value;
@@ -109,42 +109,42 @@ struct Foo : oz::DChainNode<Foo>
 
   bool operator==(const Foo& f) const
   {
-    OZ_CHECK(allowEqualsOp);
+    OZ_CHECK(allowEqualsOp)
 
     return value == f.value;
   }
 
   bool operator==(int i) const
   {
-    OZ_CHECK(allowEqualsOp);
+    OZ_CHECK(allowEqualsOp)
 
     return value == i;
   }
 
   friend bool operator==(int i, const Foo& f)
   {
-    OZ_CHECK(allowEqualsOp);
+    OZ_CHECK(allowEqualsOp)
 
     return i == f.value;
   }
 
   bool operator<(const Foo& f) const
   {
-    OZ_CHECK(allowLessOp);
+    OZ_CHECK(allowLessOp)
 
     return value < f.value;
   }
 
   bool operator<(int i) const
   {
-    OZ_CHECK(allowLessOp);
+    OZ_CHECK(allowLessOp)
 
     return value < i;
   }
 
   friend bool operator<(int i, const Foo& f)
   {
-    OZ_CHECK(allowLessOp);
+    OZ_CHECK(allowLessOp)
 
     return i < f.value;
   }

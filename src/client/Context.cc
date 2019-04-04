@@ -792,15 +792,15 @@ void Context::init()
     fragPools = new FragPool*[liber.fragPools.size()]{};
   }
 
-  OZ_REGISTER_IMAGOCLASS(SMM);
-  OZ_REGISTER_IMAGOCLASS(SMMVehicle);
-  OZ_REGISTER_IMAGOCLASS(Explosion);
-  OZ_REGISTER_IMAGOCLASS(MD2);
-  OZ_REGISTER_IMAGOCLASS(MD2Weapon);
+  OZ_REGISTER_IMAGOCLASS(SMM)
+  OZ_REGISTER_IMAGOCLASS(SMMVehicle)
+  OZ_REGISTER_IMAGOCLASS(Explosion)
+  OZ_REGISTER_IMAGOCLASS(MD2)
+  OZ_REGISTER_IMAGOCLASS(MD2Weapon)
 
-  OZ_REGISTER_AUDIOCLASS(Basic);
-  OZ_REGISTER_AUDIOCLASS(Bot);
-  OZ_REGISTER_AUDIOCLASS(Vehicle);
+  OZ_REGISTER_AUDIOCLASS(Basic)
+  OZ_REGISTER_AUDIOCLASS(Bot)
+  OZ_REGISTER_AUDIOCLASS(Vehicle)
 
   int nTextures    = liber.textures.size();
   int nSounds      = liber.sounds.size();

@@ -1111,7 +1111,7 @@ Bot::Bot(const BotClass* clazz_, int index, const Json& json)
   instrument = -1;
   container  = -1;
 
-  state      = clazz_->state & MECHANICAL_BIT;;
+  state      = clazz_->state & MECHANICAL_BIT;
   oldState   = state;
   stamina    = json["stamina"].get(0.0f);
   step       = 0.0f;
@@ -1128,10 +1128,10 @@ Bot::Bot(const BotClass* clazz_, int index, const Json& json)
   mind       = json["mind"].get("");
 
   for (const Json& stateJson : json["state"].arrayCRange()) {
-    OZ_STATE_READ(DEAD_BIT,         "dead"        );
-    OZ_STATE_READ(INCARNATABLE_BIT, "incarnatable");
-    OZ_STATE_READ(CROUCHING_BIT,    "crouching"   );
-    OZ_STATE_READ(WALKING_BIT,      "walking"     );
+    OZ_STATE_READ(DEAD_BIT,         "dead"        )
+    OZ_STATE_READ(INCARNATABLE_BIT, "incarnatable")
+    OZ_STATE_READ(CROUCHING_BIT,    "crouching"   )
+    OZ_STATE_READ(WALKING_BIT,      "walking"     )
   }
 
   if (state & CROUCHING_BIT) {
@@ -1191,10 +1191,10 @@ Json Bot::write() const
 
   Json& stateJson = json.add("state", Json::ARRAY);
 
-  OZ_STATE_WRITE(DEAD_BIT,         "dead"        );
-  OZ_STATE_WRITE(INCARNATABLE_BIT, "incarnatable");
-  OZ_STATE_WRITE(CROUCHING_BIT,    "crouching"   );
-  OZ_STATE_WRITE(WALKING_BIT,      "walking"     );
+  OZ_STATE_WRITE(DEAD_BIT,         "dead"        )
+  OZ_STATE_WRITE(INCARNATABLE_BIT, "incarnatable")
+  OZ_STATE_WRITE(CROUCHING_BIT,    "crouching"   )
+  OZ_STATE_WRITE(WALKING_BIT,      "walking"     )
 
   return json;
 }

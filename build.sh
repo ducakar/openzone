@@ -57,6 +57,7 @@ function build()
           -G Ninja \
           -D CMAKE_TOOLCHAIN_FILE=../../cmake/$platform.Toolchain.cmake \
           -D CMAKE_BUILD_TYPE=$buildType \
+          -D OZ_TOOLS=ON \
           ../.. )
       fi
     fi

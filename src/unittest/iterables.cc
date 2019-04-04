@@ -75,12 +75,12 @@ void test_iterables()
   v.add(0);
   v.add(0);
 
-  OZ_CHECK(!iEquals(crange(l), crange(v)));
-  OZ_CHECK(!iEquals(crange(v), crange(l)));
+  OZ_CHECK(!iEquals(crange(l), crange(v)))
+  OZ_CHECK(!iEquals(crange(v), crange(l)))
 
   l.free();
   v.clear();
   v.trim();
 
-  OZ_CHECK(iEquals(crange(l), crange(v)));
+  OZ_CHECK(iEquals(crange(l), crange(v)))
 }

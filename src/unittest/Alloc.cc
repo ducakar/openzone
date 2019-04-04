@@ -34,43 +34,43 @@ void test_Alloc()
   int    oSumCount  = Alloc::sumCount;
 
   Foo* array = new Foo[10]();
-  OZ_CHECK(Alloc::amount >= oAmount + 10 * sizeof(Foo));
-  OZ_CHECK(Alloc::sumAmount >= oSumAmount + 10 * sizeof(Foo));
-  OZ_CHECK(Alloc::count == oCount + 1);
-  OZ_CHECK(Alloc::sumCount == oSumCount + 1);
+  OZ_CHECK(Alloc::amount >= oAmount + 10 * sizeof(Foo))
+  OZ_CHECK(Alloc::sumAmount >= oSumAmount + 10 * sizeof(Foo))
+  OZ_CHECK(Alloc::count == oCount + 1)
+  OZ_CHECK(Alloc::sumCount == oSumCount + 1)
 
   array = Arrays::reallocate(array, 5, 8);
-  OZ_CHECK(Alloc::amount >= oAmount + 8 * sizeof(Foo));
-  OZ_CHECK(Alloc::sumAmount >= oSumAmount + 18 * sizeof(Foo));
-  OZ_CHECK(Alloc::count == oCount + 1);
-  OZ_CHECK(Alloc::sumCount == oSumCount + 2);
+  OZ_CHECK(Alloc::amount >= oAmount + 8 * sizeof(Foo))
+  OZ_CHECK(Alloc::sumAmount >= oSumAmount + 18 * sizeof(Foo))
+  OZ_CHECK(Alloc::count == oCount + 1)
+  OZ_CHECK(Alloc::sumCount == oSumCount + 2)
 
   delete[] array;
-  OZ_CHECK(Alloc::amount >= oAmount);
-  OZ_CHECK(Alloc::sumAmount >= 18 * sizeof(Foo));
-  OZ_CHECK(Alloc::count == oCount + 0);
-  OZ_CHECK(Alloc::sumCount == oSumCount + 2);
+  OZ_CHECK(Alloc::amount >= oAmount)
+  OZ_CHECK(Alloc::sumAmount >= 18 * sizeof(Foo))
+  OZ_CHECK(Alloc::count == oCount + 0)
+  OZ_CHECK(Alloc::sumCount == oSumCount + 2)
 
-  OZ_CHECK(Alloc::alignDown(0) == 0);
-  OZ_CHECK(Alloc::alignDown(1) == 0);
-  OZ_CHECK(Alloc::alignDown(OZ_ALIGNMENT - 1) == 0);
-  OZ_CHECK(Alloc::alignDown(OZ_ALIGNMENT) == OZ_ALIGNMENT);
+  OZ_CHECK(Alloc::alignDown(0) == 0)
+  OZ_CHECK(Alloc::alignDown(1) == 0)
+  OZ_CHECK(Alloc::alignDown(OZ_ALIGNMENT - 1) == 0)
+  OZ_CHECK(Alloc::alignDown(OZ_ALIGNMENT) == OZ_ALIGNMENT)
 
-  OZ_CHECK(Alloc::alignUp(0) == 0);
-  OZ_CHECK(Alloc::alignUp(1) == OZ_ALIGNMENT);
-  OZ_CHECK(Alloc::alignUp(OZ_ALIGNMENT - 1) == OZ_ALIGNMENT);
-  OZ_CHECK(Alloc::alignUp(OZ_ALIGNMENT) == OZ_ALIGNMENT);
+  OZ_CHECK(Alloc::alignUp(0) == 0)
+  OZ_CHECK(Alloc::alignUp(1) == OZ_ALIGNMENT)
+  OZ_CHECK(Alloc::alignUp(OZ_ALIGNMENT - 1) == OZ_ALIGNMENT)
+  OZ_CHECK(Alloc::alignUp(OZ_ALIGNMENT) == OZ_ALIGNMENT)
 
   char* zeroptr = nullptr;
   char* oneptr  = zeroptr + OZ_ALIGNMENT;
 
-  OZ_CHECK(Alloc::alignDown(zeroptr) == zeroptr);
-  OZ_CHECK(Alloc::alignDown(zeroptr + 1) == zeroptr);
-  OZ_CHECK(Alloc::alignDown(oneptr - 1) == zeroptr);
-  OZ_CHECK(Alloc::alignDown(oneptr) == oneptr);
+  OZ_CHECK(Alloc::alignDown(zeroptr) == zeroptr)
+  OZ_CHECK(Alloc::alignDown(zeroptr + 1) == zeroptr)
+  OZ_CHECK(Alloc::alignDown(oneptr - 1) == zeroptr)
+  OZ_CHECK(Alloc::alignDown(oneptr) == oneptr)
 
-  OZ_CHECK(Alloc::alignUp(zeroptr) == zeroptr);
-  OZ_CHECK(Alloc::alignUp(zeroptr + 1) == oneptr);
-  OZ_CHECK(Alloc::alignUp(oneptr - 1) == oneptr);
-  OZ_CHECK(Alloc::alignUp(oneptr) == oneptr);
+  OZ_CHECK(Alloc::alignUp(zeroptr) == zeroptr)
+  OZ_CHECK(Alloc::alignUp(zeroptr + 1) == oneptr)
+  OZ_CHECK(Alloc::alignUp(oneptr - 1) == oneptr)
+  OZ_CHECK(Alloc::alignUp(oneptr) == oneptr)
 }

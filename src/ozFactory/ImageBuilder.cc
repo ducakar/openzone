@@ -139,8 +139,8 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
 {
   OZ_ASSERT(nFaces > 0);
 
-  int width      = faces[0].width();
-  int height     = faces[0].height();
+  int  width     = faces[0].width();
+  int  height    = faces[0].height();
 
   bool isCubeMap = ImageBuilder::options & ImageBuilder::CUBE_MAP_BIT;
   bool isNormal  = ImageBuilder::options & ImageBuilder::NORMAL_MAP_BIT;

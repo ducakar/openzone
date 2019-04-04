@@ -493,7 +493,7 @@ void UnitProxy::update()
       }
       else {
         headH *= Camera::ROT_SMOOTHING_COEF;
-        headV *= Camera::ROT_SMOOTHING_COEF;;
+        headV *= Camera::ROT_SMOOTHING_COEF;
       }
 
       bobTheta = 0.0f;

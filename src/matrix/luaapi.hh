@@ -77,7 +77,7 @@ static MatrixLuaState ms;
 
 static int ozOrbisGetSize(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushint(2 * Orbis::DIM);
   return 1;
@@ -85,7 +85,7 @@ static int ozOrbisGetSize(lua_State* l)
 
 static int ozOrbisGetDim(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   Vec3 dim = orbis.dim();
 
@@ -97,7 +97,7 @@ static int ozOrbisGetDim(lua_State* l)
 
 static int ozOrbisGetGravity(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushfloat(physics.gravity);
   return 1;
@@ -105,7 +105,7 @@ static int ozOrbisGetGravity(lua_State* l)
 
 static int ozOrbisSetGravity(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   physics.gravity = l_tofloat(1);
   return 0;
@@ -113,7 +113,7 @@ static int ozOrbisSetGravity(lua_State* l)
 
 static int ozOrbisAddStr(lua_State* l)
 {
-  VARG(5, 7);
+  VARG(5, 7)
 
   const BSP* bsp = liber.bsp(l_tostring(2));
 
@@ -149,7 +149,7 @@ static int ozOrbisAddStr(lua_State* l)
 
 static int ozOrbisAddObj(lua_State* l)
 {
-  VARG(5, 7);
+  VARG(5, 7)
 
   const ObjectClass* clazz = liber.objClass(l_tostring(2));
 
@@ -186,7 +186,7 @@ static int ozOrbisAddObj(lua_State* l)
 
 static int ozOrbisAddFrag(lua_State* l)
 {
-  ARG(8);
+  ARG(8)
 
   const FragPool* pool = liber.fragPool(l_tostring(2));
 
@@ -209,7 +209,7 @@ static int ozOrbisAddFrag(lua_State* l)
 
 static int ozOrbisGenFrags(lua_State* l)
 {
-  ARG(11);
+  ARG(11)
 
   const FragPool* pool = liber.fragPool(l_tostring(1));
 
@@ -225,7 +225,7 @@ static int ozOrbisGenFrags(lua_State* l)
 
 static int ozOrbisOverlaps(lua_State* l)
 {
-  VARG(7, 8);
+  VARG(7, 8)
 
   int  flags = l_toint(1);
   AABB aabb  = AABB(Point(l_tofloat(2), l_tofloat(3), l_tofloat(4)),
@@ -257,7 +257,7 @@ static int ozOrbisOverlaps(lua_State* l)
 
 static int ozOrbisBindOverlaps(lua_State* l)
 {
-  ARG(7);
+  ARG(7)
 
   int  flags = l_toint(1);
   AABB aabb  = AABB(Point(l_tofloat(2), l_tofloat(3), l_tofloat(4)),
@@ -299,7 +299,7 @@ static int ozOrbisBindOverlaps(lua_State* l)
 
 static int ozCaelumLoad(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   int id = liber.caelumIndex(l_tostring(1));
 
@@ -309,7 +309,7 @@ static int ozCaelumLoad(lua_State* l)
 
 static int ozCaelumGetHeading(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushfloat(orbis.caelum.heading);
   return 1;
@@ -317,7 +317,7 @@ static int ozCaelumGetHeading(lua_State* l)
 
 static int ozCaelumSetHeading(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   orbis.caelum.heading = l_tofloat(1);
   return 0;
@@ -325,7 +325,7 @@ static int ozCaelumSetHeading(lua_State* l)
 
 static int ozCaelumGetPeriod(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushfloat(orbis.caelum.period);
   return 1;
@@ -333,7 +333,7 @@ static int ozCaelumGetPeriod(lua_State* l)
 
 static int ozCaelumSetPeriod(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   orbis.caelum.period = l_tofloat(1);
   return 0;
@@ -341,7 +341,7 @@ static int ozCaelumSetPeriod(lua_State* l)
 
 static int ozCaelumGetTime(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushfloat(orbis.caelum.time);
   return 1;
@@ -349,7 +349,7 @@ static int ozCaelumGetTime(lua_State* l)
 
 static int ozCaelumSetTime(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   orbis.caelum.time = l_tofloat(1);
   return 0;
@@ -357,7 +357,7 @@ static int ozCaelumSetTime(lua_State* l)
 
 static int ozCaelumAddTime(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   orbis.caelum.time += l_tofloat(1);
   return 0;
@@ -365,7 +365,7 @@ static int ozCaelumAddTime(lua_State* l)
 
 static int ozCaelumSetRealTime(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   Time  localTime = Time::local();
   // Since it cannot be determined whether DST is on, just subtract half an hour to get an average.
@@ -382,7 +382,7 @@ static int ozCaelumSetRealTime(lua_State* l)
 
 static int ozTerraLoad(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   int id = liber.terraIndex(l_tostring(1));
 
@@ -392,7 +392,7 @@ static int ozTerraLoad(lua_State* l)
 
 static int ozTerraHeight(lua_State* l)
 {
-  ARG(2);
+  ARG(2)
 
   float x = l_tofloat(1);
   float y = l_tofloat(2);
@@ -407,7 +407,7 @@ static int ozTerraHeight(lua_State* l)
 
 static int ozBSPDim(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   const BSP* bsp = liber.bsp(l_tostring(1));
   Vec3 dim = bsp->dim();
@@ -420,7 +420,7 @@ static int ozBSPDim(lua_State* l)
 
 static int ozBindStr(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   int index = l_toint(1);
   if (uint(index) >= uint(Orbis::MAX_STRUCTS)) {
@@ -436,7 +436,7 @@ static int ozBindStr(lua_State* l)
 
 static int ozBindNextStr(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   ms.str = nullptr;
 
@@ -451,7 +451,7 @@ static int ozBindNextStr(lua_State* l)
 
 static int ozStrIsNull(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushbool(ms.str == nullptr);
   return 1;
@@ -459,7 +459,7 @@ static int ozStrIsNull(lua_State* l)
 
 static int ozStrGetIndex(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushint(ms.str == nullptr ? -1 : ms.str->index);
   return 1;
@@ -467,8 +467,8 @@ static int ozStrGetIndex(lua_State* l)
 
 static int ozStrGetBounds(lua_State* l)
 {
-  ARG(0);
-  STR();
+  ARG(0)
+  STR()
 
   l_pushfloat(ms.str->mins.x);
   l_pushfloat(ms.str->mins.y);
@@ -481,8 +481,8 @@ static int ozStrGetBounds(lua_State* l)
 
 static int ozStrGetPos(lua_State* l)
 {
-  ARG(0);
-  STR();
+  ARG(0)
+  STR()
 
   l_pushfloat(ms.str->p.x);
   l_pushfloat(ms.str->p.y);
@@ -492,8 +492,8 @@ static int ozStrGetPos(lua_State* l)
 
 static int ozStrGetBSP(lua_State* l)
 {
-  ARG(0);
-  STR();
+  ARG(0)
+  STR()
 
   l_pushstring(ms.str->bsp->name);
   return 1;
@@ -501,8 +501,8 @@ static int ozStrGetBSP(lua_State* l)
 
 static int ozStrGetHeading(lua_State* l)
 {
-  ARG(0);
-  STR();
+  ARG(0)
+  STR()
 
   l_pushint(ms.str->heading);
   return 1;
@@ -510,8 +510,8 @@ static int ozStrGetHeading(lua_State* l)
 
 static int ozStrMaxLife(lua_State* l)
 {
-  ARG(0);
-  STR();
+  ARG(0)
+  STR()
 
   l_pushfloat(ms.str->bsp->life);
   return 1;
@@ -519,8 +519,8 @@ static int ozStrMaxLife(lua_State* l)
 
 static int ozStrGetLife(lua_State* l)
 {
-  ARG(0);
-  STR();
+  ARG(0)
+  STR()
 
   l_pushfloat(ms.str->life);
   return 1;
@@ -528,8 +528,8 @@ static int ozStrGetLife(lua_State* l)
 
 static int ozStrSetLife(lua_State* l)
 {
-  ARG(1);
-  STR();
+  ARG(1)
+  STR()
 
   ms.str->life = clamp(l_tofloat(1), 0.0f, ms.str->bsp->life);
   return 0;
@@ -537,8 +537,8 @@ static int ozStrSetLife(lua_State* l)
 
 static int ozStrAddLife(lua_State* l)
 {
-  ARG(1);
-  STR();
+  ARG(1)
+  STR()
 
   ms.str->life = clamp(ms.str->life + l_tofloat(1), 0.0f, ms.str->bsp->life);
   return 0;
@@ -546,8 +546,8 @@ static int ozStrAddLife(lua_State* l)
 
 static int ozStrDefaultResistance(lua_State* l)
 {
-  ARG(0);
-  STR();
+  ARG(0)
+  STR()
 
   l_pushfloat(ms.str->bsp->resistance);
   return 1;
@@ -555,8 +555,8 @@ static int ozStrDefaultResistance(lua_State* l)
 
 static int ozStrGetResistance(lua_State* l)
 {
-  ARG(0);
-  STR();
+  ARG(0)
+  STR()
 
   l_pushfloat(ms.str->resistance);
   return 1;
@@ -564,8 +564,8 @@ static int ozStrGetResistance(lua_State* l)
 
 static int ozStrSetResistance(lua_State* l)
 {
-  ARG(1);
-  STR();
+  ARG(1)
+  STR()
 
   ms.str->resistance = max(0.0f, l_tofloat(1));
   return 0;
@@ -573,8 +573,8 @@ static int ozStrSetResistance(lua_State* l)
 
 static int ozStrDamage(lua_State* l)
 {
-  ARG(1);
-  STR();
+  ARG(1)
+  STR()
 
   ms.str->damage(l_tofloat(1));
   return 0;
@@ -582,8 +582,8 @@ static int ozStrDamage(lua_State* l)
 
 static int ozStrDestroy(lua_State* l)
 {
-  ARG(0);
-  STR();
+  ARG(0)
+  STR()
 
   ms.str->destroy();
   return 0;
@@ -591,8 +591,8 @@ static int ozStrDestroy(lua_State* l)
 
 static int ozStrRemove(lua_State* l)
 {
-  ARG(0);
-  STR();
+  ARG(0)
+  STR()
 
   synapse.remove(ms.str);
   ms.str = nullptr;
@@ -601,8 +601,8 @@ static int ozStrRemove(lua_State* l)
 
 static int ozStrNumBoundObjs(lua_State* l)
 {
-  ARG(0);
-  STR();
+  ARG(0)
+  STR()
 
   l_pushint(ms.str->boundObjects.size());
   return 1;
@@ -610,8 +610,8 @@ static int ozStrNumBoundObjs(lua_State* l)
 
 static int ozStrBindBoundObj(lua_State* l)
 {
-  ARG(1);
-  STR();
+  ARG(1)
+  STR()
 
   int index = l_toint(1);
   if (uint(index) >= uint(ms.str->boundObjects.size())) {
@@ -625,8 +625,8 @@ static int ozStrBindBoundObj(lua_State* l)
 
 static int ozStrNumEnts(lua_State* l)
 {
-  ARG(0);
-  STR();
+  ARG(0)
+  STR()
 
   l_pushint(ms.str->entities.size());
   return 1;
@@ -634,9 +634,9 @@ static int ozStrNumEnts(lua_State* l)
 
 static int ozStrBindEnt(lua_State* l)
 {
-  ARG(1);
-  STR();
-  ENT_INDEX(l_toint(1));
+  ARG(1)
+  STR()
+  ENT_INDEX(l_toint(1))
 
   ms.ent = ent;
   l_pushbool(ms.ent != nullptr);
@@ -645,8 +645,8 @@ static int ozStrBindEnt(lua_State* l)
 
 static int ozStrOverlaps(lua_State* l)
 {
-  ARG(2);
-  STR();
+  ARG(2)
+  STR()
 
   int  flags = l_toint(1);
   AABB aabb  = ms.str->toAABB(l_tofloat(2));
@@ -666,8 +666,8 @@ static int ozStrOverlaps(lua_State* l)
 
 static int ozStrBindOverlaps(lua_State* l)
 {
-  ARG(2);
-  STR();
+  ARG(2)
+  STR()
 
   int  flags = l_toint(1);
   AABB aabb  = ms.str->toAABB(l_tofloat(2));
@@ -708,9 +708,9 @@ static int ozStrBindOverlaps(lua_State* l)
 
 static int ozStrVectorFromSelf(lua_State* l)
 {
-  ARG(1);
-  STR();
-  SELF();
+  ARG(1)
+  STR()
+  SELF()
 
   Vec3 vec = ms.str->p - ms.self->p;
 
@@ -722,9 +722,9 @@ static int ozStrVectorFromSelf(lua_State* l)
 
 static int ozStrVectorFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  STR();
-  SELF_BOT();
+  ARG(0)
+  STR()
+  SELF_BOT()
 
   Point eye = Point(self->p.x, self->p.y, self->p.z + self->camZ);
   Vec3  vec = ms.str->p - eye;
@@ -737,9 +737,9 @@ static int ozStrVectorFromSelfEye(lua_State* l)
 
 static int ozStrDirFromSelf(lua_State* l)
 {
-  ARG(0);
-  STR();
-  SELF();
+  ARG(0)
+  STR()
+  SELF()
 
   Vec3 dir = ~(ms.str->p - ms.self->p);
 
@@ -751,9 +751,9 @@ static int ozStrDirFromSelf(lua_State* l)
 
 static int ozStrDirFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  STR();
-  SELF_BOT();
+  ARG(0)
+  STR()
+  SELF_BOT()
 
   Point eye = Point(self->p.x, self->p.y, self->p.z + self->camZ);
   Vec3  dir = ~(ms.str->p - eye);
@@ -766,9 +766,9 @@ static int ozStrDirFromSelfEye(lua_State* l)
 
 static int ozStrDistFromSelf(lua_State* l)
 {
-  ARG(0);
-  STR();
-  SELF();
+  ARG(0)
+  STR()
+  SELF()
 
   l_pushfloat(!(ms.str->p - ms.self->p));
   return 1;
@@ -776,9 +776,9 @@ static int ozStrDistFromSelf(lua_State* l)
 
 static int ozStrDistFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  STR();
-  SELF_BOT();
+  ARG(0)
+  STR()
+  SELF_BOT()
 
   Point eye = Point(self->p.x, self->p.y, self->p.z + self->camZ);
 
@@ -788,9 +788,9 @@ static int ozStrDistFromSelfEye(lua_State* l)
 
 static int ozStrHeadingFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  STR();
-  SELF_BOT();
+  ARG(0)
+  STR()
+  SELF_BOT()
 
   float dx    = ms.str->p.x - self->p.x;
   float dy    = ms.str->p.y - self->p.y;
@@ -802,9 +802,9 @@ static int ozStrHeadingFromSelfEye(lua_State* l)
 
 static int ozStrRelHeadingFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  STR();
-  SELF_BOT();
+  ARG(0)
+  STR()
+  SELF_BOT()
 
   float dx    = ms.str->p.x - self->p.x;
   float dy    = ms.str->p.y - self->p.y;
@@ -816,9 +816,9 @@ static int ozStrRelHeadingFromSelfEye(lua_State* l)
 
 static int ozStrPitchFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  STR();
-  SELF_BOT();
+  ARG(0)
+  STR()
+  SELF_BOT()
 
   Point eye   = Point(self->p.x, self->p.y, self->p.z + self->camZ);
   float dx    = ms.str->p.x - eye.x;
@@ -832,9 +832,9 @@ static int ozStrPitchFromSelfEye(lua_State* l)
 
 static int ozStrIsVisibleFromSelf(lua_State* l)
 {
-  ARG(0);
-  STR();
-  SELF();
+  ARG(0)
+  STR()
+  SELF()
 
   Vec3 vec = ms.str->p - ms.self->p;
 
@@ -846,9 +846,9 @@ static int ozStrIsVisibleFromSelf(lua_State* l)
 
 static int ozStrIsVisibleFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  STR();
-  SELF_BOT();
+  ARG(0)
+  STR()
+  SELF_BOT()
 
   Point eye = Point(self->p.x, self->p.y, self->p.z + self->camZ);
   Vec3  vec = ms.str->p - eye;
@@ -865,8 +865,8 @@ static int ozStrIsVisibleFromSelfEye(lua_State* l)
 
 static int ozEntGetState(lua_State* l)
 {
-  ARG(0);
-  ENT();
+  ARG(0)
+  ENT()
 
   l_pushint(ms.ent->state);
   return 1;
@@ -874,8 +874,8 @@ static int ozEntGetState(lua_State* l)
 
 static int ozEntGetLock(lua_State* l)
 {
-  ARG(0);
-  ENT();
+  ARG(0)
+  ENT()
 
   l_pushint(ms.ent->key);
   return 1;
@@ -883,8 +883,8 @@ static int ozEntGetLock(lua_State* l)
 
 static int ozEntSetLock(lua_State* l)
 {
-  ARG(1);
-  ENT();
+  ARG(1)
+  ENT()
 
   ms.ent->key = l_toint(1);
   return 0;
@@ -892,8 +892,8 @@ static int ozEntSetLock(lua_State* l)
 
 static int ozEntTrigger(lua_State* l)
 {
-  ARG(0);
-  ENT();
+  ARG(0)
+  ENT()
 
   ms.ent->trigger();
   return 0;
@@ -901,8 +901,8 @@ static int ozEntTrigger(lua_State* l)
 
 static int ozEntOverlaps(lua_State* l)
 {
-  ARG(2);
-  ENT();
+  ARG(2)
+  ENT()
 
   int   flags  = l_toint(1);
   float margin = l_tofloat(2);
@@ -922,8 +922,8 @@ static int ozEntOverlaps(lua_State* l)
 
 static int ozEntBindOverlaps(lua_State* l)
 {
-  ARG(2);
-  ENT();
+  ARG(2)
+  ENT()
 
   int   flags  = l_toint(1);
   float margin = l_tofloat(2);
@@ -953,10 +953,10 @@ static int ozEntBindOverlaps(lua_State* l)
 
 static int ozEntVectorFromSelf(lua_State* l)
 {
-  ARG(1);
-  STR();
-  ENT();
-  SELF();
+  ARG(1)
+  STR()
+  ENT()
+  SELF()
 
   Point p   = ms.str->toAbsoluteCS(ms.ent->clazz->p() + ms.ent->offset);
   Vec3  vec = p - ms.self->p;
@@ -969,10 +969,10 @@ static int ozEntVectorFromSelf(lua_State* l)
 
 static int ozEntVectorFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  STR();
-  ENT();
-  SELF_BOT();
+  ARG(0)
+  STR()
+  ENT()
+  SELF_BOT()
 
   Point p   = ms.str->toAbsoluteCS(ms.ent->clazz->p() + ms.ent->offset);
   Point eye = Point(self->p.x, self->p.y, self->p.z + self->camZ);
@@ -986,10 +986,10 @@ static int ozEntVectorFromSelfEye(lua_State* l)
 
 static int ozEntDirFromSelf(lua_State* l)
 {
-  ARG(0);
-  STR();
-  ENT();
-  SELF();
+  ARG(0)
+  STR()
+  ENT()
+  SELF()
 
   Point p   = ms.str->toAbsoluteCS(ms.ent->clazz->p() + ms.ent->offset);
   Vec3  dir = ~(p - ms.self->p);
@@ -1002,10 +1002,10 @@ static int ozEntDirFromSelf(lua_State* l)
 
 static int ozEntDirFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  STR();
-  ENT();
-  SELF_BOT();
+  ARG(0)
+  STR()
+  ENT()
+  SELF_BOT()
 
   Point p   = ms.str->toAbsoluteCS(ms.ent->clazz->p() + ms.ent->offset);
   Point eye = Point(self->p.x, self->p.y, self->p.z + self->camZ);
@@ -1019,10 +1019,10 @@ static int ozEntDirFromSelfEye(lua_State* l)
 
 static int ozEntDistFromSelf(lua_State* l)
 {
-  ARG(0);
-  STR();
-  ENT();
-  SELF();
+  ARG(0)
+  STR()
+  ENT()
+  SELF()
 
   Point p = ms.str->toAbsoluteCS(ms.ent->clazz->p() + ms.ent->offset);
 
@@ -1032,10 +1032,10 @@ static int ozEntDistFromSelf(lua_State* l)
 
 static int ozEntDistFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  STR();
-  ENT();
-  SELF_BOT();
+  ARG(0)
+  STR()
+  ENT()
+  SELF_BOT()
 
   Point p   = ms.str->toAbsoluteCS(ms.ent->clazz->p() + ms.ent->offset);
   Point eye = Point(self->p.x, self->p.y, self->p.z + self->camZ);
@@ -1046,10 +1046,10 @@ static int ozEntDistFromSelfEye(lua_State* l)
 
 static int ozEntHeadingFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  STR();
-  ENT();
-  SELF_BOT();
+  ARG(0)
+  STR()
+  ENT()
+  SELF_BOT()
 
   Point p     = ms.str->toAbsoluteCS(ms.ent->clazz->p() + ms.ent->offset);
   float dx    = p.x - self->p.x;
@@ -1062,10 +1062,10 @@ static int ozEntHeadingFromSelfEye(lua_State* l)
 
 static int ozEntRelHeadingFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  STR();
-  ENT();
-  SELF_BOT();
+  ARG(0)
+  STR()
+  ENT()
+  SELF_BOT()
 
   Point p     = ms.str->toAbsoluteCS(ms.ent->clazz->p() + ms.ent->offset);
   float dx    = p.x - self->p.x;
@@ -1078,10 +1078,10 @@ static int ozEntRelHeadingFromSelfEye(lua_State* l)
 
 static int ozEntPitchFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  STR();
-  ENT();
-  SELF_BOT();
+  ARG(0)
+  STR()
+  ENT()
+  SELF_BOT()
 
   Point p     = ms.str->toAbsoluteCS(ms.ent->clazz->p() + ms.ent->offset);
   Point eye   = Point(self->p.x, self->p.y, self->p.z + self->camZ);
@@ -1096,10 +1096,10 @@ static int ozEntPitchFromSelfEye(lua_State* l)
 
 static int ozEntIsVisibleFromSelf(lua_State* l)
 {
-  ARG(0);
-  STR();
-  ENT();
-  SELF();
+  ARG(0)
+  STR()
+  ENT()
+  SELF()
 
   Point p   = ms.str->toAbsoluteCS(ms.ent->clazz->p() + ms.ent->offset);
   Vec3  vec = p - ms.self->p;
@@ -1112,10 +1112,10 @@ static int ozEntIsVisibleFromSelf(lua_State* l)
 
 static int ozEntIsVisibleFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  STR();
-  ENT();
-  SELF_BOT();
+  ARG(0)
+  STR()
+  ENT()
+  SELF_BOT()
 
   Point p   = ms.str->toAbsoluteCS(ms.ent->clazz->p() + ms.ent->offset);
   Point eye = Point(self->p.x, self->p.y, self->p.z + self->camZ);
@@ -1133,7 +1133,7 @@ static int ozEntIsVisibleFromSelfEye(lua_State* l)
 
 static int ozClassDim(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   const ObjectClass* clazz = liber.objClass(l_tostring(1));
 
@@ -1145,7 +1145,7 @@ static int ozClassDim(lua_State* l)
 
 static int ozBindObj(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   int index = l_toint(1);
   if (uint(index) >= uint(Orbis::MAX_OBJECTS)) {
@@ -1161,7 +1161,7 @@ static int ozBindObj(lua_State* l)
 
 static int ozBindSelf(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   ms.obj = ms.self;
 
@@ -1171,7 +1171,7 @@ static int ozBindSelf(lua_State* l)
 
 static int ozBindUser(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   ms.obj = ms.user;
 
@@ -1181,7 +1181,7 @@ static int ozBindUser(lua_State* l)
 
 static int ozBindNextObj(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   ms.obj = nullptr;
 
@@ -1196,7 +1196,7 @@ static int ozBindNextObj(lua_State* l)
 
 static int ozObjIsNull(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushbool(ms.obj == nullptr);
   return 1;
@@ -1204,7 +1204,7 @@ static int ozObjIsNull(lua_State* l)
 
 static int ozObjIsSelf(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushbool(ms.obj == ms.self);
   return 1;
@@ -1212,7 +1212,7 @@ static int ozObjIsSelf(lua_State* l)
 
 static int ozObjIsUser(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushbool(ms.obj == ms.user);
   return 1;
@@ -1220,7 +1220,7 @@ static int ozObjIsUser(lua_State* l)
 
 static int ozObjIsCut(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushbool(ms.obj != nullptr && ms.obj->cell == nullptr);
   return 1;
@@ -1228,7 +1228,7 @@ static int ozObjIsCut(lua_State* l)
 
 static int ozObjGetIndex(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushint(ms.obj == nullptr ? -1 : ms.obj->index);
   return 1;
@@ -1236,8 +1236,8 @@ static int ozObjGetIndex(lua_State* l)
 
 static int ozObjGetPos(lua_State* l)
 {
-  ARG(0);
-  OBJ();
+  ARG(0)
+  OBJ()
 
   if (ms.obj->cell == nullptr) {
     OZ_ASSERT(ms.obj->flags & Object::DYNAMIC_BIT);
@@ -1261,8 +1261,8 @@ static int ozObjGetPos(lua_State* l)
 
 static int ozObjWarpPos(lua_State* l)
 {
-  ARG(3);
-  OBJ();
+  ARG(3)
+  OBJ()
 
   ms.obj->p.x = l_tofloat(1);
   ms.obj->p.y = l_tofloat(2);
@@ -1274,8 +1274,8 @@ static int ozObjWarpPos(lua_State* l)
 
 static int ozObjGetDim(lua_State* l)
 {
-  ARG(0);
-  OBJ();
+  ARG(0)
+  OBJ()
 
   l_pushfloat(ms.obj->dim.x);
   l_pushfloat(ms.obj->dim.y);
@@ -1285,7 +1285,7 @@ static int ozObjGetDim(lua_State* l)
 
 static int ozObjHasFlag(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   l_pushbool(ms.obj != nullptr && (ms.obj->flags & l_toint(1)));
   return 1;
@@ -1293,8 +1293,8 @@ static int ozObjHasFlag(lua_State* l)
 
 static int ozObjGetHeading(lua_State* l)
 {
-  ARG(0);
-  OBJ();
+  ARG(0)
+  OBJ()
 
   l_pushint(ms.obj->flags & Object::HEADING_MASK);
   return 1;
@@ -1302,8 +1302,8 @@ static int ozObjGetHeading(lua_State* l)
 
 static int ozObjGetClassName(lua_State* l)
 {
-  ARG(0);
-  OBJ();
+  ARG(0)
+  OBJ()
 
   l_pushstring(ms.obj->clazz->name);
   return 1;
@@ -1311,8 +1311,8 @@ static int ozObjGetClassName(lua_State* l)
 
 static int ozObjMaxLife(lua_State* l)
 {
-  ARG(0);
-  OBJ();
+  ARG(0)
+  OBJ()
 
   l_pushfloat(ms.obj->clazz->life);
   return 1;
@@ -1320,8 +1320,8 @@ static int ozObjMaxLife(lua_State* l)
 
 static int ozObjGetLife(lua_State* l)
 {
-  ARG(0);
-  OBJ();
+  ARG(0)
+  OBJ()
 
   l_pushfloat(ms.obj->life);
   return 1;
@@ -1329,8 +1329,8 @@ static int ozObjGetLife(lua_State* l)
 
 static int ozObjSetLife(lua_State* l)
 {
-  ARG(1);
-  OBJ();
+  ARG(1)
+  OBJ()
 
   ms.obj->life = clamp(l_tofloat(1), 0.0f, ms.obj->clazz->life);
   return 0;
@@ -1338,8 +1338,8 @@ static int ozObjSetLife(lua_State* l)
 
 static int ozObjAddLife(lua_State* l)
 {
-  ARG(1);
-  OBJ();
+  ARG(1)
+  OBJ()
 
   ms.obj->life = clamp(ms.obj->life + l_tofloat(1), 0.0f, ms.obj->clazz->life);
   return 0;
@@ -1347,8 +1347,8 @@ static int ozObjAddLife(lua_State* l)
 
 static int ozObjDefaultResistance(lua_State* l)
 {
-  ARG(0);
-  OBJ();
+  ARG(0)
+  OBJ()
 
   l_pushfloat(ms.obj->clazz->resistance);
   return 1;
@@ -1356,8 +1356,8 @@ static int ozObjDefaultResistance(lua_State* l)
 
 static int ozObjGetResistance(lua_State* l)
 {
-  ARG(0);
-  OBJ();
+  ARG(0)
+  OBJ()
 
   l_pushfloat(ms.obj->resistance);
   return 1;
@@ -1365,8 +1365,8 @@ static int ozObjGetResistance(lua_State* l)
 
 static int ozObjSetResistance(lua_State* l)
 {
-  ARG(1);
-  OBJ();
+  ARG(1)
+  OBJ()
 
   ms.obj->resistance = max(0.0f, l_tofloat(1));
   return 0;
@@ -1374,8 +1374,8 @@ static int ozObjSetResistance(lua_State* l)
 
 static int ozObjAddEvent(lua_State* l)
 {
-  ARG(2);
-  OBJ();
+  ARG(2)
+  OBJ()
 
   int   id        = l_toint(1);
   float intensity = l_tofloat(2);
@@ -1386,8 +1386,8 @@ static int ozObjAddEvent(lua_State* l)
 
 static int ozObjEnableUpdate(lua_State* l)
 {
-  ARG(1);
-  OBJ();
+  ARG(1)
+  OBJ()
 
   if (l_tobool(1)) {
     ms.obj->flags |= Object::UPDATE_FUNC_BIT;
@@ -1400,8 +1400,8 @@ static int ozObjEnableUpdate(lua_State* l)
 
 static int ozObjReportStatus(lua_State* l)
 {
-  ARG(1);
-  OBJ();
+  ARG(1)
+  OBJ()
 
   ms.status = l_tofloat(1);
   return 0;
@@ -1417,8 +1417,8 @@ static int ozObjReportStatus(lua_State* l)
  */
 static int ozObjDamage(lua_State* l)
 {
-  ARG(1);
-  OBJ();
+  ARG(1)
+  OBJ()
 
   ms.obj->damage(l_tofloat(1));
   return 0;
@@ -1434,8 +1434,8 @@ static int ozObjDamage(lua_State* l)
  */
 static int ozObjDestroy(lua_State* l)
 {
-  VARG(0, 1);
-  OBJ();
+  VARG(0, 1)
+  OBJ()
 
   ms.obj->life = 0.0f;
 
@@ -1447,8 +1447,8 @@ static int ozObjDestroy(lua_State* l)
 
 static int ozObjBindItems(lua_State* l)
 {
-  ARG(0);
-  OBJ();
+  ARG(0)
+  OBJ()
 
   ms.objIndex = 0;
   ms.objects.clear();
@@ -1463,8 +1463,8 @@ static int ozObjBindItems(lua_State* l)
 
 static int ozObjBindItem(lua_State* l)
 {
-  ARG(1);
-  OBJ();
+  ARG(1)
+  OBJ()
 
   int index = l_toint(1);
 
@@ -1479,8 +1479,8 @@ static int ozObjBindItem(lua_State* l)
 
 static int ozObjAddItem(lua_State* l)
 {
-  ARG(1);
-  OBJ();
+  ARG(1)
+  OBJ()
 
   if (ms.obj->items.size() == ms.obj->clazz->nItems) {
     l_pushbool(false);
@@ -1490,7 +1490,7 @@ static int ozObjAddItem(lua_State* l)
   Dynamic* newItem;
 
   if (l_type(1) == LUA_TNUMBER) {
-    ITEM_INDEX(l_toint(1));
+    ITEM_INDEX(l_toint(1))
 
     if (item->cell == nullptr) {
       OZ_ASSERT(item->parent != -1);
@@ -1532,8 +1532,8 @@ static int ozObjAddItem(lua_State* l)
 
 static int ozObjRemoveItem(lua_State* l)
 {
-  ARG(1);
-  OBJ();
+  ARG(1)
+  OBJ()
 
   int item = l_toint(1);
   if (uint(item) >= uint(ms.obj->items.size())) {
@@ -1546,8 +1546,8 @@ static int ozObjRemoveItem(lua_State* l)
 
 static int ozObjRemoveAllItems(lua_State* l)
 {
-  ARG(0);
-  OBJ();
+  ARG(0)
+  OBJ()
 
   for (int item : ms.obj->items) {
     synapse.removeObject(item);
@@ -1558,8 +1558,8 @@ static int ozObjRemoveAllItems(lua_State* l)
 
 static int ozObjOverlaps(lua_State* l)
 {
-  ARG(2);
-  OBJ();
+  ARG(2)
+  OBJ()
 
   int  flags = l_toint(1);
   AABB aabb  = AABB(*ms.obj, l_tofloat(2));
@@ -1579,8 +1579,8 @@ static int ozObjOverlaps(lua_State* l)
 
 static int ozObjBindOverlaps(lua_State* l)
 {
-  ARG(2);
-  OBJ();
+  ARG(2)
+  OBJ()
 
   int  flags = l_toint(1);
   AABB aabb  = AABB(*ms.obj, l_tofloat(2));
@@ -1621,9 +1621,9 @@ static int ozObjBindOverlaps(lua_State* l)
 
 static int ozObjVectorFromSelf(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  SELF();
+  ARG(0)
+  OBJ()
+  SELF()
 
   Vec3 vec = ms.obj->p - ms.self->p;
 
@@ -1635,9 +1635,9 @@ static int ozObjVectorFromSelf(lua_State* l)
 
 static int ozObjVectorFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  SELF_BOT();
+  ARG(0)
+  OBJ()
+  SELF_BOT()
 
   Point eye = Point(self->p.x, self->p.y, self->p.z + self->camZ);
   Vec3  vec = ms.obj->p - eye;
@@ -1650,9 +1650,9 @@ static int ozObjVectorFromSelfEye(lua_State* l)
 
 static int ozObjDirFromSelf(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  SELF();
+  ARG(0)
+  OBJ()
+  SELF()
 
   Vec3 dir = ~(ms.obj->p - ms.self->p);
 
@@ -1664,9 +1664,9 @@ static int ozObjDirFromSelf(lua_State* l)
 
 static int ozObjDirFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  SELF_BOT();
+  ARG(0)
+  OBJ()
+  SELF_BOT()
 
   Point eye = Point(self->p.x, self->p.y, self->p.z + self->camZ);
   Vec3  dir = ~(ms.obj->p - eye);
@@ -1679,9 +1679,9 @@ static int ozObjDirFromSelfEye(lua_State* l)
 
 static int ozObjDistFromSelf(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  SELF();
+  ARG(0)
+  OBJ()
+  SELF()
 
   l_pushfloat(!(ms.obj->p - ms.self->p));
   return 1;
@@ -1689,9 +1689,9 @@ static int ozObjDistFromSelf(lua_State* l)
 
 static int ozObjDistFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  SELF_BOT();
+  ARG(0)
+  OBJ()
+  SELF_BOT()
 
   Point eye = Point(self->p.x, self->p.y, self->p.z + self->camZ);
 
@@ -1701,9 +1701,9 @@ static int ozObjDistFromSelfEye(lua_State* l)
 
 static int ozObjHeadingFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  SELF_BOT();
+  ARG(0)
+  OBJ()
+  SELF_BOT()
 
   float dx    = ms.obj->p.x - self->p.x;
   float dy    = ms.obj->p.y - self->p.y;
@@ -1715,9 +1715,9 @@ static int ozObjHeadingFromSelfEye(lua_State* l)
 
 static int ozObjRelHeadingFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  SELF_BOT();
+  ARG(0)
+  OBJ()
+  SELF_BOT()
 
   float dx    = ms.obj->p.x - self->p.x;
   float dy    = ms.obj->p.y - self->p.y;
@@ -1729,9 +1729,9 @@ static int ozObjRelHeadingFromSelfEye(lua_State* l)
 
 static int ozObjPitchFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  SELF_BOT();
+  ARG(0)
+  OBJ()
+  SELF_BOT()
 
   Point eye   = Point(self->p.x, self->p.y, self->p.z + self->camZ);
   float dx    = ms.obj->p.x - eye.x;
@@ -1745,9 +1745,9 @@ static int ozObjPitchFromSelfEye(lua_State* l)
 
 static int ozObjIsVisibleFromSelf(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  SELF();
+  ARG(0)
+  OBJ()
+  SELF()
 
   Vec3 vec = ms.obj->p - ms.self->p;
 
@@ -1759,9 +1759,9 @@ static int ozObjIsVisibleFromSelf(lua_State* l)
 
 static int ozObjIsVisibleFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  SELF_BOT();
+  ARG(0)
+  OBJ()
+  SELF_BOT()
 
   Point eye = Point(self->p.x, self->p.y, self->p.z + self->camZ);
   Vec3  vec = ms.obj->p - eye;
@@ -1778,9 +1778,9 @@ static int ozObjIsVisibleFromSelfEye(lua_State* l)
 
 static int ozDynGetParent(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_DYNAMIC();
+  ARG(0)
+  OBJ()
+  OBJ_DYNAMIC()
 
   const Object* parent = orbis.obj(dyn->parent);
 
@@ -1790,9 +1790,9 @@ static int ozDynGetParent(lua_State* l)
 
 static int ozDynGetVelocity(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_DYNAMIC();
+  ARG(0)
+  OBJ()
+  OBJ_DYNAMIC()
 
   l_pushfloat(dyn->velocity.x);
   l_pushfloat(dyn->velocity.y);
@@ -1802,9 +1802,9 @@ static int ozDynGetVelocity(lua_State* l)
 
 static int ozDynGetMomentum(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_DYNAMIC();
+  ARG(0)
+  OBJ()
+  OBJ_DYNAMIC()
 
   l_pushfloat(dyn->momentum.x);
   l_pushfloat(dyn->momentum.y);
@@ -1814,9 +1814,9 @@ static int ozDynGetMomentum(lua_State* l)
 
 static int ozDynSetMomentum(lua_State* l)
 {
-  ARG(3);
-  OBJ();
-  OBJ_DYNAMIC();
+  ARG(3)
+  OBJ()
+  OBJ_DYNAMIC()
 
   dyn->flags     &= ~Object::DISABLED_BIT;
   dyn->momentum.x = l_tofloat(1);
@@ -1827,9 +1827,9 @@ static int ozDynSetMomentum(lua_State* l)
 
 static int ozDynAddMomentum(lua_State* l)
 {
-  ARG(3);
-  OBJ();
-  OBJ_DYNAMIC();
+  ARG(3)
+  OBJ()
+  OBJ_DYNAMIC()
 
   dyn->flags      &= ~Object::DISABLED_BIT;
   dyn->momentum.x += l_tofloat(1);
@@ -1840,9 +1840,9 @@ static int ozDynAddMomentum(lua_State* l)
 
 static int ozDynGetMass(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_DYNAMIC();
+  ARG(0)
+  OBJ()
+  OBJ_DYNAMIC()
 
   l_pushfloat(dyn->mass);
   return 1;
@@ -1850,9 +1850,9 @@ static int ozDynGetMass(lua_State* l)
 
 static int ozDynGetLift(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_DYNAMIC();
+  ARG(0)
+  OBJ()
+  OBJ_DYNAMIC()
 
   l_pushfloat(dyn->lift);
   return 1;
@@ -1864,9 +1864,9 @@ static int ozDynGetLift(lua_State* l)
 
 static int ozWeaponMaxRounds(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_WEAPON();
+  ARG(0)
+  OBJ()
+  OBJ_WEAPON()
 
   const WeaponClass* weaponClazz = static_cast<const WeaponClass*>(weapon->clazz);
 
@@ -1876,9 +1876,9 @@ static int ozWeaponMaxRounds(lua_State* l)
 
 static int ozWeaponGetRounds(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_WEAPON();
+  ARG(0)
+  OBJ()
+  OBJ_WEAPON()
 
   l_pushint(weapon->nRounds);
   return 1;
@@ -1886,9 +1886,9 @@ static int ozWeaponGetRounds(lua_State* l)
 
 static int ozWeaponSetRounds(lua_State* l)
 {
-  ARG(1);
-  OBJ();
-  OBJ_WEAPON();
+  ARG(1)
+  OBJ()
+  OBJ_WEAPON()
 
   const WeaponClass* weaponClazz = static_cast<const WeaponClass*>(weapon->clazz);
 
@@ -1898,9 +1898,9 @@ static int ozWeaponSetRounds(lua_State* l)
 
 static int ozWeaponAddRounds(lua_State* l)
 {
-  ARG(1);
-  OBJ();
-  OBJ_WEAPON();
+  ARG(1)
+  OBJ()
+  OBJ_WEAPON()
 
   const WeaponClass* weaponClazz = static_cast<const WeaponClass*>(weapon->clazz);
 
@@ -1916,9 +1916,9 @@ static int ozWeaponAddRounds(lua_State* l)
 
 static int ozBotGetName(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_BOT();
+  ARG(0)
+  OBJ()
+  OBJ_BOT()
 
   l_pushstring(bot->name);
   return 1;
@@ -1926,9 +1926,9 @@ static int ozBotGetName(lua_State* l)
 
 static int ozBotSetName(lua_State* l)
 {
-  ARG(1);
-  OBJ();
-  OBJ_BOT();
+  ARG(1)
+  OBJ()
+  OBJ_BOT()
 
   bot->name = l_tostring(1);
   return 0;
@@ -1936,9 +1936,9 @@ static int ozBotSetName(lua_State* l)
 
 static int ozBotGetMind(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_BOT();
+  ARG(0)
+  OBJ()
+  OBJ_BOT()
 
   l_pushstring(bot->mind);
   return 1;
@@ -1946,9 +1946,9 @@ static int ozBotGetMind(lua_State* l)
 
 static int ozBotSetMind(lua_State* l)
 {
-  ARG(1);
-  OBJ();
-  OBJ_BOT();
+  ARG(1)
+  OBJ()
+  OBJ_BOT()
 
   bot->mind = l_tostring(1);
   return 0;
@@ -1956,9 +1956,9 @@ static int ozBotSetMind(lua_State* l)
 
 static int ozBotHasState(lua_State* l)
 {
-  ARG(1);
-  OBJ();
-  OBJ_BOT();
+  ARG(1)
+  OBJ()
+  OBJ_BOT()
 
   l_pushbool(bot->state & l_toint(1));
   return 1;
@@ -1966,9 +1966,9 @@ static int ozBotHasState(lua_State* l)
 
 static int ozBotGetEyePos(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_BOT();
+  ARG(0)
+  OBJ()
+  OBJ_BOT()
 
   l_pushfloat(bot->p.x);
   l_pushfloat(bot->p.y);
@@ -1978,9 +1978,9 @@ static int ozBotGetEyePos(lua_State* l)
 
 static int ozBotGetH(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_BOT();
+  ARG(0)
+  OBJ()
+  OBJ_BOT()
 
   l_pushfloat(Math::deg(bot->h));
   return 1;
@@ -1988,9 +1988,9 @@ static int ozBotGetH(lua_State* l)
 
 static int ozBotSetH(lua_State* l)
 {
-  ARG(1);
-  OBJ();
-  OBJ_BOT();
+  ARG(1)
+  OBJ()
+  OBJ_BOT()
 
   bot->h = Math::rad(l_tofloat(1));
   bot->h = angleWrap(bot->h);
@@ -1999,9 +1999,9 @@ static int ozBotSetH(lua_State* l)
 
 static int ozBotAddH(lua_State* l)
 {
-  ARG(1);
-  OBJ();
-  OBJ_BOT();
+  ARG(1)
+  OBJ()
+  OBJ_BOT()
 
   bot->h += Math::rad(l_tofloat(1));
   bot->h  = angleWrap(bot->h);
@@ -2010,9 +2010,9 @@ static int ozBotAddH(lua_State* l)
 
 static int ozBotGetV(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_BOT();
+  ARG(0)
+  OBJ()
+  OBJ_BOT()
 
   l_pushfloat(Math::deg(bot->v));
   return 1;
@@ -2020,9 +2020,9 @@ static int ozBotGetV(lua_State* l)
 
 static int ozBotSetV(lua_State* l)
 {
-  ARG(1);
-  OBJ();
-  OBJ_BOT();
+  ARG(1)
+  OBJ()
+  OBJ_BOT()
 
   bot->v = Math::rad(l_tofloat(1));
   bot->v = clamp(bot->v, 0.0f, Math::TAU / 2.0f);
@@ -2031,9 +2031,9 @@ static int ozBotSetV(lua_State* l)
 
 static int ozBotAddV(lua_State* l)
 {
-  ARG(1);
-  OBJ();
-  OBJ_BOT();
+  ARG(1)
+  OBJ()
+  OBJ_BOT()
 
   bot->v += Math::rad(l_tofloat(1));
   bot->v  = clamp(bot->v, 0.0f, Math::TAU / 2.0f);
@@ -2042,9 +2042,9 @@ static int ozBotAddV(lua_State* l)
 
 static int ozBotGetDir(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_BOT();
+  ARG(0)
+  OBJ()
+  OBJ_BOT()
 
   // {hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine}
   float hvsc[6];
@@ -2064,9 +2064,9 @@ static int ozBotGetDir(lua_State* l)
 
 static int ozBotMaxStamina(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_BOT();
+  ARG(0)
+  OBJ()
+  OBJ_BOT()
 
   const BotClass* clazz = static_cast<const BotClass*>(bot->clazz);
 
@@ -2076,9 +2076,9 @@ static int ozBotMaxStamina(lua_State* l)
 
 static int ozBotGetStamina(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_BOT();
+  ARG(0)
+  OBJ()
+  OBJ_BOT()
 
   l_pushfloat(bot->stamina);
   return 1;
@@ -2086,9 +2086,9 @@ static int ozBotGetStamina(lua_State* l)
 
 static int ozBotSetStamina(lua_State* l)
 {
-  ARG(1);
-  OBJ();
-  OBJ_BOT();
+  ARG(1)
+  OBJ()
+  OBJ_BOT()
 
   const BotClass* clazz = static_cast<const BotClass*>(bot->clazz);
 
@@ -2098,9 +2098,9 @@ static int ozBotSetStamina(lua_State* l)
 
 static int ozBotAddStamina(lua_State* l)
 {
-  ARG(1);
-  OBJ();
-  OBJ_BOT();
+  ARG(1)
+  OBJ()
+  OBJ_BOT()
 
   const BotClass* clazz = static_cast<const BotClass*>(bot->clazz);
 
@@ -2110,9 +2110,9 @@ static int ozBotAddStamina(lua_State* l)
 
 static int ozBotGetCargo(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_BOT();
+  ARG(0)
+  OBJ()
+  OBJ_BOT()
 
   const Object* cargo = orbis.obj(bot->cargo);
 
@@ -2122,9 +2122,9 @@ static int ozBotGetCargo(lua_State* l)
 
 static int ozBotGetWeaponItem(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_BOT();
+  ARG(0)
+  OBJ()
+  OBJ_BOT()
 
   const Object* weapon = orbis.obj(bot->weapon);
 
@@ -2134,9 +2134,9 @@ static int ozBotGetWeaponItem(lua_State* l)
 
 static int ozBotSetWeaponItem(lua_State* l)
 {
-  ARG(1);
-  OBJ();
-  OBJ_BOT();
+  ARG(1)
+  OBJ()
+  OBJ_BOT()
 
   int item = l_toint(1);
   if (item == -1) {
@@ -2174,11 +2174,11 @@ static int ozBotSetWeaponItem(lua_State* l)
 
 static int ozBotCanReachEntity(lua_State* l)
 {
-  ARG(2);
-  OBJ();
-  OBJ_BOT();
-  STR_INDEX(l_toint(1));
-  ENT_INDEX(l_toint(2));
+  ARG(2)
+  OBJ()
+  OBJ_BOT()
+  STR_INDEX(l_toint(1))
+  ENT_INDEX(l_toint(2))
 
   l_pushbool(bot->canReach(ent));
   return 1;
@@ -2186,10 +2186,10 @@ static int ozBotCanReachEntity(lua_State* l)
 
 static int ozBotCanReachObj(lua_State* l)
 {
-  ARG(1);
-  OBJ();
-  OBJ_BOT();
-  OBJ_INDEX(l_toint(1));
+  ARG(1)
+  OBJ()
+  OBJ_BOT()
+  OBJ_INDEX(l_toint(1))
 
   l_pushbool(bot->canReach(obj));
   return 1;
@@ -2197,9 +2197,9 @@ static int ozBotCanReachObj(lua_State* l)
 
 static int ozBotAction(lua_State* l)
 {
-  VARG(1, 3);
-  OBJ();
-  OBJ_BOT();
+  VARG(1, 3)
+  OBJ()
+  OBJ_BOT()
 
   int action = l_toint(1);
   int arg1   = l_toint(2);
@@ -2219,9 +2219,9 @@ static int ozBotAction(lua_State* l)
 
 static int ozBotClearActions(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_BOT();
+  ARG(0)
+  OBJ()
+  OBJ_BOT()
 
   bot->actions = 0;
   return 0;
@@ -2229,9 +2229,9 @@ static int ozBotClearActions(lua_State* l)
 
 static int ozBotHeal(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_BOT();
+  ARG(0)
+  OBJ()
+  OBJ_BOT()
 
   bot->heal();
   return 0;
@@ -2239,9 +2239,9 @@ static int ozBotHeal(lua_State* l)
 
 static int ozBotRearm(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_BOT();
+  ARG(0)
+  OBJ()
+  OBJ_BOT()
 
   bot->rearm();
   return 0;
@@ -2249,9 +2249,9 @@ static int ozBotRearm(lua_State* l)
 
 static int ozBotKill(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_BOT();
+  ARG(0)
+  OBJ()
+  OBJ_BOT()
 
   bot->kill();
   return 0;
@@ -2263,9 +2263,9 @@ static int ozBotKill(lua_State* l)
 
 static int ozVehicleGetPilot(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_VEHICLE();
+  ARG(0)
+  OBJ()
+  OBJ_VEHICLE()
 
   Object* pilot = orbis.obj(veh->pilot);
 
@@ -2275,9 +2275,9 @@ static int ozVehicleGetPilot(lua_State* l)
 
 static int ozVehicleGetH(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_VEHICLE();
+  ARG(0)
+  OBJ()
+  OBJ_VEHICLE()
 
   l_pushfloat(Math::deg(veh->h));
   return 1;
@@ -2285,9 +2285,9 @@ static int ozVehicleGetH(lua_State* l)
 
 static int ozVehicleSetH(lua_State* l)
 {
-  ARG(1);
-  OBJ();
-  OBJ_VEHICLE();
+  ARG(1)
+  OBJ()
+  OBJ_VEHICLE()
 
   veh->h = Math::rad(l_tofloat(1));
   veh->h = angleWrap(veh->h);
@@ -2298,9 +2298,9 @@ static int ozVehicleSetH(lua_State* l)
 
 static int ozVehicleAddH(lua_State* l)
 {
-  ARG(1);
-  OBJ();
-  OBJ_VEHICLE();
+  ARG(1)
+  OBJ()
+  OBJ_VEHICLE()
 
   veh->h += Math::rad(l_tofloat(1));
   veh->h  = angleWrap(veh->h);
@@ -2311,9 +2311,9 @@ static int ozVehicleAddH(lua_State* l)
 
 static int ozVehicleGetV(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_VEHICLE();
+  ARG(0)
+  OBJ()
+  OBJ_VEHICLE()
 
   l_pushfloat(Math::deg(veh->v));
   return 1;
@@ -2321,9 +2321,9 @@ static int ozVehicleGetV(lua_State* l)
 
 static int ozVehicleSetV(lua_State* l)
 {
-  ARG(1);
-  OBJ();
-  OBJ_VEHICLE();
+  ARG(1)
+  OBJ()
+  OBJ_VEHICLE()
 
   veh->v = Math::rad(l_tofloat(1));
   veh->v = clamp(veh->v, 0.0f, Math::TAU / 2.0f);
@@ -2334,9 +2334,9 @@ static int ozVehicleSetV(lua_State* l)
 
 static int ozVehicleAddV(lua_State* l)
 {
-  ARG(1);
-  OBJ();
-  OBJ_VEHICLE();
+  ARG(1)
+  OBJ()
+  OBJ_VEHICLE()
 
   veh->v += Math::rad(l_tofloat(1));
   veh->v  = clamp(veh->v, 0.0f, Math::TAU / 2.0f);
@@ -2347,9 +2347,9 @@ static int ozVehicleAddV(lua_State* l)
 
 static int ozVehicleGetDir(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_VEHICLE();
+  ARG(0)
+  OBJ()
+  OBJ_VEHICLE()
 
   // {hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine}
   float hvsc[6];
@@ -2369,15 +2369,15 @@ static int ozVehicleGetDir(lua_State* l)
 
 static int ozVehicleEmbarkBot(lua_State* l)
 {
-  ARG(1);
-  OBJ();
-  OBJ_VEHICLE();
+  ARG(1)
+  OBJ()
+  OBJ_VEHICLE()
 
   if (veh->pilot != -1) {
     ERROR("Vehicle already has a pilot");
   }
 
-  BOT_INDEX(l_toint(1));
+  BOT_INDEX(l_toint(1))
 
   if (bot->cell == nullptr) {
     ERROR("Bot is already in some vehicle");
@@ -2390,9 +2390,9 @@ static int ozVehicleEmbarkBot(lua_State* l)
 
 static int ozVehicleDisembarkBot(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_VEHICLE();
+  ARG(0)
+  OBJ()
+  OBJ_VEHICLE()
 
   Bot* pilot = orbis.obj<Bot>(veh->pilot);
   if (pilot == nullptr) {
@@ -2405,9 +2405,9 @@ static int ozVehicleDisembarkBot(lua_State* l)
 
 static int ozVehicleService(lua_State* l)
 {
-  ARG(0);
-  OBJ();
-  OBJ_VEHICLE();
+  ARG(0)
+  OBJ()
+  OBJ_VEHICLE()
 
   veh->service();
   return 0;
@@ -2419,7 +2419,7 @@ static int ozVehicleService(lua_State* l)
 
 static int ozFragBindIndex(lua_State* l)
 {
-  ARG(1);
+  ARG(1)
 
   int index = l_toint(1);
   if (uint(index) >= uint(Orbis::MAX_FRAGS)) {
@@ -2435,7 +2435,7 @@ static int ozFragBindIndex(lua_State* l)
 
 static int ozFragIsNull(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushbool(ms.frag == nullptr);
   return 1;
@@ -2443,7 +2443,7 @@ static int ozFragIsNull(lua_State* l)
 
 static int ozFragGetIndex(lua_State* l)
 {
-  ARG(0);
+  ARG(0)
 
   l_pushint(ms.frag == nullptr ? -1 : ms.frag->index);
   return 1;
@@ -2451,8 +2451,8 @@ static int ozFragGetIndex(lua_State* l)
 
 static int ozFragGetPos(lua_State* l)
 {
-  ARG(0);
-  FRAG();
+  ARG(0)
+  FRAG()
 
   l_pushfloat(ms.frag->p.x);
   l_pushfloat(ms.frag->p.y);
@@ -2462,8 +2462,8 @@ static int ozFragGetPos(lua_State* l)
 
 static int ozFragWarpPos(lua_State* l)
 {
-  ARG(3);
-  FRAG();
+  ARG(3)
+  FRAG()
 
   ms.frag->p.x = l_tofloat(1);
   ms.frag->p.y = l_tofloat(2);
@@ -2473,8 +2473,8 @@ static int ozFragWarpPos(lua_State* l)
 
 static int ozFragGetVelocity(lua_State* l)
 {
-  ARG(0);
-  FRAG();
+  ARG(0)
+  FRAG()
 
   l_pushfloat(ms.frag->velocity.x);
   l_pushfloat(ms.frag->velocity.y);
@@ -2484,8 +2484,8 @@ static int ozFragGetVelocity(lua_State* l)
 
 static int ozFragSetVelocity(lua_State* l)
 {
-  ARG(3);
-  FRAG();
+  ARG(3)
+  FRAG()
 
   ms.frag->velocity.x = l_tofloat(1);
   ms.frag->velocity.y = l_tofloat(2);
@@ -2495,8 +2495,8 @@ static int ozFragSetVelocity(lua_State* l)
 
 static int ozFragAddVelocity(lua_State* l)
 {
-  ARG(3);
-  FRAG();
+  ARG(3)
+  FRAG()
 
   ms.frag->velocity.x += l_tofloat(1);
   ms.frag->velocity.y += l_tofloat(2);
@@ -2506,8 +2506,8 @@ static int ozFragAddVelocity(lua_State* l)
 
 static int ozFragGetLife(lua_State* l)
 {
-  ARG(0);
-  FRAG();
+  ARG(0)
+  FRAG()
 
   l_pushfloat(ms.frag->life);
   return 1;
@@ -2515,8 +2515,8 @@ static int ozFragGetLife(lua_State* l)
 
 static int ozFragSetLife(lua_State* l)
 {
-  ARG(1);
-  FRAG();
+  ARG(1)
+  FRAG()
 
   ms.frag->life = l_tofloat(1);
   return 0;
@@ -2524,8 +2524,8 @@ static int ozFragSetLife(lua_State* l)
 
 static int ozFragAddLife(lua_State* l)
 {
-  ARG(1);
-  FRAG();
+  ARG(1)
+  FRAG()
 
   ms.frag->life += l_tofloat(1);
   return 0;
@@ -2533,8 +2533,8 @@ static int ozFragAddLife(lua_State* l)
 
 static int ozFragRemove(lua_State* l)
 {
-  ARG(0);
-  FRAG();
+  ARG(0)
+  FRAG()
 
   synapse.remove(ms.frag);
   ms.frag = nullptr;
@@ -2543,8 +2543,8 @@ static int ozFragRemove(lua_State* l)
 
 static int ozFragOverlaps(lua_State* l)
 {
-  ARG(2);
-  FRAG();
+  ARG(2)
+  FRAG()
 
   int   flags = l_toint(1);
   float dim   = l_tofloat(2);
@@ -2565,8 +2565,8 @@ static int ozFragOverlaps(lua_State* l)
 
 static int ozFragBindOverlaps(lua_State* l)
 {
-  ARG(2);
-  FRAG();
+  ARG(2)
+  FRAG()
 
   int   flags = l_toint(1);
   float dim   = l_tofloat(2);
@@ -2604,9 +2604,9 @@ static int ozFragBindOverlaps(lua_State* l)
 
 static int ozFragVectorFromSelf(lua_State* l)
 {
-  ARG(0);
-  FRAG();
-  SELF();
+  ARG(0)
+  FRAG()
+  SELF()
 
   Vec3 vec = ms.frag->p - ms.self->p;
 
@@ -2618,9 +2618,9 @@ static int ozFragVectorFromSelf(lua_State* l)
 
 static int ozFragVectorFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  FRAG();
-  SELF_BOT();
+  ARG(0)
+  FRAG()
+  SELF_BOT()
 
   Point eye = Point(self->p.x, self->p.y, self->p.z + self->camZ);
   Vec3  vec = ms.frag->p - eye;
@@ -2633,9 +2633,9 @@ static int ozFragVectorFromSelfEye(lua_State* l)
 
 static int ozFragDirFromSelf(lua_State* l)
 {
-  ARG(0);
-  FRAG();
-  SELF();
+  ARG(0)
+  FRAG()
+  SELF()
 
   Vec3 dir = ~(ms.frag->p - ms.self->p);
 
@@ -2647,9 +2647,9 @@ static int ozFragDirFromSelf(lua_State* l)
 
 static int ozFragDirFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  FRAG();
-  SELF_BOT();
+  ARG(0)
+  FRAG()
+  SELF_BOT()
 
   Point eye = Point(self->p.x, self->p.y, self->p.z + self->camZ);
   Vec3  dir = ~(ms.frag->p - eye);
@@ -2662,9 +2662,9 @@ static int ozFragDirFromSelfEye(lua_State* l)
 
 static int ozFragDistFromSelf(lua_State* l)
 {
-  ARG(0);
-  FRAG();
-  SELF();
+  ARG(0)
+  FRAG()
+  SELF()
 
   l_pushfloat(!(ms.frag->p - ms.self->p));
   return 1;
@@ -2672,9 +2672,9 @@ static int ozFragDistFromSelf(lua_State* l)
 
 static int ozFragDistFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  FRAG();
-  SELF_BOT();
+  ARG(0)
+  FRAG()
+  SELF_BOT()
 
   Point eye = Point(self->p.x, self->p.y, self->p.z + self->camZ);
 
@@ -2684,9 +2684,9 @@ static int ozFragDistFromSelfEye(lua_State* l)
 
 static int ozFragHeadingFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  FRAG();
-  SELF_BOT();
+  ARG(0)
+  FRAG()
+  SELF_BOT()
 
   float dx    = ms.frag->p.x - self->p.x;
   float dy    = ms.frag->p.y - self->p.y;
@@ -2698,9 +2698,9 @@ static int ozFragHeadingFromSelfEye(lua_State* l)
 
 static int ozFragRelHeadingFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  FRAG();
-  SELF_BOT();
+  ARG(0)
+  FRAG()
+  SELF_BOT()
 
   float dx    = ms.frag->p.x - self->p.x;
   float dy    = ms.frag->p.y - self->p.y;
@@ -2712,9 +2712,9 @@ static int ozFragRelHeadingFromSelfEye(lua_State* l)
 
 static int ozFragPitchFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  FRAG();
-  SELF_BOT();
+  ARG(0)
+  FRAG()
+  SELF_BOT()
 
   Point eye   = Point(self->p.x, self->p.y, self->p.z + self->camZ);
   float dx    = ms.frag->p.x - eye.x;
@@ -2728,9 +2728,9 @@ static int ozFragPitchFromSelfEye(lua_State* l)
 
 static int ozFragIsVisibleFromSelf(lua_State* l)
 {
-  ARG(0);
-  FRAG();
-  SELF();
+  ARG(0)
+  FRAG()
+  SELF()
 
   Vec3 vec = ms.frag->p - ms.self->p;
 
@@ -2742,9 +2742,9 @@ static int ozFragIsVisibleFromSelf(lua_State* l)
 
 static int ozFragIsVisibleFromSelfEye(lua_State* l)
 {
-  ARG(0);
-  FRAG();
-  SELF_BOT();
+  ARG(0)
+  FRAG()
+  SELF_BOT()
 
   Point eye = Point(self->p.x, self->p.y, self->p.z + self->camZ);
   Vec3  vec = ms.frag->p - eye;
