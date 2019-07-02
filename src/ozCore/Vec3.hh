@@ -66,8 +66,8 @@ public:
    * Create a vector with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit constexpr Vec3(float x, float y, float z)
-    : VectorBase3(x, y, z, 0.0f)
+  explicit constexpr Vec3(float x_, float y_, float z_)
+    : VectorBase3(x_, y_, z_, 0.0f)
   {}
 
   /**

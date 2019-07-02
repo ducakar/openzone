@@ -508,8 +508,8 @@ Vehicle::Vehicle(const VehicleClass* clazz_, int index_, const Point& p_, Headin
   }
 }
 
-Vehicle::Vehicle(const VehicleClass* clazz_, int index, const Json& json)
-  : Dynamic(clazz_, index, json)
+Vehicle::Vehicle(const VehicleClass* clazz_, int index_, const Json& json)
+  : Dynamic(clazz_, index_, json)
 {
   const VehicleClass* clazz = static_cast<const VehicleClass*>(this->clazz);
 

@@ -63,7 +63,7 @@ public:
 
   static Pool<MD2Imago> pool;
 
-  static Imago* create(const Object* obj);
+  static Imago* create(const Object* obj_);
 
   void draw(const Imago* parent) override;
 

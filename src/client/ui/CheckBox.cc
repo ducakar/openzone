@@ -85,9 +85,9 @@ void CheckBox::onDraw()
   isClicked     = false;
 }
 
-CheckBox::CheckBox(const char* text, int width, int height)
-  : Area(width, height),
-    label(height + 2, height / 2, 0, ALIGN_VCENTRE, &style.sansFont, "%s", text),
+CheckBox::CheckBox(const char* text, int width_, int height_)
+  : Area(width_, height_),
+    label(height_ + 2, height_ / 2, 0, ALIGN_VCENTRE, &style.sansFont, "%s", text),
     isHighlighted(false), isClicked(false), wasClicked(false), isChecked(false)
 {}
 

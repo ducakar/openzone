@@ -44,7 +44,7 @@ public:
   OZ_PRINTF_FORMAT(6, 7)
   explicit Label(int width, int height, int align, Font* font, const char* s, ...);
 
-  void setWidth(int width);
+  void setWidth(int width_);
   void setAlign(int align);
   void setFont(Font* font);
   OZ_PRINTF_FORMAT(2, 3)

@@ -28,11 +28,11 @@ int ExplosionImago::modelId;
 
 Pool<ExplosionImago> ExplosionImago::pool(64);
 
-Imago* ExplosionImago::create(const Object* obj)
+Imago* ExplosionImago::create(const Object* obj_)
 {
-  ExplosionImago* imago = new ExplosionImago(obj);
+  ExplosionImago* imago = new ExplosionImago(obj_);
 
-  modelId = obj->clazz->imagoModel;
+  modelId = obj_->clazz->imagoModel;
 
   imago->model     = context.requestModel(modelId);
   imago->startTime = timer.duration;

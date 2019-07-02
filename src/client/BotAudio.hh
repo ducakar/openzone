@@ -38,13 +38,13 @@ private:
 
 protected:
 
-  explicit BotAudio(const Object* obj);
+  explicit BotAudio(const Object* obj_);
 
 public:
 
   static Pool<BotAudio> pool;
 
-  static Audio* create(const Object* obj);
+  static Audio* create(const Object* obj_);
 
   void play(const Object* playAt) override;
 

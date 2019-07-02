@@ -55,7 +55,7 @@ protected:
 
 public:
 
-  explicit Slider(float min, float max, float step, float value_, int width, int height);
+  explicit Slider(float min, float max, float step, float value_, int width_, int height_);
 
 };
 

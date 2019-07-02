@@ -66,8 +66,8 @@ public:
    * Create a vector with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit constexpr Vec4(float x, float y, float z, float w)
-    : VectorBase4(x, y, z, w)
+  explicit constexpr Vec4(float x_, float y_, float z_, float w_)
+    : VectorBase4(x_, y_, z_, w_)
   {}
 
   /**

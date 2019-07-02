@@ -26,11 +26,11 @@ namespace oz::client
 
 Pool<SMMImago> SMMImago::pool(4096);
 
-Imago* SMMImago::create(const Object* obj)
+Imago* SMMImago::create(const Object* obj_)
 {
-  SMMImago* imago = new SMMImago(obj);
+  SMMImago* imago = new SMMImago(obj_);
 
-  imago->model = context.requestModel(obj->clazz->imagoModel);
+  imago->model = context.requestModel(obj_->clazz->imagoModel);
 
   return imago;
 }

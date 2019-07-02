@@ -27,8 +27,8 @@ void Label::onDraw()
   text.draw(this);
 }
 
-Label::Label(int width, int height, int align, Font* font, const char* s, ...)
-  : Area(width, height), text(0, 0, width, align, font, "")
+Label::Label(int width_, int height_, int align, Font* font, const char* s, ...)
+  : Area(width_, height_), text(0, 0, width_, align, font, "")
 {
   va_list ap;
   va_start(ap, s);
@@ -36,9 +36,9 @@ Label::Label(int width, int height, int align, Font* font, const char* s, ...)
   va_end(ap);
 }
 
-void Label::setWidth(int width)
+void Label::setWidth(int width_)
 {
-  text.setWidth(width);
+  text.setWidth(width_);
 }
 
 void Label::setAlign(int align)

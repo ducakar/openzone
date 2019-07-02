@@ -65,7 +65,8 @@ private:
 
   void updateReferences();
   void handleScroll(const Object* container, int* scroll);
-  void drawComponent(int height, const Object* container, const Dynamic* taggedItem, int scroll);
+  void drawComponent(int componentHeight, const Object* container, const Dynamic* taggedItem,
+                     int scroll);
 
 protected:
 

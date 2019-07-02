@@ -60,8 +60,8 @@ public:
    * Create a point with given coordinates.
    */
   OZ_ALWAYS_INLINE
-  explicit constexpr Point(float x, float y, float z)
-    : VectorBase3(x, y, z, 1.0f)
+  explicit constexpr Point(float x_, float y_, float z_)
+    : VectorBase3(x_, y_, z_, 1.0f)
   {}
 
   /**

@@ -45,7 +45,7 @@ public:
 
   static Pool<SMMImago> pool;
 
-  static Imago* create(const Object* obj);
+  static Imago* create(const Object* obj_);
 
   void draw(const Imago* parent) override;
 

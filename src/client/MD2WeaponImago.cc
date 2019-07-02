@@ -32,14 +32,14 @@ MD2WeaponImago::~MD2WeaponImago()
   context.releaseModel(clazz->imagoModel);
 }
 
-Imago* MD2WeaponImago::create(const Object* obj)
+Imago* MD2WeaponImago::create(const Object* obj_)
 {
-  OZ_ASSERT(obj->flags & Object::DYNAMIC_BIT);
-  OZ_ASSERT(obj->flags & Object::WEAPON_BIT);
+  OZ_ASSERT(obj_->flags & Object::DYNAMIC_BIT);
+  OZ_ASSERT(obj_->flags & Object::WEAPON_BIT);
 
-  MD2WeaponImago* imago = new MD2WeaponImago(obj);
+  MD2WeaponImago* imago = new MD2WeaponImago(obj_);
 
-  imago->model = context.requestModel(obj->clazz->imagoModel);
+  imago->model = context.requestModel(obj_->clazz->imagoModel);
 
   return imago;
 }

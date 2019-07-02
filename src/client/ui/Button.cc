@@ -80,8 +80,8 @@ void Button::onDraw()
   isClicked     = false;
 }
 
-Button::Button(const char* s, Callback* callback_, int width, int height)
-  : Area(width, height), text(width / 2, height / 2, 0, ALIGN_CENTRE, &style.sansFont, "%s", s),
+Button::Button(const char* s, Callback* callback_, int width_, int height_)
+  : Area(width_, height_), text(width_ / 2, height_ / 2, 0, ALIGN_CENTRE, &style.sansFont, "%s", s),
     callback(callback_), isHighlighted(false), isClicked(false), wasClicked(false)
 {}
 

@@ -76,8 +76,8 @@ void EditFrame::handleScroll(const Object* container, int* scroll)
   }
 }
 
-void EditFrame::drawComponent(int height, const Object* container, const Dynamic* taggedItem,
-                              int scroll)
+void EditFrame::drawComponent(int componentHeight, const Object* container,
+                              const Dynamic* taggedItem, int scroll)
 {
   const ObjectClass* containerClazz = container->clazz;
 
@@ -86,13 +86,13 @@ void EditFrame::drawComponent(int height, const Object* container, const Dynamic
   if (scroll != 0) {
     shape.colour(1.0f, 1.0f, 1.0f, 1.0f);
     glBindTexture(GL_TEXTURE_2D, style.images.scrollUp);
-    shape.fill(x + 16, y + height + SLOT_SIZE, 16, 16);
+    shape.fill(x + 16, y + componentHeight + SLOT_SIZE, 16, 16);
     glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
   }
   if (scroll != nScrollRows) {
     shape.colour(1.0f, 1.0f, 1.0f, 1.0f);
     glBindTexture(GL_TEXTURE_2D, style.images.scrollDown);
-    shape.fill(x + 16, y + height - 16, 16, 16);
+    shape.fill(x + 16, y + componentHeight - 16, 16, 16);
     glBindTexture(GL_TEXTURE_2D, shader.defaultTexture);
   }
 
@@ -105,12 +105,12 @@ void EditFrame::drawComponent(int height, const Object* container, const Dynamic
   float life   = taggedItem->life / taggedClazz->life;
   float status = taggedItem->status();
 
-  lifeBar.draw(this, x + width - 52, y + height + SLOT_SIZE + 8, 50, 12, life);
+  lifeBar.draw(this, x + width - 52, y + componentHeight + SLOT_SIZE + 8, 50, 12, life);
   if (status >= 0.0f) {
-    statusBar.draw(this, x + width - 52, y + height + SLOT_SIZE + 1, 50, 8, status);
+    statusBar.draw(this, x + width - 52, y + componentHeight + SLOT_SIZE + 1, 50, 8, status);
   }
 
-  itemDesc.setPosition(-ICON_SIZE - 8, height - FOOTER_SIZE / 2);
+  itemDesc.setPosition(-ICON_SIZE - 8, componentHeight - FOOTER_SIZE / 2);
   itemDesc.setText("#%d %s", taggedItem->index, taggedClazz->title.c());
   itemDesc.draw(this);
 }

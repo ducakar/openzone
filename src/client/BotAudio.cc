@@ -27,15 +27,15 @@ namespace oz::client
 
 Pool<BotAudio> BotAudio::pool(256);
 
-BotAudio::BotAudio(const Object* obj)
-  : BasicAudio(obj), prevStep(0)
+BotAudio::BotAudio(const Object* obj_)
+  : BasicAudio(obj_), prevStep(0)
 {}
 
-Audio* BotAudio::create(const Object* obj)
+Audio* BotAudio::create(const Object* obj_)
 {
-  OZ_ASSERT(obj->flags & Object::BOT_BIT);
+  OZ_ASSERT(obj_->flags & Object::BOT_BIT);
 
-  return new BotAudio(obj);
+  return new BotAudio(obj_);
 }
 
 void BotAudio::play(const Object* playAt)

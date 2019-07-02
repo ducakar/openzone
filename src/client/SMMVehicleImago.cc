@@ -27,13 +27,13 @@ namespace oz::client
 
 Pool<SMMVehicleImago> SMMVehicleImago::pool(64);
 
-Imago* SMMVehicleImago::create(const Object* obj)
+Imago* SMMVehicleImago::create(const Object* obj_)
 {
-  OZ_ASSERT(obj->flags & Object::VEHICLE_BIT);
+  OZ_ASSERT(obj_->flags & Object::VEHICLE_BIT);
 
-  SMMVehicleImago* imago = new SMMVehicleImago(obj);
+  SMMVehicleImago* imago = new SMMVehicleImago(obj_);
 
-  imago->model = context.requestModel(obj->clazz->imagoModel);
+  imago->model = context.requestModel(obj_->clazz->imagoModel);
 
   return imago;
 }

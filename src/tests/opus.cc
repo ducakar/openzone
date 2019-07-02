@@ -39,7 +39,7 @@ static Semaphore     decodeThreadSemaphore;
 static Thread        decodeThread;
 static Atomic<bool>  isDecoderAlive = {true};
 
-static void decoderMain(void*)
+static void* decoderMain(void*)
 {
   Stream is(0);
   File("/home/davorin/Glasba/Whatever1.opus").read(&is);
@@ -121,6 +121,8 @@ finishedDecoding:
     decodeMainSemaphore.post();
     decodeThreadSemaphore.wait();
   }
+
+  return nullptr;
 }
 
 class MainStage : public Application::Stage

@@ -32,26 +32,26 @@ MD2Imago::~MD2Imago()
   context.releaseModel(clazz->imagoModel);
 }
 
-Imago* MD2Imago::create(const Object* obj)
+Imago* MD2Imago::create(const Object* obj_)
 {
-  OZ_ASSERT(obj->flags & (Object::BOT_BIT | Object::VEHICLE_BIT));
+  OZ_ASSERT(obj_->flags & (Object::BOT_BIT | Object::VEHICLE_BIT));
 
-  if (obj->flags & Object::VEHICLE_BIT) {
-    const Vehicle* veh   = static_cast<const Vehicle*>(obj);
+  if (obj_->flags & Object::VEHICLE_BIT) {
+    const Vehicle* veh   = static_cast<const Vehicle*>(obj_);
     MD2Imago*      imago = new MD2Imago(veh);
 
     imago->flags = Imago::MD2MODEL_BIT;
-    imago->model = context.requestModel(obj->clazz->imagoModel);
+    imago->model = context.requestModel(obj_->clazz->imagoModel);
     imago->h     = veh->h;
 
     return imago;
   }
   else {
-    const Bot*     bot   = static_cast<const Bot*>(obj);
+    const Bot*     bot   = static_cast<const Bot*>(obj_);
     MD2Imago*      imago = new MD2Imago(bot);
 
     imago->flags = Imago::MD2MODEL_BIT;
-    imago->model = context.requestModel(obj->clazz->imagoModel);
+    imago->model = context.requestModel(obj_->clazz->imagoModel);
     imago->h     = bot->h;
 
     return imago;

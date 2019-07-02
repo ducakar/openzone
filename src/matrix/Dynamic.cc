@@ -90,8 +90,8 @@ Dynamic::Dynamic(const DynamicClass* clazz_, int index_, const Point& p_, Headin
   lift     = clazz_->lift;
 }
 
-Dynamic::Dynamic(const DynamicClass* clazz_, int index, const Json& json)
-  : Object(clazz_, index, json)
+Dynamic::Dynamic(const DynamicClass* clazz_, int index_, const Json& json)
+  : Object(clazz_, index_, json)
 {
   velocity = Vec3::ZERO;
   momentum = Vec3::ZERO;

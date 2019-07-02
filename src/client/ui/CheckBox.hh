@@ -51,7 +51,7 @@ protected:
 
 public:
 
-  explicit CheckBox(const char* text, int width, int height);
+  explicit CheckBox(const char* text, int width_, int height_);
 
   void setLabel(const char* text);
 

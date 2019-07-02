@@ -47,7 +47,7 @@ protected:
 public:
 
   explicit MissionButton(const char* text, Callback* callback, MissionMenu* missionMenu_,
-                         int index_, int width, int height);
+                         int index_, int width_, int height_);
 
 };
 

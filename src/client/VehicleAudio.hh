@@ -38,7 +38,7 @@ public:
 
   static Pool<VehicleAudio> pool;
 
-  static Audio* create(const Object* obj);
+  static Audio* create(const Object* obj_);
 
   void play(const Object*) override;
 

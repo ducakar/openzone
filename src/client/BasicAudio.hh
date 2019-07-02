@@ -43,13 +43,13 @@ protected:
   // so friction sound only stops when not detected for COUNTDOWN_TICKS.
   int eventCountdowns[ObjectClass::MAX_SOUNDS];
 
-  explicit BasicAudio(const Object* obj);
+  explicit BasicAudio(const Object* obj_);
 
 public:
 
   static Pool<BasicAudio> pool;
 
-  static Audio* create(const Object* obj);
+  static Audio* create(const Object* obj_);
 
   void play(const Object* playAt) override;
 

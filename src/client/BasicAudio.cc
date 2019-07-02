@@ -26,13 +26,13 @@ namespace oz::client
 
 Pool<BasicAudio> BasicAudio::pool(2048);
 
-BasicAudio::BasicAudio(const Object* obj)
-  : Audio(obj), eventCountdowns{}
+BasicAudio::BasicAudio(const Object* obj_)
+  : Audio(obj_), eventCountdowns{}
 {}
 
-Audio* BasicAudio::create(const Object* obj)
+Audio* BasicAudio::create(const Object* obj_)
 {
-  return new BasicAudio(obj);
+  return new BasicAudio(obj_);
 }
 
 void BasicAudio::play(const Object* playAt)

@@ -28,15 +28,15 @@
 namespace oz::client::ui
 {
 
-bool StrategicArea::projectPoint(const Point& p, int* x, int* y) const
+bool StrategicArea::projectPoint(const Point& p, int* x_, int* y_) const
 {
   Vec3  t  = camera.rotTMat * (p - camera.p);
   float d  = -t.z;    if (d < TAG_CLIP_DIST)                    { return false; }
   float kx = t.x / d; if (kx < -TAG_CLIP_K || +TAG_CLIP_K < kx) { return false; }
   float ky = t.y / d; if (ky < -TAG_CLIP_K || +TAG_CLIP_K < ky) { return false; }
 
-  *x = camera.centreX + Math::lround(kx * stepPixel);
-  *y = camera.centreY + Math::lround(ky * stepPixel);
+  *x_ = camera.centreX + Math::lround(kx * stepPixel);
+  *y_ = camera.centreY + Math::lround(ky * stepPixel);
   return true;
 }
 
@@ -88,10 +88,10 @@ bool StrategicArea::projectBounds(const AABB& bb, Span* span) const
   return true;
 }
 
-Vec3 StrategicArea::getRay(int x, int y)
+Vec3 StrategicArea::getRay(int x_, int y_)
 {
-  float cx = float(x - camera.centreX) * pixelStep;
-  float cy = float(y - camera.centreY) * pixelStep;
+  float cx = float(x_ - camera.centreX) * pixelStep;
+  float cy = float(y_ - camera.centreY) * pixelStep;
   Vec3  at = Vec3(cx * TAG_REACH_DIST, cy * TAG_REACH_DIST, -TAG_REACH_DIST);
 
   return camera.rotMat * at;

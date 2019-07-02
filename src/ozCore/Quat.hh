@@ -63,8 +63,8 @@ public:
    * Create a quaternion with given components.
    */
   OZ_ALWAYS_INLINE
-  explicit constexpr Quat(float x, float y, float z, float w)
-    : VectorBase4(x, y, z, w)
+  explicit constexpr Quat(float x_, float y_, float z_, float w_)
+    : VectorBase4(x_, y_, z_, w_)
   {}
 
   /**

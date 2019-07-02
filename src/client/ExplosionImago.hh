@@ -48,7 +48,7 @@ public:
 
   static Pool<ExplosionImago> pool;
 
-  static Imago* create(const Object* obj);
+  static Imago* create(const Object* obj_);
 
   void draw(const Imago* parent) override;
 

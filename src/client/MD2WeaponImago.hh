@@ -45,7 +45,7 @@ public:
 
   static Pool<MD2WeaponImago> pool;
 
-  static Imago* create(const Object* obj);
+  static Imago* create(const Object* obj_);
 
   void draw(const Imago* parent) override;
 

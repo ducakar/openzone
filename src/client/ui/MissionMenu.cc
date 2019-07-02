@@ -51,8 +51,8 @@ bool MissionButton::onMouseEvent()
 }
 
 MissionButton::MissionButton(const char* text, Callback* callback, MissionMenu* missionMenu_,
-                             int index_, int width, int height)
-  : Button(text, callback, width, height), missionMenu(missionMenu_), index(index_)
+                             int index_, int width_, int height_)
+  : Button(text, callback, width_, height_), missionMenu(missionMenu_), index(index_)
 {}
 
 void MissionMenu::loadMission(Button* sender)

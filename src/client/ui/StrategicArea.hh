@@ -70,9 +70,9 @@ public:
 
 private:
 
-  bool projectPoint(const Point& p, int* x, int* y) const;
+  bool projectPoint(const Point& p, int* x_, int* y_) const;
   bool projectBounds(const AABB& bb, Span* span) const;
-  Vec3 getRay(int x, int y);
+  Vec3 getRay(int x_, int y_);
   void collectHovers();
 
   void drawHoverTitle(const Span& span, const char* title);

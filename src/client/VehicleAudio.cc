@@ -27,11 +27,11 @@ namespace oz::client
 
 Pool<VehicleAudio> VehicleAudio::pool(256);
 
-Audio* VehicleAudio::create(const Object* obj)
+Audio* VehicleAudio::create(const Object* obj_)
 {
-  OZ_ASSERT(obj->flags & Object::VEHICLE_BIT);
+  OZ_ASSERT(obj_->flags & Object::VEHICLE_BIT);
 
-  return new VehicleAudio(obj);
+  return new VehicleAudio(obj_);
 }
 
 void VehicleAudio::play(const Object* playAt)
