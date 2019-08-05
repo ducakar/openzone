@@ -241,7 +241,7 @@ protected:
     }
 
     data_[index] = new(&pool_) Entry{data_[index], hash, static_cast<Elem_&&>(elem)};
-    return *data_[index];
+    return data_[index]->elem;
   }
 
 public:

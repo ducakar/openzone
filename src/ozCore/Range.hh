@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "System.hh"
 #include "IteratorBase.hh"
 
 namespace oz
@@ -77,10 +78,38 @@ public:
   {}
 
   /**
+   * True iff both ranges are of the same length and all respective elements are equal.
+   */
+  bool operator==(const Range& other) const
+  {
+    return operator==<BeginIterator, EndIterator>(other);
+  }
+
+  /**
+   * True iff both ranges are of the same length and all respective elements are equal.
+   */
+  template <typename BeginIterator_, typename EndIterator_>
+  bool operator==(const Range<BeginIterator_, EndIterator_>& other) const
+  {
+    BeginIterator  beginA = begin_;
+    BeginIterator_ beginB = other.begin();
+
+    while (beginA != end_ && beginB != other.end()) {
+      if (*beginA != *beginB) {
+        return false;
+      }
+
+      ++beginA;
+      ++beginB;
+    }
+    return beginA == end_ && beginB == other.end();
+  }
+
+  /**
    * Begin iterator.
    */
   OZ_ALWAYS_INLINE
-  BeginIterator begin() noexcept
+  BeginIterator begin() const noexcept
   {
     return begin_;
   }
@@ -89,9 +118,29 @@ public:
    * End iterator.
    */
   OZ_ALWAYS_INLINE
-  EndIterator end() noexcept
+  EndIterator end() const noexcept
   {
     return end_;
+  }
+
+  /**
+   * True iff range is empty.
+   */
+  OZ_ALWAYS_INLINE
+  bool isEmpty() const noexcept
+  {
+    return begin_ == end_;
+  }
+
+  /**
+   * First element in range.
+   */
+  OZ_ALWAYS_INLINE
+  Elem& first() const
+  {
+    OZ_ASSERT(begin_ != end_);
+
+    return *begin_;
   }
 
 };
@@ -138,10 +187,42 @@ public:
   {}
 
   /**
+   * True iff both ranges are of the same length and all respective elements are equal.
+   */
+  bool operator==(const Range& other) const
+  {
+    if (end_ - begin_ != other.end_ - other.begin_) {
+      return false;
+    }
+
+    return operator==<Elem*, Elem*>(other);
+  }
+
+  /**
+   * True iff both ranges are of the same length and all respective elements are equal.
+   */
+  template <typename BeginIterator_, typename EndIterator_>
+  bool operator==(const Range<BeginIterator_, EndIterator_>& other) const
+  {
+    Elem*          beginA = begin_;
+    BeginIterator_ beginB = other.begin();
+
+    while (beginA != end_ && beginB != other.end()) {
+      if (*beginA != *beginB) {
+        return false;
+      }
+
+      ++beginA;
+      ++beginB;
+    }
+    return beginA == end_ && beginB == other.end();
+  }
+
+  /**
    * Begin iterator.
    */
   OZ_ALWAYS_INLINE
-  Elem* begin() noexcept
+  Elem* begin() const noexcept
   {
     return begin_;
   }
@@ -150,9 +231,60 @@ public:
    * End iterator.
    */
   OZ_ALWAYS_INLINE
-  Elem* end() noexcept
+  Elem* end() const noexcept
   {
     return end_;
+  }
+
+  /**
+   * Number of elements.
+   */
+  OZ_ALWAYS_INLINE
+  int size() const noexcept
+  {
+    return end_ - begin_;
+  }
+
+  /**
+   * True iff range is empty.
+   */
+  OZ_ALWAYS_INLINE
+  bool isEmpty() const noexcept
+  {
+    return begin_ == end_;
+  }
+
+  /**
+   * Reference to `i`-th element.
+   */
+  OZ_ALWAYS_INLINE
+  Elem& operator[](int i) const
+  {
+    OZ_ASSERT(size_t(i) < size_t(end_ - begin_));
+
+    return begin_[i];
+  }
+
+  /**
+   * First element.
+   */
+  OZ_ALWAYS_INLINE
+  Elem& first() const
+  {
+    OZ_ASSERT(begin_ < end_);
+
+    return begin_[0];
+  }
+
+  /**
+   * Last element.
+   */
+  OZ_ALWAYS_INLINE
+  Elem& last() const
+  {
+    OZ_ASSERT(begin_ < end_);
+
+    return end_[-1];
   }
 
 };

@@ -34,15 +34,15 @@
 #include "common.hh"
 
 /*
+ * System.
+ */
+#include "System.hh"
+
+/*
  * Iterators.
  */
 #include "IteratorBase.hh"
 #include "Range.hh"
-
-/*
- * System.
- */
-#include "System.hh"
 
 /*
  * Array utilities.
