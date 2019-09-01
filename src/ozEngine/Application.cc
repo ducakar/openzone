@@ -302,7 +302,7 @@ void Application::run(Stage* initialStage)
   while (true);
 
   if (defaults.saveConfig) {
-    File configFile = configDir + "/config.json";
+    File configFile = configDir / "config.json";
 
     Log::print("Saving configuration to `%s' ... ", configFile.c());
 

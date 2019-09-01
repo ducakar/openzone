@@ -71,21 +71,21 @@ protected:
 public:
 
   /**
-   * True as long as iterator has not passed all elements.
+   * True iff iterators point to the same element.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator==(const IteratorBase& other) const noexcept
+  {
+    return elem_ == other.elem_;
+  }
+
+  /**
+   * True iff iterator does not point to null.
    */
   OZ_ALWAYS_INLINE
   bool operator==(nullptr_t) const noexcept
   {
     return elem_ == nullptr;
-  }
-
-  /**
-   * False as long as iterator has not passed all elements.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator!=(nullptr_t) const noexcept
-  {
-    return elem_ != nullptr;
   }
 
   /**

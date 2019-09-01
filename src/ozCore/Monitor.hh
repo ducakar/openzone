@@ -119,7 +119,7 @@ public:
   /**
    * Wait on the condition variable.
    *
-   * This function atomically blocks the current thread and releases the mutex. Upon a recieved
+   * This function atomically blocks the current thread and releases the mutex. Upon a received
    * signal is the mutex is acquired again by the current thread and this function unblocks.
    *
    * @note Spurious wakeups are possible.

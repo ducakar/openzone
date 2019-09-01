@@ -392,7 +392,7 @@ public:
   static void init();
 
   /**
-   * Deinitialise file systems.
+   * De-initialise file systems.
    */
   static void destroy();
 

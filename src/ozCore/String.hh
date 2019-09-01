@@ -274,8 +274,8 @@ public:
   /**
    * Generate a string representing the number and optionally add a SI unit prefix.
    *
-   * It adds a space after the number and, when neccessary, it multiplies the number with an
-   * exponent of 1000 and adds a 'm', 'k', 'M' or 'G' unit prefix after the space.
+   * It adds a space after the number and, when necessary, it multiplies the number with an exponent
+   * of 1000 and adds a 'm', 'k', 'M' or 'G' unit prefix after the space.
    */
   OZ_PRINTF_FORMAT(2, 0)
   static String si(double e, const char* format = "%.3g");

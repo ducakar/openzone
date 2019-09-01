@@ -183,9 +183,9 @@ static_assert(sizeof(double) == 8, "sizeof(double) should be 8");
 /**
  * operator!= expressed in terms of operator==.
  */
-template <typename Type>
+template <typename TypeA, typename TypeB>
 OZ_ALWAYS_INLINE
-inline constexpr bool operator!=(const Type& a, const Type& b)
+inline constexpr bool operator!=(const TypeA& a, const TypeB& b)
 {
   return !(a == b);
 }
@@ -193,9 +193,9 @@ inline constexpr bool operator!=(const Type& a, const Type& b)
 /**
  * operator<= expressed in terms of operator<.
  */
-template <typename Type>
+template <typename TypeA, typename TypeB>
 OZ_ALWAYS_INLINE
-inline constexpr bool operator<=(const Type& a, const Type& b)
+inline constexpr bool operator<=(const TypeA& a, const TypeB& b)
 {
   return !(b < a);
 }
@@ -203,9 +203,9 @@ inline constexpr bool operator<=(const Type& a, const Type& b)
 /**
  * operator> expressed in terms of operator<.
  */
-template <typename Type>
+template <typename TypeA, typename TypeB>
 OZ_ALWAYS_INLINE
-inline constexpr bool operator>(const Type& a, const Type& b)
+inline constexpr bool operator>(const TypeA& a, const TypeB& b)
 {
   return b < a;
 }
@@ -213,9 +213,9 @@ inline constexpr bool operator>(const Type& a, const Type& b)
 /**
  * operator>= expressed in terms of operator<.
  */
-template <typename Type>
+template <typename TypeA, typename TypeB>
 OZ_ALWAYS_INLINE
-inline constexpr bool operator>=(const Type& a, const Type& b)
+inline constexpr bool operator>=(const TypeA& a, const TypeB& b)
 {
   return !(a < b);
 }

@@ -751,9 +751,9 @@ void Collider::getOrbisOverlaps(List<Struct*>* structs, List<Object*>* objects)
       }
 
       if (objects != nullptr) {
-        for (Object* sObj = cell.objects.first(); sObj != nullptr; sObj = sObj->next[0]) {
+        for (const Object* sObj = cell.objects.first(); sObj != nullptr; sObj = sObj->next[0]) {
           if ((sObj->flags & mask) && trace.overlaps(*sObj)) {
-            objects->add(sObj);
+            objects->add(const_cast<Object*>(sObj));
           }
         }
       }
@@ -769,7 +769,7 @@ void Collider::getEntityOverlaps(List<Object*>* objects)
     for (int y = span.minY; y <= span.maxY; ++y) {
       const Cell& cell = orbis.cells[x][y];
 
-      for (Object* sObj = cell.objects.first(); sObj != nullptr; sObj = sObj->next[0]) {
+      for (const Object* sObj = cell.objects.first(); sObj != nullptr; sObj = sObj->next[0]) {
         if ((sObj->flags & mask) && trace.overlaps(*sObj)) {
           startPos = str->toStructCS(sObj->p) - entity->offset;
           localDim = str->swapDimCS(sObj->dim + Vec3(margin, margin, margin));
@@ -778,7 +778,7 @@ void Collider::getEntityOverlaps(List<Object*>* objects)
             const BSP::Brush& brush = bsp->brushes[entity->clazz->firstBrush + i];
 
             if (overlapsAABBBrush(&brush)) {
-              objects->add(sObj);
+              objects->add(const_cast<Object*>(sObj));
             }
           }
         }

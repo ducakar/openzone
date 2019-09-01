@@ -39,7 +39,7 @@ namespace oz
  * Besides the ordinary semaphore functions it also provides `waitAll()` and `tryWaitAll()` methods
  * that zero the counter so it can also be used as a binary semaphore.
  *
- * The couter is clamped to [0, maxValue].
+ * The counter is clamped to [0, maxValue].
  *
  * @note No error checks are performed on the underlying pthreads API so any abuse of this class
  * leads to undefined behaviour.

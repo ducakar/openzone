@@ -180,7 +180,7 @@ public:
   }
 
   /**
-   * Find and remove the element that mathes a given key.
+   * Find and remove the element that matches a given key.
    *
    * @return Index of the removed element or -1 if not found.
    */

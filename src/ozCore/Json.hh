@@ -65,7 +65,7 @@ public:
    */
   struct Format
   {
-    int    indentSpaces;    ///< Number of spaces used for indentitation.
+    int    indentSpaces;    ///< Number of spaces used for indentation.
     int    alignmentColumn; ///< Value alignment column.
     String numberFormat;    ///< `printf()`-like number format.
   };

@@ -25,22 +25,22 @@
 namespace oz
 {
 
-static HashMap<String, uint64> profileTimes;
+static HashMap<String, Duration> profileTimes;
 
 Profiler::CRange Profiler::crange() noexcept
 {
   return CRange(profileTimes.cbegin(), profileTimes.cend());
 }
 
-void Profiler::add(const char* key, uint micros)
+void Profiler::add(const char* key, Duration duration)
 {
-  uint64* time = profileTimes.find(key);
+  Duration* time = profileTimes.find(key);
 
   if (time == nullptr) {
-    profileTimes.add(key, micros);
+    profileTimes.add(key, duration);
   }
   else {
-    *time += micros;
+    *time += duration;
   }
 }
 

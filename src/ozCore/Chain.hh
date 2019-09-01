@@ -247,33 +247,21 @@ public:
   }
 
   /**
-   * Pointer to the first element.
+   * Constant pointer to the first element.
    */
   OZ_ALWAYS_INLINE
-  Elem* first() const
+  const Elem* first() const
   {
     return first_;
   }
 
   /**
-   * Pointer to the element before a given one.
-   *
-   * Passing `nullptr` as the parameter returns the last element in the chain.
+   * Pointer to the first element.
    */
-  Elem* before(const Elem* elem) const
+  OZ_ALWAYS_INLINE
+  Elem* first()
   {
-    Elem* current = first_;
-    Elem* before  = nullptr;
-
-    while (current != elem) {
-      if (current == nullptr) {
-        return nullptr;
-      }
-
-      before  = current;
-      current = current->next[INDEX];
-    }
-    return before;
+    return first_;
   }
 
   /**

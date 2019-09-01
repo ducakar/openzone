@@ -171,7 +171,7 @@ public:
    * Unless `STRONG` is true the comparison may spuriously fail even when values are equal but may
    * yield better berformace.
    *
-   * Same as `std::atomic_compare_echange_weak()` or `std::atomic_compare_echange_strong()`.
+   * Same as `std::atomic_compare_exchange_weak()` or `std::atomic_compare_exchange_strong()`.
    * All memory orders are allowed for `SUCCESS_MEMORY_ORDER`, while `FAILURE_MEMORY_ORDER` must be
    * weaker than `SUCCESS_MEMORY_ORDER` and must not be `RELEASE` or `ACQ_REL`.
    */

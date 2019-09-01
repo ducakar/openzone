@@ -239,7 +239,7 @@ public:
   }
 
   /**
-   * Product, compositum of linear transformations.
+   * Product, composition of linear transformations.
    */
   Mat3 operator*(const Mat3& m) const
   {

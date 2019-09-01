@@ -264,7 +264,7 @@ void Log::printProfilerStatistics()
     indent();
 
     for (const auto& i : range) {
-      println("%.6f s\t %s", double(i.value) / 1e6, i.key.c());
+      println("%.6f s\t %s", double(i.value.ns()) / 1e6, i.key.c());
     }
 
     unindent();

@@ -59,6 +59,9 @@ else()
   set(OZ_BINARY_SUBDIR "")
 endif()
 
+# Temporarily disable PCH, they confuse Qt Creator.
+set(PCH_DISABLE ON)
+
 include(cmake/PCH.cmake)
 include(FindPkgConfig)
 
@@ -170,7 +173,7 @@ mark_as_advanced(MINGW32_LIBRARY)
 # Local libmad, faad and eSpeak headers.
 include_directories(SYSTEM etc/include)
 
-set(flags "-std=c++2a -fvisibility-inlines-hidden -fsized-deallocation -fstrict-enums -ffast-math")
+set(flags "-std=c++17 -fvisibility-inlines-hidden -fsized-deallocation -fstrict-enums -ffast-math")
 
 if(BUILD_SHARED_LIBS)
   set(flags "${flags} -fPIC")

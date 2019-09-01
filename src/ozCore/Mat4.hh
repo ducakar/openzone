@@ -278,7 +278,7 @@ public:
   }
 
   /**
-   * Product, composite of linear transformations.
+   * Product, composition of linear transformations.
    */
   Mat4 operator*(const Mat4& m) const
   {

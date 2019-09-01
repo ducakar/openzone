@@ -66,7 +66,7 @@ public:
    * Call function if this is the first call on this object.
    *
    * This function is implemented as a typical double-checked lock and guarantees that the function
-   * is called only once even when called simultanueusly from two threads.
+   * is called only once even when called simultaneously from two threads.
    */
   template <typename Function>
   void operator<<(Function function)

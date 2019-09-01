@@ -36,16 +36,16 @@
  * Remember current time for a later `OZ_PROFILER_END()` macro with the same key.
  */
 #define OZ_PROFILER_BEGIN(key) \
-  uint key##_profilerTime = oz::Time::uclock()
+  Instant key##_profilerInstant = oz::Instant<STEADY>::now()
 
 /**
  * Enter time difference into the `oz::Profiler` under a given key.
  *
- * Time difference is calculated as difference in microseconds between the current time and the
- * saved time from a previous `oz_PROFILER_BEGIN()` with the same key.
+ * Time difference is calculated as difference between the current time and the saved time from a
+ * previous `oz_PROFILER_BEGIN()` with the same key.
  */
 #define OZ_PROFILER_END(key) \
-  oz::Profiler::add(#key, oz::Time::uclock() - key##_profilerTime)
+  oz::Profiler::add(#key, oz::Instant<STEADY>::now() - key##_profilerInstant)
 
 namespace oz
 {
@@ -64,7 +64,7 @@ public:
   /**
    * Constant iterator for accumulated times.
    */
-  using CRange = HashMap<String, uint64>::CRangeType;
+  using CRange = HashMap<String, Duration>::CRangeType;
 
 public:
 
@@ -74,11 +74,11 @@ public:
   static CRange crange() noexcept;
 
   /**
-   * Add a time in microseconds to a named sum.
+   * Add a time to a named sum.
    *
-   * If the key doesn't exist, a new key with initial value `micros` is added.
+   * If the key doesn't exist, a new key with initial value `duration` is added.
    */
-  static void add(const char* key, uint micros);
+  static void add(const char* key, Duration duration);
 
   /**
    * Clear internal hashtable, deleting all times.

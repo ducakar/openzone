@@ -148,12 +148,12 @@ uint64 Alloc::maxAmount = 0;
 
 Alloc::CRange Alloc::objectCRange() noexcept
 {
-  return CRange(chunkInfos[OBJECT].cbegin(), nullptr);
+  return CRange(chunkInfos[OBJECT].cbegin(), chunkInfos[OBJECT].cend());
 }
 
 Alloc::CRange Alloc::arrayCRange() noexcept
 {
-  return CRange(chunkInfos[ARRAY].cbegin(), nullptr);
+  return CRange(chunkInfos[ARRAY].cbegin(), chunkInfos[ARRAY].cend());
 }
 
 }

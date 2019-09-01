@@ -134,10 +134,19 @@ public:
   }
 
   /**
+   * Constant pointer to the last element.
+   */
+  OZ_ALWAYS_INLINE
+  const Elem* last() const
+  {
+    return last_;
+  }
+
+  /**
    * Pointer to the last element.
    */
   OZ_ALWAYS_INLINE
-  Elem* last() const
+  Elem* last()
   {
     return last_;
   }
