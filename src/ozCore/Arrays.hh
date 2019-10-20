@@ -106,17 +106,17 @@ private:
     else {
       // Selection sort.
       for (Elem* i = first; i < last;) {
-        Elem* pivot = i;
-        Elem* min   = i;
+        Elem* pivot   = i;
+        Elem* minElem = i;
         ++i;
 
         for (Elem* j = i; j <= last; ++j) {
-          if (LessFunc()(*j, *min)) {
-            min = j;
+          if (LessFunc()(*j, *minElem)) {
+            minElem = j;
           }
         }
-        if (min != pivot) {
-          swap<Elem>(*min, *pivot);
+        if (minElem != pivot) {
+          swap<Elem>(*minElem, *pivot);
         }
       }
     }

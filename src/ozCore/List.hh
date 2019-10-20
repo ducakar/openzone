@@ -79,8 +79,7 @@ protected:
       OZ_ERROR("oz::List: Negative capacity (overflow?)");
     }
     else if (capacity_ < requestedCapacity) {
-      capacity_ = capacity_ == 0 ? 8 : capacity_ + capacity_ / 2;
-      capacity_ = max<int>(capacity_, requestedCapacity);
+      capacity_ = max<int>(requestedCapacity, capacity_ + capacity_ / 2);
       data_     = Arrays::reallocate<Elem>(data_, size_, capacity_);
     }
   }

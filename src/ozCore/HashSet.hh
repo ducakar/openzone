@@ -209,9 +209,7 @@ protected:
       OZ_ERROR("oz::HashSet: Capacity overflow");
     }
     else if (capacity_ < requestedCapacity) {
-      int newCapacity = capacity_ == 0 ? 8 : capacity_ + capacity_ / 2;
-      newCapacity = max<int>(capacity_, requestedCapacity);
-
+      int newCapacity = max<int>(requestedCapacity, capacity_ + capacity_ / 2);
       resize(newCapacity);
     }
   }

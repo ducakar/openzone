@@ -506,6 +506,8 @@ void System::error(const char* function, const char* file, int line, int nSkippe
   Log::vprintRaw(message, ap);
   Log::printRaw("\n  at %s\n  in %s:%d\n", function, file, line);
 
+  va_end(ap);
+
   Log::printTrace(StackTrace::current(nSkippedFrames + 1));
   Log::println();
 

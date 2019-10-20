@@ -155,7 +155,7 @@ private:
   String parseString()
   {
     List<char> chars;
-    char ch = '"';
+    char ch;
 
     do {
       ch = readChar();

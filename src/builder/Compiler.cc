@@ -142,11 +142,20 @@ struct Node
     : transf(Mat4::ID), mesh(-1), name(name_), includeInBounds(true), parent(parent_)
   {}
 
-  void free()
+  Node(Node&& other) noexcept
+    : Node()
   {
-    for (Node* child : children) {
-      child->free();
-    }
+    swap(*this, other);
+  }
+
+  Node& operator=(Node&& other) noexcept
+  {
+    swap(*this, other);
+    return *this;
+  }
+
+  ~Node()
+  {
     children.free();
   }
 
@@ -933,7 +942,7 @@ void Compiler::destroy()
   currentMesh.indices.clear();
   currentMesh.indices.trim();
 
-  root.free();
+  root.children.free();
   Node::pool.free();
 
   polyIndices.clear();

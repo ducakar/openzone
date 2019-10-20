@@ -39,6 +39,7 @@ namespace oz
 enum MemoryOrder
 {
   RELAXED = __ATOMIC_RELAXED,
+  CONSUME = __ATOMIC_CONSUME,
   ACQUIRE = __ATOMIC_ACQUIRE,
   RELEASE = __ATOMIC_RELEASE,
   ACQ_REL = __ATOMIC_ACQ_REL,
@@ -122,6 +123,7 @@ public:
   Type load() const noexcept
   {
     static_assert(MEMORY_ORDER == RELAXED ||
+                  MEMORY_ORDER == CONSUME ||
                   MEMORY_ORDER == ACQUIRE ||
                   MEMORY_ORDER == SEQ_CST,
                   "Unsupported memory order");

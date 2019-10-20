@@ -59,9 +59,6 @@ else()
   set(OZ_BINARY_SUBDIR "")
 endif()
 
-# Temporarily disable PCH, they confuse Qt Creator.
-set(PCH_DISABLE ON)
-
 include(cmake/PCH.cmake)
 include(FindPkgConfig)
 
