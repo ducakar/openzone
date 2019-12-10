@@ -51,4 +51,4 @@ add_library(matrix STATIC
   WeaponClass.cc
 #END SOURCES
 )
-use_pch(matrix pch)
+target_precompile_headers(matrix REUSE_FROM common)

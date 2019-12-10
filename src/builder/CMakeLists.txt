@@ -30,4 +30,4 @@ add_library(builder STATIC
   UI.cc
 #END SOURCES
 )
-use_pch(builder pch)
+target_precompile_headers(builder REUSE_FROM common)

@@ -21,4 +21,4 @@ add_library(nirvana STATIC
   TechGraph.cc
 #END SOURCES
 )
-use_pch(nirvana pch)
+target_precompile_headers(nirvana REUSE_FROM common)

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.16)
 
 project(openzone)
 
@@ -59,7 +59,6 @@ else()
   set(OZ_BINARY_SUBDIR "")
 endif()
 
-include(cmake/PCH.cmake)
 include(FindPkgConfig)
 
 #
