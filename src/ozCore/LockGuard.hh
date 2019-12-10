@@ -78,4 +78,7 @@ public:
 
 };
 
+template <class Lock>
+LockGuard(Lock*) -> LockGuard<Lock>;
+
 }

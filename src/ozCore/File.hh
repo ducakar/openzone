@@ -123,11 +123,7 @@ public:
   /**
    * Recreate instance for a given path.
    */
-  File& operator=(const char* path)
-  {
-    String::operator=(path);
-    return *this;
-  }
+  File& operator=(const char* path);
 
   /**
    * True iff VFS file path.

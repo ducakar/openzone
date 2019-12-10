@@ -266,6 +266,12 @@ File& File::operator=(String&& path) noexcept
   return *this;
 }
 
+File& File::operator=(const char* path)
+{
+  String::operator=(path);
+  return *this;
+}
+
 bool File::exists() const
 {
   return Stat(begin()).type != Stat::MISSING;

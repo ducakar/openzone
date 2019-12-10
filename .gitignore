@@ -1,27 +1,14 @@
 /CMakeLists.txt.user*
-/*.kdev4
-*.kate-swp
-/.vscode
-/.project
-/.cproject
-/.settings
-/nbproject
+/.idea/
 
-/build
+/build/
 /doc/doxygen*
-/gh-pages
-/lib
-/ports
-/share/openzone
-/share/pixmaps
-/web
+/lib/
+/ports/
+/share/openzone/
+/share/pixmaps/
 
 /*log
 /*.patch
 /*.trace
-/stats
-/*.tar.gz
-/*.tar.bz2
-/*.tar.xz
-/*.zip
-/*.7z
+/*.tar.zst
