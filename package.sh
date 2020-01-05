@@ -13,12 +13,14 @@
 #   standalone builds and compiled game data packages found in `share/openzone`.
 #
 
+set -e
+
 platforms=(
   Linux-x86_64
   Windows-x86_64
 )
 
-eval `egrep '^version=' ./autogen.sh`
+eval "$(egrep '^version=' ./autogen.sh)"
 
 files=`git ls-files | egrep -v '^data$'`
 files="$files share/applications share/pixmaps"
@@ -47,7 +49,7 @@ case $1 in
     mkdir -p build/bundle && cd build/bundle
     rm -rf OpenZone-$version ../../OpenZone-$version-bundle.zip
 
-    for platform in ${platforms[@]}; do
+    for platform in "${platforms[@]}"; do
       mkdir -p $platform && cd $platform
 
       header_msg $platform

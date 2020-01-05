@@ -6,6 +6,8 @@
 # compile a BSP structures for OpenZone.
 #
 
+set -e
+
 if [[ -z $1 ]]; then
   echo "Usage: $0 <map_file>"
   exit

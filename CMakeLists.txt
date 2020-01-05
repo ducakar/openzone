@@ -185,7 +185,7 @@ endif()
 #set(flags "${flags} -fsanitize=undefined")
 
 # Additional flags.
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   set(flags "${flags} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic")
   set(flags "${flags} -Wno-exit-time-destructors -Wno-global-constructors")
   set(flags "${flags} -Wno-date-time -Wno-padded -Wno-switch-enum -Wno-sign-conversion")

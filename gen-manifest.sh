@@ -6,6 +6,8 @@
 # timestamps. Needed by NaCl to update cached game packages.
 #
 
+set -e
+
 cd share/openzone
 
 printf '{\n' > manifest.json

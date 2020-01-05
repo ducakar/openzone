@@ -9,6 +9,8 @@
 # - `wine`: Installs and launches standalone Windows x86_64 port via Wine.
 #
 
+set -e
+
 defaultPlatform=Linux-x86_64-Clang-Debug
 
 function launchWine()
@@ -18,14 +20,14 @@ function launchWine()
   cp ../../lib/Windows-x86_64/* bin
 
   shift
-  exec wine bin/openzone.exe -p ../.. $@
+  exec wine bin/openzone.exe -p ../.. "$@"
 }
 
 case $1 in
   wine)
-    launchWine
+    launchWine "$@"
     ;;
   *)
-    exec ./build/$defaultPlatform/src/tools/openzone -p . $@
+    exec ./build/$defaultPlatform/src/tools/openzone -p . "$@"
     ;;
 esac

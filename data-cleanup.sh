@@ -5,6 +5,8 @@
 # Cleans up temporary, intermediate and backup files from a game source data directory.
 #
 
+set -e
+
 if [[ -z $1 ]]; then
   echo "Usage: $0 <datasrc_dir>"
   exit

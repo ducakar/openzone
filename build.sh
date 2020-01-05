@@ -13,6 +13,8 @@
 # - `conf`: Delete build(s) and configure (but not build) them anew.
 # - (none): Configure (if necessary) and build.
 
+set -e
+
 buildType=Debug
 platforms=(
 #  Android14-i686
@@ -28,7 +30,7 @@ platforms=(
 
 function clean()
 {
-  for platform in ${platforms[@]}; do
+  for platform in "${platforms[@]}"; do
     rm -rf build/$platform-$buildType
   done
   rm -rf build/{OpenZone-*,NaCl-test,Windows-test,Android,bundle}
@@ -36,7 +38,7 @@ function clean()
 
 function build()
 {
-  for platform in ${platforms[@]}; do
+  for platform in "${platforms[@]}"; do
     if [[ $platform != Emscripten && ! -f cmake/$platform.Toolchain.cmake ]]; then
       echo Unknown platform: $platform
       continue
@@ -67,15 +69,15 @@ function build()
 
 case $1 in
   clean)
-    if [[ -n $2 ]]; then platforms=( $2 ); fi
+    if [[ -n $2 ]]; then platforms=("$2"); fi
     clean
     ;;
   conf)
-    if [[ -n $2 ]]; then platforms=( $2 ); fi
+    if [[ -n $2 ]]; then platforms=("$2"); fi
     build 1
     ;;
   *)
-    if [[ -n $1 ]]; then platforms=( $1 ); fi
+    if [[ -n $1 ]]; then platforms=("$1"); fi
     build 0
     ;;
 esac

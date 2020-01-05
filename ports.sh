@@ -15,6 +15,8 @@
 # - (none): Builds all libraries for all platforms.
 #
 
+set -e
+
 platforms=(
 #  Android14-i686
 #  Android14-ARMv7a
@@ -61,8 +63,8 @@ function setup_ndk_i686()
   export CXXFLAGS="-Ofast -fPIC -march=i686 -msse3 -mfpmath=sse"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
 
-  for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && return 0
+  for p in "${platforms[@]}"; do
+    [[ $p == "$platform" ]] && return 0
   done
   return 1
 }
@@ -92,8 +94,8 @@ function setup_ndk_ARMv7a()
   export CXXFLAGS="-Ofast -fPIC -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wno-psabi"
   export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib -Wl,--fix-cortex-a8"
 
-  for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && return 0
+  for p in "${platforms[@]}"; do
+    [[ $p == "$platform" ]] && return 0
   done
   return 1
 }
@@ -118,23 +120,23 @@ function setup_emscripten()
   export CXXFLAGS="-O3"
   export LDFLAGS=""
 
-  for p in ${platforms[@]}; do
-    [[ $p == $platform ]] && return 0
+  for p in "${platforms[@]}"; do
+    [[ $p == "$platform" ]] && return 0
   done
   return 1
 }
 
 function clean()
 {
-  for platform in ${platforms[@]}; do
+  for platform in "${platforms[@]}"; do
     rm -rf "$topDir/$platform"
   done
 }
 
 function buildclean()
 {
-  for platform in ${platforms[@]}; do
-    for subDir in `echo "$topDir/$platform/*"`; do
+  for platform in "${platforms[@]}"; do
+    for subDir in $(echo "$topDir/$platform/*"); do
       [[ $subDir == */usr ]] || rm -rf "$subDir"
     done
 
@@ -147,7 +149,7 @@ function buildclean()
 function download()
 {
   mkdir -p "$topDir/archives"
-  wget -c -nc -P "$topDir/archives" $@
+  wget -c -nc -P "$topDir/archives" "$@"
 }
 
 function fetch()
@@ -204,7 +206,7 @@ function prepare()
 
 function applyPatches()
 {
-  for patchFile in $@; do
+  for patchFile in "$@"; do
     patch -p1 < "$projectDir/etc/patches/$patchFile" || exit 1
   done
 }
@@ -219,7 +221,7 @@ function cmakeBuild()
       -D CMAKE_MODULE_PATH="$projectDir/cmake" \
       -D CMAKE_BUILD_TYPE="Release" \
       -D CMAKE_INSTALL_PREFIX="/usr" \
-      $@ \
+      "$@" \
       .. || return 1
   else
     cmake \
@@ -229,7 +231,7 @@ function cmakeBuild()
       -D CMAKE_BUILD_TYPE="Release" \
       -D CMAKE_INSTALL_PREFIX="/usr" \
       -D PLATFORM_PORTS_PREFIX="$buildDir" \
-      $@ \
+      "$@" \
       .. || return 1
   fi
 
@@ -240,9 +242,9 @@ function cmakeBuild()
 function autotoolsBuild()
 {
   if [[ $platform == Emscripten ]]; then
-    emconfigure ./configure --prefix=/usr $@ || exit 1
+    emconfigure ./configure --prefix=/usr "$@" || exit 1
   else
-    ./configure --build=$buildTriplet --host=$hostTriplet --prefix=/usr $@ || exit 1
+    ./configure --build=$buildTriplet --host=$hostTriplet --prefix=/usr "$@" || exit 1
   fi
 
   make -j4 || exit 1

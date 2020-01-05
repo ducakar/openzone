@@ -13,8 +13,9 @@
 #   together with their timestamps. Needed by NaCl to update cached game packages.
 #
 
+set -e
+
 chromium="/usr/bin/chromium"
-pnaclPath="${NACL_SDK_ROOT}/toolchain/linux_pnacl/bin${bits}"
 
 function run()
 {

@@ -10,7 +10,9 @@
 # each file, remove duplicated blank lines and then remove the last (always blank) line.
 #
 
-files=`git ls-files | egrep -v '^doc/licences/|^etc/include/|^etc/android-project/|^data|\.patch$'`
+set -e
+
+files=$(git ls-files | egrep -v '^doc/licences/|^etc/include/|^etc/android-project/|^data|\.patch$')
 files="$files `find data -name '*.lua' -o -name '*.vert' -o -name '*.frag'`"
 
 for file in $files; do

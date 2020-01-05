@@ -6,6 +6,8 @@
 # `<data_dir>/lingua/<data_dir_basename>.pot`.
 #
 
+set -e
+
 outFile="data/ozBase/lingua/internal.pot"
 
 echo "Extracting strings to $outFile"

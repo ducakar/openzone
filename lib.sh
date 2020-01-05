@@ -14,6 +14,8 @@
 # - `clean`: Delete directories for all platforms.
 # - (none): Copy libraries for selected platforms into corresponding directories.
 
+set -e
+
 platforms=(
   Linux-x86_64
   Windows-x86_64
@@ -21,14 +23,14 @@ platforms=(
 
 function clean()
 {
-  for platform in ${platforms[@]}; do
+  for platform in "${platforms[@]}"; do
     rm -rf lib/$platform
   done
 }
 
 function build()
 {
-  for platform in ${platforms[@]}; do
+  for platform in "${platforms[@]}"; do
     if [[ $platform == Linux-x86_64 ]]; then
       outDir=lib/$platform
       prefix=/usr/lib64

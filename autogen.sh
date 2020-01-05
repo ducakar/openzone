@@ -9,12 +9,14 @@
 # Additionally this scripts updates version numbers in various files.
 #
 
+set -e
+
 components=(src/ozCore src/ozEngine src/ozFactory src/unittest
             src/common src/matrix src/nirvana src/client src/builder)
 version=`sed -r '/^set\(OZ_VERSION / !d; s|.* ([0-9.]+)\)|\1|' CMakeLists.txt`
 
 # Generate CMakeLists.txt files.
-for component in ${components[@]}; do
+for component in "${components[@]}"; do
   echo "Generating $component/CMakeLists.txt"
 
   cd $component

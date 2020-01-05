@@ -6,6 +6,8 @@
 # into `openzone-pa.wav` file.
 #
 
+set -e
+
 parecord -d 0 --file-format=WAVE > openzone-pa.wav &
-glc-capture --pbo -s $@
+glc-capture --pbo -s "$@"
 kill $!

@@ -5,6 +5,8 @@
 # Runs cppcheck tool for static code analysis. Output is written into `cppcheck.log`.
 #
 
+set -e
+
 path="src"
 [[ -n $1 ]] && path="$1"
 

@@ -6,6 +6,8 @@
 # on the system).
 #
 
+set -e
+
 which sloccount &> /dev/null && LC_ALL=C sloccount src
 
 echo
