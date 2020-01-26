@@ -12,4 +12,4 @@ add_library(common STATIC
   Timer.cc
 #END SOURCES
 )
-target_precompile_headers(common PUBLIC common.hh)
+#target_precompile_headers(common PUBLIC common.hh)
