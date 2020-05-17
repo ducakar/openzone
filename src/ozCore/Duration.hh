@@ -175,7 +175,7 @@ public:
   OZ_ALWAYS_INLINE
   constexpr Duration operator*(Scalar s) const
   {
-    return Duration(int64(ns_ * s));
+    return Duration(int64(Scalar(ns_) * s));
   }
 
   /**
@@ -185,7 +185,7 @@ public:
   OZ_ALWAYS_INLINE
   friend constexpr Duration operator*(Scalar s, const Duration& d)
   {
-    return Duration(int64(s * d.ns_));
+    return Duration(int64(s * Scalar(d.ns_)));
   }
 
   /**
@@ -195,7 +195,7 @@ public:
   OZ_ALWAYS_INLINE
   constexpr Duration operator/(Scalar s) const
   {
-    return Duration(int64(ns_ / s));
+    return Duration(int64(Scalar(ns_) / s));
   }
 
   /**
@@ -243,7 +243,7 @@ public:
   OZ_ALWAYS_INLINE
   constexpr Duration& operator*=(Scalar s)
   {
-    ns_ = int64(ns_ * s);
+    ns_ = int64(Scalar(ns_) * s);
     return *this;
   }
 
@@ -254,7 +254,7 @@ public:
   OZ_ALWAYS_INLINE
   constexpr Duration& operator/=(Scalar s)
   {
-    ns_ = int64(ns_ / s);
+    ns_ = int64(Scalar(ns_) / s);
     return *this;
   }
 

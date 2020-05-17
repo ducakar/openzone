@@ -180,9 +180,9 @@ public:
   template <MemoryOrder SUCCESS_MEMORY_ORDER, MemoryOrder FAILURE_MEMORY_ORDER, bool STRONG = false>
   bool compareExchange(Type* expected, Type desired) noexcept
   {
-    static_assert(FAILURE_MEMORY_ORDER != RELEASE &&
-                  FAILURE_MEMORY_ORDER != ACQ_REL &&
-                  FAILURE_MEMORY_ORDER <= SUCCESS_MEMORY_ORDER,
+    static_assert(FAILURE_MEMORY_ORDER <= SUCCESS_MEMORY_ORDER &&
+                  FAILURE_MEMORY_ORDER != RELEASE &&
+                  FAILURE_MEMORY_ORDER != ACQ_REL,
                   "Unsupported memory order");
 
     return __atomic_compare_exchange_n(&value, expected, desired, !STRONG, SUCCESS_MEMORY_ORDER,

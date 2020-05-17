@@ -502,7 +502,7 @@ void System::error(const char* function, const char* file, int line, int nSkippe
 
   Log::verboseMode = false;
 
-  Log::putsRaw("\n\n");
+  Log::putsRaw("\n");
   Log::vprintRaw(message, ap);
   Log::printRaw("\n  at %s\n  in %s:%d\n", function, file, line);
 

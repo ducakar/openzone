@@ -64,7 +64,7 @@ protected:
    * Create an iterator pointing to a given element.
    */
   OZ_ALWAYS_INLINE
-  constexpr explicit IteratorBase(ElemType* first) noexcept
+  explicit IteratorBase(ElemType* first) noexcept
     : elem_(first)
   {}
 

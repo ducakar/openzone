@@ -50,7 +50,7 @@
  * @def OZ_ALWAYS_INLINE
  * Compiler-specific attribute that suggests function inlining even in debug mode.
  */
-#define OZ_ALWAYS_INLINE [[gnu::always_inline]]
+#define OZ_ALWAYS_INLINE __attribute__((always_inline))
 
 /**
  * @def OZ_BYTE_ORDER
@@ -65,7 +65,7 @@
 #ifdef _WIN32
 # define OZ_HIDDEN
 #else
-# define OZ_HIDDEN [[gnu::visibility("hidden")]]
+# define OZ_HIDDEN __attribute__((visibility("hidden")))
 #endif
 
 /**
@@ -75,7 +75,7 @@
 #ifdef _WIN32
 # define OZ_INTERNAL
 #else
-# define OZ_INTERNAL [[gnu::visibility("internal")]]
+# define OZ_INTERNAL __attribute__((visibility("internal")))
 #endif
 
 /**
@@ -91,14 +91,14 @@
 #ifdef _WIN32
 # define OZ_PRINTF_FORMAT(s, first) [[gnu::format(gnu_printf, s, first)]]
 #else
-# define OZ_PRINTF_FORMAT(s, first) [[gnu::format(printf, s, first)]]
+# define OZ_PRINTF_FORMAT(s, first) __attribute__((format(printf, s, first)))
 #endif
 
 /**
  * @def OZ_WEAK
  * Compiler-specific attribute specifying a weak symbol.
  */
-#define OZ_WEAK [[gnu::weak]]
+#define OZ_WEAK __attribute__((weak))
 
 /**
  * Top-level OpenZone namespace.
