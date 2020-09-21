@@ -1,13 +1,15 @@
 /CMakeLists.txt.user*
-/.idea/
-/.vscode/
+/.idea
+/.vscode
+/.clangd
+/compile_commands.json
 
-/build/
+/build
 /doc/doxygen*
-/lib/
-/ports/
-/share/openzone/
-/share/pixmaps/
+/lib
+/ports
+/share/openzone
+/share/pixmaps
 
 /*log
 /*.patch
