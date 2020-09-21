@@ -168,6 +168,8 @@ mark_as_advanced(MINGW32_LIBRARY)
 
 # Local libmad, faad and eSpeak headers.
 include_directories(SYSTEM etc/include)
+# libgamemode.
+include_directories(SYSTEM ext/gamemode/lib)
 
 set(flags "-std=c++17 -fvisibility-inlines-hidden -fsized-deallocation -fstrict-enums -ffast-math")
 

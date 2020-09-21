@@ -31,6 +31,8 @@
 #include <client/EditStage.hh>
 #include <client/ui/UI.hh>
 
+#include <gamemode_client.h>
+
 #include <SDL2/SDL.h>
 #include <unistd.h>
 #ifdef __native_client__
@@ -482,6 +484,14 @@ int Client::init(int argc, char** argv)
   appConfig.include("dir.pictures", picturesDir).get(String::EMPTY);
   appConfig.include("dir.music", musicDir).get(String::EMPTY);
   appConfig.include("dir.prefix", prefixDir).get(String::EMPTY);
+
+  Log::print("Enabling game mode ...");
+  if (gamemode_request_start() == 0) {
+    Log::printEnd(" OK");
+  }
+  else {
+    Log::printEnd(" Failed");
+  }
 
   windowWidth  = appConfig.include("window.windowWidth",  1280).get(0);
   windowHeight = appConfig.include("window.windowHeight", 720 ).get(0);
