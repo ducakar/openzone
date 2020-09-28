@@ -241,7 +241,7 @@ void Application::run(Stage* initialStage)
 
     // Waste time when iconified.
     if (!Window::isActive()) {
-      Thread::sleepFor(1_s / fps);
+      Thread::sleepFor(1_s / int64(fps));
 
       timeSpent = Instant<STEADY>::now() - timeLast;
       timeLast += timeSpent;
@@ -267,7 +267,8 @@ void Application::run(Stage* initialStage)
       continue;
     }
 
-    tickTime       = 1_s * (nTicksInSecond + 1) / fps - 1_s * nTicksInSecond / fps;
+    tickTime       = 1_s * int64(nTicksInSecond + 1) / int64(fps) -
+                     1_s * int64(nTicksInSecond) / int64(fps);
     nTicksInSecond = (nTicksInSecond + 1) % fps;
 
     currentStage->update();

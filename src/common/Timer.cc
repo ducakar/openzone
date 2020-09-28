@@ -47,8 +47,8 @@ void Timer::tick()
   frameDuration   += TICK_DURATION;
   frameTime       += frameDuration.t();
 
-  realTickDuration = (1_s * (nTicksInSecond_ + 1)) / TICKS_PER_SEC -
-                     (1_s * nTicksInSecond_) / TICKS_PER_SEC;
+  realTickDuration = (1_s * int64(nTicksInSecond_ + 1)) / int64(TICKS_PER_SEC) -
+                     (1_s * int64(nTicksInSecond_)) / int64(TICKS_PER_SEC);
   realDuration    += realTickDuration;
 
   nTicksInSecond_  = (nTicksInSecond_ + 1) % TICKS_PER_SEC;

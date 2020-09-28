@@ -32,7 +32,7 @@ class BasicAudio : public Audio
 {
 protected:
 
-  static constexpr int COUNTDOWN_TICKS = Timer::TICKS_PER_SEC / 12;
+  static constexpr uint COUNTDOWN_TICKS = Timer::TICKS_PER_SEC / 12;
 
   // Recent event countdowns. This is to prevent event spawning rafales of same event sounds when
   // some event is occurring every few frames. The same event sound can only be triggered every

@@ -89,7 +89,7 @@
  * Compiler-specific attribute that specifies checking of printf-like arguments.
  */
 #ifdef _WIN32
-# define OZ_PRINTF_FORMAT(s, first) [[gnu::format(gnu_printf, s, first)]]
+# define OZ_PRINTF_FORMAT(s, first) __attribute__((format(gnu_printf, s, first)))
 #else
 # define OZ_PRINTF_FORMAT(s, first) __attribute__((format(printf, s, first)))
 #endif

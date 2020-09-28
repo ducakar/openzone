@@ -38,10 +38,10 @@ class Timer
 public:
 
   /// Number of ticks (game updates) per second.
-  static constexpr uint64 TICKS_PER_SEC = 60;
+  static constexpr uint TICKS_PER_SEC = 60;
 
   /// Length of one tick.
-  static constexpr Duration TICK_DURATION = (1_s + Duration(TICKS_PER_SEC / 2)) / TICKS_PER_SEC;
+  static constexpr Duration TICK_DURATION = (1_s + Duration(TICKS_PER_SEC / 2)) / int64(TICKS_PER_SEC);
 
   /// Length of one tick in seconds.
   static constexpr float TICK_TIME = 1.0f / float(TICKS_PER_SEC);
