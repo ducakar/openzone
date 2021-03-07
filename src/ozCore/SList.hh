@@ -376,14 +376,10 @@ public:
 
     --size_;
 
-    if (i == size_) {
-      // When removing the last element, no shift is performed, so it is not implicitly destroyed by
-      // the move operation.
-      data_[size_] = Elem();
-    }
-    else {
+    if (i != size_) {
       Arrays::move<Elem>(data_ + i + 1, size_ - i, data_ + i);
     }
+    data_[size_] = Elem();
   }
 
   /**
@@ -397,14 +393,10 @@ public:
 
     --size_;
 
-    if (i == size_) {
-      // When removing the last element, no shift is performed, so it is not implicitly destroyed by
-      // the move operation.
-      data_[size_] = Elem();
-    }
-    else {
+    if (i != size_) {
       data_[i] = static_cast<Elem&&>(data_[size_]);
     }
+    data_[size_] = Elem();
   }
 
   /**

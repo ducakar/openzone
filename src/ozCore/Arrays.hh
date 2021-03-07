@@ -79,7 +79,7 @@ private:
       Elem* pivot      = first + (last - first) / 2;
       Elem  pivotValue = *pivot;
 
-      swap(*pivot, *last);
+      swap<Elem>(*pivot, *last);
 
       do {
         while (!LessFunc()(pivotValue, *top) && top <= bottom) {
