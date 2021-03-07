@@ -25,7 +25,7 @@
 
 #include <client/common.hh>
 
-#include <espeak/speak_lib.h>
+#include <speak_lib.h>
 
 namespace oz::client
 {

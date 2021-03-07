@@ -1,8 +1,7 @@
 /CMakeLists.txt.user*
 /.idea
 /.vscode
-/.clangd
-/compile_commands.json
+/.cache
 
 /build
 /doc/doxygen*
