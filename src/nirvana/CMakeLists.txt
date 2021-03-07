@@ -1,24 +1,24 @@
 add_library(nirvana STATIC
 #BEGIN SOURCES
-  common.hh
-  Device.hh
-  luaapi.hh
-  LuaNirvana.hh
-  Memo.hh
-  Mind.hh
-  Nirvana.hh
-  QuestList.hh
-  Task.hh
-  TechGraph.hh
   Device.cc
-  luaapi.cc
+  Device.hh
   LuaNirvana.cc
+  LuaNirvana.hh
   Memo.cc
+  Memo.hh
   Mind.cc
+  Mind.hh
   Nirvana.cc
+  Nirvana.hh
   QuestList.cc
+  QuestList.hh
   Task.cc
+  Task.hh
   TechGraph.cc
+  TechGraph.hh
+  common.hh
+  luaapi.cc
+  luaapi.hh
 #END SOURCES
 )
 #target_precompile_headers(nirvana REUSE_FROM common)

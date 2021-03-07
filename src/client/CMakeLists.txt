@@ -4,153 +4,153 @@ configure_file(BuildInfo.cc.in BuildInfo.cc @ONLY)
 add_library(client STATIC
   ${CMAKE_CURRENT_BINARY_DIR}/BuildInfo.cc
 #BEGIN SOURCES
-  Audio.hh
-  BasicAudio.hh
-  BotAudio.hh
-  BSPAudio.hh
-  BSPImago.hh
-  BuildInfo.hh
-  Caelum.hh
-  Camera.hh
-  CinematicProxy.hh
-  Client.hh
-  common.hh
-  Context.hh
-  EditStage.hh
-  eSpeak.hh
-  ExplosionImago.hh
-  FragPool.hh
-  Frustum.hh
-  GameStage.hh
-  Imago.hh
-  Input.hh
-  Loader.hh
-  luaapi.hh
-  LuaClient.hh
-  MD2.hh
-  MD2Imago.hh
-  MD2WeaponImago.hh
-  MenuStage.hh
-  Model.hh
-  Network.hh
-  PartClass.hh
-  PartGen.hh
-  Profile.hh
-  Proxy.hh
-  Render.hh
-  Shader.hh
-  Shape.hh
-  SMMImago.hh
-  SMMVehicleImago.hh
-  Sound.hh
-  SparkModel.hh
-  Stage.hh
-  StrategicProxy.hh
-  Terra.hh
-  UnitProxy.hh
-  VehicleAudio.hh
   Audio.cc
-  BasicAudio.cc
-  BotAudio.cc
+  Audio.hh
   BSPAudio.cc
+  BSPAudio.hh
   BSPImago.cc
+  BSPImago.hh
+  BasicAudio.cc
+  BasicAudio.hh
+  BotAudio.cc
+  BotAudio.hh
+  BuildInfo.hh
   Caelum.cc
+  Caelum.hh
   Camera.cc
+  Camera.hh
   CinematicProxy.cc
+  CinematicProxy.hh
   Client.cc
-  common.cc
+  Client.hh
   Context.cc
+  Context.hh
   EditStage.cc
-  eSpeak.cc
+  EditStage.hh
   ExplosionImago.cc
+  ExplosionImago.hh
   FragPool.cc
+  FragPool.hh
   Frustum.cc
+  Frustum.hh
   GameStage.cc
+  GameStage.hh
   Imago.cc
+  Imago.hh
   Input.cc
+  Input.hh
   Loader.cc
-  luaapi.cc
+  Loader.hh
   LuaClient.cc
+  LuaClient.hh
   MD2.cc
+  MD2.hh
   MD2Imago.cc
+  MD2Imago.hh
   MD2WeaponImago.cc
+  MD2WeaponImago.hh
   MenuStage.cc
+  MenuStage.hh
   Model.cc
+  Model.hh
   Network.cc
+  Network.hh
   PartClass.cc
+  PartClass.hh
   PartGen.cc
+  PartGen.hh
   Profile.cc
+  Profile.hh
   Proxy.cc
+  Proxy.hh
   Render.cc
-  Shader.cc
-  Shape.cc
+  Render.hh
   SMMImago.cc
+  SMMImago.hh
   SMMVehicleImago.cc
+  SMMVehicleImago.hh
+  Shader.cc
+  Shader.hh
+  Shape.cc
+  Shape.hh
   Sound.cc
+  Sound.hh
   SparkModel.cc
+  SparkModel.hh
   Stage.cc
+  Stage.hh
   StrategicProxy.cc
+  StrategicProxy.hh
   Terra.cc
+  Terra.hh
   UnitProxy.cc
+  UnitProxy.hh
   VehicleAudio.cc
-  ui/Area.hh
-  ui/Bar.hh
-  ui/BuildFrame.hh
-  ui/Button.hh
-  ui/CheckBox.hh
-  ui/CinematicText.hh
-  ui/CreditsMenu.hh
-  ui/DebugFrame.hh
-  ui/EditFrame.hh
-  ui/Frame.hh
-  ui/GalileoFrame.hh
-  ui/HudArea.hh
-  ui/InfoFrame.hh
-  ui/Inventory.hh
-  ui/Label.hh
-  ui/LoadingArea.hh
-  ui/MainMenu.hh
-  ui/MissionMenu.hh
-  ui/ModelField.hh
-  ui/Mouse.hh
-  ui/MusicPlayer.hh
-  ui/QuestFrame.hh
-  ui/SettingsMenu.hh
-  ui/Slider.hh
-  ui/StrategicArea.hh
-  ui/Style.hh
-  ui/TalkFrame.hh
-  ui/Text.hh
-  ui/UI.hh
+  VehicleAudio.hh
+  common.cc
+  common.hh
+  eSpeak.cc
+  eSpeak.hh
+  luaapi.cc
+  luaapi.hh
   ui/Area.cc
+  ui/Area.hh
   ui/Bar.cc
+  ui/Bar.hh
   ui/BuildFrame.cc
+  ui/BuildFrame.hh
   ui/Button.cc
+  ui/Button.hh
   ui/CheckBox.cc
+  ui/CheckBox.hh
   ui/CinematicText.cc
+  ui/CinematicText.hh
   ui/CreditsMenu.cc
+  ui/CreditsMenu.hh
   ui/DebugFrame.cc
+  ui/DebugFrame.hh
   ui/EditFrame.cc
+  ui/EditFrame.hh
   ui/Frame.cc
+  ui/Frame.hh
   ui/GalileoFrame.cc
+  ui/GalileoFrame.hh
   ui/HudArea.cc
+  ui/HudArea.hh
   ui/InfoFrame.cc
+  ui/InfoFrame.hh
   ui/Inventory.cc
+  ui/Inventory.hh
   ui/Label.cc
+  ui/Label.hh
   ui/LoadingArea.cc
+  ui/LoadingArea.hh
   ui/MainMenu.cc
+  ui/MainMenu.hh
   ui/MissionMenu.cc
+  ui/MissionMenu.hh
   ui/ModelField.cc
+  ui/ModelField.hh
   ui/Mouse.cc
+  ui/Mouse.hh
   ui/MusicPlayer.cc
+  ui/MusicPlayer.hh
   ui/QuestFrame.cc
+  ui/QuestFrame.hh
   ui/SettingsMenu.cc
+  ui/SettingsMenu.hh
   ui/Slider.cc
+  ui/Slider.hh
   ui/StrategicArea.cc
+  ui/StrategicArea.hh
   ui/Style.cc
+  ui/Style.hh
   ui/TalkFrame.cc
+  ui/TalkFrame.hh
   ui/Text.cc
+  ui/Text.hh
   ui/UI.cc
+  ui/UI.hh
 #END SOURCES
 )
 #target_precompile_headers(client REUSE_FROM common)

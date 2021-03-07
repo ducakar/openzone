@@ -10,19 +10,23 @@ set -e
 
 cd share/openzone
 
-printf '{\n' > manifest.json
+echo '{' > manifest.json
 
 first=1
 
-for pkg in `echo *.zip`; do
-  if [[ -f $pkg ]]; then
-    timestamp=`stat -c %Y $pkg`
+for pkg in *.zip; do
+  if [[ -f "$pkg" ]]; then
+    timestamp=$(stat -c %Y "$pkg")
 
-    (( $first )) && first=0 || ( printf ',\n' >> manifest.json )
-    printf "  \"$pkg\": $timestamp" >> manifest.json
+    if [[ -n $first ]]; then
+      unset first
+    else
+      echo ',' >> manifest.json
+    fi
+    echo -n "  \"$pkg\": $timestamp" >> manifest.json
   fi
 done
 
-printf '\n}\n' >> manifest.json
+echo -e '\n}' >> manifest.json
 
 cat manifest.json

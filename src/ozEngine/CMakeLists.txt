@@ -4,24 +4,24 @@ configure_file(ozEngine.pc.in ozEngine.pc @ONLY)
 add_library(ozEngine
   ${CMAKE_CURRENT_BINARY_DIR}/config.hh
 #BEGIN SOURCES
-  AL.hh
-  Application.hh
-  common.hh
-  Cursor.hh
-  Font.hh
-  GL.hh
-  Input.hh
-  Lua.hh
-  ozEngine.hh
-  Window.hh
   AL.cc
+  AL.hh
   Application.cc
+  Application.hh
   Cursor.cc
+  Cursor.hh
   Font.cc
+  Font.hh
   GL.cc
+  GL.hh
   Input.cc
+  Input.hh
   Lua.cc
+  Lua.hh
   Window.cc
+  Window.hh
+  common.hh
+  ozEngine.hh
 #END SOURCES
 )
 

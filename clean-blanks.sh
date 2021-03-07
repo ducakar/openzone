@@ -12,14 +12,14 @@
 
 set -e
 
-files=$(git ls-files | egrep -v '^doc/licences/|^etc/include/|^etc/android-project/|^data|\.patch$')
-files="$files `find data -name '*.lua' -o -name '*.vert' -o -name '*.frag'`"
+files=$(git ls-files | grep -Ev '^doc/licences/|^etc/android-project/|^ext/|\.patch$')
+files="$files $(find data -name '*.lua' -o -name '*.vert' -o -name '*.frag')"
 
 for file in $files; do
   # Add two blank lines to the end of each file.
-  printf '\n\n' >> $file
+  printf '\n\n' >> "$file"
   # Remove trailing blanks and then remove duplicated empty lines.
-  sed -r 's|[ \t]*$||; /./,/^$/ !d' -i $file
+  sed -E 's|[ \t]*$||; /./,/^$/ !d' -i "$file"
   # Delete the last (always blank) line.
-  sed -r '$ d' -i $file
+  sed -E '$ d' -i "$file"
 done

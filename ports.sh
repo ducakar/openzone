@@ -23,9 +23,9 @@ platforms=(
   Emscripten
 )
 
-buildTriplet="`uname -m`-`uname -i`-linux-gnu"
+buildTriplet="$(uname -m)-$(uname -i)-linux-gnu"
 
-projectDir=`pwd`
+projectDir=$(pwd)
 topDir="$projectDir/ports"
 originalPath="$PATH"
 
@@ -129,20 +129,20 @@ function setup_emscripten()
 function clean()
 {
   for platform in "${platforms[@]}"; do
-    rm -rf "$topDir/$platform"
+    rm -rf "${topDir:?}/$platform"
   done
 }
 
 function buildclean()
 {
   for platform in "${platforms[@]}"; do
-    for subDir in $(echo "$topDir/$platform/*"); do
+    for subDir in "$topDir/$platform"/*; do
       [[ $subDir == */usr ]] || rm -rf "$subDir"
     done
 
-    rm -rf "$topDir/$platform"/usr/{bin,doc,man,share}
-    rm -rf "$topDir/$platform"/usr/lib/{libpng,lua}
-    rm -rf "$topDir/$platform"/usr/lib/*.la
+    rm -rf "${topDir:?}/$platform"/usr/{bin,doc,man,share}
+    rm -rf "${topDir:?}/$platform"/usr/lib/{libpng,lua}
+    rm -rf "${topDir:?}/$platform"/usr/lib/*.la
   done
 }
 
@@ -244,7 +244,7 @@ function autotoolsBuild()
   if [[ $platform == Emscripten ]]; then
     emconfigure ./configure --prefix=/usr "$@" || exit 1
   else
-    ./configure --build=$buildTriplet --host=$hostTriplet --prefix=/usr "$@" || exit 1
+    ./configure --build="$buildTriplet" --host=$hostTriplet --prefix=/usr "$@" || exit 1
   fi
 
   make -j4 || exit 1
@@ -257,7 +257,7 @@ function finish()
 
   # Fix paths in pkg-config files.
   for file in "$buildDir"/usr/lib/pkgconfig/*.pc; do
-    sed -r 's|=/usr|='"$buildDir"'/usr|g' -i $file
+    sed -E 's|=/usr|='"$buildDir"'/usr|g' -i "$file"
   done
 }
 
@@ -325,7 +325,7 @@ function build_physfs()
   prepare physfs-2.0.3 physfs-2.0.3.tar.bz2 || return
 
   cmakeBuild -D PHYSFS_BUILD_SHARED=0 -D PHYSFS_BUILD_TEST=0 \
-	     -D ZLIB_INCLUDE_DIR="$buildDir/usr/include" -D ZLIB_LIBRARY="$buldDir/usr/lib/zlib.a"
+	     -D ZLIB_INCLUDE_DIR="$buildDir/usr/include" -D ZLIB_LIBRARY="$buildDir/usr/lib/zlib.a"
 
   finish
 }

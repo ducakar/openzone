@@ -31,7 +31,7 @@ platforms=(
 function clean()
 {
   for platform in "${platforms[@]}"; do
-    rm -rf build/$platform-$buildType
+    rm -rf "build/$platform-$buildType"
   done
   rm -rf build/{OpenZone-*,NaCl-test,Windows-test,Android,bundle}
 }
@@ -39,31 +39,31 @@ function clean()
 function build()
 {
   for platform in "${platforms[@]}"; do
-    if [[ $platform != Emscripten && ! -f cmake/$platform.Toolchain.cmake ]]; then
-      echo Unknown platform: $platform
+    if [[ "$platform" != "Emscripten" && ! -f "cmake/$platform.Toolchain.cmake" ]]; then
+      echo "Unknown platform: $platform"
       continue
     fi
 
-    header_msg $platform-$buildType
+    header_msg "$platform-$buildType"
 
-    (( $1 )) && rm -rf build/$platform-$buildType
-    if [[ ! -d build/$platform-$buildType ]]; then
-      mkdir -p build/$platform-$buildType
-      if [[ $platform == Emscripten ]]; then
-        ( cd build/$platform-$buildType && emcmake cmake -Wdev --warn-uninitialized \
+    (( $1 )) && rm -rf "build/$platform-$buildType"
+    if [[ ! -d "build/$platform-$buildType" ]]; then
+      mkdir -p "build/$platform-$buildType"
+      if [[ "$platform" == "Emscripten" ]]; then
+        ( cd "build/$platform-$buildType" && emcmake cmake -Wdev --warn-uninitialized \
           -G Ninja \
-          -D CMAKE_BUILD_TYPE=$buildType \
+          -D CMAKE_BUILD_TYPE="$buildType" \
           ../.. )
       else
-        ( cd build/$platform-$buildType && cmake -Wdev --warn-uninitialized \
+        ( cd "build/$platform-$buildType" && cmake -Wdev --warn-uninitialized \
           -G Ninja \
-          -D CMAKE_TOOLCHAIN_FILE=../../cmake/$platform.Toolchain.cmake \
-          -D CMAKE_BUILD_TYPE=$buildType \
+          -D CMAKE_TOOLCHAIN_FILE="../../cmake/$platform.Toolchain.cmake" \
+          -D CMAKE_BUILD_TYPE="$buildType" \
           -D OZ_TOOLS=ON \
           ../.. )
       fi
     fi
-    (( $1 )) || ( cd build/$platform-$buildType && time ninja )
+    (( $1 )) || ( cd "build/$platform-$buildType" && time ninja )
   done
 }
 

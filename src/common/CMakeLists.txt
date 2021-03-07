@@ -2,14 +2,14 @@ add_library(common STATIC
 #BEGIN SOURCES
   AABB.hh
   Bounds.hh
-  common.hh
-  Lingua.hh
-  luaapi.hh
-  luabase.hh
-  Timer.hh
   Lingua.cc
-  luabase.cc
+  Lingua.hh
   Timer.cc
+  Timer.hh
+  common.hh
+  luaapi.hh
+  luabase.cc
+  luabase.hh
 #END SOURCES
 )
 #target_precompile_headers(common PUBLIC common.hh)

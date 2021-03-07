@@ -4,12 +4,12 @@ endif()
 
 add_executable(unittest
 #BEGIN SOURCES
-  unittest.hh
   Alloc.cc
   Arrays.cc
   common.cc
   iterables.cc
   unittest.cc
+  unittest.hh
 #END SOURCES
 )
 target_link_libraries(unittest ozCore)

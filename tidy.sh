@@ -261,6 +261,5 @@ checks=(
   readability-static-definition-in-anonymous-namespace
   readability-uniqueptr-delete-release
 )
-checks=$(echo "${checks[@]}" | sed 's| |,|g')
 
-clang-tidy -p build/$platform-$buildType -checks=$checks -header-filter=.hh "$@"
+clang-tidy -p build/$platform-$buildType -checks="${checks// /,}" -header-filter=.hh "$@"

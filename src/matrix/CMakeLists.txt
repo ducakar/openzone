@@ -1,54 +1,54 @@
 add_library(matrix STATIC
 #BEGIN SOURCES
-  BotClass.hh
-  Bot.hh
-  BSP.hh
-  Caelum.hh
-  Collider.hh
-  common.hh
-  DynamicClass.hh
-  Dynamic.hh
-  Frag.hh
-  FragPool.hh
-  Liber.hh
-  luaapi.hh
-  LuaMatrix.hh
-  Matrix.hh
-  ObjectClass.hh
-  Object.hh
-  Orbis.hh
-  Physics.hh
-  Struct.hh
-  Synapse.hh
-  Terra.hh
-  VehicleClass.hh
-  Vehicle.hh
-  WeaponClass.hh
-  Weapon.hh
-  Bot.cc
-  BotClass.cc
   BSP.cc
+  BSP.hh
+  Bot.cc
+  Bot.hh
+  BotClass.cc
+  BotClass.hh
   Caelum.cc
+  Caelum.hh
   Collider.cc
+  Collider.hh
   Dynamic.cc
+  Dynamic.hh
   DynamicClass.cc
+  DynamicClass.hh
   Frag.cc
+  Frag.hh
   FragPool.cc
+  FragPool.hh
   Liber.cc
-  luaapi.cc
+  Liber.hh
   LuaMatrix.cc
+  LuaMatrix.hh
   Matrix.cc
+  Matrix.hh
   Object.cc
+  Object.hh
   ObjectClass.cc
+  ObjectClass.hh
   Orbis.cc
+  Orbis.hh
   Physics.cc
+  Physics.hh
   Struct.cc
+  Struct.hh
   Synapse.cc
+  Synapse.hh
   Terra.cc
+  Terra.hh
   Vehicle.cc
+  Vehicle.hh
   VehicleClass.cc
+  VehicleClass.hh
   Weapon.cc
+  Weapon.hh
   WeaponClass.cc
+  WeaponClass.hh
+  common.hh
+  luaapi.cc
+  luaapi.hh
 #END SOURCES
 )
 #target_precompile_headers(matrix REUSE_FROM common)

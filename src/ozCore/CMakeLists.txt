@@ -4,91 +4,91 @@ configure_file(ozCore.pc.in ozCore.pc @ONLY)
 add_library(ozCore
   ${CMAKE_CURRENT_BINARY_DIR}/config.hh
 #BEGIN SOURCES
+  Alloc.cc
   Alloc.hh
   Arrays.hh
   Atomic.hh
+  Barrier.cc
   Barrier.hh
+  Bitset.cc
   Bitset.hh
   CallOnce.hh
   Chain.hh
-  common.hh
   DChain.hh
+  Duration.cc
   Duration.hh
   Endian.hh
+  EnumMap.cc
   EnumMap.hh
+  File.cc
   File.hh
+  Gettext.cc
   Gettext.hh
   HashMap.hh
   HashSet.hh
   Heap.hh
+  Instant.cc
   Instant.hh
   IteratorBase.hh
+  Java.cc
   Java.hh
+  Json.cc
   Json.hh
   List.hh
   LockGuard.hh
+  Log.cc
   Log.hh
   Map.hh
+  Mat3.cc
   Mat3.hh
+  Mat4.cc
   Mat4.hh
+  Math.cc
   Math.hh
+  Monitor.cc
   Monitor.hh
-  ozCore.hh
+  Pepper.cc
   Pepper.hh
+  Plane.cc
   Plane.hh
+  Point.cc
   Point.hh
+  Pool.cc
   Pool.hh
+  Profiler.cc
   Profiler.hh
+  Quat.cc
   Quat.hh
-  Range.hh
+  RWLock.cc
   RWLock.hh
+  Range.hh
   SBitset.hh
+  SList.hh
+  Semaphore.cc
   Semaphore.hh
   Set.hh
-  SharedLib.hh
-  simd.hh
-  SList.hh
-  SpinLock.hh
-  StackTrace.hh
-  Stream.hh
-  String.hh
-  System.hh
-  Thread.hh
-  Time.hh
-  Vec3.hh
-  Vec4.hh
-  Alloc.cc
-  Barrier.cc
-  Bitset.cc
-  Duration.cc
-  EnumMap.cc
-  File.cc
-  Gettext.cc
-  Instant.cc
-  Java.cc
-  Json.cc
-  Log.cc
-  Mat3.cc
-  Mat4.cc
-  Math.cc
-  Monitor.cc
-  Pepper.cc
-  Plane.cc
-  Point.cc
-  Pool.cc
-  Profiler.cc
-  Quat.cc
-  RWLock.cc
-  Semaphore.cc
   SharedLib.cc
+  SharedLib.hh
+  SpinLock.hh
   StackTrace.cc
+  StackTrace.hh
   Stream.cc
+  Stream.hh
   String.cc
+  String.hh
   System.cc
+  System.hh
   Thread.cc
+  Thread.hh
   Time.cc
+  Time.hh
   Vec3.cc
+  Vec3.hh
   Vec4.cc
+  Vec4.hh
+  common.hh
+  ozCore.hh
+  simd.hh
 #END SOURCES
 )
 

@@ -6,16 +6,16 @@ configure_file(ozFactory.pc.in ozFactory.pc @ONLY)
 
 add_library(ozFactory
 #BEGIN SOURCES
-  common.hh
-  ImageBuilder.hh
-  ImageData.hh
-  ModelBuilder.hh
-  ozFactory.hh
-  TerraBuilder.hh
   ImageBuilder.cc
+  ImageBuilder.hh
   ImageData.cc
+  ImageData.hh
   ModelBuilder.cc
+  ModelBuilder.hh
   TerraBuilder.cc
+  TerraBuilder.hh
+  common.hh
+  ozFactory.hh
 #END SOURCES
 )
 

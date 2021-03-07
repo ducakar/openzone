@@ -14,9 +14,9 @@ echo
 echo
 
 which cloc &> /dev/null && cloc --force-lang=C++,hh --force-lang=C++,h \
-                                src cmake *.txt *.sh data/*/{glsl,lua,mission}
+                                -- src cmake *.txt *.sh data/*/{glsl,lua,mission}
 
 echo
 echo
 
-which tokei &> /dev/null && tokei src cmake *.txt *.sh data/*/{glsl,lua,mission}
+which tokei &> /dev/null && tokei src cmake -- *.txt *.sh data/*/{glsl,lua,mission}

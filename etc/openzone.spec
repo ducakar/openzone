@@ -79,8 +79,8 @@ cmake \
   -D CMAKE_CXX_FLAGS_RELEASE="-Ofast -flto" \
   -D CMAKE_AR="/usr/bin/gcc-ar" \
   -D CMAKE_RANLIB="/usr/bin/gcc-ranlib" \
-  -D BUILD_SHARED_LIBS=1 \
-  -D OZ_TOOLS=1 \
+  -D BUILD_SHARED_LIBS=ON \
+  -D OZ_TOOLS=ON \
   ..
 
 make %{?_smp_mflags}
@@ -91,7 +91,7 @@ rm -rf "$RPM_BUILD_ROOT"
 ( cd build && cmake -D CMAKE_INSTALL_PREFIX="$RPM_BUILD_ROOT/usr" -P cmake_install.cmake )
 
 if [[ %{_libdir} != /usr/lib ]]; then
-  sed -ri 's|libdir=.*|libdir=%{_libdir}|' "$RPM_BUILD_ROOT"/usr/lib/pkgconfig/*
+  sed -Ei 's|libdir=.*|libdir=%{_libdir}|' "$RPM_BUILD_ROOT"/usr/lib/pkgconfig/*
   mv "$RPM_BUILD_ROOT"/usr/lib "$RPM_BUILD_ROOT"%{_libdir}
 fi
 

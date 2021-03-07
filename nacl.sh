@@ -23,7 +23,7 @@ function run()
 
   # Just create symlinks instead of copying.
   for i in doc etc/nacl/nacl.* etc/nacl/openzone.* share/openzone/*.{zip,json}; do
-    [[ -e $i ]] && ln -sf ../../../../$i build/PNaCl/src/tools
+    [[ -e "$i" ]] && ln -sf "../../../../$i" build/PNaCl/src/tools
   done
 
   cd build/PNaCl/src/tools
@@ -38,24 +38,7 @@ function run()
 
 function manifest()
 {
-  cd share/openzone
-
-  printf '{\n' > manifest.json
-
-  first=1
-
-  for pkg in `echo *.zip`; do
-    if [[ -f $pkg ]]; then
-      timestamp=`stat -c %Y $pkg`
-
-      (( $first )) && first=0 || ( printf ',\n' >> manifest.json )
-      printf "  \"$pkg\": $timestamp" >> manifest.json
-    fi
-  done
-
-  printf '\n}\n' >> manifest.json
-
-  cat manifest.json
+  ./gen-manifest.sh
 }
 
 case $1 in

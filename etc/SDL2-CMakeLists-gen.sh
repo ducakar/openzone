@@ -20,7 +20,7 @@ include_directories( ./include )
 add_definitions( -DANDROID -U__LINUX__ )
 
 set( sources
-  `echo src/*.c \
+  $(echo src/*.c \
         src/audio/*.c \
         src/audio/android/*.c \
         src/audio/dummy/*.c \
@@ -46,7 +46,7 @@ set( sources
         src/timer/unix/*.c \
         src/video/*.c \
         src/video/android/*.c \
-        | sed -r 's| |\n  |g'` )
+        | sed -E 's| |\n  |g') )
 
 add_library( SDL2 STATIC \${sources} )
 set_target_properties( SDL2 PROPERTIES PUBLIC_HEADER "\${public_headers}" )
@@ -57,6 +57,6 @@ install( PROGRAMS \${CMAKE_CURRENT_BINARY_DIR}/sdl2-config DESTINATION bin )
 
 EOF
 
-sed -r 's|Java_org_libsdl_app_|Java_com_github_ducakar_openzone_|g' -i \
+sed -E 's|Java_org_libsdl_app_|Java_com_github_ducakar_openzone_|g' -i \
     src/core/android/SDL_android.c \
     src/main/android/SDL_android_main.c
