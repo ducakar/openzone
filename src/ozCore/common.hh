@@ -131,7 +131,8 @@ using std::ptrdiff_t;
  *
  * Alias for `std::initializer_list`.
  */
-using std::initializer_list;
+template <typename Type>
+using InitialiserList = std::initializer_list<Type>;
 
 /**
  * Signed byte.
@@ -402,7 +403,8 @@ struct Hash<char[SIZE]> : Hash<const char*>
  * Shortcut for calling `Hash<Type>()(value)`.
  */
 template <typename Value>
-inline constexpr uint hash(Value value) {
+inline constexpr uint hash(Value value)
+{
   return Hash<Value>()(value);
 }
 

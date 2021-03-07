@@ -126,7 +126,7 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  HashMap(initializer_list<Pair> il)
+  HashMap(InitialiserList<Pair> il)
     : HashMap(int(il.size()) * 4 / 3)
   {
     for (const Pair& p : il) {
@@ -137,7 +137,7 @@ public:
   /**
    * Assign from an initialiser list.
    */
-  HashMap& operator=(initializer_list<Pair> il)
+  HashMap& operator=(InitialiserList<Pair> il)
   {
     clear();
     ensureCapacity(int(il.size()) * 4 / 3);

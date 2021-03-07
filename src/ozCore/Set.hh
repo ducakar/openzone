@@ -111,7 +111,7 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  Set(initializer_list<Elem> il)
+  Set(InitialiserList<Elem> il)
     : List<Elem>(il)
   {
     List<Elem>::template sort<LessFunc>();
@@ -122,7 +122,7 @@ public:
    *
    * Existing storage is reused if it suffices.
    */
-  Set& operator=(initializer_list<Elem> il)
+  Set& operator=(InitialiserList<Elem> il)
   {
     List<Elem>::operator=(il);
     List<Elem>::template sort<LessFunc>();

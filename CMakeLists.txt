@@ -171,7 +171,7 @@ include_directories(SYSTEM ext/gamemode/lib ext/espeak)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(flags "-fvisibility-inlines-hidden -fsized-deallocation -fstrict-enums -ffast-math")
+set(flags "-fsized-deallocation -fstrict-enums -ffast-math")
 
 if(BUILD_SHARED_LIBS)
   set(flags "${flags} -fPIC")

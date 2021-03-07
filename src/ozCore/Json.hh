@@ -234,7 +234,7 @@ public:
    * Json array = {Json {0, 1}, {1, 2}, {2, 0}};
    * @endcode
    */
-  Json(initializer_list<Json> il, const char* comment = "");
+  Json(InitialiserList<Json> il, const char* comment = "");
 
   /**
    * Create an object from initialiser list of string-JSON pairs.
@@ -244,7 +244,7 @@ public:
    * Json object = {Json::Pair {"key1", 1}, {"key2", 2}, {"key3", 3}};
    * @endcode
    */
-  Json(initializer_list<Pair> il, const char* comment = "");
+  Json(InitialiserList<Pair> il, const char* comment = "");
 
   /**
    * Destructor.

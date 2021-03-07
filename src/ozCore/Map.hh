@@ -171,7 +171,7 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  Map(initializer_list<Pair> il)
+  Map(InitialiserList<Pair> il)
     : Set<Pair>(il)
   {}
 
@@ -180,7 +180,7 @@ public:
    *
    * Existing storage is reused if it suffices.
    */
-  Map& operator=(initializer_list<Pair> il)
+  Map& operator=(InitialiserList<Pair> il)
   {
     Set<Pair>::operator=(il);
     return *this;

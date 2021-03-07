@@ -260,7 +260,7 @@ public:
   /**
    * Initialise from an initialiser list.
    */
-  HashSet(initializer_list<Elem> il)
+  HashSet(InitialiserList<Elem> il)
     : HashSet(int(il.size()) * 4 / 3)
   {
     for (const Elem& e : il) {
@@ -325,7 +325,7 @@ public:
   /**
    * Assign from an initialiser list.
    */
-  HashSet& operator=(initializer_list<Elem> il)
+  HashSet& operator=(InitialiserList<Elem> il)
   {
     clear();
     ensureCapacity(int(il.size()) * 4 / 3);
