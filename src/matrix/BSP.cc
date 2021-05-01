@@ -25,11 +25,13 @@
 namespace oz
 {
 
+BSP::~BSP()
+{
+  delete[] data;
+}
+
 BSP::BSP(const char* name_, int id_)
   : data(nullptr), name(name_), id(id_)
-{}
-
-void BSP::load()
 {
   File   file   = String::format("@bsp/%s.ozBSP", name.c());
   Stream is     = Stream(0, Endian::LITTLE);
@@ -113,7 +115,9 @@ void BSP::load()
     brushes[i].flags     = is.readInt();
 
     if (brushes[i].flags & Medium::SEA_BIT) {
-      brushes[i].flags |= orbis.terra.liquid & Medium::LIQUID_MASK;
+//      brushes[i].flags |= orbis.terra.liquid & Medium::LIQUID_MASK;
+      int liquid = orbis.terra.liquid;
+      brushes[i].flags |= liquid;
     }
   }
   p = Alloc::alignUp(p + nBrushes * sizeof(brushes[0]));
@@ -173,11 +177,6 @@ void BSP::load()
   }
 
   OZ_ASSERT(is.available() == 0);
-}
-
-void BSP::unload()
-{
-  delete[] data;
 }
 
 }

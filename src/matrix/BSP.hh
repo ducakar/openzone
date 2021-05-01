@@ -138,7 +138,7 @@ public:
     Heading            heading;
   };
 
-  char*           data;
+  char*           data = nullptr;
 
   Plane*          planes;
   Node*           nodes;
@@ -175,10 +175,25 @@ public:
 
 public:
 
+  BSP() = default;
+  ~BSP();
+
   explicit BSP(const char* name_, int id_);
 
-  void load();
-  void unload();
+  BSP(const BSP&) = delete;
+  BSP& operator=(const BSP&) = delete;
+
+  BSP(BSP&& other) noexcept
+    : BSP()
+  {
+    swap(*this, other);
+  }
+
+  BSP& operator=(BSP&& other) noexcept
+  {
+    swap(*this, other);
+    return *this;
+  }
 
 };
 

@@ -647,8 +647,6 @@ void Liber::initBSPs()
 
     BSP& bsp = bspMap.add(name, BSP(name, bsps.size())).value;
     bsps.add(&bsp);
-
-    bsp.load();
   }
 
   bspMap.trim();
@@ -793,10 +791,6 @@ void Liber::destroy()
 
   baseClasses.clear();
   baseClasses.trim();
-
-  for (auto& bsp: bspMap) {
-    bsp.value.unload();
-  }
 
   bsps.clear();
   bsps.trim();
