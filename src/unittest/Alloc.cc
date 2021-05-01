@@ -39,7 +39,7 @@ void test_Alloc()
   OZ_CHECK(Alloc::count == oCount + 1)
   OZ_CHECK(Alloc::sumCount == oSumCount + 1)
 
-  array = Arrays::reallocate(array, 5, 8);
+  array = Arrays::resize(array, 5, 8);
   OZ_CHECK(Alloc::amount >= oAmount + 8 * sizeof(Foo))
   OZ_CHECK(Alloc::sumAmount >= oSumAmount + 18 * sizeof(Foo))
   OZ_CHECK(Alloc::count == oCount + 1)

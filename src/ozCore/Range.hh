@@ -255,7 +255,7 @@ public:
   }
 
   /**
-   * Reference to `i`-th element.
+   * Reference to the `i`-th element.
    */
   OZ_ALWAYS_INLINE
   Elem& operator[](int i) const
@@ -290,6 +290,51 @@ public:
 };
 
 /**
+ * Range to access to a range of elements between two iterators.
+ */
+template <class BeginIterator, class EndIterator>
+inline Range<BeginIterator, EndIterator> range(BeginIterator begin, EndIterator end) noexcept
+{
+  return Range<BeginIterator, EndIterator>(begin, end);
+}
+
+/**
+ * Range with constant access to array elements.
+ */
+template <typename Elem>
+inline Range<const Elem*, const Elem*> crange(const Elem* array, int size) noexcept
+{
+  return Range<const Elem*, const Elem*>(array, array + size);
+}
+
+/**
+ * Range with non-constant access to array elements.
+ */
+template <typename Elem>
+inline Range<Elem*, Elem*> range(Elem* array, int size) noexcept
+{
+  return Range<Elem*, Elem*>(array, array + size);
+}
+
+/**
+ * Range with constant access to static array elements.
+ */
+template <typename Elem, int SIZE>
+inline Range<const Elem*, const Elem*> crange(const Elem (& array)[SIZE]) noexcept
+{
+  return Range<const Elem*, const Elem*>(array, array + SIZE);
+}
+
+/**
+ * Range with non-constant access to static array elements.
+ */
+template <typename Elem, int SIZE>
+inline Range<Elem*, Elem*> range(Elem (& array)[SIZE]) noexcept
+{
+  return Range<Elem*, Elem*>(array, array + SIZE);
+}
+
+/**
  * Range with constant access to container elements.
  */
 template <class Container>
@@ -314,15 +359,6 @@ template <class Container>
 inline typename Container::RangeType range(Container& container) noexcept
 {
   return typename Container::RangeType(container.begin(), container.end());
-}
-
-/**
- * Range to access to a range of elements between two iterators.
- */
-template <class BeginIterator, class EndIterator>
-inline Range<BeginIterator, EndIterator> range(BeginIterator begin, EndIterator end)
-{
-  return Range<BeginIterator, EndIterator>(begin, end);
 }
 
 }

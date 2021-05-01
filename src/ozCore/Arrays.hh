@@ -362,16 +362,15 @@ public:
   }
 
   /**
-   * Reallocate an array to a different size, moving its elements.
+   * Resize an array to a different size, moving its elements.
    *
-   * Allocate a new zero-initialised array of `newSize` elements, move first `min(size, newSize)`
-   * elements of the source array to the newly created one and free the source array. Similar to
-   * `realloc()`, the given array is deleted and `nullptr` is returned if `newSize` is 0.
+   * Newly allocated elements are explicitly initialised. If `newSize` is 0 the given array is
+   * deleted and `nullptr` is returned.
    *
    * @return Newly allocated array.
    */
   template <typename Elem>
-  static Elem* reallocate(Elem* array, int size, int newSize)
+  static Elem* resize(Elem* array, int size, int newSize)
   {
     Elem* newArray = nullptr;
 
@@ -385,59 +384,5 @@ public:
   }
 
 };
-
-/**
- * Range with constant access to static array elements.
- */
-template <typename Elem, int SIZE>
-inline Arrays::CRangeType<Elem> crange(const Elem (& array)[SIZE]) noexcept
-{
-  return Arrays::CRangeType<Elem>(array, array + SIZE);
-}
-
-/**
- * Range with constant access to constant static array elements.
- */
-template <typename Elem, int SIZE>
-inline Arrays::CRangeType<Elem> range(const Elem (& array)[SIZE]) noexcept
-{
-  return Arrays::CRangeType<Elem>(array, array + SIZE);
-}
-
-/**
- * Range with non-constant access to static array elements.
- */
-template <typename Elem, int SIZE>
-inline Arrays::RangeType<Elem> range(Elem (& array)[SIZE]) noexcept
-{
-  return Arrays::RangeType<Elem>(array, array + SIZE);
-}
-
-/**
- * Range with constant access to array elements.
- */
-template <typename Elem>
-inline Arrays::CRangeType<Elem> crange(const Elem* array, int size) noexcept
-{
-  return Arrays::CRangeType<Elem>(array, array + size);
-}
-
-/**
- * Range with constant access to constant array elements.
- */
-template <typename Elem>
-inline Arrays::CRangeType<Elem> range(const Elem* array, int size) noexcept
-{
-  return Arrays::CRangeType<Elem>(array, array + size);
-}
-
-/**
- * Range with non-constant access to array elements.
- */
-template <typename Elem>
-inline Arrays::RangeType<Elem> range(Elem* array, int size) noexcept
-{
-  return Arrays::RangeType<Elem>(array, array + size);
-}
 
 }

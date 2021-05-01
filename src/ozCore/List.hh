@@ -80,7 +80,7 @@ protected:
     }
     else if (capacity_ < requestedCapacity) {
       capacity_ = max<int>(requestedCapacity, capacity_ + capacity_ / 2);
-      data_     = Arrays::reallocate<Elem>(data_, size_, capacity_);
+      data_     = Arrays::resize<Elem>(data_, size_, capacity_);
     }
   }
 
@@ -95,7 +95,7 @@ public:
    * Create a list with a given initial length and capacity.
    */
   explicit List(int size)
-    : data_(Arrays::reallocate<Elem>(nullptr, 0, size)), size_(size), capacity_(size)
+    : data_(Arrays::resize<Elem>(nullptr, 0, size)), size_(size), capacity_(size)
   {}
 
   /**
@@ -146,9 +146,8 @@ public:
   List& operator=(const List& other)
   {
     if (&other != this) {
-      size_ = 0;
+      clear();
       addAll(other.data_, other.size_);
-      Arrays::clear<Elem>(data_ + other.size_, size_ - other.size_);
     }
     return *this;
   }
@@ -575,7 +574,7 @@ public:
   {
     if (exactCapacity) {
       if (newSize != capacity_) {
-        data_     = Arrays::reallocate<Elem>(data_, size_, newSize);
+        data_     = Arrays::resize<Elem>(data_, size_, newSize);
         capacity_ = newSize;
       }
     }
@@ -594,7 +593,7 @@ public:
   {
     if (exactCapacity) {
       if (capacity_ < capacity) {
-        data_     = Arrays::reallocate<Elem>(data_, size_, capacity);
+        data_     = Arrays::resize<Elem>(data_, size_, capacity);
         capacity_ = capacity;
       }
     }
@@ -609,7 +608,7 @@ public:
   void trim()
   {
     if (size_ < capacity_) {
-      data_     = Arrays::reallocate<Elem>(data_, size_, size_);
+      data_     = Arrays::resize<Elem>(data_, size_, size_);
       capacity_ = size_;
     }
   }

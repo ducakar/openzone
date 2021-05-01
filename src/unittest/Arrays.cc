@@ -109,14 +109,14 @@ void test_Arrays()
 
   Foo* d = new Foo[4]();
   Arrays::copy<Foo>(b, 4, d);
-  d = Arrays::reallocate(d, 4, 10);
+  d = Arrays::resize(d, 4, 10);
   OZ_CHECK(Arrays::equals(b, 4, d))
   delete[] d;
 
   for (int j = 0; j < 100; ++j) {
     int r[1000];
-    for (int i = 0; i < 1000; ++i) {
-      r[i] = Math::rand(1000);
+    for (int& i : r) {
+      i = Math::rand(1000);
     }
     Arrays::sort(r, 1000);
 

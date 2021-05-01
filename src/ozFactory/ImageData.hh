@@ -155,7 +155,7 @@ public:
   }
 
   /**
-   * Constant reference to `i`-th byte in pixels array.
+   * Constant reference to the `i`-th byte in pixels array.
    */
   OZ_ALWAYS_INLINE
   const char& operator[](int i) const
@@ -166,7 +166,7 @@ public:
   }
 
   /**
-   * Non-constant reference to `i`-th byte in pixels array.
+   * Non-constant reference to the `i`-th byte in pixels array.
    */
   OZ_ALWAYS_INLINE
   char& operator[](int i)
