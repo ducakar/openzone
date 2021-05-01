@@ -24,6 +24,7 @@
 
 #include "Alloc.hh"
 
+#include <cstdlib>
 #include <cstring>
 #include <zlib.h>
 
@@ -85,14 +86,16 @@ Stream::Stream(char* start, char* end, Endian::Order order)
   : pos_(start), begin_(start), end_(end), flags_(WRITABLE), order_(order)
 {}
 
-Stream::Stream(int size, Endian::Order order)
-  : pos_(size == 0 ? nullptr : new char[size]), begin_(pos_), end_(pos_ + size),
+Stream::Stream(int capacity, Endian::Order order)
+  : pos_(static_cast<char*>(realloc(nullptr, capacity))), begin_(pos_), end_(pos_ + capacity),
     flags_(WRITABLE | BUFFERED), order_(order)
 {}
 
 Stream::~Stream()
 {
-  free();
+  if (flags_ & BUFFERED) {
+    free(begin_);
+  }
 }
 
 Stream::Stream(Stream&& other) noexcept
@@ -117,17 +120,14 @@ void Stream::seek(int offset)
   pos_ = begin_ + offset;
 }
 
-void Stream::resize(int newSize)
+void Stream::resize(int newCapacity)
 {
-  int length = min<int>(tell(), newSize);
+  int   offset  = min<int>(tell(), newCapacity);
+  char* newData = static_cast<char*>(realloc(begin_, newCapacity));
 
-  char* newData = new char[newSize];
-  memcpy(newData, begin_, length);
-  delete[] begin_;
-
-  pos_   = newData + length;
+  pos_   = newData + offset;
   begin_ = newData;
-  end_   = newData + newSize;
+  end_   = newData + newCapacity;
 }
 
 const char* Stream::readSkip(int count)
@@ -157,41 +157,25 @@ char* Stream::writeSkip(int count)
   }
   else if (pos_ > end_) {
     if (flags_ & BUFFERED) {
-      size_t oldLength = oldPos - begin_;
-      size_t newLength = pos_ - begin_;
-      size_t size      = end_ - begin_;
+      size_t oldOffset = oldPos - begin_;
+      size_t newOffset = pos_ - begin_;
+      size_t capacity  = end_ - begin_;
 
-      size = size == 0 ? 4096 : size + size / 2;
-      size = max<size_t>(size, newLength);
+      capacity = capacity == 0 ? 4096 : capacity + capacity / 2;
+      capacity = max<size_t>(capacity, newOffset);
 
-      char* newData = new char[size];
-
-      if (begin_ != nullptr) {
-        memcpy(newData, begin_, oldLength);
-        delete[] begin_;
-      }
+      char* newData = static_cast<char*>(realloc(begin_, capacity));
 
       begin_ = newData;
-      end_   = newData + size;
-      pos_   = newData + newLength;
-      oldPos = newData + oldLength;
+      end_   = newData + capacity;
+      pos_   = newData + newOffset;
+      oldPos = newData + oldOffset;
     }
     else {
       OZ_ERROR("oz::Stream: Overrun for %d B during a write of %d B", int(pos_ - end_), count);
     }
   }
   return oldPos;
-}
-
-void Stream::free()
-{
-  if (flags_ & BUFFERED) {
-    delete[] begin_;
-
-    pos_   = nullptr;
-    begin_ = nullptr;
-    end_   = nullptr;
-  }
 }
 
 void Stream::read(char* array, int count)

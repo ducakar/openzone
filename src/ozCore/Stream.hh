@@ -76,19 +76,19 @@ public:
   Stream() = default;
 
   /**
-   * Create a fixed-size stream for reading a given memory range.
+   * Create a fixed-capacity stream for reading a given memory range.
    */
   explicit Stream(const char* start, const char* end, Endian::Order order = Endian::NATIVE);
 
   /**
-   * Create a fixed-size stream for reading/writing to a given memory range.
+   * Create a fixed-capacity stream for reading/writing to a given memory range.
    */
   explicit Stream(char* start, char* end, Endian::Order order = Endian::NATIVE);
 
   /**
-   * Create a buffered stream of given initial size.
+   * Create a buffered stream of given initial capacity.
    */
-  explicit Stream(int size, Endian::Order order = Endian::NATIVE);
+  explicit Stream(int capacity, Endian::Order order = Endian::NATIVE);
 
   /**
    * Free internal buffer if allocated.
@@ -163,7 +163,7 @@ public:
    * Position offset from the beginning.
    */
   OZ_ALWAYS_INLINE
-  int size() const noexcept
+  int offset() const noexcept
   {
     OZ_ASSERT(pos_ <= end_);
 
@@ -280,7 +280,7 @@ public:
    *
    * The data after the current position is not preserved.
    */
-  void resize(int newSize);
+  void resize(int newCapacity);
 
   /**
    * Skip `count` bytes.
@@ -298,11 +298,6 @@ public:
    * @return Pointer to the beginning of the skipped bytes.
    */
   char* writeSkip(int count);
-
-  /**
-   * Deallocate underlaying buffer if the stream is buffered.
-   */
-  void free();
 
   /**
    * Read an array of bytes.

@@ -40,7 +40,7 @@ void Font::close()
     handle_ = nullptr;
   }
 
-  fileBuffer_.free();
+  fileBuffer_ = Stream();
 }
 
 Font::Font(const File& file, int height)

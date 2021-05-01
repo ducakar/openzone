@@ -51,7 +51,7 @@ void* GameStage::saveMain(void*)
     Log::printEnd(" OK");
   }
 
-  gameStage.saveStream.free();
+  gameStage.saveStream = Stream(0, Endian::LITTLE);
   gameStage.saveFile = "";
 
   return nullptr;
