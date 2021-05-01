@@ -1,7 +1,6 @@
----
-Language:        Cpp
-AccessModifierOffset: -1
+AlignConsecutiveMacros: true
 AlignConsecutiveAssignments: true
+AlignConsecutiveBitFields: true
 AlignConsecutiveDeclarations: true
 AllowShortFunctionsOnASingleLine: None
 AlwaysBreakTemplateDeclarations: true
@@ -12,11 +11,13 @@ BraceWrapping:
   AfterNamespace:  true
   AfterStruct:     true
   AfterUnion:      true
+  BeforeCatch:     true
+  BeforeElse:      true
+  BeforeWhile:     true
   SplitEmptyFunction: false
   SplitEmptyRecord: false
   SplitEmptyNamespace: false
 BreakBeforeBraces: Custom
-BreakConstructorInitializersBeforeComma: false
 ColumnLimit:     100
 ConstructorInitializerIndentWidth: 2
 ContinuationIndentWidth: 2
@@ -24,4 +25,3 @@ FixNamespaceComments: false
 IndentCaseLabels: true
 PointerAlignment: Left
 SpaceAfterCStyleCast: true
-...
