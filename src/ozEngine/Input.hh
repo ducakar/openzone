@@ -45,7 +45,7 @@ class Input
 public:
 
   /// Maximum number of actions.
-  static constexpr int MAX_ACTIONS = 128;
+  static constexpr int MAX_ACTIONS = 256;
 
 public:
 
@@ -54,10 +54,10 @@ public:
    */
   enum ModKey
   {
-    NONE    = 0, ///< None.
-    SHIFT   = 1, ///< (Left or right) Shift key.
-    CONTROL = 2, ///< (Left or right) Control key.
-    ALT     = 4  ///< (Left or right) Alt or Alt Gr key.
+    NONE,    ///< None.
+    SHIFT,   ///< (Left or right) Shift key.
+    CONTROL, ///< (Left or right) Control key.
+    ALT      ///< (Left or right) Alt or AltGr key.
   };
 
   /**

@@ -46,14 +46,11 @@ struct Medium
 {
   static constexpr int NONE        = 0;      ///< No medium.
 
-  static constexpr int LADDER_BIT  = 0x0100; ///< Overlapping with BSP ladder brush.
-  static constexpr int AIR_BIT     = 0x0200; ///< Overlapping with BSP air brush.
-  static constexpr int WATER_BIT   = 0x0400; ///< Overlapping with BSP water brush or overlapping
-                                             ///< with terrain water sea but not BSP air brush.
-  static constexpr int LAVA_BIT    = 0x0800; ///< Overlapping with BSP lava brush or overlapping
-                                             ///< with terrain lava sea but not BSP air brush.
-  static constexpr int SEA_BIT     = 0x1000; ///< Overlapping with terrain water/lava sea but not
-                                             ///< BSP air brush or overlapping with BSP sea brush.
+  static constexpr int LADDER_BIT  = 0x0100; ///< Overlapping with BSP ladder.
+  static constexpr int AIR_BIT     = 0x0200; ///< Overlapping with BSP air.
+  static constexpr int WATER_BIT   = 0x0400; ///< Overlapping with BSP or terrain water.
+  static constexpr int LAVA_BIT    = 0x0800; ///< Overlapping with BSP or terrain lava.
+  static constexpr int SEA_BIT     = 0x1000; ///< Overlapping with BSP or terrain sea.
 
   static constexpr int LIQUID_MASK = 0x0c00; ///< Mask for liquids (water or lava bit, but not sea).
   static constexpr int MASK        = 0xff00; ///< Medium mask (to distinguish from Material bits

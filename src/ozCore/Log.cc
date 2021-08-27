@@ -357,21 +357,13 @@ const Log& Log::operator<<(ulong l) const
 
 const Log& Log::operator<<(int64 l) const
 {
-#ifdef _WIN32
-  printRaw("%I64d", l);
-#else
   printRaw("%lld", l);
-#endif
   return *this;
 }
 
 const Log& Log::operator<<(uint64 l) const
 {
-#ifdef _WIN32
-  printRaw("%I64u", l);
-#else
   printRaw("%llu", l);
-#endif
   return *this;
 }
 

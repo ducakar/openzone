@@ -52,8 +52,8 @@ class Set : protected List<Elem>
 {
 public:
 
-  using typename List<Elem>::CRangeType;
-  using typename List<Elem>::RangeType;
+  using typename List<Elem>::CRange;
+  using typename List<Elem>::Range;
 
 protected:
 

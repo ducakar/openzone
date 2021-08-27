@@ -65,7 +65,7 @@ void RWLock::Write::unlock()
 }
 
 RWLock::RWLock()
-  : read(this), write(this), descriptor_(new Descriptor)
+  : descriptor_(new Descriptor), read(this), write(this)
 {}
 
 RWLock::~RWLock()

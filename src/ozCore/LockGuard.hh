@@ -67,12 +67,12 @@ public:
   }
 
   /**
-   * Copying or moving is not possible.
+   * No copying or moving.
    */
   LockGuard(const LockGuard&) = delete;
 
   /**
-   * Copying or moving is not possible.
+   * No copying or moving.
    */
   LockGuard& operator=(const LockGuard&) = delete;
 

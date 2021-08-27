@@ -1,6 +1,6 @@
 [submodule "data"]
 	path = data
-	url = ../openzone-data.git
+	url = git@github.com:ducakar/openzone-data.git
 [submodule "ext/gamemode"]
 	path = ext/gamemode
 	url = git@github.com:FeralInteractive/gamemode.git

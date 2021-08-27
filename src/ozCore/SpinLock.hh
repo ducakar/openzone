@@ -47,17 +47,17 @@ private:
 public:
 
   /**
-   * Create new instance.
+   * Create a new instance.
    */
   SpinLock() = default;
 
   /**
-   * Copying or moving is not possible.
+   * No copying or moving.
    */
   SpinLock(const SpinLock&) = delete;
 
   /**
-   * Copying or moving is not possible.
+   * No copying or moving.
    */
   SpinLock& operator=(const SpinLock&) = delete;
 

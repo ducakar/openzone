@@ -167,10 +167,10 @@ Instant<STEADY> Instant<STEADY>::now();
 template <>
 Instant<WALL> Instant<WALL>::now();
 
-Instant(const Instant<STEADY>&) -> Instant<STEADY>;
-Instant(Instant<STEADY>&&) -> Instant<STEADY>;
+template <Clock CLOCK>
+Instant(const Instant<CLOCK>&) -> Instant<CLOCK>;
 
-Instant(const Instant<WALL>&) -> Instant<WALL>;
-Instant(Instant<WALL>&&) -> Instant<WALL>;
+template <Clock CLOCK>
+Instant(Instant<CLOCK>&&) -> Instant<CLOCK>;
 
 }

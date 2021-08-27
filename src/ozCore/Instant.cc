@@ -27,8 +27,11 @@
 namespace oz
 {
 
-template <Clock CLOCK>
-const Instant<CLOCK> Instant<CLOCK>::EPOCH = Instant();
+template <>
+const Instant<STEADY> Instant<STEADY>::EPOCH = Instant<STEADY>();
+
+template <>
+const Instant<WALL> Instant<WALL>::EPOCH = Instant<WALL>();
 
 template <>
 Instant<STEADY> Instant<STEADY>::now()
@@ -36,7 +39,7 @@ Instant<STEADY> Instant<STEADY>::now()
   struct timespec ts;
   clock_gettime(CLOCK_MONOTONIC, &ts);
 
-  return Instant(int64(ts.tv_sec) * 1000000000 + int64(ts.tv_nsec));
+  return Instant(int64(ts.tv_sec) * 1'000'000'000 + int64(ts.tv_nsec));
 }
 
 template <>
@@ -45,7 +48,7 @@ Instant<WALL> Instant<WALL>::now()
   struct timespec ts;
   clock_gettime(CLOCK_REALTIME, &ts);
 
-  return Instant(int64(ts.tv_sec) * 1000000000 + int64(ts.tv_nsec));
+  return Instant(int64(ts.tv_sec) * 1'000'000'000 + int64(ts.tv_nsec));
 }
 
 }

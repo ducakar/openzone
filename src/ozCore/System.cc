@@ -87,6 +87,8 @@ static void signalHandler(int sigNum)
 {
   Log::verboseMode = false;
 
+  Log::resetIndent();
+  Log::println();
 #if defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L
   Log::println("Signal %d (%s)", sigNum, strsignal(sigNum));
 #else
@@ -233,28 +235,6 @@ struct SampleInfo
   bool               isFinished    = false;
 };
 
-#elif defined(_WIN32)
-
-struct Wave
-{
-  char  chunkId[4];
-  int   chunkSize;
-  char  format[4];
-
-  char  subchunk1Id[4];
-  int   subchunk1Size;
-  int16 audioFormat;
-  int16 nChannels;
-  int   sampleRate;
-  int   byteRate;
-  int16 blockAlign;
-  int16 bitsPerSample;
-
-  char  subchunk2Id[4];
-  int   subchunk2Size;
-  int16 samples[BELL_SAMPLES * 2];
-};
-
 static void bellCallback(void* buffer, uint, void* info_)
 {
   SampleInfo* info    = static_cast<SampleInfo*>(info_);
@@ -307,6 +287,26 @@ static void* bellMain(void*)
 }
 
 #elif defined(_WIN32)
+
+struct Wave
+{
+  char  chunkId[4];
+  int   chunkSize;
+  char  format[4];
+
+  char  subchunk1Id[4];
+  int   subchunk1Size;
+  int16 audioFormat;
+  int16 nChannels;
+  int   sampleRate;
+  int   byteRate;
+  int16 blockAlign;
+  int16 bitsPerSample;
+
+  char  subchunk2Id[4];
+  int   subchunk2Size;
+  int16 samples[BELL_SAMPLES * 2];
+};
 
 static void* bellMain(void*)
 {

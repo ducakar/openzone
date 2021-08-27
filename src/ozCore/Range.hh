@@ -338,27 +338,27 @@ inline Range<Elem*, Elem*> range(Elem (& array)[SIZE]) noexcept
  * Range with constant access to container elements.
  */
 template <class Container>
-inline typename Container::CRangeType crange(const Container& container) noexcept
+inline typename Container::CRange crange(const Container& container) noexcept
 {
-  return typename Container::CRangeType(container.cbegin(), container.cend());
+  return typename Container::CRange(container.cbegin(), container.cend());
 }
 
 /**
  * Range with constant access to constant container elements.
  */
 template <class Container>
-inline typename Container::CRangeType range(const Container& container) noexcept
+inline typename Container::CRange range(const Container& container) noexcept
 {
-  return typename Container::CRangeType(container.cbegin(), container.cend());
+  return typename Container::CRange(container.cbegin(), container.cend());
 }
 
 /**
  * Range with non-constant access to container elements.
  */
 template <class Container>
-inline typename Container::RangeType range(Container& container) noexcept
+inline typename Container::Range range(Container& container) noexcept
 {
-  return typename Container::RangeType(container.begin(), container.end());
+  return typename Container::Range(container.begin(), container.end());
 }
 
 }

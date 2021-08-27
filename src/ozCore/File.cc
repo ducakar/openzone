@@ -473,7 +473,7 @@ bool File::read(char* buffer, int64* size) const
 #ifdef _WIN32
     int fd = open(begin(), O_RDONLY | O_BINARY);
 #else
-    int fd = open(begin(), O_RDONLY);
+    int fd = open(begin(), O_RDONLY | O_CLOEXEC);
 #endif
     if (fd < 0) {
       *size = 0;
@@ -524,7 +524,7 @@ bool File::write(const char* buffer, int64 size) const
 #ifdef _WIN32
     int fd = open(begin(), O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0644);
 #else
-    int fd = open(begin(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    int fd = open(begin(), O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0644);
 #endif
     if (fd < 0) {
       return false;

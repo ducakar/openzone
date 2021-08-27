@@ -28,10 +28,10 @@ namespace oz
 {
 
 // Char type is used to map actions, so no more than 256 are possible.
-static_assert(Input::MAX_ACTIONS <= 128, "MAX_ACTIONS must be <= 128");
+static_assert(Input::MAX_ACTIONS <= 256, "MAX_ACTIONS must be <= 256");
 
-static byte                        keyMaps[4][SDL_NUM_SCANCODES];
-static byte                        buttonMaps[4][8];
+static ubyte                       keyMaps[4][SDL_NUM_SCANCODES];
+static ubyte                       buttonMaps[4][8];
 static SBitset<Input::MAX_ACTIONS> previousActions;
 static SBitset<Input::MAX_ACTIONS> currentActions;
 static Input::ModKey               modKey = Input::NONE;
@@ -92,8 +92,8 @@ void Input::processEvent(const SDL_Event* event)
     case SDL_MOUSEBUTTONUP: {
       int code = event->button.button & 0x07;
 
-      for (int i = 0; i < 4; ++i) {
-        int action = buttonMaps[i][code];
+      for (const auto& buttonMap : buttonMaps) {
+        int action = buttonMap[code];
         if (action >= 0) {
           currentActions.clear(action);
         }
@@ -116,8 +116,8 @@ void Input::processEvent(const SDL_Event* event)
 
       SDL_Scancode code = event->key.keysym.scancode;
 
-      for (int i = 0; i < 4; ++i) {
-        int action = keyMaps[i][code];
+      for (const auto& keyMap : keyMaps) {
+        int action = keyMap[code];
         if (action >= 0) {
           currentActions.clear(action);
         }

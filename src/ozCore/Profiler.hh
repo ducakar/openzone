@@ -64,7 +64,7 @@ public:
   /**
    * Constant iterator for accumulated times.
    */
-  using CRange = HashMap<String, Duration>::CRangeType;
+  using CRange = HashMap<String, Duration>::CRange;
 
 public:
 

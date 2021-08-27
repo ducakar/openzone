@@ -72,12 +72,12 @@ public:
   ~Semaphore();
 
   /**
-   * Copying or moving is not possible.
+   * No copying or moving.
    */
   Semaphore(const Semaphore&) = delete;
 
   /**
-   * Copying or moving is not possible.
+   * No copying or moving.
    */
   Semaphore& operator=(const Semaphore&) = delete;
 

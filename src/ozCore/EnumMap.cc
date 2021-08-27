@@ -24,10 +24,7 @@
 
 #include "String.hh"
 
-namespace oz
-{
-
-namespace detail
+namespace oz::detail
 {
 
 int EnumMapImpl::defaultValue() const
@@ -78,8 +75,6 @@ const char* EnumMapImpl::operator[](int value) const
     OZ_ERROR("oz::EnumMap: Invalid value %d", value);
   }
   return *name;
-}
-
 }
 
 }

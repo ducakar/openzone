@@ -13,7 +13,8 @@ if [[ -z $1 ]]; then
   exit
 fi
 
-radiantHome=/usr/bin
+radiantHome=/opt/gtkradiant
+#radiantHome=/usr/bin
 basePath=$(echo "$1" | sed -E 's|(.*)/baseq3/maps/.*|\1|')
 
 "$radiantHome"/q3map2 -fs_basepath "$basePath" -meta -v "$1"

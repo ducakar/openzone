@@ -33,6 +33,38 @@
 namespace oz
 {
 
+namespace detail
+{
+
+  /**
+   * The common type used internally when multiplying or dividing by a scalar.
+   */
+  template <typename Scalar>
+  struct DurationCommonType
+  {
+    using Type = int64;
+  };
+
+  template <>
+  struct DurationCommonType<float>
+  {
+    using Type = long double;
+  };
+
+  template <>
+  struct DurationCommonType<double>
+  {
+    using Type = long double;
+  };
+
+  template <>
+  struct DurationCommonType<long double>
+  {
+    using Type = long double;
+  };
+
+}
+
 /**
  * %Time interval.
  *
@@ -102,7 +134,7 @@ public:
   OZ_ALWAYS_INLINE
   constexpr int64 us() const
   {
-    return ns_ / 1000;
+    return ns_ / 1'000;
   }
 
   /**
@@ -111,7 +143,7 @@ public:
   OZ_ALWAYS_INLINE
   constexpr int64 ms() const
   {
-    return ns_ / 1000000;
+    return ns_ / 1'000'000;
   }
 
   /**
@@ -120,7 +152,7 @@ public:
   OZ_ALWAYS_INLINE
   constexpr int64 s() const
   {
-    return ns_ / 1000000000;
+    return ns_ / 1'000'000'000;
   }
 
   /**
@@ -129,7 +161,7 @@ public:
   OZ_ALWAYS_INLINE
   constexpr float t() const
   {
-    return float(ns_) / 1000000000.0f;
+    return float(ns_) / 1'000'000'000.0f;
   }
 
   /**
@@ -171,31 +203,33 @@ public:
   /**
    * Product of a duration and a scalar.
    */
-  template <typename Scalar = int64>
+  template <typename Scalar>
   OZ_ALWAYS_INLINE
   constexpr Duration operator*(Scalar s) const
   {
-    return Duration(int64(ns_ * s));
+    using CommonType = typename detail::DurationCommonType<Scalar>::Type;
+    return Duration(int64(CommonType(ns_) * CommonType(s)));
   }
 
   /**
    * Product of a scalar and a duration.
    */
-  template <typename Scalar = int64>
+  template <typename Scalar>
   OZ_ALWAYS_INLINE
   friend constexpr Duration operator*(Scalar s, const Duration& d)
   {
-    return Duration(int64(s * d.ns_));
+    return d.operator*(s);
   }
 
   /**
    * Duration divided by a scalar.
    */
-  template <typename Scalar = int64>
+  template <typename Scalar>
   OZ_ALWAYS_INLINE
   constexpr Duration operator/(Scalar s) const
   {
-    return Duration(int64(ns_ / s));
+    using CommonType = typename detail::DurationCommonType<Scalar>::Type;
+    return Duration(int64(CommonType(ns_) / CommonType(s)));
   }
 
   /**
@@ -239,22 +273,22 @@ public:
   /**
    * Multiply the duration by a scalar.
    */
-  template <typename Scalar = int64>
+  template <typename Scalar>
   OZ_ALWAYS_INLINE
   constexpr Duration& operator*=(Scalar s)
   {
-    ns_ = int64(ns_ * s);
+    *this = this->operator*(s);
     return *this;
   }
 
   /**
    * Divide the duration by a scalar.
    */
-  template <typename Scalar = int64>
+  template <typename Scalar>
   OZ_ALWAYS_INLINE
   constexpr Duration& operator/=(Scalar s)
   {
-    ns_ = int64(ns_ * s);
+    *this = this->operator/(s);
     return *this;
   }
 
@@ -266,7 +300,7 @@ public:
 OZ_ALWAYS_INLINE
 inline constexpr Duration operator""_s(unsigned long long value)
 {
-  return Duration(int64(value * 1000000000));
+  return Duration(int64(value * 1'000'000'000));
 }
 
 /**
@@ -275,7 +309,7 @@ inline constexpr Duration operator""_s(unsigned long long value)
 OZ_ALWAYS_INLINE
 inline constexpr Duration operator""_s(long double value)
 {
-  return Duration(int64(value * 1000000000));
+  return Duration(int64(value * 1'000'000'000));
 }
 
 /**
@@ -284,7 +318,7 @@ inline constexpr Duration operator""_s(long double value)
 OZ_ALWAYS_INLINE
 inline constexpr Duration operator""_ms(unsigned long long value)
 {
-  return Duration(int64(value * 1000000));
+  return Duration(int64(value * 1'000'000));
 }
 
 /**
@@ -293,7 +327,7 @@ inline constexpr Duration operator""_ms(unsigned long long value)
 OZ_ALWAYS_INLINE
 inline constexpr Duration operator""_ms(long double value)
 {
-  return Duration(int64(value * 1000000));
+  return Duration(int64(value * 1'000'000));
 }
 
 /**
@@ -302,7 +336,7 @@ inline constexpr Duration operator""_ms(long double value)
 OZ_ALWAYS_INLINE
 inline constexpr Duration operator""_us(unsigned long long value)
 {
-  return Duration(int64(value * 1000));
+  return Duration(int64(value * 1'000));
 }
 
 /**
@@ -311,7 +345,7 @@ inline constexpr Duration operator""_us(unsigned long long value)
 OZ_ALWAYS_INLINE
 inline constexpr Duration operator""_us(long double value)
 {
-  return Duration(int64(value * 1000));
+  return Duration(int64(value * 1'000));
 }
 
 /**

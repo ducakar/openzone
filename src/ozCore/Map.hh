@@ -105,8 +105,8 @@ public:
    */
   using Pair = MapPair<Key, Value, LessFunc>;
 
-  using typename Set<Pair>::CRangeType;
-  using typename Set<Pair>::RangeType;
+  using typename Set<Pair>::CRange;
+  using typename Set<Pair>::Range;
 
 private:
 

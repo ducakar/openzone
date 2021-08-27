@@ -76,6 +76,16 @@ public:
   ~Log();
 
   /**
+   * No copying or moving.
+   */
+  Log(const Log&) = delete;
+
+  /**
+   * No copying or moving.
+   */
+  Log& operator=(const Log&) = delete;
+
+  /**
    * Return log file or a null file if log is printed to stdout only.
    */
   static const File& file();

@@ -55,12 +55,12 @@ public:
   /**
    * %Range with constant access to elements.
    */
-  using CRangeType = Arrays::CRangeType<Elem>;
+  using CRange = Arrays::CRange<Elem>;
 
   /**
    * %Range with non-constant access to elements.
    */
-  using RangeType = Arrays::RangeType<Elem>;
+  using Range = Arrays::Range<Elem>;
 
 private:
 
@@ -122,7 +122,7 @@ public:
   }
 
   /**
-   * STL-style constant begin iterator.
+   * Constant begin iterator.
    */
   OZ_ALWAYS_INLINE
   const Elem* cbegin() const noexcept
@@ -131,7 +131,7 @@ public:
   }
 
   /**
-   * STL-style constant begin iterator.
+   * Constant begin iterator.
    */
   OZ_ALWAYS_INLINE
   const Elem* begin() const noexcept
@@ -140,7 +140,7 @@ public:
   }
 
   /**
-   * STL-style begin iterator.
+   * Begin iterator.
    */
   OZ_ALWAYS_INLINE
   Elem* begin() noexcept
@@ -149,7 +149,7 @@ public:
   }
 
   /**
-   * STL-style constant end iterator.
+   * Constant end iterator.
    */
   OZ_ALWAYS_INLINE
   const Elem* cend() const noexcept
@@ -158,7 +158,7 @@ public:
   }
 
   /**
-   * STL-style constant end iterator.
+   * Constant end iterator.
    */
   OZ_ALWAYS_INLINE
   const Elem* end() const noexcept
@@ -167,7 +167,7 @@ public:
   }
 
   /**
-   * STL-style end iterator.
+   * End iterator.
    */
   OZ_ALWAYS_INLINE
   Elem* end() noexcept

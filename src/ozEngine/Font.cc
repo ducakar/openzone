@@ -116,7 +116,7 @@ void Font::init()
   // and ignores horizontal hints making old-school TTF fonts look blurry when not using subpixel
   // rendering. This doesn't affect the modern fonts as they usually don't have any horizontal hints
   // at all since they are made with subpixel rendering in mind.
-  setenv("FREETYPE_PROPERTIES", "truetype:interpreter-version=35", true);
+  SDL_setenv("FREETYPE_PROPERTIES", "truetype:interpreter-version=35", true);
 
   if (TTF_Init() < 0) {
     OZ_ERROR("oz::Font: %s", TTF_GetError());

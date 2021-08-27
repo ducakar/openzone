@@ -52,8 +52,8 @@ public:
    */
   using Pair = MapPair<Key, Value, Less<Key>>;
 
-  using typename HashSet<Pair, HashFunc>::CRangeType;
-  using typename HashSet<Pair, HashFunc>::RangeType;
+  using typename HashSet<Pair, HashFunc>::CRange;
+  using typename HashSet<Pair, HashFunc>::Range;
 
 private:
 

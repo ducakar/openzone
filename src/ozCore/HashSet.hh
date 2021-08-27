@@ -146,12 +146,12 @@ public:
   /**
    * %Range with constant access to elements.
    */
-  using CRangeType = Range<HashIterator<const Entry, const Elem>, nullptr_t>;
+  using CRange = oz::Range<HashIterator<const Entry, const Elem>, nullptr_t>;
 
   /**
    * %Range with non-constant access to elements.
    */
-  using RangeType = Range<HashIterator<Entry, Elem>, nullptr_t>;
+  using Range = oz::Range<HashIterator<Entry, Elem>, nullptr_t>;
 
 protected:
 
@@ -356,7 +356,7 @@ public:
   }
 
   /**
-   * STL-style constant begin iterator.
+   * Constant begin iterator.
    */
   OZ_ALWAYS_INLINE
   HashIterator<const Entry, const Elem> cbegin() const noexcept
@@ -365,7 +365,7 @@ public:
   }
 
   /**
-   * STL-style constant begin iterator.
+   * Constant begin iterator.
    */
   OZ_ALWAYS_INLINE
   HashIterator<const Entry, const Elem> begin() const noexcept
@@ -374,7 +374,7 @@ public:
   }
 
   /**
-   * STL-style begin iterator.
+   * Begin iterator.
    */
   OZ_ALWAYS_INLINE
   HashIterator<Entry, Elem> begin() noexcept
@@ -383,7 +383,7 @@ public:
   }
 
   /**
-   * STL-style constant end iterator.
+   * Constant end iterator.
    */
   OZ_ALWAYS_INLINE
   nullptr_t cend() const noexcept
@@ -392,7 +392,7 @@ public:
   }
 
   /**
-   * STL-style constant end iterator.
+   * Constant end iterator.
    */
   OZ_ALWAYS_INLINE
   nullptr_t end() const noexcept
@@ -401,7 +401,7 @@ public:
   }
 
   /**
-   * STL-style end iterator.
+   * End iterator.
    */
   OZ_ALWAYS_INLINE
   nullptr_t end() noexcept

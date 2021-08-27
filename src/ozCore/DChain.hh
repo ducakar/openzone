@@ -46,9 +46,7 @@ struct DChainNode
 /**
  * Intrusive doubly linked list.
  *
- * This is not a real container but a way of binding existing elements into a linked list.
- *
- * It can only be applied on classes that have `prev[]` and `next[]` members. These can also be
+ * It can only be applied on classes that have `prev[]` and `next[]` members, which can also be
  * provided by extending `DChain::Node` struct.
  * Example:
  * @code
@@ -89,8 +87,8 @@ class DChain : private Chain<Elem, INDEX>
 {
 public:
 
-  using typename Chain<Elem, INDEX>::CRangeType;
-  using typename Chain<Elem, INDEX>::RangeType;
+  using typename Chain<Elem, INDEX>::CRange;
+  using typename Chain<Elem, INDEX>::Range;
 
 private:
 

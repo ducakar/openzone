@@ -60,12 +60,12 @@ public:
   ~Barrier();
 
   /**
-   * Copying or moving is not possible.
+   * No copying or moving.
    */
   Barrier(const Barrier&) = delete;
 
   /**
-   * Copying or moving is not possible.
+   * No copying or moving.
    */
   Barrier& operator=(const Barrier&) = delete;
 

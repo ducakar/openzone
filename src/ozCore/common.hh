@@ -224,8 +224,7 @@ inline constexpr bool operator>=(const TypeA& a, const TypeB& b)
 /**
  * Swap contents of two variables.
  *
- * This performs raw byte copy, so all object must be oblivious of their memory
- * location.
+ * This performs raw byte copy, so all object must be oblivious of their memory location.
  */
 template <typename Value>
 OZ_ALWAYS_INLINE

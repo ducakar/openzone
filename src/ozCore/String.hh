@@ -54,12 +54,12 @@ public:
   /**
    * %Range with constant access to characters.
    */
-  using CRange = Arrays::CRangeType<const char>;
+  using CRange = Arrays::CRange<const char>;
 
   /**
    * %Range with non-constant access to characters.
    */
-  using Range = Arrays::RangeType<char>;
+  using Range = Arrays::Range<char>;
 
 private:
 
@@ -394,30 +394,6 @@ public:
   }
 
   /**
-   * Same as `strcmp() != 0`.
-   */
-  bool operator!=(const String& other) const
-  {
-    return size_ != other.size_ || compare(begin(), other.begin()) != 0;
-  }
-
-  /**
-   * Same as `strcmp() != 0`.
-   */
-  bool operator!=(const char* other) const
-  {
-    return compare(begin(), other) != 0;
-  }
-
-  /**
-   * Same as `strcmp() != 0`.
-   */
-  friend bool operator!=(const char* a, const String& b)
-  {
-    return compare(a, b.begin()) != 0;
-  }
-
-  /**
    * Same as `strcmp() < 0`.
    */
   bool operator<(const String& other) const
@@ -442,79 +418,16 @@ public:
   }
 
   /**
-   * Same as `strcmp() <= 0`.
+   * Constant begin iterator.
    */
-  bool operator<=(const String& other) const
+  OZ_ALWAYS_INLINE
+  const char* cbegin() const noexcept
   {
-    return compare(begin(), other.begin()) <= 0;
+    return size_ < STATIC_SIZE ? staticData_ : data_;
   }
 
   /**
-   * Same as `strcmp() <= 0`.
-   */
-  bool operator<=(const char* other) const
-  {
-    return compare(begin(), other) <= 0;
-  }
-
-  /**
-   * Same as `strcmp() <= 0`.
-   */
-  friend bool operator<=(const char* a, const String& b)
-  {
-    return compare(a, b.begin()) <= 0;
-  }
-
-  /**
-   * Same as `strcmp() > 0`.
-   */
-  bool operator>(const String& other) const
-  {
-    return compare(begin(), other.begin()) > 0;
-  }
-
-  /**
-   * Same as `strcmp() > 0`.
-   */
-  bool operator>(const char* other) const
-  {
-    return compare(begin(), other) > 0;
-  }
-
-  /**
-   * Same as `strcmp() > 0`.
-   */
-  friend bool operator>(const char* a, const String& b)
-  {
-    return compare(a, b.begin()) > 0;
-  }
-
-  /**
-   * Same as `strcmp() >= 0`.
-   */
-  bool operator>=(const String& other) const
-  {
-    return compare(begin(), other.begin()) >= 0;
-  }
-
-  /**
-   * Same as `strcmp() >= 0`.
-   */
-  bool operator>=(const char* other) const
-  {
-    return compare(begin(), other) >= 0;
-  }
-
-  /**
-   * Same as `strcmp() >= 0`.
-   */
-  friend bool operator>=(const char* a, const String& b)
-  {
-    return compare(a, b.begin()) >= 0;
-  }
-
-  /**
-   * STL-style constant begin iterator.
+   * Constant begin iterator.
    */
   OZ_ALWAYS_INLINE
   const char* begin() const noexcept
@@ -523,7 +436,7 @@ public:
   }
 
   /**
-   * STL-style begin iterator.
+   * Begin iterator.
    */
   OZ_ALWAYS_INLINE
   char* begin() noexcept
@@ -532,7 +445,16 @@ public:
   }
 
   /**
-   * STL-style constant end iterator.
+   * Constant end iterator.
+   */
+  OZ_ALWAYS_INLINE
+  const char* cend() const noexcept
+  {
+    return begin() + size_;
+  }
+
+  /**
+   * Constant end iterator.
    */
   OZ_ALWAYS_INLINE
   const char* end() const noexcept
@@ -541,7 +463,7 @@ public:
   }
 
   /**
-   * STL-style end iterator.
+   * End iterator.
    */
   OZ_ALWAYS_INLINE
   char* end() noexcept

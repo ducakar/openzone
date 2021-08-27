@@ -53,12 +53,12 @@ public:
   CallOnce() = default;
 
   /**
-   * Copying or moving is not possible.
+   * No copying or moving.
    */
   CallOnce(const CallOnce&) = delete;
 
   /**
-   * Copying or moving is not possible.
+   * No copying or moving.
    */
   CallOnce& operator=(const CallOnce&) = delete;
 

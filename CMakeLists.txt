@@ -78,18 +78,15 @@ else()
 endif()
 
 find_package(ZLIB REQUIRED)
-pkg_check_modules(PHYSFS REQUIRED physfs)
+find_package(PhysFS REQUIRED)
 
 if(OZ_LUAJIT)
   pkg_check_modules(LUAJIT REQUIRED luajit)
   set(LUA_LIBRARIES ${LUAJIT_LIBRARIES})
   include_directories(SYSTEM ${LUAJIT_INCLUDE_DIRS})
-elseif(EMSCRIPTEN)
+else()
   find_package(Lua REQUIRED)
   include_directories(SYSTEM ${LUA_INCLUDE_DIR})
-else()
-  pkg_check_modules(LUA REQUIRED lua)
-  include_directories(SYSTEM ${LUA_INCLUDE_DIRS})
 endif()
 
 if(EMSCRIPTEN)
@@ -117,7 +114,7 @@ if(OZ_GL_ES)
 else()
   set(OpenGL_GL_PREFERENCE GLVND)
   find_package(OpenGL REQUIRED)
-  set(GL_LIBRARIES OpenGL::OpenGL)
+  set(GL_LIBRARIES OpenGL::GL)
 endif()
 
 find_package(OpenAL REQUIRED)
@@ -167,52 +164,43 @@ mark_as_advanced(MINGW32_LIBRARY)
 #
 
 # External library headers.
-include_directories(SYSTEM ext/gamemode/lib ext/espeak)
+if(LINUX)
+  include_directories(SYSTEM ext/gamemode/lib)
+endif()
+include_directories(SYSTEM ext/espeak)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(flags "-fsized-deallocation -fstrict-enums -ffast-math")
+add_compile_options(-fsized-deallocation -fstrict-enums -ffast-math)
 
 if(BUILD_SHARED_LIBS)
   set(flags "${flags} -fPIC")
 endif()
 
 # Static analyser.
-#set(flags "${flags} -Qunused-arguments --analyze")
+#add_compile_options(-Qunused-arguments --analyze)
 # Address sanitizer.
-#set(flags "${flags} -fsanitize=address")
+#add_compile_options(-fsanitize=address)
 # Thread sanitizer.
-#set(flags "${flags} -fsanitize=thread -fpie -fPIC")
+#add_compile_options(-fsanitize=thread -fpie -fPIC)
 # Undefined behaviour sanitizer.
-#set(flags "${flags} -fsanitize=undefined")
+#add_compile_options(-fsanitize=undefined)
 
 # Additional flags.
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-  set(flags "${flags} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic")
-  set(flags "${flags} -Wno-exit-time-destructors -Wno-global-constructors")
-  set(flags "${flags} -Wno-date-time -Wno-padded -Wno-switch-enum -Wno-sign-conversion")
-  set(flags "${flags} -Wno-float-equal -Wno-double-promotion -Wno-zero-as-null-pointer-constant")
+  add_compile_options(-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic)
+  add_compile_options(-Wno-exit-time-destructors -Wno-global-constructors)
+  add_compile_options(-Wno-date-time -Wno-padded -Wno-switch-enum -Wno-sign-conversion)
+  add_compile_options(-Wno-float-equal -Wno-double-promotion -Wno-zero-as-null-pointer-constant)
 else()
-  set(flags "${flags} -Wall -Wextra -Wcast-align -Winit-self -Wlogical-op -Wundef -Winvalid-pch")
-  set(flags "${flags} -Wmissing-declarations -Wnon-virtual-dtor -Woverloaded-virtual -Wformat=2")
-  set(flags "${flags} -Wno-format-zero-length -Wmissing-format-attribute -Wduplicated-cond")
+  add_compile_options(-Wall -Wextra -Wcast-align -Winit-self -Wlogical-op -Wundef -Winvalid-pch)
+  add_compile_options(-Wmissing-declarations -Wnon-virtual-dtor -Woverloaded-virtual -Wformat=2)
+  add_compile_options(-Wno-format-zero-length -Wmissing-format-attribute -Wduplicated-cond)
 endif()
-
-set(CMAKE_CXX_FLAGS "${flags} ${CMAKE_CXX_FLAGS}")
 
 # Strings for BuildInfo class.
 string(TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" OZ_CXX_FLAGS)
 string(STRIP "${CMAKE_CXX_FLAGS} ${${OZ_CXX_FLAGS}}" OZ_CXX_FLAGS)
-
-get_directory_property(_includes INCLUDE_DIRECTORIES)
-foreach(_include ${_includes})
-  set(OZ_CXX_FLAGS "${OZ_CXX_FLAGS} -I${_include}")
-endforeach()
-
-get_directory_property(_defines COMPILE_DEFINITIONS)
-foreach(_define ${_defines})
-  set(OZ_CXX_FLAGS "${OZ_CXX_FLAGS} -D${_define}")
-endforeach()
 
 site_name(OZ_HOSTNAME)
 mark_as_advanced(OZ_HOSTNAME)
@@ -234,8 +222,7 @@ add_custom_target(dataFiles SOURCES ${docFiles} ${dataFiles})
 
 # Application launcher and icon.
 if(NOT OZ_BUNDLE)
-  install(DIRECTORY ${CMAKE_SOURCE_DIR}/share/applications ${CMAKE_SOURCE_DIR}/share/pixmaps
-          DESTINATION share)
+  install(DIRECTORY ${CMAKE_SOURCE_DIR}/share/applications DESTINATION share)
 endif()
 
 # Documentation, game data and libraries for a standalone bundle.

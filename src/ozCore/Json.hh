@@ -65,9 +65,9 @@ public:
    */
   struct Format
   {
-    int    indentSpaces;    ///< Number of spaces used for indentation.
-    int    alignmentColumn; ///< Value alignment column.
-    String numberFormat;    ///< `printf()`-like number format.
+    int         indentSpaces;    ///< Number of spaces used for indentation.
+    int         alignmentColumn; ///< Value alignment column.
+    const char* numberFormat;    ///< `printf()`-like number format.
   };
 
   /// Default format (2 space indent, alignment on 32nd column, 9 significant digits, "\\n" EOL).
@@ -81,22 +81,22 @@ public:
   /**
    * %Range for JSON arrays with constant access to elements.
    */
-  using ArrayCRange = List<const Json>::CRangeType;
+  using ArrayCRange = List<const Json>::CRange;
 
   /**
    * %Range for JSON arrays with non-constant access to elements.
    */
-  using ArrayRange = List<Json>::RangeType;
+  using ArrayRange = List<Json>::Range;
 
   /**
    * %Range for JSON objects with constant access to elements.
    */
-  using ObjectCRange = Map<String, Json>::CRangeType;
+  using ObjectCRange = Map<String, Json>::CRange;
 
   /**
    * %Range for JSON objects with non-constant access to elements.
    */
-  using ObjectRange = Map<String, Json>::RangeType;
+  using ObjectRange = Map<String, Json>::Range;
 
 private:
 
@@ -127,12 +127,6 @@ private:
    */
   OZ_INTERNAL
   explicit Json(const float* vector, int count, const char* comment);
-
-  /**
-   * Helper function for setting copying a value to avoid code duplication.
-   */
-  OZ_INTERNAL
-  void copyValue(const Json& other);
 
   /**
    * Helper function for `get()` for reading vectors, quaternions, matrices etc.

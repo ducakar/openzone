@@ -28,8 +28,8 @@ void test_Arrays()
 {
   Log() << "+ Arrays";
 
-  Arrays::CRangeType<Foo> rca;
-  Arrays::RangeType<Foo>  ra;
+  Arrays::CRange<Foo> rca;
+  Arrays::Range<Foo>  ra;
 
   static_cast<void>(rca);
   static_cast<void>(ra);

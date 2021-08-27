@@ -596,32 +596,6 @@ Json::Json(const float* vector, int count, const char* comment)
   }
 }
 
-void Json::copyValue(const Json& other)
-{
-  switch (other.type_) {
-    default: {
-      number_ = other.number_;
-      break;
-    }
-    case STRING: {
-      string_ = new String(other.string_);
-      break;
-    }
-    case ARRAY: {
-      array_ = new Array(*other.array_);
-      break;
-    }
-    case OBJECT: {
-      object_ = new Object(*other.object_);
-      break;
-    }
-  }
-
-  comment_     = other.comment_;
-  type_        = other.type_;
-  wasAccessed_ = other.wasAccessed_;
-}
-
 bool Json::getVector(float* vector, int count) const
 {
   if (type_ != ARRAY) {
@@ -746,8 +720,26 @@ Json::~Json()
 }
 
 Json::Json(const Json& other)
+  : comment_(other.comment_), type_(other.type_), wasAccessed_(other.wasAccessed_)
 {
-  copyValue(other);
+  switch (other.type_) {
+    default: {
+      number_ = other.number_;
+      break;
+    }
+    case STRING: {
+      string_ = new String(other.string_);
+      break;
+    }
+    case ARRAY: {
+      array_ = new Array(*other.array_);
+      break;
+    }
+    case OBJECT: {
+      object_ = new Object(*other.object_);
+      break;
+    }
+  }
 }
 
 Json::Json(Json&& other) noexcept
@@ -758,7 +750,8 @@ Json::Json(Json&& other) noexcept
 
 Json& Json::operator=(const Json& other)
 {
-  copyValue(other);
+  Json temp(other);
+  swap(*this, temp);
   return *this;
 }
 

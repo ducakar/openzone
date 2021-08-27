@@ -32,7 +32,7 @@ class UnitProxy : public Proxy
 {
 private:
 
-  static constexpr float CAMERA_Z_SMOOTHING       = 0.40f;
+  static constexpr float CAMERA_Z_SMOOTHING       = 0.50f;
   static constexpr float CAMERA_Z_TOLERANCE       = 0.30f;
   static constexpr float CAMERA_DIST_SMOOTHING    = 0.80f;
   static constexpr float EXTERNAL_CAM_DIST        = 2.75f;

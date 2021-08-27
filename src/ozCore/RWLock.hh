@@ -68,12 +68,12 @@ public:
   public:
 
     /**
-     * No copying.
+     * No copying or moving.
      */
     Read(const Read&) = delete;
 
     /**
-     * No copying.
+     * No copying or moving.
      */
     Read& operator=(const Read&) = delete;
 
@@ -128,12 +128,12 @@ public:
   public:
 
     /**
-     * No copying.
+     * No copying or moving.
      */
     Write(const Write&) = delete;
 
     /**
-     * No copying.
+     * No copying or moving.
      */
     Write& operator=(const Write&) = delete;
 
@@ -165,14 +165,16 @@ public:
 
   };
 
-  Read  read;  ///< Accessor for reader lock.
-  Write write; ///< Accessor for writer lock.
-
 private:
 
   struct Descriptor;
 
   Descriptor* descriptor_; ///< Internal shared mutex descriptor.
+
+public:
+
+  Read  read;  ///< Accessor for the reader lock.
+  Write write; ///< Accessor for the writer lock.
 
 public:
 
@@ -187,12 +189,12 @@ public:
   ~RWLock();
 
   /**
-   * Copying or moving is not possible.
+   * No copying or moving.
    */
   RWLock(const RWLock&) = delete;
 
   /**
-   * Copying or moving is not possible.
+   * No copying or moving.
    */
   RWLock& operator=(const RWLock&) = delete;
 

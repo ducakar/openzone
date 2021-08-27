@@ -71,12 +71,12 @@ public:
   ~Monitor();
 
   /**
-   * Copying or moving is not possible.
+   * No copying or moving.
    */
   Monitor(const Monitor&) = delete;
 
   /**
-   * Copying or moving is not possible.
+   * No copying.
    */
   Monitor& operator=(const Monitor&) = delete;
 

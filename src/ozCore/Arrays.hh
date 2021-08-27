@@ -45,13 +45,13 @@ public:
    * Array range with constant access to elements.
    */
   template <typename Elem>
-  using CRangeType = Range<const Elem*, const Elem*>;
+  using CRange = oz::Range<const Elem*, const Elem*>;
 
   /**
    * Array range with non-constant access to elements.
    */
   template <typename Elem>
-  using RangeType = Range<Elem*, Elem*>;
+  using Range = oz::Range<Elem*, Elem*>;
 
 private:
 

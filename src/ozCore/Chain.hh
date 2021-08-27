@@ -46,10 +46,8 @@ struct ChainNode
 /**
  * Intrusive linked list.
  *
- * This is not a real container but a way of binding existing elements into a linked list.
- *
- * It can only be applied on classes that have a `next[]` member. This can also be provided by
- * extending `Chain::Node` struct.
+ * It can only used on classes that have a `next[]` member, which can also be provided by extending
+ * `Chain::Node` struct.
  * Example:
  * @code
  * struct C
@@ -132,12 +130,12 @@ public:
   /**
    * %Range with constant access to elements.
    */
-  using CRangeType = Range<ChainIterator<const Elem>, nullptr_t>;
+  using CRange = oz::Range<ChainIterator<const Elem>, nullptr_t>;
 
   /**
    * %Range with non-constant access to elements.
    */
-  using RangeType = Range<ChainIterator<Elem>, nullptr_t>;
+  using Range = oz::Range<ChainIterator<Elem>, nullptr_t>;
 
 protected:
 
@@ -169,7 +167,7 @@ public:
   }
 
   /**
-   * STL-style constant begin iterator.
+   * Constant begin iterator.
    */
   OZ_ALWAYS_INLINE
   ChainIterator<const Elem> cbegin() const noexcept
@@ -178,7 +176,7 @@ public:
   }
 
   /**
-   * STL-style constant begin iterator.
+   * Constant begin iterator.
    */
   OZ_ALWAYS_INLINE
   ChainIterator<const Elem> begin() const noexcept
@@ -187,7 +185,7 @@ public:
   }
 
   /**
-   * STL-style begin iterator.
+   * Begin iterator.
    */
   OZ_ALWAYS_INLINE
   ChainIterator<Elem> begin() noexcept
@@ -196,7 +194,7 @@ public:
   }
 
   /**
-   * STL-style constant end iterator.
+   * Constant end iterator.
    */
   OZ_ALWAYS_INLINE
   nullptr_t cend() const noexcept
@@ -205,7 +203,7 @@ public:
   }
 
   /**
-   * STL-style constant end iterator.
+   * Constant end iterator.
    */
   OZ_ALWAYS_INLINE
   nullptr_t end() const noexcept
@@ -214,7 +212,7 @@ public:
   }
 
   /**
-   * STL-style end iterator.
+   * End iterator.
    */
   OZ_ALWAYS_INLINE
   nullptr_t end() noexcept

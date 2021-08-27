@@ -28,22 +28,22 @@ void test_iterables()
 {
   Log() << "+ iterables";
 
-  Chain<Foo>::CRangeType        rcc;
-  Chain<Foo>::RangeType         rc;
-  DChain<Foo>::CRangeType       rdcc;
-  DChain<Foo>::RangeType        rdc;
-  List<Foo>::CRangeType         rcl;
-  List<Foo>::RangeType          rl;
-  SList<Foo, 1>::CRangeType     rcsl;
-  SList<Foo, 1>::RangeType      rsl;
-  Set<Foo>::CRangeType          rcs;
-  Set<Foo>::RangeType           rs;
-  Map<Foo, Foo>::CRangeType     rcm;
-  Map<Foo, Foo>::RangeType      rm;
-  HashSet<Foo>::CRangeType      rchs;
-  HashSet<Foo>::RangeType       rhs;
-  HashMap<Foo, Foo>::CRangeType rchm;
-  HashMap<Foo, Foo>::RangeType  rhm;
+  Chain<Foo>::CRange        rcc;
+  Chain<Foo>::Range         rc;
+  DChain<Foo>::CRange       rdcc;
+  DChain<Foo>::Range        rdc;
+  List<Foo>::CRange         rcl;
+  List<Foo>::Range          rl;
+  SList<Foo, 1>::CRange     rcsl;
+  SList<Foo, 1>::Range      rsl;
+  Set<Foo>::CRange          rcs;
+  Set<Foo>::Range           rs;
+  Map<Foo, Foo>::CRange     rcm;
+  Map<Foo, Foo>::Range      rm;
+  HashSet<Foo>::CRange      rchs;
+  HashSet<Foo>::Range       rhs;
+  HashMap<Foo, Foo>::CRange rchm;
+  HashMap<Foo, Foo>::Range  rhm;
 
   static_cast<void>(rcc);
   static_cast<void>(rc);
