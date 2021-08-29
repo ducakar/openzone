@@ -164,7 +164,7 @@ mark_as_advanced(MINGW32_LIBRARY)
 #
 
 # External library headers.
-if(LINUX)
+if(UNIX AND NOT PLATFORM_EMBEDDED)
   include_directories(SYSTEM ext/gamemode/lib)
 endif()
 include_directories(SYSTEM ext/espeak)
