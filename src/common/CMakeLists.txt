@@ -10,6 +10,7 @@ add_library(common STATIC
   luaapi.hh
   luabase.cc
   luabase.hh
+  pch.hh
 #END SOURCES
 )
-#target_precompile_headers(common PUBLIC common.hh)
+target_precompile_headers(common PUBLIC pch.hh)

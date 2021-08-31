@@ -30,4 +30,4 @@ add_library(builder STATIC
   common.hh
 #END SOURCES
 )
-#target_precompile_headers(builder REUSE_FROM common)
+target_precompile_headers(builder REUSE_FROM common)

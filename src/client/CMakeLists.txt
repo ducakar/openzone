@@ -153,4 +153,4 @@ add_library(client STATIC
   ui/UI.hh
 #END SOURCES
 )
-#target_precompile_headers(client REUSE_FROM common)
+target_precompile_headers(client REUSE_FROM common)

@@ -51,4 +51,4 @@ add_library(matrix STATIC
   luaapi.hh
 #END SOURCES
 )
-#target_precompile_headers(matrix REUSE_FROM common)
+target_precompile_headers(matrix REUSE_FROM common)

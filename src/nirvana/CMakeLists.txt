@@ -21,4 +21,4 @@ add_library(nirvana STATIC
   luaapi.hh
 #END SOURCES
 )
-#target_precompile_headers(nirvana REUSE_FROM common)
+target_precompile_headers(nirvana REUSE_FROM common)
