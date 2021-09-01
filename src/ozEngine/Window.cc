@@ -81,7 +81,7 @@ static void* screenshotMain(void* data)
   const ScreenshotInfo* info = static_cast<const ScreenshotInfo*>(data);
 
   String path = String::format("%s %s.png", info->basePath.c(), Time::local().toString().c());
-  FILE*  file = fopen(path, "wb");
+  FILE*  file = fopen(path, "wbe");
 
   if (file == nullptr) {
     return nullptr;

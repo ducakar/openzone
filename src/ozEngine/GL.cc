@@ -118,10 +118,9 @@ OZ_DL_DEFINE(glCheckFramebufferStatus );
 
 void GL::checkError(const char* function, const char* file, int line)
 {
-  const char* message;
-  GLenum result = glGetError();
+  const char* message = "UNKNOWN";
 
-  switch (result) {
+  switch (glGetError()) {
     case GL_NO_ERROR: {
       return;
     }
@@ -159,10 +158,6 @@ void GL::checkError(const char* function, const char* file, int line)
       break;
     }
 # endif
-    default: {
-      message = "UNKNOWN";
-      break;
-    }
   }
 
   System::error(function, file, line, 1, "GL error `%s'", message);

@@ -100,9 +100,10 @@ private:
   char skipBlanks()
   {
     List<char> commentBuffer;
-    char       ch1, ch2;
 
     do {
+      char ch1, ch2;
+
       do {
         ch2 = readChar();
       }
@@ -155,7 +156,7 @@ private:
   String parseString()
   {
     List<char> chars;
-    char ch;
+    char       ch;
 
     do {
       ch = readChar();

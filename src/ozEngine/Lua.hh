@@ -68,7 +68,7 @@ public:
   using Function = int(lua_State*);
 
   /**
-   * Wrapper class for reading stack values, e.g. values returnes by a function.
+   * Wrapper class for reading stack values, e.g. values returned by a function.
    */
   class Result
   {
@@ -76,14 +76,9 @@ public:
 
   private:
 
-    lua_State* l_ = nullptr; ///< %Lua state.
+    lua_State* l_; ///< %Lua state.
 
   private:
-
-    /**
-     * Invalid instance.
-     */
-    Result() = default;
 
     /**
      * Create stack
@@ -120,6 +115,18 @@ public:
      */
     void read(int index, void** value) const;
 
+    /**
+     * Read a (light) user data pointer at a given (1-based) stack index and cast it to the desired
+     * type.
+     */
+    template <typename Type>
+    void read(int index, Type** value) const
+    {
+      void* data;
+      read(index, &data);
+      *value = static_cast<Type*>(data);
+    }
+
   public:
 
     /**
@@ -128,63 +135,24 @@ public:
     ~Result();
 
     /**
-     * Move constructor.
+     * No copying.
      */
-    Result(Result&& other) noexcept;
+    Result(const Result&) = delete;
 
     /**
-     * Move operator.
+     * No moving.
      */
-    Result& operator=(Result&& other) noexcept;
+    Result(Result&& other) = delete;
 
     /**
-     * Return the first value on the stack as a bool.
+     * No copying.
      */
-    operator bool() const
-    {
-      return toBool(1);
-    }
+    Result& operator=(const Result&) = delete;
 
     /**
-     * Return the first value on the stack as an integer.
+     * No moving.
      */
-    operator int() const
-    {
-      return toInt(1);
-    }
-
-    /**
-     * Return the first value on the stack as a float.
-     */
-    operator float() const
-    {
-      return toFloat(1);
-    }
-
-    /**
-     * Return the first value on the stack as a string.
-     */
-    operator String() const
-    {
-      return toString(1);
-    }
-
-    /**
-     * Return the first value on the stack as C function.
-     */
-    operator Function*() const
-    {
-      return toFunction(1);
-    }
-
-    /**
-     * Return the first value on the stack as a (light) user data pointer.
-     */
-    template <typename Type>
-    operator Type*() const
-    {
-      return static_cast<Type*>(toPointer(1));
-    }
+    Result& operator=(Result&& other) = delete;
 
     /**
      * Return the stack value at a given (1-based) index as a bool.
@@ -239,9 +207,10 @@ public:
     /**
      * Return the stack value at a given (1-based) index as a (light) user data pointer.
      */
-    void* toPointer(int index = 1) const
+    template <typename Type>
+    Type* toPointer(int index = 1) const
     {
-      void* value;
+      Type* value;
       read(index, &value);
       return value;
     }
@@ -347,11 +316,6 @@ public:
     void assign(void* data) const;
 
     /**
-     * Helper for assigning full user data.
-     */
-    void assign(const void* data, size_t size, const char* metatable = nullptr) const;
-
-    /**
      * Call a function with given number of arguments.
      *
      * Call is MULTRET so the stack contains all the returned values after the function finishes.
@@ -361,14 +325,24 @@ public:
   public:
 
     /**
-     * Copy constructor copies field accessor.
+     * No copying.
      */
-    Field(const Field& other) = default;
+    Field(const Field&) = delete;
 
     /**
-     * Copy operator assigns value of the target field.
+     * No moving.
      */
-    Field& operator=(const Field& other);
+    Field(Field&& other) noexcept;
+
+    /**
+     * No copying.
+     */
+    Field& operator=(const Field&) = delete;
+
+    /**
+     * No moving.
+     */
+    Field& operator=(Field&& other) noexcept;
 
     /**
      * Assign first value of a function's result.
@@ -376,7 +350,7 @@ public:
     Field& operator=(const Result& other);
 
     /**
-     * Assing an empty value of a given type to the field.
+     * Assign an empty value of a given type to the field.
      */
     Field& operator=(Type type);
 
@@ -401,7 +375,7 @@ public:
     Field& operator=(const char* value);
 
     /**
-     * Assing a C function to the field.
+     * Assign a C function to the field.
      */
     Field& operator=(Function* func);
 
@@ -412,16 +386,6 @@ public:
     Field& operator=(Data* data)
     {
       assign(data);
-      return *this;
-    }
-
-    /**
-     * Assign user data to the field.
-     */
-    template <class Data>
-    Field& operator=(const Data& data)
-    {
-      assign(&data, sizeof(Data));
       return *this;
     }
 
@@ -565,9 +529,19 @@ public:
   ~Lua();
 
   /**
+   * No copying.
+   */
+  Lua(const Lua&) = delete;
+
+  /**
    * Move constructor.
    */
   Lua(Lua&& other) noexcept;
+
+  /**
+   * No copying.
+   */
+  Lua& operator=(const Lua& other) = delete;
 
   /**
    * Move operator.

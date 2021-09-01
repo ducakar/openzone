@@ -76,18 +76,6 @@ Lua::Result::~Result()
   }
 }
 
-Lua::Result::Result(Result&& other) noexcept
-  : Result()
-{
-  swap(*this, other);
-}
-
-Lua::Result& Lua::Result::operator=(Lua::Result&& other) noexcept
-{
-  swap(*this, other);
-  return *this;
-}
-
 Lua::Field::Field(lua_State* l, const Field* parent, const char* name)
   : l_(l), parent_(parent), name_(name), index_(0)
 {}
@@ -163,66 +151,12 @@ void Lua::Field::assign(void* data) const
   }
 }
 
-void Lua::Field::assign(const void* data, size_t size, const char* metatable) const
-{
-  if (parent_ == nullptr) {
-    memcpy(lua_newuserdata(l_, size), data, size);
-
-    if (metatable != nullptr) {
-      lua_getglobal(l_, metatable);
-      lua_setmetatable(l_, -1);
-    }
-
-    lua_setglobal(l_, name_);
-  }
-  else {
-    parent_->push();
-    memcpy(lua_newuserdata(l_, size), data, size);
-
-    if (metatable != nullptr) {
-      lua_getglobal(l_, metatable);
-      lua_setmetatable(l_, -1);
-    }
-
-    if (name_ == nullptr) {
-      lua_rawseti(l_, -2, index_);
-    }
-    else {
-      lua_setfield(l_, -2, name_);
-    }
-
-    lua_pop(l_, 1);
-  }
-}
-
 Lua::Result Lua::Field::call(int nArgs) const
 {
   if (lua_pcall(l_, nArgs, LUA_MULTRET, 0)) {
     OZ_ERROR("oz::Lua: %s", lua_tostring(l_, -1));
   }
   return Result(l_);
-}
-
-Lua::Field& Lua::Field::operator=(const Lua::Field& other)
-{
-  if (parent_ == nullptr) {
-    other.push();
-    lua_setglobal(l_, name_);
-  }
-  else {
-    parent_->push();
-    other.push();
-
-    if (name_ == nullptr) {
-      lua_rawseti(l_, -2, index_);
-    }
-    else {
-      lua_setfield(l_, -2, name_);
-    }
-
-    lua_pop(l_, 1);
-  }
-  return *this;
 }
 
 Lua::Field& Lua::Field::operator=(const Lua::Result&)

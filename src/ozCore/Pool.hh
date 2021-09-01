@@ -45,11 +45,11 @@
   void* operator new     (size_t)                                    { return pool.allocate(); }   \
   void* operator new[]   (size_t)                                    = delete;                     \
   void  operator delete  (void* ptr)                        noexcept { pool.deallocate(ptr); }     \
-  void  operator delete[](void*)                            noexcept = delete;                     \
+  void  operator delete[](void*)                                     = delete;                     \
   void* operator new     (size_t, const std::nothrow_t&)    noexcept { return pool.allocate(); }   \
-  void* operator new[]   (size_t, const std::nothrow_t&)    noexcept = delete;                     \
+  void* operator new[]   (size_t, const std::nothrow_t&)             = delete;                     \
   void  operator delete  (void* ptr, const std::nothrow_t&) noexcept { pool.deallocate(ptr); }     \
-  void  operator delete[](void*, const std::nothrow_t&)     noexcept = delete;
+  void  operator delete[](void*, const std::nothrow_t&)              = delete;
 
 /**
  * @def OZ_PLACEMENT_POOL_ALLOC
@@ -63,12 +63,12 @@
 #define OZ_PLACEMENT_POOL_ALLOC(Type)                                                              \
   void* operator new     (size_t)                                  = delete;                       \
   void* operator new[]   (size_t)                                  = delete;                       \
-  void  operator delete  (void*)                          noexcept = delete;                       \
-  void  operator delete[](void*)                          noexcept = delete;                       \
-  void* operator new     (size_t, const std::nothrow_t&)  noexcept = delete;                       \
-  void* operator new[]   (size_t, const std::nothrow_t&)  noexcept = delete;                       \
-  void  operator delete  (void*, const std::nothrow_t&)   noexcept = delete;                       \
-  void  operator delete[](void*, const std::nothrow_t&)   noexcept = delete;                       \
+  void  operator delete  (void*)                                   = delete;                       \
+  void  operator delete[](void*)                                   = delete;                       \
+  void* operator new     (size_t, const std::nothrow_t&)           = delete;                       \
+  void* operator new[]   (size_t, const std::nothrow_t&)           = delete;                       \
+  void  operator delete  (void*, const std::nothrow_t&)            = delete;                       \
+  void  operator delete[](void*, const std::nothrow_t&)            = delete;                       \
   void* operator new     (size_t, oz::PoolAlloc* pool)             { return pool->allocate(); }    \
   void  operator delete  (void* ptr, oz::PoolAlloc* pool) noexcept { pool->deallocate(ptr); }
 
@@ -117,9 +117,19 @@ public:
   ~PoolAlloc();
 
   /**
+   * No copying.
+   */
+  PoolAlloc(const PoolAlloc&) = delete;
+
+  /**
    * Move constructor, moves storage.
    */
   PoolAlloc(PoolAlloc&& other) noexcept;
+
+  /**
+   * No copying.
+   */
+  PoolAlloc& operator=(const PoolAlloc&) = delete;
 
   /**
    * Move operator, moves storage.

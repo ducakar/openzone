@@ -60,7 +60,8 @@ Cursor::Cursor(const File& file, Mode mode, int size)
     if (type != 0xfffd0002) {
       continue;
     }
-    else if (size == -1) {
+
+    if (size == -1) {
       size = subtype;
     }
     else if (subtype != size) {

@@ -71,14 +71,24 @@ public:
   ~Monitor();
 
   /**
-   * No copying or moving.
+   * No copying.
    */
   Monitor(const Monitor&) = delete;
+
+  /**
+   * No moving.
+   */
+  Monitor(Monitor&&) = delete;
 
   /**
    * No copying.
    */
   Monitor& operator=(const Monitor&) = delete;
+
+  /**
+   * No moving.
+   */
+  Monitor& operator=(Monitor&&) = delete;
 
   /**
    * Wait until mutex lock is obtained.

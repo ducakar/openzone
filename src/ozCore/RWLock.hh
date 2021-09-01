@@ -68,14 +68,29 @@ public:
   public:
 
     /**
-     * No copying or moving.
+     * Trivial destructor.
+     */
+    ~Read() = default;
+
+    /**
+     * No copying.
      */
     Read(const Read&) = delete;
 
     /**
-     * No copying or moving.
+     * No moving.
+     */
+    Read(Read&&) noexcept = delete;
+
+    /**
+     * No copying.
      */
     Read& operator=(const Read&) = delete;
+
+    /**
+     * No moving.
+     */
+    Read& operator=(Read&&) noexcept = delete;
 
     /**
      * Wait until reader lock is acquired.
@@ -128,14 +143,29 @@ public:
   public:
 
     /**
-     * No copying or moving.
+     * Trivial destructor.
+     */
+    ~Write() = default;
+
+    /**
+     * No copying.
      */
     Write(const Write&) = delete;
 
     /**
-     * No copying or moving.
+     * No moving.
+     */
+    Write(Write&&) noexcept = delete;
+
+    /**
+     * No copying.
      */
     Write& operator=(const Write&) = delete;
+
+    /**
+     * No moving.
+     */
+    Write& operator=(Write&&) noexcept = delete;
 
     /**
      * Wait until writer lock is acquired.
@@ -189,14 +219,24 @@ public:
   ~RWLock();
 
   /**
-   * No copying or moving.
+   * No copying.
    */
   RWLock(const RWLock&) = delete;
 
   /**
-   * No copying or moving.
+   * No moving.
+   */
+  RWLock(RWLock&&) noexcept = delete;
+
+  /**
+   * No copying.
    */
   RWLock& operator=(const RWLock&) = delete;
+
+  /**
+   * No moving.
+   */
+  RWLock& operator=(RWLock&&) noexcept = delete;
 
 };
 

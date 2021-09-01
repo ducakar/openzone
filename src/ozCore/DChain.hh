@@ -114,6 +114,16 @@ public:
   DChain() = default;
 
   /**
+   * Trivial destructor.
+   */
+  ~DChain() = default;
+
+  /**
+   * No copying.
+   */
+  DChain(const DChain&) = delete;
+
+  /**
    * Move constructor, rebinds elements to the new chain.
    */
   DChain(DChain&& other) noexcept
@@ -121,6 +131,11 @@ public:
   {
     swap(*this, other);
   }
+
+  /**
+   * No copying.
+   */
+  DChain& operator=(const DChain&) = delete;
 
   /**
    * Move operator, rebinds elements to the destination chain.

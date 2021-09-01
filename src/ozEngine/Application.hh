@@ -35,10 +35,32 @@ public:
   {
   public:
 
+    Stage() = default;
+
     /**
      * Destructor.
      */
     virtual ~Stage();
+
+    /**
+     * No copying.
+     */
+    Stage(const Stage&) = delete;
+
+    /**
+     * No moving.
+     */
+    Stage(Stage&&) noexcept = default;
+
+    /**
+     * No copying.
+     */
+    Stage& operator=(const Stage&) = delete;
+
+    /**
+     * No moving.
+     */
+    Stage& operator=(Stage&&) noexcept = default;
 
     /**
      * Load stage, called after the previous stage was unloaded.

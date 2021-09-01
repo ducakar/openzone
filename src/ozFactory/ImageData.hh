@@ -68,9 +68,19 @@ public:
   ~ImageData();
 
   /**
+   * No copying.
+   */
+  ImageData(const ImageData&) = delete;
+
+  /**
    * Move constructor, moves pixel data.
    */
   ImageData(ImageData&& other) noexcept;
+
+  /**
+   * No copying.
+   */
+  ImageData& operator=(const ImageData&) = delete;
 
   /**
    * Move operator, moves pixel data.

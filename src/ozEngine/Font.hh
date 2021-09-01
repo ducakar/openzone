@@ -69,9 +69,19 @@ public:
   Font(const File& file, int height);
 
   /**
+   * No copying.
+   */
+  Font(const Font&) = delete;
+
+  /**
    * Move constructor.
    */
   Font(Font&& other) noexcept;
+
+  /**
+   * No copying.
+   */
+  Font& operator=(const Font&) = delete;
 
   /**
    * Move operator.

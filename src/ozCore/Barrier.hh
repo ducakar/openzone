@@ -60,14 +60,24 @@ public:
   ~Barrier();
 
   /**
-   * No copying or moving.
+   * No copying.
    */
   Barrier(const Barrier&) = delete;
 
   /**
-   * No copying or moving.
+   * No moving.
+   */
+  Barrier(Barrier&&) = delete;
+
+  /**
+   * No copying.
    */
   Barrier& operator=(const Barrier&) = delete;
+
+  /**
+   * No moving.
+   */
+  Barrier& operator=(Barrier&&) = delete;
 
   /**
    * Synchronise at barrier.

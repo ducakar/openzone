@@ -67,14 +67,24 @@ public:
   }
 
   /**
-   * No copying or moving.
+   * No copying.
    */
   LockGuard(const LockGuard&) = delete;
 
   /**
-   * No copying or moving.
+   * No moving.
+   */
+  LockGuard(LockGuard&&) = delete;
+
+  /**
+   * No copying.
    */
   LockGuard& operator=(const LockGuard&) = delete;
+
+  /**
+   * No moving.
+   */
+  LockGuard& operator=(LockGuard&&) = delete;
 
 };
 

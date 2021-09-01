@@ -53,14 +53,29 @@ public:
   CallOnce() = default;
 
   /**
-   * No copying or moving.
+   * Trivial destructor.
+   */
+  ~CallOnce() = default;
+
+  /**
+   * No copying.
    */
   CallOnce(const CallOnce&) = delete;
 
   /**
-   * No copying or moving.
+   * No moving.
+   */
+  CallOnce(CallOnce&&) = delete;
+
+  /**
+   * No copying.
    */
   CallOnce& operator=(const CallOnce&) = delete;
+
+  /**
+   * No moving.
+   */
+  CallOnce& operator=(CallOnce&&) = delete;
 
   /**
    * Call function if this is the first call on this object.

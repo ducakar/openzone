@@ -79,6 +79,14 @@ protected:
 
 public:
 
+  StreamBase() = default;
+
+  StreamBase(const StreamBase&) = delete;
+  StreamBase(StreamBase&&) noexcept = default;
+
+  StreamBase& operator=(const StreamBase&) = delete;
+  StreamBase& operator=(StreamBase&&) noexcept = default;
+
   OZ_INTERNAL
   virtual ~StreamBase();
 
@@ -136,67 +144,76 @@ public:
   }
 
   OZ_INTERNAL
-  bool decode(AL::Decoder* decoder) override;
+  ~WaveStream() override;
+
+  WaveStream(const WaveStream&) = delete;
+  WaveStream(WaveStream&&) = delete;
+
+  WaveStream& operator=(const WaveStream&) = delete;
+  WaveStream& operator=(WaveStream&&) = delete;
+
+  OZ_INTERNAL
+  bool decode(AL::Decoder* decoder) override
+  {
+    if (decoder->size_ != 0) {
+      return false;
+    }
+
+    float* begin      = decoder->samples_;
+    float* end        = decoder->samples_ + decoder->capacity_;
+    float* alignedEnd = begin + Alloc::alignDown<ptrdiff_t>(end - begin, 4);
+
+    if (sampleSize_ == 1) {
+      const ubyte* samples = reinterpret_cast<const ubyte*>(is_.pos());
+
+      while (begin != alignedEnd) {
+        begin[0] = float(samples[0] - 128) / 128.0f;
+        begin[1] = float(samples[1] - 128) / 128.0f;
+        begin[2] = float(samples[2] - 128) / 128.0f;
+        begin[3] = float(samples[3] - 128) / 128.0f;
+
+        begin   += 4;
+        samples += 4;
+      }
+      while (begin != end) {
+        *begin++ = float(*samples++ - 128) / 128.0f;
+      }
+    }
+    else {
+      const int16* samples = reinterpret_cast<const int16*>(is_.pos());
+
+      while (begin != alignedEnd) {
+#if OZ_BYTE_ORDER == 4321
+        begin[0] = float(Endian::bswap(samples[0])) / 32768.0f;
+        begin[1] = float(Endian::bswap(samples[1])) / 32768.0f;
+        begin[2] = float(Endian::bswap(samples[2])) / 32768.0f;
+        begin[3] = float(Endian::bswap(samples[3])) / 32768.0f;
+#else
+        begin[0] = float(samples[0]) / 32768.0f;
+        begin[1] = float(samples[1]) / 32768.0f;
+        begin[2] = float(samples[2]) / 32768.0f;
+        begin[3] = float(samples[3]) / 32768.0f;
+#endif
+
+        begin   += 4;
+        samples += 4;
+      }
+      while (begin != end) {
+#if OZ_BYTE_ORDER == 4321
+        *begin++ = float(Endian::bswap(*samples++)) / 32768.0f;
+#else
+        *begin++ = float(*samples++) / 32768.0f;
+#endif
+      }
+    }
+
+    decoder->size_ = decoder->capacity_;
+    return true;
+  }
 
 };
 
-bool AL::Decoder::WaveStream::decode(AL::Decoder* decoder)
-{
-  if (decoder->size_ != 0) {
-    return false;
-  }
-
-  float* begin      = decoder->samples_;
-  float* end        = decoder->samples_ + decoder->capacity_;
-  float* alignedEnd = begin + Alloc::alignDown<ptrdiff_t>(end - begin, 4);
-
-  if (sampleSize_ == 1) {
-    const ubyte* samples = reinterpret_cast<const ubyte*>(is_.pos());
-
-    while (begin != alignedEnd) {
-      begin[0] = float(samples[0] - 128) / 128.0f;
-      begin[1] = float(samples[1] - 128) / 128.0f;
-      begin[2] = float(samples[2] - 128) / 128.0f;
-      begin[3] = float(samples[3] - 128) / 128.0f;
-
-      begin   += 4;
-      samples += 4;
-    }
-    while (begin != end) {
-      *begin++ = float(*samples++ - 128) / 128.0f;
-    }
-  }
-  else {
-    const int16* samples = reinterpret_cast<const int16*>(is_.pos());
-
-    while (begin != alignedEnd) {
-#if OZ_BYTE_ORDER == 4321
-      begin[0] = float(Endian::bswap(samples[0])) / 32768.0f;
-      begin[1] = float(Endian::bswap(samples[1])) / 32768.0f;
-      begin[2] = float(Endian::bswap(samples[2])) / 32768.0f;
-      begin[3] = float(Endian::bswap(samples[3])) / 32768.0f;
-#else
-      begin[0] = float(samples[0]) / 32768.0f;
-      begin[1] = float(samples[1]) / 32768.0f;
-      begin[2] = float(samples[2]) / 32768.0f;
-      begin[3] = float(samples[3]) / 32768.0f;
-#endif
-
-      begin   += 4;
-      samples += 4;
-    }
-    while (begin != end) {
-#if OZ_BYTE_ORDER == 4321
-      *begin++ = float(Endian::bswap(*samples++)) / 32768.0f;
-#else
-      *begin++ = float(*samples++) / 32768.0f;
-#endif
-    }
-  }
-
-  decoder->size_ = decoder->capacity_;
-  return true;
-}
+AL::Decoder::WaveStream::~WaveStream() = default;
 
 class AL::Decoder::OpusStream : public AL::Decoder::StreamBase
 {
@@ -239,43 +256,45 @@ public:
   OZ_INTERNAL
   ~OpusStream() override;
 
+  OpusStream(const OpusStream&) = delete;
+  OpusStream(OpusStream&&) = delete;
+
+  OpusStream& operator=(const OpusStream&) = delete;
+  OpusStream& operator=(OpusStream&&) = delete;
+
   OZ_INTERNAL
-  bool decode(AL::Decoder* decoder) override;
+  bool decode(AL::Decoder* decoder) override
+  {
+    decoder->size_ = 0;
+
+    do {
+      int result;
+
+      if (decoder->format_ == AL_FORMAT_STEREO_FLOAT32) {
+        result = op_read_float_stereo(opFile_, decoder->samples_ + decoder->size_,
+                                      decoder->capacity_ - decoder->size_) * 2;
+      }
+      else {
+        result = op_read_float(opFile_, decoder->samples_ + decoder->size_,
+                              decoder->capacity_ - decoder->size_, nullptr);
+      }
+
+      if (result <= 0) {
+        return decoder->size_ != 0;
+      }
+
+      decoder->size_ += result;
+    }
+    while (decoder->size_ != decoder->capacity_);
+
+    return true;
+  }
 
 };
 
 AL::Decoder::OpusStream::~OpusStream()
 {
-  if (opFile_ != nullptr) {
-    op_free(opFile_);
-  }
-}
-
-bool AL::Decoder::OpusStream::decode(AL::Decoder* decoder)
-{
-  decoder->size_ = 0;
-
-  do {
-    int result;
-
-    if (decoder->format_ == AL_FORMAT_STEREO_FLOAT32) {
-      result = op_read_float_stereo(opFile_, decoder->samples_ + decoder->size_,
-                                    decoder->capacity_ - decoder->size_) * 2;
-    }
-    else {
-      result = op_read_float(opFile_, decoder->samples_ + decoder->size_,
-                             decoder->capacity_ - decoder->size_, nullptr);
-    }
-
-    if (result <= 0) {
-      return decoder->size_ != 0;
-    }
-
-    decoder->size_ += result;
-  }
-  while (decoder->size_ != decoder->capacity_);
-
-  return true;
+  op_free(opFile_);
 }
 
 class AL::Decoder::VorbisStream : public AL::Decoder::StreamBase
@@ -319,49 +338,53 @@ public:
   OZ_INTERNAL
   ~VorbisStream() override;
 
+  VorbisStream(const VorbisStream&) = delete;
+  VorbisStream(VorbisStream&&) = delete;
+
+  VorbisStream& operator=(const VorbisStream&) = delete;
+  VorbisStream& operator=(VorbisStream&&) = delete;
+
   OZ_INTERNAL
-  bool decode(AL::Decoder* decoder) override;
+  bool decode(AL::Decoder* decoder) override
+  {
+    int stereo = decoder->format_ == AL_FORMAT_STEREO_FLOAT32;
+
+    decoder->size_ = 0;
+
+    do {
+      float** samples;
+      int     section;
+      long    result = ov_read_float(&ovFile_, &samples,
+                                    (decoder->capacity_ - decoder->size_) >> stereo, &section);
+      if (result <= 0) {
+        return decoder->size_ != 0;
+      }
+
+      float* output = &decoder->samples_[decoder->size_];
+
+      if (stereo != 0) {
+        for (long i = 0; i < result; ++i) {
+          *output++ = samples[0][i];
+          *output++ = samples[1][i];
+        }
+        result *= 2;
+      }
+      else {
+        memcpy(output, samples[0], result * sizeof(float));
+      }
+
+      decoder->size_ += result;
+    }
+    while (decoder->size_ != decoder->capacity_);
+
+    return true;
+  }
 
 };
 
 AL::Decoder::VorbisStream::~VorbisStream()
 {
   ov_clear(&ovFile_);
-}
-
-bool AL::Decoder::VorbisStream::decode(AL::Decoder* decoder)
-{
-  int stereo = decoder->format_ == AL_FORMAT_STEREO_FLOAT32;
-
-  decoder->size_ = 0;
-
-  do {
-    float** samples;
-    int     section;
-    long    result = ov_read_float(&ovFile_, &samples,
-                                   (decoder->capacity_ - decoder->size_) >> stereo, &section);
-    if (result <= 0) {
-      return decoder->size_ != 0;
-    }
-
-    float* output = &decoder->samples_[decoder->size_];
-
-    if (stereo != 0) {
-      for (long i = 0; i < result; ++i) {
-        *output++ = samples[0][i];
-        *output++ = samples[1][i];
-      }
-      result *= 2;
-    }
-    else {
-      memcpy(output, samples[0], result * sizeof(float));
-    }
-
-    decoder->size_ += result;
-  }
-  while (decoder->size_ != decoder->capacity_);
-
-  return true;
 }
 
 AL::Decoder::Decoder(const File& file, bool isStreaming)
@@ -414,10 +437,9 @@ void AL::Decoder::load(ALuint buffer) const
 
 void AL::checkError(const char* function, const char* file, int line)
 {
-  const char* message;
-  ALenum result = alGetError();
+  const char* message = "UNKNOWN";
 
-  switch (result) {
+  switch (alGetError()) {
     case AL_NO_ERROR: {
       return;
     }
@@ -439,10 +461,6 @@ void AL::checkError(const char* function, const char* file, int line)
     }
     case AL_OUT_OF_MEMORY: {
       message = "AL_OUT_OF_MEMORY";
-      break;
-    }
-    default: {
-      message = "UNKNOWN";
       break;
     }
   }

@@ -84,7 +84,7 @@ public:
   static Time local(int64 epoch);
 
   /**
-   * Convert to ISO date/time string "yyyy-mm-dd hh:mm:ss".
+   * Convert to ISO-like date/time string "yyyy-mm-dd hh:mm:ss".
    */
   String toString() const;
 

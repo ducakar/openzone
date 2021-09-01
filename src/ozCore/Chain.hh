@@ -149,6 +149,16 @@ public:
   Chain() = default;
 
   /**
+   * Trivial destructor.
+   */
+  ~Chain() = default;
+
+  /**
+   * No copying.
+   */
+  Chain(const Chain&) = delete;
+
+  /**
    * Move constructor, rebinds elements to the new chain.
    */
   Chain(Chain&& other) noexcept
@@ -156,6 +166,11 @@ public:
   {
     swap(*this, other);
   }
+
+  /**
+   * No copying.
+   */
+  Chain& operator=(const Chain&) = delete;
 
   /**
    * Move operator, rebinds elements to the destination chain.

@@ -52,14 +52,29 @@ public:
   SpinLock() = default;
 
   /**
-   * No copying or moving.
+   * Trivial destructor.
+   */
+  ~SpinLock() = default;
+
+  /**
+   * No copying.
    */
   SpinLock(const SpinLock&) = delete;
 
   /**
-   * No copying or moving.
+   * No moving.
+   */
+  SpinLock(SpinLock&&) noexcept = delete;
+
+  /**
+   * No copying.
    */
   SpinLock& operator=(const SpinLock&) = delete;
+
+  /**
+   * No moving.
+   */
+  SpinLock& operator=(SpinLock&&) noexcept = delete;
 
   /**
    * Loop performing a lock operation until it succeeds.

@@ -84,6 +84,11 @@ public:
   Heap() = default;
 
   /**
+   * Trivial destructor.
+   */
+  ~Heap() = default;
+
+  /**
    * Initialise from an initialiser list.
    */
   Heap(InitialiserList<Elem> il)

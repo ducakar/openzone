@@ -76,14 +76,24 @@ public:
   ~Log();
 
   /**
-   * No copying or moving.
+   * Trivial copy.
    */
-  Log(const Log&) = delete;
+  Log(const Log&) = default;
 
   /**
-   * No copying or moving.
+   * Trivial move.
    */
-  Log& operator=(const Log&) = delete;
+  Log(Log&&) noexcept = default;
+
+  /**
+   * Trivial copy.
+   */
+  Log& operator=(const Log&) = default;
+
+  /**
+   * Trivial move.
+   */
+  Log& operator=(Log&&) noexcept = default;
 
   /**
    * Return log file or a null file if log is printed to stdout only.

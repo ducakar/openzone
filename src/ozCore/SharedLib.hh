@@ -98,9 +98,19 @@ public:
   ~SharedLib();
 
   /**
+   * No copying.
+   */
+  SharedLib(const SharedLib&) = delete;
+
+  /**
    * Move constructor.
    */
   SharedLib(SharedLib&& other) noexcept;
+
+  /**
+   * No copying.
+   */
+  SharedLib& operator=(const SharedLib&) = delete;
 
   /**
    * Move operator.

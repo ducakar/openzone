@@ -114,9 +114,19 @@ public:
   ~Cursor();
 
   /**
+   * No copying.
+   */
+  Cursor(const Cursor&) = delete;
+
+  /**
    * Move constructor.
    */
   Cursor(Cursor&& other) noexcept;
+
+  /**
+   * No copying.
+   */
+  Cursor& operator=(const Cursor&) = delete;
 
   /**
    * Move operator.

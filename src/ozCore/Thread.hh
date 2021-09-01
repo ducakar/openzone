@@ -141,9 +141,19 @@ public:
   ~Thread();
 
   /**
+   * No copying.
+   */
+  Thread(const Thread&) = delete;
+
+  /**
    * Move constructor.
    */
   Thread(Thread&& other) noexcept;
+
+  /**
+   * No copying.
+   */
+  Thread& operator=(const Thread&) = delete;
 
   /**
    * Move operator.

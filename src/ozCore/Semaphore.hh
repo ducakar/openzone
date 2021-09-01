@@ -72,14 +72,24 @@ public:
   ~Semaphore();
 
   /**
-   * No copying or moving.
+   * No copying.
    */
   Semaphore(const Semaphore&) = delete;
 
   /**
-   * No copying or moving.
+   * No moving.
+   */
+  Semaphore(Semaphore&&) noexcept = delete;
+
+  /**
+   * No copying.
    */
   Semaphore& operator=(const Semaphore&) = delete;
+
+  /**
+   * No moving.
+   */
+  Semaphore& operator=(Semaphore&&) noexcept = delete;
 
   /**
    * Get current counter value.

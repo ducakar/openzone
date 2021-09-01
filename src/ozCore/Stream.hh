@@ -96,9 +96,19 @@ public:
   ~Stream();
 
   /**
+   * No copying.
+   */
+  Stream(const Stream&) = delete;
+
+  /**
    * Move construction, moves internal buffer.
    */
   Stream(Stream&& other) noexcept;
+
+  /**
+   * No copying.
+   */
+  Stream& operator=(const Stream&) = delete;
 
   /**
    * Move operator, moves internal buffer.

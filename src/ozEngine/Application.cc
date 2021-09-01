@@ -267,7 +267,7 @@ void Application::run(Stage* initialStage)
       continue;
     }
 
-    tickTime       = 1_s * int64(nTicksInSecond + 1) / int64(fps) -
+    tickTime       = 1_s * (int64(nTicksInSecond) + 1) / int64(fps) -
                      1_s * int64(nTicksInSecond) / int64(fps);
     nTicksInSecond = (nTicksInSecond + 1) % fps;
 

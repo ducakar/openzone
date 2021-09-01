@@ -61,26 +61,6 @@ public:
   static const char* systemLanguage(const char* fallback = "C");
 
   /**
-   * Default constructor, creates an empty instance.
-   */
-  Gettext();
-
-  /**
-   * Destructor.
-   */
-  ~Gettext();
-
-  /**
-   * Move constructor.
-   */
-  Gettext(Gettext&&) noexcept;
-
-  /**
-   * Move operator.
-   */
-  Gettext& operator=(Gettext&&) noexcept;
-
-  /**
    * Number of messages it contains.
    */
   OZ_ALWAYS_INLINE

@@ -92,9 +92,19 @@ public:
     ~Decoder();
 
     /**
+     * No copying.
+     */
+    Decoder(const Decoder&) = delete;
+
+    /**
      * Move constructor.
      */
     Decoder(Decoder&& other) noexcept;
+
+    /**
+     * No copying.
+     */
+    Decoder& operator=(const Decoder&) = delete;
 
     /**
      * Move operator.

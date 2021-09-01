@@ -56,14 +56,6 @@ const char* Gettext::systemLanguage(const char* fallback)
   return fallback;
 }
 
-Gettext::Gettext() = default;
-
-Gettext::~Gettext() = default;
-
-Gettext::Gettext(Gettext&&) noexcept = default;
-
-Gettext& Gettext::operator=(Gettext&&) noexcept = default;
-
 bool Gettext::contains(const char* message) const
 {
   if (messages_.isEmpty() || String::isEmpty(message)) {
