@@ -161,15 +161,27 @@ public:
 
 };
 
+/**
+ * Current instant, using steady clock.
+ */
 template <>
 Instant<STEADY> Instant<STEADY>::now();
 
+/**
+ * Current instant, using wall clock.
+ */
 template <>
 Instant<WALL> Instant<WALL>::now();
 
+/**
+ * Derivation guide for `Instant`.
+ */
 template <Clock CLOCK>
 Instant(const Instant<CLOCK>&) -> Instant<CLOCK>;
 
+/**
+ * Derivation guide for `Instant`.
+ */
 template <Clock CLOCK>
 Instant(Instant<CLOCK>&&) -> Instant<CLOCK>;
 

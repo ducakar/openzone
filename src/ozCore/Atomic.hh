@@ -246,6 +246,9 @@ public:
 
 };
 
+/**
+ * Derivation guid for `Atomic`.
+ */
 template <typename Type>
 Atomic(Type) -> Atomic<Type>;
 

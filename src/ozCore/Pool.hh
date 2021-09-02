@@ -226,6 +226,11 @@ public:
     : PoolAlloc(sizeof(Elem), blockSlots)
   {}
 
+  /**
+   * Free internal storage.
+   *
+   * All elements MUST be deallocated before calling this function to avoid use-after-free bugs.
+   */
   void free()
   {
     PoolAlloc::free();

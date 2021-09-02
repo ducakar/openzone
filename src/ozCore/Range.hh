@@ -44,6 +44,9 @@ class Range
 {
 public:
 
+  /**
+   * Element type.
+   */
   using Elem = typename BeginIterator::Elem;
 
   /**
@@ -153,6 +156,9 @@ class Range<ElemType*, ElemType*>
 {
 public:
 
+  /**
+   * Element type.
+   */
   using Elem = ElemType;
 
   /**

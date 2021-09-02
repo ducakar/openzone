@@ -42,24 +42,45 @@ namespace detail
   template <typename Scalar>
   struct DurationCommonType
   {
+    /**
+     * Internal type for integers is int64.
+     */
     using Type = int64;
   };
 
+  /**
+   * Specialisation for floating-point values.
+   */
   template <>
   struct DurationCommonType<float>
   {
+    /**
+     * Internal type for floating-point values is long double.
+     */
     using Type = long double;
   };
 
+  /**
+   * Specialisation for floating-point values.
+   */
   template <>
   struct DurationCommonType<double>
   {
+    /**
+     * Internal type for floating-point values is long double.
+     */
     using Type = long double;
   };
 
+  /**
+   * Specialisation for floating-point values.
+   */
   template <>
   struct DurationCommonType<long double>
   {
+    /**
+     * Internal type for floating-point values is long double.
+     */
     using Type = long double;
   };
 

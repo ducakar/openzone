@@ -117,6 +117,9 @@ public:
     create(name, main, data);
   }
 
+  /**
+   * Alternate constructor to run an arbitrary parameter-less function (can be lambda).
+   */
   template <typename Callable>
   explicit Thread(const char* name, Callable callable)
   {

@@ -100,7 +100,14 @@ public:
 
 private:
 
+  /**
+   * Internal representation of a JSON array.
+   */
   using Array = List<Json>;
+
+  /**
+   * Internal representation of a JSON object.
+   */
   using Object = Map<String, Json>;
 
   class Parser;

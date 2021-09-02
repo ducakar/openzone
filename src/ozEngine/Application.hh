@@ -27,14 +27,25 @@
 namespace oz
 {
 
+/**
+ * Application class.
+ */
 class Application
 {
 public:
 
+  /**
+   * Application stage.
+   *
+   * E.g. main menu, game, editor ...
+   */
   class Stage
   {
   public:
 
+    /**
+     * Trivial default constructor.
+     */
     Stage() = default;
 
     /**
@@ -50,7 +61,7 @@ public:
     /**
      * No moving.
      */
-    Stage(Stage&&) noexcept = default;
+    Stage(Stage&&) noexcept = delete;
 
     /**
      * No copying.
@@ -60,7 +71,7 @@ public:
     /**
      * No moving.
      */
-    Stage& operator=(Stage&&) noexcept = default;
+    Stage& operator=(Stage&&) noexcept = delete;
 
     /**
      * Load stage, called after the previous stage was unloaded.
@@ -91,45 +102,57 @@ public:
     virtual void present(bool isEnoughTime);
   };
 
+  /**
+   * Application configuration.
+   */
   struct Config
   {
+    /**
+     * Window configuration.
+     */
     struct WindowConfig
     {
-      const char*  title  = "Untitled";
-      int          width  = 1280;
-      int          height = 720;
-      Window::Mode mode   = Window::WINDOWED;
+      const char*  title  = "Untitled";       ///< Title.
+      int          width  = 1280;             ///< Width.
+      int          height = 720;              ///< Height.
+      Window::Mode mode   = Window::WINDOWED; ///< Window/fullscreen mode.
     };
 
+    /**
+     * Application update timing configuration.
+     */
     struct TimingConfig
     {
-      int  fps      = 60;
-      bool isFixed  = true;
+      int fps = 60;   ///< Number of updates per second.
     };
 
-    const char*  name       = "untitled";
-    bool         loadConfig = false;
-    bool         saveConfig = false;
-    WindowConfig window;
-    TimingConfig timing;
+    const char*  name       = "untitled"; ///< Filesystem name.
+    bool         loadConfig = false;      ///< Load configuration on startup.
+    bool         saveConfig = false;      ///< Save configuration on shutdown.
+    WindowConfig window;                  ///< Window configuration.
+    TimingConfig timing;                  ///< Timing configuration.
   };
 
 public:
 
-  static const File& CONFIG_DIR;
-  static const File& DATA_DIR;
+  static const File& CONFIG_DIR; ///< Application configuration directory.
+  static const File& DATA_DIR;   ///< Application data/state directory.
 
 public:
 
-  static Config defaults;
-  static Json   config;
+  static Config defaults; ///< Default configuration.
+  static Json   config;   ///< Configuration.
 
 public:
 
-  Application() = delete;
-
+  /**
+   * Switch to another game stage.
+   */
   static void setStage(Stage* stage);
 
+  /**
+   * Run application.
+   */
   static void run(Stage* initialStage);
 
 };
