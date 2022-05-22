@@ -97,9 +97,6 @@ void Font::upload(const char* s, int* width, int* height) const
     OZ_ERROR("oz::Font: %s", TTF_GetError());
   }
 
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_RGBA,
-               GL_UNSIGNED_BYTE, surface->pixels);
-
   if (width != nullptr) {
     *width = surface->w;
   }
@@ -107,6 +104,10 @@ void Font::upload(const char* s, int* width, int* height) const
     *height = surface->h;
   }
 
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, surface->pitch / 4);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+               surface->pixels);
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
   SDL_FreeSurface(surface);
 }
 
