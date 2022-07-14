@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "IteratorBase.hh"
 #include "Range.hh"
 #include "System.hh"
 

@@ -98,7 +98,7 @@ public:
      */
     struct Mouse
     {
-      Vec4  sensitivity; ///< Sensitivity for (X, Y, horizontal wheen, vertical wheel).
+      Vec4  sensitivity; ///< Sensitivity for (X, Y, horizontal when, vertical wheel).
       float smoothing;   ///< Input smoothing for movement and mouse wheel.
       bool  isRaw;       ///< Whether the input is raw i.e. not accelerated by the OS.
     };
@@ -118,7 +118,7 @@ public:
     float dx;             ///< X-move in pixels in the last update.
     float dy;             ///< Y-move in pixels in the last update.
     float dz;             ///< Horizontal wheel scroll in pixels in the last update.
-    float dw;             ///< Vertical whell scroll in pixels in the last update.
+    float dw;             ///< Vertical wheel scroll in pixels in the last update.
 
     bool  leftDown;       ///< Left button was down during the last update.
     bool  leftPressed;    ///< Left button pressed in the last update.
@@ -176,7 +176,7 @@ public:
   }
 
   /**
-   * Process an input-replated SDL event.
+   * Process an input-related SDL event.
    */
   static void processEvent(const SDL_Event* event);
 

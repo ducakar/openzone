@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "IteratorBase.hh"
 #include "Range.hh"
 #include "System.hh"
 #include "Pool.hh"
@@ -523,7 +524,7 @@ public:
   /**
    * Trim the bucket array size to 4/3 of the current number of elements.
    *
-   * In case the hastable contains no entries all its storage gets deallocated.
+   * In case the hashtable contains no entries all its storage gets deallocated.
    */
   void trim()
   {

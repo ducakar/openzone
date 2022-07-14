@@ -22,7 +22,6 @@
 
 #include "Bitset.hh"
 
-#include "Alloc.hh"
 #include "String.hh"
 
 namespace oz

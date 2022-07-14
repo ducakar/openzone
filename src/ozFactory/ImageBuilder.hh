@@ -130,14 +130,14 @@ public:
   static bool convertToDDS(const File& file, const File& destPath);
 
   /**
-   * Initialise underlaying FreeImage library.
+   * Initialise underlying FreeImage library.
    *
    * This function should be called before `ImageBuilder` class is used.
    */
   static void init();
 
   /**
-   * Deinitialise underlaying FreeImage library.
+   * Deinitialise underlying FreeImage library.
    *
    * This function should be called after you finish using `ImageBuilder`.
    */

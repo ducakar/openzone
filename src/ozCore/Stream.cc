@@ -22,8 +22,6 @@
 
 #include "Stream.hh"
 
-#include "Alloc.hh"
-
 #include <cstdlib>
 #include <cstring>
 #include <zlib.h>

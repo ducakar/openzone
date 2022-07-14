@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "Alloc.hh"
 #include "SList.hh"
 
 namespace oz

@@ -137,8 +137,8 @@ bool Input::loadConfig(const File& file)
     return false;
   }
 
-  Json keyboardJson = rootJson["keyboard"];
-  Json mouseJson    = rootJson["mouse"];
+  const Json& keyboardJson = rootJson["keyboard"];
+  const Json& mouseJson    = rootJson["mouse"];
 
   config.keyboard.sensitivity = keyboardJson["sensitivity"].get(config.keyboard.sensitivity);
   config.keyboard.leftKey     = keyboardJson["leftKey"].get(config.keyboard.leftKey);

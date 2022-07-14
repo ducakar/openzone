@@ -38,7 +38,7 @@ namespace oz
  */
 enum Clock
 {
-  STEADY, ///< Monotonic, without non-continuouties, does not include system stand-by time.
+  STEADY, ///< Monotonic, without non-continuities, does not include system stand-by time.
   WALL    ///< Wall-clock.
 };
 

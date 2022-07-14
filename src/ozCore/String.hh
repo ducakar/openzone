@@ -77,7 +77,7 @@ private:
   char* resize(int newSize, bool keepContents);
 
   /**
-   * Helpher function for assignment operators.
+   * Helper function for assignment operators.
    */
   void assign(const char* other, int length);
 

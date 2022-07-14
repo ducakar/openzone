@@ -22,7 +22,7 @@
 
 #include "System.hh"
 
-#include "SpinLock.hh"
+#include "Atomic.hh"
 #include "SharedLib.hh"
 #include "Log.hh"
 #include "Pepper.hh"

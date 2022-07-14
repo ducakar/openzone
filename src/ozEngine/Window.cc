@@ -23,7 +23,6 @@
 #include "Window.hh"
 
 #include "GL.hh"
-#include "Input.hh"
 
 #include <AL/alc.h>
 #include <cstdio>

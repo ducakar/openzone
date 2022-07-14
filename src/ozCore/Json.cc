@@ -100,10 +100,10 @@ private:
   char skipBlanks()
   {
     List<char> commentBuffer;
+    char       ch1 = 0;
+    char       ch2 = 0;
 
     do {
-      char ch1, ch2;
-
       do {
         ch2 = readChar();
       }
@@ -156,7 +156,7 @@ private:
   String parseString()
   {
     List<char> chars;
-    char       ch;
+    char       ch = 0;
 
     do {
       ch = readChar();
@@ -317,7 +317,7 @@ private:
         }
         chars.add('\0');
 
-        const char* end;
+        const char* end = nullptr;
         double number = String::parseDouble(chars.begin(), &end);
 
         if (end == chars.begin()) {

@@ -23,7 +23,6 @@
 #include "File.hh"
 
 #include "Map.hh"
-#include "Pepper.hh"
 
 #include <cstdio>
 #include <cstdlib>

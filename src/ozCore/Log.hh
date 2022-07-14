@@ -60,7 +60,7 @@ public:
    * @code
    * Log() << "Hello, " << "world!";
    * @endcode
-   * This constructor adds indent to the begining if each line printed with such syntax.
+   * This constructor adds an indent at the beginning of each line printed with such syntax.
    */
   Log();
 

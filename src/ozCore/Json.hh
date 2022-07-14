@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Map.hh"
+#include "Mat4.hh"
 #include "File.hh"
 #include "EnumMap.hh"
 

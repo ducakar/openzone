@@ -234,7 +234,7 @@ public:
       OZ_ERROR("oz::AL::Decoder: Failed to open Opus file `%s'", file.c());
     }
 
-    int error;
+    int error = 0;
     opFile_ = op_open_memory(reinterpret_cast<const ubyte*>(is_.begin()), is_.available(), &error);
     if (error != 0) {
       OZ_ERROR("oz::AL::Decoder: Invalid Opus file `%s'", file.c());
@@ -268,7 +268,7 @@ public:
     decoder->size_ = 0;
 
     do {
-      int result;
+      int result = 0;
 
       if (decoder->format_ == AL_FORMAT_STEREO_FLOAT32) {
         result = op_read_float_stereo(opFile_, decoder->samples_ + decoder->size_,
@@ -352,10 +352,10 @@ public:
     decoder->size_ = 0;
 
     do {
-      float** samples;
-      int     section;
-      long    result = ov_read_float(&ovFile_, &samples,
-                                    (decoder->capacity_ - decoder->size_) >> stereo, &section);
+      float** samples = nullptr;
+      int     section = 0;
+      long    result  = ov_read_float(&ovFile_, &samples,
+                                      (decoder->capacity_ - decoder->size_) >> stereo, &section);
       if (result <= 0) {
         return decoder->size_ != 0;
       }

@@ -76,7 +76,7 @@ public:
 
   private:
 
-    lua_State* l_; ///< %Lua state.
+    lua_State* l_ = nullptr; ///< %Lua state.
 
   private:
 
@@ -122,7 +122,7 @@ public:
     template <typename Type>
     void read(int index, Type** value) const
     {
-      void* data;
+      void* data = nullptr;
       read(index, &data);
       *value = static_cast<Type*>(data);
     }
@@ -159,7 +159,7 @@ public:
      */
     bool toBool(int index = 1) const
     {
-      bool value;
+      bool value = false;
       read(index, &value);
       return value;
     }
@@ -169,7 +169,7 @@ public:
      */
     int toInt(int index = 1) const
     {
-      int value;
+      int value = 0;
       read(index, &value);
       return value;
     }
@@ -179,7 +179,7 @@ public:
      */
     float toFloat(int index = 1) const
     {
-      float value;
+      float value = 0.0f;
       read(index, &value);
       return value;
     }
@@ -199,7 +199,7 @@ public:
      */
     Function* toFunction(int index = 1) const
     {
-      Function* value;
+      Function* value = nullptr;
       read(index, &value);
       return value;
     }
@@ -210,7 +210,7 @@ public:
     template <typename Type>
     Type* toPointer(int index = 1) const
     {
-      Type* value;
+      Type* value = nullptr;
       read(index, &value);
       return value;
     }
@@ -332,7 +332,12 @@ public:
     /**
      * No moving.
      */
-    Field(Field&& other) noexcept;
+    Field(Field&& other) = delete;
+
+    /**
+     * Destruction, no-op.
+     */
+    ~Field() = default;
 
     /**
      * No copying.
@@ -342,7 +347,7 @@ public:
     /**
      * No moving.
      */
-    Field& operator=(Field&& other) noexcept;
+    Field& operator=(Field&& other) = delete;
 
     /**
      * Assign first value of a function's result.

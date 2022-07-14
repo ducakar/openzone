@@ -22,8 +22,6 @@
 
 #include "Monitor.hh"
 
-#include "System.hh"
-
 #include <pthread.h>
 
 namespace oz

@@ -22,7 +22,6 @@
 
 #include "Semaphore.hh"
 
-#include "System.hh"
 #include "Atomic.hh"
 
 #include <pthread.h>

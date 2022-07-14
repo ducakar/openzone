@@ -322,7 +322,7 @@ public:
   }
 
   /**
-   * True iff the number (positive or negative) infinity.
+   * True iff the number is (positive or negative) infinity.
    */
   OZ_ALWAYS_INLINE
   static bool isInf(float x)

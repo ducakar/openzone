@@ -29,7 +29,6 @@
 #pragma once
 
 #include "String.hh"
-#include "Mat4.hh"
 #include "Endian.hh"
 
 namespace oz

@@ -30,7 +30,7 @@
 
 #include "HashMap.hh"
 #include "String.hh"
-#include "Instant.hh"
+#include "Duration.hh"
 
 /**
  * Remember current time for a later `OZ_PROFILER_END()` macro with the same key.

@@ -29,7 +29,6 @@
 #pragma once
 
 #include "System.hh"
-#include "IteratorBase.hh"
 
 namespace oz
 {

@@ -157,8 +157,8 @@ public:
    * a cube map texture, it replaces a series of six `glTexImage2D(GL_TEXTURE_CUBE_MAP_*, ...)`
    * calls.
    *
-   * This functions also sets texture filters and wrapping mode. `GL_LINEAR`/`GL_LINEAR` fiters are
-   * used as default for textures without mipmps and `GL_LINEAR`/`GL_LINEAR_MIPMAP_LINEAR` for
+   * This functions also sets texture filters and wrapping mode. `GL_LINEAR`/`GL_LINEAR` filters are
+   * used as default for textures without mipmaps and `GL_LINEAR`/`GL_LINEAR_MIPMAP_LINEAR` for
    * mipmapped textures. `GL_CLAMP_TO_EDGE` wrapping mode is used for non-mipmapped textures and for
    * cube maps while `GL_REPEAT` is used otherwise.
    *

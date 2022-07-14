@@ -120,8 +120,8 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_UI_ALT][0]             = MOD_MASK    | SDL_SCANCODE_LALT;
   keyMap[KEY_UI_ALT][1]             = MOD_MASK    | SDL_SCANCODE_RALT;
   keyMap[KEY_UI_TOGGLE][0]          = MOD_MASK    | SDL_SCANCODE_TAB;
-  keyMap[KEY_DIR_1][0]              = MOD_MASK    | SDL_SCANCODE_KP_1;
 
+  keyMap[KEY_DIR_1][0]              = MOD_MASK    | SDL_SCANCODE_KP_1;
   keyMap[KEY_DIR_1][1]              = MOD_MASK    | SDL_SCANCODE_END;
   keyMap[KEY_DIR_2][0]              = MOD_MASK    | SDL_SCANCODE_KP_2;
   keyMap[KEY_DIR_2][1]              = MOD_MASK    | SDL_SCANCODE_DOWN;

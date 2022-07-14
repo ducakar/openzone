@@ -28,8 +28,6 @@
 
 #pragma once
 
-#include "common.hh"
-
 #if defined(__ANDROID__) || defined(DOXYGEN_IGNORE)
 
 #include <jni.h>

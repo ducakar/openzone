@@ -28,8 +28,6 @@
 
 #pragma once
 
-#include "common.hh"
-
 namespace oz
 {
 
@@ -171,7 +169,7 @@ public:
    * replace it with `desired` using `SUCCESS_MEMORY_ORDER`. On failure, load the current value into
    * `expected` using `FAILURE_MEMORY_ORDER`.
    * Unless `STRONG` is true the comparison may spuriously fail even when values are equal but may
-   * yield better berformace.
+   * yield better performance.
    *
    * Same as `std::atomic_compare_exchange_weak()` or `std::atomic_compare_exchange_strong()`.
    * All memory orders are allowed for `SUCCESS_MEMORY_ORDER`, while `FAILURE_MEMORY_ORDER` must be
@@ -190,7 +188,7 @@ public:
   }
 
   /**
-   * Atomically perfrom bitwise AND and return the previous value.
+   * Atomically perform bitwise AND and return the previous value.
    *
    * Same as `std::atomic::fetch_and()`.
    */
@@ -201,7 +199,7 @@ public:
   }
 
   /**
-   * Atomically perfrom bitwise OR and return the previous value.
+   * Atomically perform bitwise OR and return the previous value.
    *
    * Same as `std::atomic::fetch_or()`.
    */
@@ -212,7 +210,7 @@ public:
   }
 
   /**
-   * Atomically perfrom bitwise XOR and return the previous value.
+   * Atomically perform bitwise XOR and return the previous value.
    *
    * Same as `std::atomic::fetch_xor()`.
    */

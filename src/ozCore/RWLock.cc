@@ -22,8 +22,6 @@
 
 #include "RWLock.hh"
 
-#include "System.hh"
-
 #include <pthread.h>
 
 namespace oz

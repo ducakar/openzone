@@ -120,7 +120,7 @@ public:
    * @param flags is a bitwise OR of the following bits:
    * - `HANDLER_BIT`: Catch fatal signals (SIGQUIT, SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon
    *   which print diagnostics and abort the program (similar to `System::error()` function).
-   * - `HALT_BIT`: If runing from a terminal, previous handlers wait for user to press Enter before
+   * - `HALT_BIT`: If running from a terminal, previous handlers wait for user to press Enter before
    *   terminating the process via `System::abort()`, so one have time to attach a debugger.
    *
    * @param handler user-provided function called when the application is aborted by a signal

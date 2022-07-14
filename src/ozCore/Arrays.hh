@@ -29,7 +29,6 @@
 #pragma once
 
 #include "Range.hh"
-#include "System.hh"
 
 namespace oz
 {
