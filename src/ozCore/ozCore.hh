@@ -58,7 +58,6 @@
 /*
  * Memory management.
  */
-#include "Alloc.hh"
 #include "Pool.hh"
 
 /*

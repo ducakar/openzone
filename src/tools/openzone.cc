@@ -80,16 +80,6 @@ int main(int argc, char** argv)
 
   client::client.shutdown();
 
-  if (Alloc::count != 0) {
-    Log::verboseMode = true;
-    bool isOutput = Log::printMemoryLeaks();
-    Log::verboseMode = false;
-
-    if (isOutput) {
-      Log::println("There are some memory leaks. See '%s' for details.", Log::file().c());
-    }
-  }
-
   return exitCode;
 }
 

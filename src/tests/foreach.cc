@@ -177,7 +177,5 @@ int main()
   hi.trim();
   hs.clear();
   hs.trim();
-
-  Log::printMemoryLeaks();
   return 0;
 }

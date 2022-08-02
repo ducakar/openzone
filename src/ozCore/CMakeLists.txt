@@ -4,8 +4,6 @@ configure_file(ozCore.pc.in ozCore.pc @ONLY)
 add_library(ozCore
   ${CMAKE_CURRENT_BINARY_DIR}/config.hh
 #BEGIN SOURCES
-  Alloc.cc
-  Alloc.hh
   Arrays.hh
   Atomic.hh
   Barrier.cc

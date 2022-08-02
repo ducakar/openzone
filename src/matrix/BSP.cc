@@ -27,11 +27,11 @@ namespace oz
 
 BSP::~BSP()
 {
-  delete[] data;
+  operator delete[](data, (std::align_val_t(16)));
 }
 
 BSP::BSP(const char* name_, int id_)
-  : data(nullptr), name(name_), id(id_)
+  : name(name_), id(id_)
 {
   File   file   = String::format("@bsp/%s.ozBSP", name.c());
   Stream is     = Stream(0, Endian::LITTLE);
@@ -64,28 +64,26 @@ BSP::BSP(const char* name_, int id_)
   nEntities     = is.readInt();
   nBoundObjects = is.readInt();
 
-  size_t size = Alloc::alignUp(1);
+  size_t size = Math::alignUp(1);
 
-  size += Alloc::alignUp(nPlanes       * sizeof(planes[0]));
-  size += Alloc::alignUp(nNodes        * sizeof(nodes[0]));
-  size += Alloc::alignUp(nLeaves       * sizeof(leaves[0]));
-  size += Alloc::alignUp(nLeafBrushes  * sizeof(leafBrushes[0]));
-  size += Alloc::alignUp(nBrushes      * sizeof(brushes[0]));
-  size += Alloc::alignUp(nBrushSides   * sizeof(brushSides[0]));
-  size += Alloc::alignUp(nEntities     * sizeof(entities[0]));
-  size += Alloc::alignUp(nBoundObjects * sizeof(boundObjects[0]));
+  size += Math::alignUp(nPlanes       * sizeof(planes[0]));
+  size += Math::alignUp(nNodes        * sizeof(nodes[0]));
+  size += Math::alignUp(nLeaves       * sizeof(leaves[0]));
+  size += Math::alignUp(nLeafBrushes  * sizeof(leafBrushes[0]));
+  size += Math::alignUp(nBrushes      * sizeof(brushes[0]));
+  size += Math::alignUp(nBrushSides   * sizeof(brushSides[0]));
+  size += Math::alignUp(nEntities     * sizeof(entities[0]));
+  size += Math::alignUp(nBoundObjects * sizeof(boundObjects[0]));
 
-  OZ_ASSERT(data == nullptr);
+  data = new(std::align_val_t(16)) char[size];
 
-  data = new char[size];
-
-  char* p = Alloc::alignUp(data);
+  char* p = data;
 
   planes = new(p) Plane[nPlanes];
   for (int i = 0; i < nPlanes; ++i) {
     planes[i] = is.read<Plane>();
   }
-  p = Alloc::alignUp(p + nPlanes * sizeof(planes[0]));
+  p = Math::alignUp(p + nPlanes * sizeof(planes[0]));
 
   nodes = new(p) Node[nNodes];
   for (int i = 0; i < nNodes; ++i) {
@@ -93,20 +91,20 @@ BSP::BSP(const char* name_, int id_)
     nodes[i].front = is.readInt();
     nodes[i].back  = is.readInt();
   }
-  p = Alloc::alignUp(p + nNodes * sizeof(nodes[0]));
+  p = Math::alignUp(p + nNodes * sizeof(nodes[0]));
 
   leaves = new(p) Leaf[nLeaves];
   for (int i = 0; i < nLeaves; ++i) {
     leaves[i].firstBrush = is.readInt();
     leaves[i].nBrushes   = is.readInt();
   }
-  p = Alloc::alignUp(p + nLeaves * sizeof(leaves[0]));
+  p = Math::alignUp(p + nLeaves * sizeof(leaves[0]));
 
   leafBrushes = new(p) int[nLeafBrushes];
   for (int i = 0; i < nLeafBrushes; ++i) {
     leafBrushes[i] = is.readInt();
   }
-  p = Alloc::alignUp(p + nLeafBrushes * sizeof(leafBrushes[0]));
+  p = Math::alignUp(p + nLeafBrushes * sizeof(leafBrushes[0]));
 
   brushes = new(p) Brush[nBrushes];
   for (int i = 0; i < nBrushes; ++i) {
@@ -120,13 +118,13 @@ BSP::BSP(const char* name_, int id_)
       brushes[i].flags |= liquid;
     }
   }
-  p = Alloc::alignUp(p + nBrushes * sizeof(brushes[0]));
+  p = Math::alignUp(p + nBrushes * sizeof(brushes[0]));
 
   brushSides = new(p) int[nBrushSides];
   for (int i = 0; i < nBrushSides; ++i) {
     brushSides[i] = is.readInt();
   }
-  p = Alloc::alignUp(p + nBrushSides * sizeof(brushSides[0]));
+  p = Math::alignUp(p + nBrushSides * sizeof(brushSides[0]));
 
   entities = new(p) EntityClass[nEntities];
   for (int i = 0; i < nEntities; ++i) {
@@ -161,7 +159,7 @@ BSP::BSP(const char* name_, int id_)
     entities[i].model        = liber.modelIndex(is.readString());
     entities[i].modelTransf  = is.read<Mat4>();
   }
-  p = Alloc::alignUp(p + nEntities * sizeof(entities[0]));
+  p = Math::alignUp(p + nEntities * sizeof(entities[0]));
 
   boundObjects = new(p) BoundObject[nBoundObjects];
   for (int i = 0; i < nBoundObjects; ++i) {

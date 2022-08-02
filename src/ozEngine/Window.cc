@@ -86,7 +86,7 @@ static void* screenshotMain(void* data)
     return nullptr;
   }
 
-  int         stride  = Alloc::alignUp<int>(info->width * 3, 4);
+  int         stride  = Math::alignUp<int>(info->width * 3, 4);
   png_struct* png     = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
   png_info*   pngInfo = png_create_info_struct(png);
 
@@ -197,7 +197,7 @@ void Window::screenshot(const char* basePath)
     screenshotThread.join();
   }
 
-  int    stride = Alloc::alignUp<int>(windowWidth * 3, 4);
+  int    stride = Math::alignUp<int>(windowWidth * 3, 4);
   ubyte* pixels = new ubyte[windowHeight * stride];
 
   ScreenshotInfo* info = new ScreenshotInfo{basePath, windowWidth, windowHeight, pixels};

@@ -834,8 +834,6 @@ int Builder::main(int argc, char** argv)
   Log::printProfilerStatistics();
   Profiler::clear();
 
-  Log::printMemorySummary();
-
   return EXIT_SUCCESS;
 }
 

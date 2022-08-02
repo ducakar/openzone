@@ -4,7 +4,6 @@ endif()
 
 add_executable(unittest
 #BEGIN SOURCES
-  Alloc.cc
   Arrays.cc
   common.cc
   iterables.cc

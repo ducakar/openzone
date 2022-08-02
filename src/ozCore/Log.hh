@@ -166,27 +166,6 @@ public:
   static void printTrace(const StackTrace& st);
 
   /**
-   * Print summary about memory usage (`Alloc`'s -`count` and -`size` fields).
-   *
-   * If new/delete operators haven't been overloaded or no memory allocation have been made nothing
-   * is printed.
-   *
-   * @return true iff there has been anything printed.
-   *
-   * @sa `oz::Alloc`
-   */
-  static bool printMemorySummary();
-
-  /**
-   * Print memory chunks allocated via `new` and `new[]` operators, tracked by `Alloc` class.
-   *
-   * @return true iff there have been any memory chunks printed.
-   *
-   * @sa `oz::Alloc`
-   */
-  static bool printMemoryLeaks();
-
-  /**
    * Print `Profiler` statistics.
    *
    * If there's no statistics accumulated by profiler, nothing is printed.

@@ -734,8 +734,6 @@ void Client::shutdown()
   Log::printProfilerStatistics();
   Profiler::clear();
 
-  Log::printMemorySummary();
-
   if (initFlags) {
     Log::println("OpenZone " OZ_VERSION " finished on %s", Time::local().toString().c());
   }

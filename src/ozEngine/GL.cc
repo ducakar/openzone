@@ -270,7 +270,7 @@ int GL::textureDataFromStream(Stream* is, int bias)
           }
         }
         else {
-          int mipmapPitch = Alloc::alignUp<int>(mipmapWidth * pixelSize, 4);
+          int mipmapPitch = Math::alignUp<int>(mipmapWidth * pixelSize, 4);
           int mipmapSize  = mipmapHeight * mipmapPitch;
 
           if (j < bias) {
@@ -342,7 +342,7 @@ void GL::textureDataIdenticon(uint hash, int size, const Vec4& backgroundColour)
 
   int fieldSize = size / 6;
   int fieldHalf = fieldSize / 2;
-  int stride    = Alloc::alignUp<int>(size * 3, 4);
+  int stride    = Math::alignUp<int>(size * 3, 4);
 
   List<char> data(size * stride);
 

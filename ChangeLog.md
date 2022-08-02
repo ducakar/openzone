@@ -28,7 +28,7 @@
     + new `HashSet` template class: hash table of arbitrary elements instead of key-value pairs
     + new `Heap` template class implementing binary min-heap
     + more inheritance between classes and far less code duplication (e.g. `List` -> `Set` -> `Map`)
-  * `Alloc`: new/delete statistics only tracked in diagnostics mode (`OZ_ALLOCATOR`)
+  * remove `Alloc` class
   * new `PoolAlloc` class, non-template version of `Pool` which now extends `PoolAlloc`
   * `String`
     + buffer and baseBuffer in union, `String` class size 48 -> 32 bytes

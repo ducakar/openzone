@@ -168,7 +168,7 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
   int targetWidth    = max<int>(Math::lround(float(width) * ImageBuilder::scale), 1);
   int targetHeight   = max<int>(Math::lround(float(height) * ImageBuilder::scale), 1);
   int targetBPP      = hasAlpha || compress || isArray ? 32 : 24;
-  int pitchOrLinSize = Alloc::alignUp<int>(targetWidth * targetBPP / 8 , 4);
+  int pitchOrLinSize = Math::alignUp<int>(targetWidth * targetBPP / 8 , 4);
   int nMipmaps       = doMipmaps ? Math::index1(max<int>(targetWidth, targetHeight)) + 1 : 1;
 
   int flags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;

@@ -22,7 +22,6 @@
 
 #include "Log.hh"
 
-#include "Alloc.hh"
 #include "Profiler.hh"
 
 #include <cstdio>
@@ -178,31 +177,6 @@ void Log::println()
   )
 }
 
-bool Log::printMemorySummary()
-{
-  if (Alloc::count == 0) {
-    return false;
-  }
-
-  println("Alloc summary {");
-  indent();
-
-  println("current chunks    %7d", Alloc::count);
-  println("current amount    %7.2f MiB (%llu B)",
-          double(Alloc::amount) / (1024.0 * 1024.0), Alloc::amount);
-  println("maximum chunks    %7d", Alloc::maxCount);
-  println("maximum amount    %7.2f MiB (%llu B)",
-          double(Alloc::maxAmount) / (1024.0 * 1024.0), Alloc::maxAmount);
-  println("cumulative chunks %7d", Alloc::sumCount);
-  println("cumulative amount %7.2f MiB (%llu B)",
-          double(Alloc::sumAmount) / (1024.0 * 1024.0), Alloc::sumAmount);
-
-  unindent();
-  println("}");
-
-  return true;
-}
-
 void Log::printTrace(const StackTrace& st)
 {
   printEnd("  on %s", String::isEmpty(st.thread) ? "?" : st.thread);
@@ -226,33 +200,6 @@ void Log::printTrace(const StackTrace& st)
   }
 
 #endif
-}
-
-bool Log::printMemoryLeaks()
-{
-  bool hasOutput = false;
-
-  for (const auto& ci : Alloc::objectCRange()) {
-    println("Leaked object at %p of size %llu B allocated",
-            static_cast<const void*>(&ci), uint64(ci.size));
-    indent();
-    printTrace(ci.stackTrace);
-    unindent();
-
-    hasOutput = true;
-  }
-
-  for (const auto& ci : Alloc::arrayCRange()) {
-    println("Leaked array at %p of size %llu B allocated",
-            static_cast<const void*>(&ci), uint64(ci.size));
-    indent();
-    printTrace(ci.stackTrace);
-    unindent();
-
-    hasOutput = true;
-  }
-
-  return hasOutput;
 }
 
 void Log::printProfilerStatistics()

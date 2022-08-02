@@ -184,6 +184,5 @@ int main()
   }
 
   Log() << (Instant<STEADY>::now() - t0).ms() << " ms";
-  Log::printMemoryLeaks();
   return 0;
 }

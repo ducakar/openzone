@@ -8,7 +8,6 @@ project(openzone)
 
 set(OZ_VERSION 0.3.95)
 
-option(OZ_ALLOCATOR "Overload new/delete with diagnostics and allocations tracking." OFF)
 option(OZ_SIMD "Use SIMD implementation of linear algebra classes." OFF)
 option(OZ_GL_ES "Use OpenGL ES 2.0 instead of OpenGL 2.1." OFF)
 option(OZ_LUAJIT "Use use LuaJIT instead of official Lua." OFF)
@@ -180,7 +179,8 @@ endif()
 # Static analyser.
 #add_compile_options(-Qunused-arguments --analyze)
 # Address sanitizer.
-#add_compile_options(-fsanitize=address)
+add_compile_options(-fsanitize=address,leak)
+add_link_options(-fsanitize=address,leak)
 # Thread sanitizer.
 #add_compile_options(-fsanitize=thread -fpie -fPIC)
 # Undefined behaviour sanitizer.

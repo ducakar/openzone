@@ -161,7 +161,7 @@ public:
 
     float* begin      = decoder->samples_;
     float* end        = decoder->samples_ + decoder->capacity_;
-    float* alignedEnd = begin + Alloc::alignDown<ptrdiff_t>(end - begin, 4);
+    float* alignedEnd = begin + Math::alignDown<ptrdiff_t>(end - begin, 4);
 
     if (sampleSize_ == 1) {
       const ubyte* samples = reinterpret_cast<const ubyte*>(is_.pos());

@@ -496,6 +496,26 @@ public:
   }
 
   /**
+   * Align to the previous boundary.
+   */
+  template <typename Type>
+  OZ_ALWAYS_INLINE
+  static constexpr Type alignDown(Type size, size_t alignment = OZ_ALIGNMENT)
+  {
+    return Type(size_t(size) & ~(alignment - 1));
+  }
+
+  /**
+   * Align to the next boundary.
+   */
+  template <typename Type>
+  OZ_ALWAYS_INLINE
+  static constexpr Type alignUp(Type size, size_t alignment = OZ_ALIGNMENT)
+  {
+    return Type((size_t(size) + alignment - 1) & ~(alignment - 1));
+  }
+
+  /**
    * %Set seed for random generator.
    */
   static void seed(int n);

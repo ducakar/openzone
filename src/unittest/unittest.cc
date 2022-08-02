@@ -48,10 +48,6 @@ int main()
   test_iterables();
   test_Arrays();
 
-#ifdef OZ_ALLOCATOR
-  test_Alloc();
-#endif
-
   Log() << (hasPassed ? "Unittest PASSED" : "Unittest FAILED");
   return EXIT_SUCCESS;
 }
