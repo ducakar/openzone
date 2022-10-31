@@ -70,8 +70,7 @@ protected:
   /**
    * Ensure a given capacity.
    *
-   * The capacity is increased if necessary with growth factor 1.5 or to (at least) 8 slots as the
-   * initial allocation.
+   * The capacity is increased if necessary with growth factor 1.75.
    */
   void ensureCapacity(int requestedCapacity)
   {
@@ -79,7 +78,7 @@ protected:
       OZ_ERROR("oz::List: Negative capacity (overflow?)");
     }
     else if (capacity_ < requestedCapacity) {
-      capacity_ = max<int>(requestedCapacity, capacity_ + capacity_ / 2);
+      capacity_ = max<int>(requestedCapacity, capacity_ + capacity_ / 2 + capacity_ / 4);
       data_     = Arrays::resize<Elem>(data_, size_, capacity_);
     }
   }

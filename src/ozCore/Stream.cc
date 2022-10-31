@@ -159,7 +159,7 @@ char* Stream::writeSkip(int count)
       size_t newOffset = pos_ - begin_;
       size_t capacity  = end_ - begin_;
 
-      capacity = capacity == 0 ? 4096 : capacity + capacity / 2;
+      capacity = capacity == 0 ? 4096 : capacity + capacity / 2 + capacity / 4;
       capacity = max<size_t>(capacity, newOffset);
 
       char* newData = static_cast<char*>(realloc(begin_, capacity));
