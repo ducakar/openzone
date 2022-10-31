@@ -43,7 +43,14 @@ class Gettext
 {
 private:
 
-  struct Message;
+  struct Message
+  {
+    int      original;
+    int      translation;
+    Message* next;
+  };
+
+private:
 
   List<Message*> buckets_;  ///< Message hashtable.
   List<Message>  messages_; ///< Messages.

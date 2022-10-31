@@ -37,13 +37,6 @@ static inline uint bucketIndex(const char* message, int size)
   return Hash<const char*>()(message) % uint(size);
 }
 
-struct Gettext::Message
-{
-  int      original;
-  int      translation;
-  Message* next;
-};
-
 const char* Gettext::systemLanguage(const char* fallback)
 {
   for (const char* envVar : ENV_VARS) {

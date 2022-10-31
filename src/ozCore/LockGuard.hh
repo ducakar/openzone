@@ -87,7 +87,7 @@ public:
 };
 
 /**
- * Derivation guide for `LockGuard`.
+ * Template deduction guide for `LockGuard`.
  */
 template <class Lock>
 LockGuard(Lock*) -> LockGuard<Lock>;
