@@ -133,7 +133,7 @@ static void catchSignals()
 // Buffer should contain space for (nSamples * 2) 16-bit samples.
 static void generateBellSamples(int16* buffer, int nSamples, int rate, int fromSample, int toSample)
 {
-  float length = float(nSamples);
+  float length   = float(nSamples);
   float quotient = BELL_FREQUENCY / float(rate) * Math::TAU;
 
   for (; fromSample < toSample; ++fromSample) {
@@ -158,7 +158,7 @@ static void* bellMain(void*)
 
   static_cast<void>(genBellSamples);
 
-  SLObjectItf engine;
+  SLObjectItf    engine;
   SLEngineOption engineOptions[] = {SL_ENGINEOPTION_THREADSAFE, true};
   slCreateEngine(&engine, 1, engineOptions, 0, nullptr, nullptr);
   (*engine)->Realize(engine, false);
@@ -190,8 +190,8 @@ static void* bellMain(void*)
   SLBufferQueueItf iBufferQueue;
   (*player)->GetInterface(player, SL_IID_BUFFERQUEUE, &iBufferQueue);
 
-  int    size     = BELL_SAMPLES * 2 * sizeof(int16);
-  int16* samples  = static_cast<int16*>(alloca(size));
+  int    size    = BELL_SAMPLES * 2 * sizeof(int16);
+  int16* samples = static_cast<int16*>(alloca(size));
 
   generateBellSamples(samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
   (*iBufferQueue)->Enqueue(iBufferQueue, samples, size);
@@ -360,7 +360,8 @@ enum PulseStatus
   INITIALISATION_FAILED
 };
 
-static PulseStatus pulseStatus = NOT_INITIALISED;
+static PulseStatus pulseStatus                = NOT_INITIALISED;
+static int16       bellData[BELL_SAMPLES * 2] = {};
 
 static OZ_DL_DEFINE(pa_simple_new)
 static OZ_DL_DEFINE(pa_simple_free)
@@ -372,6 +373,8 @@ static void initialisePulse()
   SharedLib libPulseSimple("libpulse-simple.so.0");
 
   if (libPulseSimple.isOpened()) {
+    generateBellSamples(bellData, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
+
     OZ_DL_LOAD(libPulseSimple, pa_simple_new)
     OZ_DL_LOAD(libPulseSimple, pa_simple_free)
     OZ_DL_LOAD(libPulseSimple, pa_simple_write)
@@ -395,19 +398,12 @@ static void* bellMain(void*)
   if (pulseStatus == INITIALISED) {
     pa_sample_spec sampleSpec = {PA_SAMPLE_S16NE, BELL_RATE, 2};
     pa_simple*     pa         = pa_simple_new(nullptr, "liboz", PA_STREAM_PLAYBACK, nullptr, "bell",
-                                              &sampleSpec, nullptr,  nullptr, nullptr);
+                                              &sampleSpec, nullptr, nullptr, nullptr);
 
     if (pa != nullptr) {
-      size_t samplesSize = BELL_SAMPLES * 2 * sizeof(int16);
-      int16* samples     = static_cast<int16*>(malloc(samplesSize));
-
-      generateBellSamples(samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
-
-      pa_simple_write(pa, samples, samplesSize, nullptr);
+      pa_simple_write(pa, bellData, sizeof(bellData), nullptr);
       pa_simple_drain(pa, nullptr);
       pa_simple_free(pa);
-
-      free(samples);
     }
   }
 
@@ -471,11 +467,9 @@ void System::trap()
 
 void System::bell()
 {
-  if (!hasBellThread.load<ACQUIRE>() &&
-      pthread_mutex_trylock(&bellMutex) == 0)
-  {
+  if (!hasBellThread.load<ACQUIRE>() && pthread_mutex_trylock(&bellMutex) == 0) {
     if (!hasBellThread.load<RELAXED>()) {
-      pthread_t      bellThread;
+      pthread_t      bellThread = {};
       pthread_attr_t bellThreadAttr;
 
       pthread_attr_setdetachstate(&bellThreadAttr, PTHREAD_CREATE_DETACHED);

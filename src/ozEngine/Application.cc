@@ -72,6 +72,14 @@ const File&         Application::DATA_DIR   = dataDir;
 Application::Config Application::defaults;
 Json                Application::config;
 
+Application::Application(const char* argv0)
+{
+#ifdef __native_client__
+  Pepper::init();
+#endif
+  File::init(argv0);
+}
+
 void Application::setStage(Stage* stage)
 {
   nextStage = stage;
@@ -86,8 +94,6 @@ void Application::run(Stage* initialStage)
   nextStage = initialStage;
 
 #ifdef __native_client__
-  Pepper::init();
-
   const PPB_View* view = PSInterfaceView();
 
   PSEventSetFilter(PSE_INSTANCE_DIDCHANGEVIEW);
@@ -101,8 +107,6 @@ void Application::run(Stage* initialStage)
   NACL_SetScreenResolution(rect.size.width, rect.size.height, 0);
   SDL_SetMainReady();
 #endif
-
-  File::init();
 
   configDir = File::CONFIG + "/" + defaults.name;
   dataDir   = File::DATA + "/" + defaults.name;

@@ -66,7 +66,7 @@ void Mat3::rotateX(float theta)
   Vec3 j = y;
   Vec3 k = z;
 
-  float s, c;
+  float s = 0.0f, c = 0.0f;
   Math::sincos(theta, &s, &c);
 
   y = j * c + k * s;
@@ -78,7 +78,7 @@ void Mat3::rotateY(float theta)
   Vec3 i = x;
   Vec3 k = z;
 
-  float s, c;
+  float s = 0.0f, c = 0.0f;
   Math::sincos(theta, &s, &c);
 
   x = i * c - k * s;
@@ -90,7 +90,7 @@ void Mat3::rotateZ(float theta)
   Vec3 i = x;
   Vec3 j = y;
 
-  float s, c;
+  float s = 0.0f, c = 0.0f;
   Math::sincos(theta, &s, &c);
 
   x = i * c + j * s;
@@ -127,7 +127,7 @@ Mat3 Mat3::rotation(const Quat& q)
 
 Mat3 Mat3::rotationX(float theta)
 {
-  float s, c;
+  float s = 0.0f, c = 0.0f;
   Math::sincos(theta, &s, &c);
 
   return Mat3(1.0f, 0.0f, 0.0f,
@@ -137,7 +137,7 @@ Mat3 Mat3::rotationX(float theta)
 
 Mat3 Mat3::rotationY(float theta)
 {
-  float s, c;
+  float s = 0.0f, c = 0.0f;
   Math::sincos(theta, &s, &c);
 
   return Mat3(   c, 0.0f,   -s,
@@ -147,7 +147,7 @@ Mat3 Mat3::rotationY(float theta)
 
 Mat3 Mat3::rotationZ(float theta)
 {
-  float s, c;
+  float s = 0.0f, c = 0.0f;
   Math::sincos(theta, &s, &c);
 
   return Mat3(   c,    s, 0.0f,
@@ -157,7 +157,7 @@ Mat3 Mat3::rotationZ(float theta)
 
 Mat3 Mat3::rotationZXZ(float heading, float pitch, float roll)
 {
-  float hs, hc, ps, pc, rs, rc;
+  float hs = 0.0f, hc = 0.0f, ps = 0.0f, pc = 0.0f, rs = 0.0f, rc = 0.0f;
 
   Math::sincos(heading, &hs, &hc);
   Math::sincos(pitch, &ps, &pc);

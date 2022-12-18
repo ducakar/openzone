@@ -197,10 +197,9 @@ void Window::screenshot(const char* basePath)
     screenshotThread.join();
   }
 
-  int    stride = Math::alignUp<int>(windowWidth * 3, 4);
-  ubyte* pixels = new ubyte[windowHeight * stride];
-
-  ScreenshotInfo* info = new ScreenshotInfo{basePath, windowWidth, windowHeight, pixels};
+  int             stride = Math::alignUp<int>(windowWidth * 3, 4);
+  ubyte*          pixels = new ubyte[windowHeight * stride];
+  ScreenshotInfo* info   = new ScreenshotInfo{basePath, windowWidth, windowHeight, pixels};
 
   glReadPixels(0, 0, windowWidth, windowHeight, GL_RGB, GL_UNSIGNED_BYTE, info->pixels);
   screenshotThread = Thread("screenshot", screenshotMain, info);

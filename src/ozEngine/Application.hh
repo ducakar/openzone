@@ -146,6 +146,11 @@ public:
 public:
 
   /**
+   * Initialise the application and filesystem.
+   */
+  explicit Application(const char* argv0);
+
+  /**
    * Switch to another game stage.
    */
   static void setStage(Stage* stage);

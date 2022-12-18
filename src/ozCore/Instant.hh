@@ -62,12 +62,6 @@ public:
 
 public:
 
-  using Duration::ns;
-  using Duration::us;
-  using Duration::ms;
-  using Duration::s;
-  using Duration::t;
-
   /**
    * Epoch.
    */

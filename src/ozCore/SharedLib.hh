@@ -69,7 +69,11 @@ public:
   /**
    * True iff platform supports dynamic linking.
    */
-  static const bool IS_SUPPORTED;
+#ifdef __native_client__
+  static constexpr bool IS_SUPPORTED = false;
+#else
+  static constexpr bool IS_SUPPORTED = true;
+#endif
 
   /**
    * Generic function type to avoid casts between pointer-to-function and pointer-to-object.

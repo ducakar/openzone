@@ -29,40 +29,40 @@
 namespace oz
 {
 
-static const uint DDSD_CAPS                          = 0x00000001;
-static const uint DDSD_HEIGHT                        = 0x00000002;
-static const uint DDSD_WIDTH                         = 0x00000004;
-static const uint DDSD_PITCH                         = 0x00000008;
-static const uint DDSD_PIXELFORMAT                   = 0x00001000;
-static const uint DDSD_MIPMAPCOUNT                   = 0x00020000;
-static const uint DDSD_LINEARSIZE                    = 0x00080000;
+static constexpr uint DDSD_CAPS                          = 0x00000001;
+static constexpr uint DDSD_HEIGHT                        = 0x00000002;
+static constexpr uint DDSD_WIDTH                         = 0x00000004;
+static constexpr uint DDSD_PITCH                         = 0x00000008;
+static constexpr uint DDSD_PIXELFORMAT                   = 0x00001000;
+static constexpr uint DDSD_MIPMAPCOUNT                   = 0x00020000;
+static constexpr uint DDSD_LINEARSIZE                    = 0x00080000;
 
-static const uint DDSCAPS_COMPLEX                    = 0x00000008;
-static const uint DDSCAPS_MIPMAP                     = 0x00400000;
-static const uint DDSCAPS_TEXTURE                    = 0x00001000;
+static constexpr uint DDSCAPS_COMPLEX                    = 0x00000008;
+static constexpr uint DDSCAPS_MIPMAP                     = 0x00400000;
+static constexpr uint DDSCAPS_TEXTURE                    = 0x00001000;
 
-static const uint DDSCAPS2_CUBEMAP                   = 0x00000200;
-static const uint DDSCAPS2_CUBEMAP_POSITIVEX         = 0x00000400;
-static const uint DDSCAPS2_CUBEMAP_NEGITIVEX         = 0x00000800;
-static const uint DDSCAPS2_CUBEMAP_POSITIVEY         = 0x00001000;
-static const uint DDSCAPS2_CUBEMAP_NEGITIVEY         = 0x00002000;
-static const uint DDSCAPS2_CUBEMAP_POSITIVEZ         = 0x00004000;
-static const uint DDSCAPS2_CUBEMAP_NEGITIVEZ         = 0x00008000;
+static constexpr uint DDSCAPS2_CUBEMAP                   = 0x00000200;
+static constexpr uint DDSCAPS2_CUBEMAP_POSITIVEX         = 0x00000400;
+static constexpr uint DDSCAPS2_CUBEMAP_NEGITIVEX         = 0x00000800;
+static constexpr uint DDSCAPS2_CUBEMAP_POSITIVEY         = 0x00001000;
+static constexpr uint DDSCAPS2_CUBEMAP_NEGITIVEY         = 0x00002000;
+static constexpr uint DDSCAPS2_CUBEMAP_POSITIVEZ         = 0x00004000;
+static constexpr uint DDSCAPS2_CUBEMAP_NEGITIVEZ         = 0x00008000;
 
-static const uint DDPF_ALPHAPIXELS                   = 0x00000001;
-static const uint DDPF_FOURCC                        = 0x00000004;
-static const uint DDPF_RGB                           = 0x00000040;
-static const uint DDPF_NORMAL                        = 0x80000000;
+static constexpr uint DDPF_ALPHAPIXELS                   = 0x00000001;
+static constexpr uint DDPF_FOURCC                        = 0x00000004;
+static constexpr uint DDPF_RGB                           = 0x00000040;
+static constexpr uint DDPF_NORMAL                        = 0x80000000;
 
-static const uint DXGI_FORMAT_R8G8B8A8_UNORM         = 28;
-static const uint DXGI_FORMAT_BC1_UNORM              = 71;
-static const uint DXGI_FORMAT_BC3_UNORM              = 77;
+static constexpr uint DXGI_FORMAT_R8G8B8A8_UNORM         = 28;
+static constexpr uint DXGI_FORMAT_BC1_UNORM              = 71;
+static constexpr uint DXGI_FORMAT_BC3_UNORM              = 77;
 
-static const int D3D10_RESOURCE_DIMENSION_TEXTURE2D = 3;
+static constexpr uint D3D10_RESOURCE_DIMENSION_TEXTURE2D = 3;
 
-static const int ERROR_LENGTH                       = 1024;
+static constexpr int ERROR_LENGTH                        = 1024;
 
-static char errorBuffer[ERROR_LENGTH]               = {};
+static char errorBuffer[ERROR_LENGTH]                    = {};
 
 static void printError(FREE_IMAGE_FORMAT fif, const char* message)
 {

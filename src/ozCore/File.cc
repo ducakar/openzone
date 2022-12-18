@@ -226,7 +226,9 @@ static void initSpecialFiles()
   char exePathBuffer[PATH_MAX];
 
   pid_t pid = getpid();
-  snprintf(pidPathBuffer, PATH_MAX, "/proc/%d/exe", pid);
+  if (snprintf(pidPathBuffer, PATH_MAX, "/proc/%d/exe", pid) < 0) {
+    OZ_ERROR("Failed to construct process path");
+  }
 
   ptrdiff_t length = readlink(pidPathBuffer, exePathBuffer, PATH_MAX);
   specialFiles[9] = File(exePathBuffer, length < 0 ? 0 : int(length));
@@ -724,11 +726,11 @@ bool File::mountLocalAt(bool append) const
   return true;
 }
 
-void File::init()
+void File::init(const char* argv0)
 {
   initSpecialFiles();
 
-  if (PHYSFS_init(EXECUTABLE) == 0) {
+  if (PHYSFS_init(argv0) == 0) {
     OZ_ERROR("oz::File: PhysicsFS initialisation failed: %s",
              PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
   }

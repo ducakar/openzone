@@ -42,7 +42,7 @@ enum Heading
 };
 
 /// Bitwise AND with this mask is non-zero iff heading is either `EAST` or `WEST`.
-const int WEST_EAST_MASK = 0x01;
+constexpr int WEST_EAST_MASK = 0x01;
 
 inline Vec3 rotate(const Vec3& dim, Heading heading)
 {

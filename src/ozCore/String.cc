@@ -29,7 +29,7 @@
 namespace oz
 {
 
-static const int LOCAL_BUFFER_SIZE = 4096;
+static constexpr int LOCAL_BUFFER_SIZE = 4096;
 
 const String String::EMPTY = String();
 
@@ -113,7 +113,6 @@ const char* String::findLast(const char* s, char ch, int end)
 {
 #ifndef _GNU_SOURCE
   static_cast<void>(end);
-
   return strrchr(s, ch);
 #else
   return static_cast<const char*>(memrchr(s, ch, end));

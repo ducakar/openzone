@@ -385,7 +385,7 @@ public:
   /**
    * Initialise VFS, determine user directories and executable path.
    */
-  static void init();
+  static void init(const char* argv0);
 
   /**
    * De-initialise file systems.

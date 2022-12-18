@@ -406,7 +406,7 @@ int Client::init(int argc, char** argv)
 
 #endif
 
-  File::init();
+  File::init(argv[0]);
 
 #ifdef __ANDROID__
 

@@ -32,21 +32,15 @@
 namespace oz
 {
 
-#ifdef __native_client__
-const bool SharedLib::IS_SUPPORTED = false;
-#else
-const bool SharedLib::IS_SUPPORTED = true;
-#endif
-
 SharedLib::SharedLib(const char* name)
-{
 #if defined(__native_client__)
-  static_cast<void>(name);
 #elif defined(_WIN32)
-  handle_ = static_cast<void*>(LoadLibrary(name));
+  : handle_(static_cast<void*>(LoadLibrary(name)))
 #else
-  handle_ = dlopen(name, RTLD_NOW);
+  : handle_(dlopen(name, RTLD_NOW))
 #endif
+{
+  static_cast<void>(name);
 }
 
 SharedLib::~SharedLib()

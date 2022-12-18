@@ -72,7 +72,7 @@ void Mat4::rotateX(float theta)
   Vec4 j = y;
   Vec4 k = z;
 
-  float s, c;
+  float s = 0.0f, c = 0.0f;
   Math::sincos(theta, &s, &c);
 
   y = j * c + k * s;
@@ -84,7 +84,7 @@ void Mat4::rotateY(float theta)
   Vec4 i = x;
   Vec4 k = z;
 
-  float s, c;
+  float s = 0.0f, c = 0.0f;
   Math::sincos(theta, &s, &c);
 
   x = i * c - k * s;
@@ -96,7 +96,7 @@ void Mat4::rotateZ(float theta)
   Vec4 i = x;
   Vec4 j = y;
 
-  float s, c;
+  float s = 0.0f, c = 0.0f;
   Math::sincos(theta, &s, &c);
 
   x = i * c + j * s;
@@ -135,7 +135,7 @@ Mat4 Mat4::rotation(const Quat& q)
 
 Mat4 Mat4::rotationX(float theta)
 {
-  float s, c;
+  float s = 0.0f, c = 0.0f;
   Math::sincos(theta, &s, &c);
 
   return Mat4(1.0f, 0.0f, 0.0f, 0.0f,
@@ -146,7 +146,7 @@ Mat4 Mat4::rotationX(float theta)
 
 Mat4 Mat4::rotationY(float theta)
 {
-  float s, c;
+  float s = 0.0f, c = 0.0f;
   Math::sincos(theta, &s, &c);
 
   return Mat4(   c, 0.0f,   -s, 0.0f,
@@ -157,7 +157,7 @@ Mat4 Mat4::rotationY(float theta)
 
 Mat4 Mat4::rotationZ(float theta)
 {
-  float s, c;
+  float s = 0.0f, c = 0.0f;
   Math::sincos(theta, &s, &c);
 
   return Mat4(   c,    s, 0.0f, 0.0f,
@@ -168,7 +168,7 @@ Mat4 Mat4::rotationZ(float theta)
 
 Mat4 Mat4::rotationZXZ(float heading, float pitch, float roll)
 {
-  float hs, hc, ps, pc, rs, rc;
+  float hs = 0.0f, hc = 0.0f, ps = 0.0f, pc = 0.0f, rs = 0.0f, rc = 0.0f;
 
   Math::sincos(heading, &hs, &hc);
   Math::sincos(pitch, &ps, &pc);

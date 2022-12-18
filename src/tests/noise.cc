@@ -33,8 +33,8 @@ struct Colour
   double colour[3];
 };
 
-static const int width  = 1024;
-static const int height = 1024;
+static constexpr int width  = 1024;
+static constexpr int height = 1024;
 
 int main(int, char**)
 {

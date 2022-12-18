@@ -124,7 +124,7 @@ template <typename Type>
 inline void oaSort(Type* array, int begin, int end)
 {
   int first = begin;
-  int last = end - 1;
+  int last  = end - 1;
 
   if (first < last) {
     if (first + 1 == last) {
@@ -134,8 +134,8 @@ inline void oaSort(Type* array, int begin, int end)
     }
     else {
       int pivotValue = array[last];
-      int top = first;
-      int bottom = last - 1;
+      int top        = first;
+      int bottom     = last - 1;
 
       do {
         while (top <= bottom && array[top] <= pivotValue) {
@@ -160,8 +160,8 @@ inline void oaSort(Type* array, int begin, int end)
   }
 }
 
-#define MAX 10000
-#define TESTS 2000
+static constexpr int MAX   = 10000;
+static constexpr int TESTS = 2000;
 
 int main()
 {
