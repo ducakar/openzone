@@ -27,8 +27,7 @@ add_library(ozEngine
 
 target_link_libraries(ozEngine ${LUA_LIBRARIES} OpenGL::GL ${OPENAL_LIBRARY}
                                PNG::PNG ${OPUSFILE_LIBRARIES} ${VORBISFILE_LIBRARIES}
-                               ${OGG_LIBRARIES} ${OPUS_LIBRARIES}
-                               ${SDL_LIBRARIES} ${SDL_TTF_LIBRARIES})
+                               Ogg::ogg ${OPUS_LIBRARIES} SDL2::SDL2 SDL2_ttf::SDL2_ttf)
 
 if(NOT NACL)
 #  target_link_libraries(ozEngine ${SDL_NET_LIBRARIES})
@@ -36,7 +35,7 @@ endif()
 
 target_link_libraries(ozEngine ozCore)
 
-set_target_properties(ozEngine PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0)
+set_target_properties(ozEngine PROPERTIES VERSION ${CMAKE_PROJECT_VERSION} SOVERSION 0)
 
 install(TARGETS ozEngine RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR}
                          LIBRARY DESTINATION lib${OZ_BINARY_SUBDIR}

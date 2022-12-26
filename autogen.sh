@@ -13,7 +13,7 @@ set -e
 
 components=(src/ozCore src/ozEngine src/ozFactory src/unittest
             src/common src/matrix src/nirvana src/client src/builder)
-version=$(sed -E '/^set\(OZ_VERSION / !d; s|.* ([0-9.]+)\)|\1|' CMakeLists.txt)
+version=$(sed -E '/^project\(/ !d; s|.* VERSION "([^"]*)".*|\1|' CMakeLists.txt)
 
 # Generate CMakeLists.txt files.
 for component in "${components[@]}"; do
@@ -28,10 +28,10 @@ done
 
 # Fix version numbers.
 echo "Updating version in doc/Doxyfile*"
-sed -E 's|^(PROJECT_NUMBER *= *).*$|\1"'"$version"'"|' -i doc/Doxyfile*
+sed -E 's|^(PROJECT_NUMBER *= *).*$|\1'"$version"'|' -i doc/Doxyfile*
 
 echo "Updating HTML READMEs doc/*.html"
-sed -E 's|(<!--OZ_VERSION-->)[^<"]*|\1'"$version"'|' -i doc/*.html
+sed -E 's|(<!--CMAKE_PROJECT_VERSION-->)[^<"]*|\1'"$version"'|' -i doc/*.html
 
 echo "Updating version in etc/openzone.spec"
 sed -E 's|^(Version: *).*$|\1'"$version"'|' -i etc/openzone.spec

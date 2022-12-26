@@ -1,7 +1,3 @@
-if(NOT OZ_TESTS OR PLATFORM_EMBEDDED)
-  return()
-endif()
-
 add_executable(containers containers.cc)
 target_link_libraries(containers ozCore)
 

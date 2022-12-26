@@ -22,7 +22,7 @@ add_library(ozFactory
 target_link_libraries(ozFactory ozCore ${ASSIMP_LIBRARIES} ${FREEIMAGE_LIBRARY} ${NOISE_LIBRARY})
 target_link_libraries(ozFactory ${SQUISH_LIBRARY})
 
-set_target_properties(ozFactory PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0)
+set_target_properties(ozFactory PROPERTIES VERSION ${CMAKE_PROJECT_VERSION} SOVERSION 0)
 
 install(TARGETS ozFactory RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR}
                           LIBRARY DESTINATION lib${OZ_BINARY_SUBDIR}

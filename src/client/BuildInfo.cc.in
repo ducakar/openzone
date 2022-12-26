@@ -32,12 +32,11 @@ const char* const BuildInfo::COMPILER    = "LLVM/Clang " __clang_version__;
 #else
 const char* const BuildInfo::COMPILER    = "GCC " __VERSION__;
 #endif
-const char* const BuildInfo::CXX_FLAGS   = "@OZ_CXX_FLAGS@";
+const char* const BuildInfo::OPTIONS     = "@OZ_COMPILE_OPTIONS@";
 const char* const BuildInfo::CONFIG      = "OZ_SIMD: @OZ_SIMD@, "
                                            "OZ_GL_ES: @OZ_GL_ES@, "
                                            "OZ_LUAJIT: @OZ_LUAJIT@, "
                                            "OZ_TOOLS: @OZ_TOOLS@, "
-                                           "OZ_TESTS: @OZ_TESTS@, "
                                            "OZ_BUNDLE: @OZ_BUNDLE@";
 
 }

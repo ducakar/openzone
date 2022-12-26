@@ -5,7 +5,7 @@ includedir=${prefix}/include
 
 Name: ozEngine
 Description: OpenZone Engine Library
-Version: @OZ_VERSION@
+Version: @CMAKE_PROJECT_VERSION@
 Requires: ozCore
 Libs: -L${libdir} -lozEngine
 Cflags: -std=c++11 -I${includedir}

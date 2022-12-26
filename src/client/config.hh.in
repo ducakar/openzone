@@ -24,7 +24,7 @@
  */
 
 // Version.
-#define OZ_VERSION "@OZ_VERSION@"
+#define OZ_VERSION "@CMAKE_PROJECT_VERSION@"
 
 // Default root path (e.g. '/usr' on Linux or '.' for standalone).
-#define OZ_PREFIX "@OZ_PREFIX@"
+#define OZ_PREFIX "@CMAKE_INSTALL_PREFIX@"

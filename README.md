@@ -104,10 +104,6 @@ You may also want to adjust several options when configuring CMake build system:
 - `OZ_TOOLS`: Build tools required for building game data (see the next section).
   `OFF` by default.
 
-- `OZ_TESTS`: Build liboz unittest and various experimental executables used as a playground when
-  developing OpenZone. You don't need this.
-  `OFF` by default.
-
 ## Tools ##
 
 ### `ozBuild -CAZ <pkgSrc>` ###

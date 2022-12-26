@@ -51,7 +51,7 @@ struct BuildInfo
   static const char* const COMPILER;
 
   /// Compiler flags.
-  static const char* const CXX_FLAGS;
+  static const char* const OPTIONS;
 
   /// Configuration options.
   static const char* const CONFIG;

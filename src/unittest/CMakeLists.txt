@@ -1,7 +1,3 @@
-if(NOT OZ_TESTS)
-  return()
-endif()
-
 add_executable(unittest
 #BEGIN SOURCES
   Arrays.cc
@@ -12,6 +8,7 @@ add_executable(unittest
 #END SOURCES
 )
 target_link_libraries(unittest ozCore)
+add_test(NAME unittest COMMAND unittest)
 
 if(NACL)
   add_custom_command(OUTPUT unittest.nmf unittest.html
@@ -24,5 +21,3 @@ if(NACL)
   set_target_properties(unittest PROPERTIES OUTPUT_NAME unittest${PLATFORM_EXE_SUFFIX})
   pnacl_finalise(unittest)
 endif()
-
-add_test(unittest unittest)

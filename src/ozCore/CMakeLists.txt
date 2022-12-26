@@ -102,7 +102,7 @@ else()
   target_link_libraries(ozCore -ldl -lpthread)
 endif()
 
-set_target_properties(ozCore PROPERTIES VERSION ${OZ_VERSION} SOVERSION 0)
+set_target_properties(ozCore PROPERTIES VERSION ${CMAKE_PROJECT_VERSION} SOVERSION 0)
 
 install(TARGETS ozCore RUNTIME DESTINATION bin${OZ_BINARY_SUBDIR}
                        LIBRARY DESTINATION lib${OZ_BINARY_SUBDIR}

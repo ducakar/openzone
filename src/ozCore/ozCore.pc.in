@@ -5,6 +5,6 @@ includedir=${prefix}/include
 
 Name: ozCore
 Description: OpenZone Core Library
-Version: @OZ_VERSION@
+Version: @CMAKE_PROJECT_VERSION@
 Libs: -L${libdir} -lozCore
 Cflags: -std=c++11 -I${includedir}

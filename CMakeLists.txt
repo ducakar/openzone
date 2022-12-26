@@ -1,27 +1,20 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(openzone)
+project(openzone VERSION "0.3.95")
 
 #
 # Configuration options.
 #
 
-set(OZ_VERSION 0.3.95)
-
 option(OZ_SIMD "Use SIMD implementation of linear algebra classes." OFF)
 option(OZ_GL_ES "Use OpenGL ES 2.0 instead of OpenGL 2.1." OFF)
 option(OZ_LUAJIT "Use use LuaJIT instead of official Lua." OFF)
 option(OZ_TOOLS "Build engine tools required for game data creation." OFF)
-option(OZ_TESTS "Build test programs (that should only be used by me)." OFF)
+option(OZ_BUNDLE "Adjust installation for OpenZone multi-platform bundle ZIP." OFF)
 
 #
 # Internal configuration.
 #
-
-option(OZ_BUNDLE "Adjust installation for OpenZone multi-platform bundle ZIP." OFF)
-mark_as_advanced(OZ_BUNDLE)
-
-set(OZ_PLATFORM_NAME ${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR})
 
 # Emscripten uses stock toolchain file, we have to set these things manually.
 if(EMSCRIPTEN)
@@ -43,18 +36,18 @@ if(EMSCRIPTEN)
   add_definitions(-D__EMSCRIPTEN__)
 endif()
 
+set(OZ_PLATFORM_NAME ${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR})
+
 if(PLATFORM_EMBEDDED)
-  set(OZ_PLATFORM_NAME ${PLATFORM_NAME}-${CMAKE_SYSTEM_PROCESSOR})
   set(OZ_GL_ES ON)
   set(OZ_TOOLS OFF)
 endif()
 
 if(OZ_BUNDLE)
-  set(OZ_PREFIX "")
-  set(OZ_BINARY_SUBDIR "/${OZ_PLATFORM_NAME}")
+  set(CMAKE_INSTALL_PREFIX "")
   set(CMAKE_INSTALL_RPATH "$ORIGIN")
+  set(OZ_BINARY_SUBDIR "/${OZ_PLATFORM_NAME}")
 else()
-  set(OZ_PREFIX "${CMAKE_INSTALL_PREFIX}")
   set(OZ_BINARY_SUBDIR "")
 endif()
 
@@ -88,15 +81,8 @@ else()
   include_directories(SYSTEM ${LUA_INCLUDE_DIR})
 endif()
 
-if(EMSCRIPTEN)
-  pkg_check_modules(SDL REQUIRED sdl)
-  set(SDL_TTF_LIBRARIES "")
-else()
-  pkg_check_modules(SDL REQUIRED sdl2)
-  pkg_check_modules(SDL_TTF REQUIRED SDL2_ttf)
-  list(REMOVE_ITEM SDL_LIBRARIES ppapi_simple)
-  list(REMOVE_ITEM SDL_TTF_LIBRARIES ppapi_simple)
-endif()
+find_package(SDL2 REQUIRED)
+find_package(SDL2_ttf REQUIRED)
 
 if(OZ_GL_ES)
   # On embedded platforms, GLES is part of system libraries and is guaranteed to exist in toolchain
@@ -118,7 +104,7 @@ endif()
 
 find_package(OpenAL REQUIRED)
 find_package(PNG REQUIRED)
-pkg_check_modules(OGG REQUIRED ogg)
+find_package(Ogg REQUIRED)
 pkg_check_modules(OPUS REQUIRED opus)
 pkg_check_modules(OPUSFILE REQUIRED opusfile)
 pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
@@ -199,11 +185,15 @@ else()
 endif()
 
 # Strings for BuildInfo class.
-string(TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" OZ_CXX_FLAGS)
-string(STRIP "${CMAKE_CXX_FLAGS} ${${OZ_CXX_FLAGS}}" OZ_CXX_FLAGS)
+get_property(compileOptions DIRECTORY PROPERTY COMPILE_OPTIONS)
+list(JOIN compileOptions " " compileOptions)
+string(TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" OZ_COMPILE_OPTIONS)
+string(STRIP "${compileOptions} ${CMAKE_CXX_FLAGS} ${${OZ_COMPILE_OPTIONS}}" OZ_COMPILE_OPTIONS)
 
 site_name(OZ_HOSTNAME)
 mark_as_advanced(OZ_HOSTNAME)
+
+enable_testing()
 
 #
 # Sources.
