@@ -43,11 +43,14 @@ class Gettext
 {
 private:
 
+  /**
+   * Translated text.
+   */
   struct Message
   {
-    int      original;
-    int      translation;
-    Message* next;
+    int      original;    ///< Original text.
+    int      translation; ///< Translated text.
+    Message* next;        ///< Next message in hashtable bucket.
   };
 
 private:
