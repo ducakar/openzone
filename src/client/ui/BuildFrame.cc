@@ -204,7 +204,7 @@ void BuildFrame::startPlacement(ModelField* sender, bool isClicked)
           editStage.editFrame != nullptr && editStage.editFrame->isVisible())
       {
         if (container->items.size() != container->clazz->nItems) {
-          Heading  heading = Heading(Math::rand(4));
+          Heading  heading = Heading(Math::rand(NORTH, EAST));
           Object*  newObj  = synapse.add(clazz, Point::ORIGIN, heading, false);
           Dynamic* newItem = static_cast<Dynamic*>(newObj);
 

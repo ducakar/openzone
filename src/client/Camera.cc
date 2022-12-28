@@ -44,8 +44,8 @@ void Camera::flash(float intensity)
 
 void Camera::shake(float intensity)
 {
-  float heading = intensity * Math::rand() * Math::TAU;
-  float pitch   = intensity * Math::rand() * Math::TAU / 2.0f;
+  float heading = intensity * Math::rand(0.0f, Math::TAU);
+  float pitch   = intensity * Math::rand(0.0f, Math::TAU / 2.0f);
   float cPitch  = Math::cos(pitch);
   Vec3  axis    = Vec3(cPitch * Math::sin(heading), cPitch * Math::cos(heading), Math::sin(pitch));
 

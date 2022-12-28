@@ -80,7 +80,7 @@ Cursor::Cursor(const File& file, Mode mode, int size)
     image.height      = is.readInt();
     image.hotspotLeft = is.readInt();
     image.hotspotTop  = is.readInt();
-    image.delay       = int64(is.readInt()) * 1_ms;
+    image.delay       = is.readInt() * 1_ms;
 
     int   nBytes = image.width * image.height * 4;
     char* pixels = new char[nBytes];

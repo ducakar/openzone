@@ -66,7 +66,7 @@ MD2::AnimType MD2::AnimState::extractAnim()
         return nextType;
       }
       else {
-        return AnimType(ANIM_DEATH_FALLBACK + Math::rand(3));
+        return AnimType(ANIM_DEATH_FALLBACK + Math::rand(0, 2));
       }
     }
     else if (bot->cell == nullptr) {
@@ -132,7 +132,7 @@ MD2::AnimState::AnimState(const Bot* bot_)
     prevAttack(false)
 {
   if (bot->state & Bot::DEAD_BIT) {
-    currType = AnimType(ANIM_DEATH_FALLBACK + Math::rand(3));
+    currType = AnimType(ANIM_DEATH_FALLBACK + Math::rand(0, 2));
     nextType = currType;
   }
 

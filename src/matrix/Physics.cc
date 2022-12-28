@@ -373,7 +373,7 @@ void Physics::handleFragHit()
         float damage = FRAG_DAMAGE_COEF * velocity2 * frag->mass;
 
         if (damage > str->resistance) {
-          damage *= FRAG_FIXED_DAMAGE + (1.0f - FRAG_FIXED_DAMAGE) * Math::rand();
+          damage *= Math::rand(FRAG_FIXED_DAMAGE, 1.0f);
           str->damage(damage);
         }
       }
@@ -382,7 +382,7 @@ void Physics::handleFragHit()
         float damage = FRAG_DAMAGE_COEF * velocity2 * frag->mass;
 
         if (damage > obj->resistance) {
-          damage *= FRAG_FIXED_DAMAGE + (1.0f - FRAG_FIXED_DAMAGE) * Math::rand();
+          damage *= Math::rand(FRAG_FIXED_DAMAGE, 1.0f);
           obj->damage(damage);
         }
 

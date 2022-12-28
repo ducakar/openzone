@@ -521,24 +521,19 @@ public:
   static void seed(int n);
 
   /**
-   * Random integer between from [0, `max`).
+   * Random integer from `[min, max]`.
    */
-  static int rand(int max);
+  static int rand(int min, int max);
 
   /**
-   * Random float number from [0, 1].
+   * Random float number from [min, max].
    */
-  static float rand();
+  static float rand(float min, float max);
 
   /**
-   * Random float number from [-1, 1].
+   * Random number with standard distribution.
    */
-  static float centralRand();
-
-  /**
-   * Random number from [-1, 1], numbers close to zero are more likely.
-   */
-  static float normalRand();
+  static float normalRand(float mean = 0.0f, float deviation = 1.0f);
 
 };
 

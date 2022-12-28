@@ -116,7 +116,7 @@ void test_Arrays()
   for (int j = 0; j < 100; ++j) {
     int r[1000];
     for (int& i : r) {
-      i = Math::rand(1000);
+      i = Math::rand(0, 1000);
     }
     Arrays::sort(r, 1000);
 

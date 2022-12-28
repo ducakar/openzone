@@ -176,7 +176,7 @@ Object* Synapse::add(const ObjectClass* clazz, const Point& p, Heading heading, 
 
   if (!empty) {
     for (const ObjectClass* defaultItem : obj->clazz->defaultItems) {
-      Heading itemHeading = Heading(Math::rand(4));
+      Heading itemHeading = Heading(Math::rand(NORTH, EAST));
       Dynamic* item = static_cast<Dynamic*>(orbis.add(defaultItem, Point::ORIGIN, itemHeading));
 
       if (item == nullptr) {
@@ -219,20 +219,20 @@ void Synapse::gen(const FragPool* pool, int nFrags, const Bounds& bb, const Vec3
 {
   for (int i = 0; i < nFrags; ++i) {
     // spawn the frag somewhere in the upper half of the structure's bounding box
-    Point fragPos = Point(bb.mins.x + Math::rand() * (bb.maxs.x - bb.mins.x),
-                          bb.mins.y + Math::rand() * (bb.maxs.y - bb.mins.y),
-                          bb.mins.z + Math::rand() * (bb.maxs.z - bb.mins.z));
+    Point fragPos = Point(Math::rand(bb.mins.x, bb.maxs.x),
+                          Math::rand(bb.mins.y, bb.mins.y),
+                          Math::rand(bb.mins.z, bb.mins.z));
 
     Frag*  frag = add(pool, fragPos, velocity);
     if (frag == nullptr) {
       continue;
     }
 
-    frag->velocity += Vec3(Math::normalRand() * pool->velocitySpread,
-                           Math::normalRand() * pool->velocitySpread,
-                           Math::normalRand() * pool->velocitySpread);
+    frag->velocity += Vec3(Math::normalRand(0.0f, pool->velocitySpread),
+                           Math::normalRand(0.0f, pool->velocitySpread),
+                           Math::normalRand(0.0f, pool->velocitySpread));
 
-    frag->life     += Math::centralRand() * pool->lifeSpread;
+    frag->life     += Math::normalRand(0.0f, pool->lifeSpread);
   }
 }
 

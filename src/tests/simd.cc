@@ -48,22 +48,23 @@ static Mat4 mc[MAX];
 
 int main()
 {
+  auto rand = []() { return Math::rand(0.0f, 1.0f); };
   for (int i = 0; i < MAX; ++i) {
-    a[i] = CreateVecX(Math::rand(), Math::rand(), Math::rand(), Math::rand());
-    b[i] = CreateVecX(Math::rand(), Math::rand(), Math::rand(), Math::rand());
-    c[i] = CreateVecX(Math::rand(), Math::rand(), Math::rand(), Math::rand());
-    d[i] = CreateVecX(Math::rand(), Math::rand(), Math::rand(), Math::rand());
+    a[i] = CreateVecX(rand(), rand(), rand(), rand());
+    b[i] = CreateVecX(rand(), rand(), rand(), rand());
+    c[i] = CreateVecX(rand(), rand(), rand(), rand());
+    d[i] = CreateVecX(rand(), rand(), rand(), rand());
   }
 
   for (int i = 0; i < MAX; ++i) {
-    ma[i] = Mat4(Math::rand(), Math::rand(), Math::rand(), Math::rand(),
-                 Math::rand(), Math::rand(), Math::rand(), Math::rand(),
-                 Math::rand(), Math::rand(), Math::rand(), Math::rand(),
-                 Math::rand(), Math::rand(), Math::rand(), Math::rand());
-    mb[i] = Mat4(Math::rand(), Math::rand(), Math::rand(), Math::rand(),
-                 Math::rand(), Math::rand(), Math::rand(), Math::rand(),
-                 Math::rand(), Math::rand(), Math::rand(), Math::rand(),
-                 Math::rand(), Math::rand(), Math::rand(), Math::rand());
+    ma[i] = Mat4(rand(), rand(), rand(), rand(),
+                 rand(), rand(), rand(), rand(),
+                 rand(), rand(), rand(), rand(),
+                 rand(), rand(), rand(), rand());
+    mb[i] = Mat4(rand(), rand(), rand(), rand(),
+                 rand(), rand(), rand(), rand(),
+                 rand(), rand(), rand(), rand(),
+                 rand(), rand(), rand(), rand());
   }
 
   Instant t0 = Instant<STEADY>::now();

@@ -70,7 +70,7 @@ static int ozOrbisAddPlayer(lua_State* l)
 
   AddMode mode    = AddMode(l_toint(1));
   Point   p       = Point(l_tofloat(2), l_tofloat(3), l_tofloat(4));
-  Heading heading = Heading(Math::rand(4));
+  Heading heading = Heading(Math::rand(NORTH, EAST));
   bool    empty   = false;
 
   int nParams = l_gettop();
@@ -110,8 +110,8 @@ static int ozOrbisAddPlayer(lua_State* l)
       int invMax = min(player->clazz->nItems, profile.items.size());
 
       for (int i = 0; i < invMax; ++i) {
-        Object*  obj  = synapse.add(profile.items[i], Point::ORIGIN, Heading(Math::rand(4)),
-                                    true);
+        Object*  obj  = synapse.add(profile.items[i], Point::ORIGIN,
+                                    Heading(Math::rand(NORTH, EAST)), true);
         Dynamic* item = static_cast<Dynamic*>(obj);
 
         player->items.add(item->index);

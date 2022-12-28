@@ -29,27 +29,22 @@ namespace oz
 
 void Math::seed(int n)
 {
-  srand(n);
+  ::srand(n);
 }
 
-int Math::rand(int max)
+int Math::rand(int min, int max)
 {
-  return ::rand() % max;
+  return min + ::rand() % (max - min);
 }
 
-float Math::rand()
+float Math::rand(float min, float max)
 {
-  return float(::rand()) / float(RAND_MAX);
+  return min + float(::rand()) / float(RAND_MAX) * (max - min);
 }
 
-float Math::centralRand()
+float Math::normalRand(float mean, float deviation)
 {
-  return float(::rand() - RAND_MAX / 2) / float(RAND_MAX / 2);
-}
-
-float Math::normalRand()
-{
-  return tan(centralRand() * TAU / 8.0f);
+  return mean + deviation * tan(rand(-1.0f, +1.0f) * TAU / 8.0f);
 }
 
 }

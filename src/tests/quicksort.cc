@@ -174,7 +174,7 @@ int main()
 
   for (int i = 0; i < TESTS; ++i) {
     for (int& j : list) {
-      j = Math::rand(MAX);
+      j = Math::rand(0, MAX);
     }
 
     Arrays::sort(list.begin(), MAX);

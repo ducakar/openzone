@@ -32,7 +32,7 @@ FragPool::FragPool(const Json& config, const char* name_, int id_)
 
   OZ_CLASS_FLAG(oz::FragPool::FADEOUT_BIT, "flag.fadeout", true);
 
-  velocitySpread = config["velocitySpread"].get(4.0f);
+  velocitySpread = config["velocitySpread"].get(2.0f);
 
   if (velocitySpread < 0.0f) {
     OZ_ERROR("%s: Frag velocitySpread must be >= 0.0", name_);

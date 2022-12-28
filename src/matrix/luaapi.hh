@@ -119,7 +119,7 @@ static int ozOrbisAddStr(lua_State* l)
 
   AddMode mode    = AddMode(l_toint(1));
   Point   p       = Point(l_tofloat(3), l_tofloat(4), l_tofloat(5));
-  Heading heading = Heading(Math::rand(4));
+  Heading heading = Heading(Math::rand(NORTH, EAST));
   bool    empty   = false;
 
   int nParams = l_gettop();
@@ -155,7 +155,7 @@ static int ozOrbisAddObj(lua_State* l)
 
   AddMode mode    = AddMode(l_toint(1));
   Point   p       = Point(l_tofloat(3), l_tofloat(4), l_tofloat(5));
-  Heading heading = Heading(Math::rand(4));
+  Heading heading = Heading(Math::rand(NORTH, EAST));
   bool    empty   = false;
 
   int nParams = l_gettop();
@@ -1487,7 +1487,7 @@ static int ozObjAddItem(lua_State* l)
     return 1;
   }
 
-  Dynamic* newItem;
+  Dynamic* newItem = nullptr;
 
   if (l_type(1) == LUA_TNUMBER) {
     ITEM_INDEX(l_toint(1))
@@ -1506,7 +1506,7 @@ static int ozObjAddItem(lua_State* l)
   else {
     const char* sClazz = l_tostring(1);
 
-    Object* obj = synapse.addObject(sClazz, Point::ORIGIN, Heading(Math::rand(4)), false);
+    Object* obj = synapse.addObject(sClazz, Point::ORIGIN, Heading(Math::rand(NORTH, EAST)), false);
     if (obj == nullptr) {
       l_pushbool(false);
       return 1;
