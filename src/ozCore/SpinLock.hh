@@ -44,6 +44,10 @@ private:
 
   Atomic<bool> isLocked_ = {false}; ///< True iff locked.
 
+private:
+
+  static void yield();
+
 public:
 
   /**
@@ -82,11 +86,7 @@ public:
   void lock()
   {
     while (isLocked_.testAndSet<ACQUIRE>()) {
-#if defined(__ARM_ACLE__)
-      __builtin_arm_yield();
-#elif defined(__i386__) || defined(__x86_64__)
-      __builtin_ia32_pause();
-#endif
+      yield();
     }
   }
 

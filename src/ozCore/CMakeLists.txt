@@ -67,6 +67,7 @@ add_library(ozCore
   Set.hh
   SharedLib.cc
   SharedLib.hh
+  SpinLock.cc
   SpinLock.hh
   StackTrace.cc
   StackTrace.hh
