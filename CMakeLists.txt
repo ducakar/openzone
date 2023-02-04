@@ -156,7 +156,7 @@ include_directories(SYSTEM ext/espeak)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_compile_options(-fsized-deallocation -fstrict-enums -ffast-math)
+add_compile_options(-fsized-deallocation -fstrict-enums -ffast-math -fno-exceptions -fno-rtti)
 
 if(BUILD_SHARED_LIBS)
   set(flags "${flags} -fPIC")

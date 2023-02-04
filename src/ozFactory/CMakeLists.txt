@@ -19,6 +19,7 @@ add_library(ozFactory
 #END SOURCES
 )
 
+target_compile_options(ozFactory PRIVATE -fexceptions)
 target_link_libraries(ozFactory ozCore ${ASSIMP_LIBRARIES} ${FREEIMAGE_LIBRARY} ${NOISE_LIBRARY})
 target_link_libraries(ozFactory ${SQUISH_LIBRARY})
 

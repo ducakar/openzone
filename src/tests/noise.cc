@@ -21,11 +21,9 @@
 #include <ozEngine/ozEngine.hh>
 #include <ozFactory/ozFactory.hh>
 
-#include <noise/noise.h>
 #include <SDL2/SDL.h>
 
 using namespace oz;
-using namespace noise;
 
 struct Colour
 {
