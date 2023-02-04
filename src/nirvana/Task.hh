@@ -39,7 +39,7 @@ public:
   using CreateFunc = Task* (const Task* parent);
   using ReadFunc = Task* (Stream* is, const Task* parent);
 
-  int         flags;
+  int          flags = 0;
 
 private:
 
@@ -53,10 +53,13 @@ public:
   static Task* read(Stream* is, const Task* parent);
 
   explicit Task(Mind* mind_, Task* parent_)
-    : flags(0), mind(mind_), parent(parent_)
+    : mind(mind_), parent(parent_)
   {}
 
   virtual ~Task();
+
+  OZ_NO_COPY(Task)
+  OZ_NO_MOVE(Task)
 
   virtual const char* type() const = 0;
 

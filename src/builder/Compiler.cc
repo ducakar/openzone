@@ -127,10 +127,10 @@ struct Node
   Mat4        transf;
   int         firstChild;
   int         nChildren;
-  int         mesh;
+  int         mesh = -1;
   String      name;
 
-  bool        includeInBounds;
+  bool        includeInBounds = true;
 
   Node*       parent;
   List<Node*> children;
@@ -139,25 +139,16 @@ struct Node
   Node*       next[1];
 
   explicit Node(const char* name_ = "", Node* parent_ = nullptr)
-    : transf(Mat4::ID), mesh(-1), name(name_), includeInBounds(true), parent(parent_)
+    : transf(Mat4::ID), name(name_), parent(parent_)
   {}
-
-  Node(Node&& other) noexcept
-    : Node()
-  {
-    swap(*this, other);
-  }
-
-  Node& operator=(Node&& other) noexcept
-  {
-    swap(*this, other);
-    return *this;
-  }
 
   ~Node()
   {
     children.free();
   }
+
+  OZ_NO_COPY(Node)
+  OZ_GENERIC_MOVE(Node)
 
   OZ_STATIC_POOL_ALLOC(pool)
 };
@@ -324,10 +315,10 @@ void Compiler::animPositions(const float* positions_)
   OZ_ASSERT(environment == MODEL);
   OZ_ASSERT(nFrames != 0);
 
-  for (int i = 0; i < positions.size(); ++i) {
-    positions[i].x = *positions_++;
-    positions[i].y = *positions_++;
-    positions[i].z = *positions_++;
+  for (Point& position : positions) {
+    position.x = *positions_++;
+    position.y = *positions_++;
+    position.z = *positions_++;
   }
 }
 
@@ -336,10 +327,10 @@ void Compiler::animNormals(const float* normals_)
   OZ_ASSERT(environment == MODEL);
   OZ_ASSERT(nFrames != 0);
 
-  for (int i = 0; i < normals.size(); ++i) {
-    normals[i].x = *normals_++;
-    normals[i].y = *normals_++;
-    normals[i].z = *normals_++;
+  for (Vec3& normal : normals) {
+    normal.x = *normals_++;
+    normal.y = *normals_++;
+    normal.z = *normals_++;
   }
 }
 
@@ -541,7 +532,7 @@ void Compiler::vertex(float x, float y, float z)
   currentVert.pos.y = y;
   currentVert.pos.z = z;
 
-  int index;
+  int index = 0;
 
   if (caps & UNIQUE) {
     index = int(&vertices.include(currentVert) - vertices.begin());
@@ -702,15 +693,15 @@ void Compiler::writeModel(Stream* os, bool globalTextures)
 
   int nIndices = 0;
 
-  for (int i = 0; i < meshes.size(); ++i) {
-    textures.include(meshes[i].texture);
+  for (Mesh& mesh : meshes) {
+    textures.include(mesh.texture);
 
-    meshes[i].firstIndex = nIndices;
-    meshes[i].nIndices   = meshes[i].indices.size();
+    mesh.firstIndex = nIndices;
+    mesh.nIndices   = mesh.indices.size();
 
-    indices.addAll(meshes[i].indices.begin(), meshes[i].indices.size());
+    indices.addAll(mesh.indices.begin(), mesh.indices.size());
 
-    nIndices += meshes[i].nIndices;
+    nIndices += mesh.nIndices;
   }
 
   int nNodes = -1;
@@ -902,13 +893,13 @@ void Compiler::buildModelTextures(const File& destDir)
 
   List<String> textures;
 
-  for (int i = 0; i < meshes.size(); ++i) {
-    textures.include(meshes[i].texture);
+  for (const Mesh& mesh : meshes) {
+    textures.include(mesh.texture);
   }
   textures.exclude(String::EMPTY);
 
-  for (int i = 0; i < textures.size(); ++i) {
-    context.buildTexture(textures[i], destDir / File(textures[i]).name());
+  for (const String& texture : textures) {
+    context.buildTexture(texture, destDir / File(texture).name());
   }
 }
 

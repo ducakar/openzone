@@ -39,13 +39,16 @@ private:
 
   using Imago::Imago;
 
-  ~SMMVehicleImago() override;
-
 public:
 
   static Pool<SMMVehicleImago> pool;
 
   static Imago* create(const Object* obj_);
+
+  ~SMMVehicleImago() override;
+
+  OZ_NO_COPY(SMMVehicleImago)
+  OZ_NO_MOVE(SMMVehicleImago)
 
   void draw(const Imago* parent) override;
 

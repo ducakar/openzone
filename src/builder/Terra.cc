@@ -216,9 +216,9 @@ void Terra::saveMatrix()
 
   os.writeInt(VERTS);
 
-  for (int x = 0; x < VERTS; ++x) {
-    for (int y = 0; y < VERTS; ++y) {
-      os.writeFloat(quads[x][y].vertex.z);
+  for (const auto& quad : quads) {
+    for (const Quad& y : quad) {
+      os.writeFloat(y.vertex.z);
     }
   }
 

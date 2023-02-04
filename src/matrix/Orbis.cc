@@ -588,11 +588,11 @@ void Orbis::unload()
     }
   }
 
-  for (int i = 0; i < Orbis::CELLS; ++i) {
-    for (int j = 0; j < Orbis::CELLS; ++j) {
-      cells[i][j].structs.clear();
-      cells[i][j].objects.clear();
-      cells[i][j].frags.clear();
+  for (auto& column : cells) {
+    for (auto& cell : column) {
+      cell.structs.clear();
+      cell.objects.clear();
+      cell.frags.clear();
     }
   }
 

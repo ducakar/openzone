@@ -34,11 +34,11 @@ void Terra::load(int id_)
   id = id_;
 
   if (id == -1) {
-    for (int x = 0; x < VERTS; ++x) {
-      for (int y = 0; y < VERTS; ++y) {
-        quads[x][y].vertex.z   = 0.0f;
-        quads[x][y].normals[0] = Vec3(0.0f, 0.0f, 1.0f);
-        quads[x][y].normals[1] = Vec3(0.0f, 0.0f, 1.0f);
+    for (auto& column : quads) {
+      for (Quad& quad : column) {
+        quad.vertex.z   = 0.0f;
+        quad.normals[0] = Vec3(0.0f, 0.0f, 1.0f);
+        quad.normals[1] = Vec3(0.0f, 0.0f, 1.0f);
       }
     }
   }
@@ -58,23 +58,21 @@ void Terra::load(int id_)
       OZ_ERROR("Invalid dimension %d, should be %d", max, VERTS);
     }
 
-    for (int x = 0; x < VERTS; ++x) {
-      for (int y = 0; y < VERTS; ++y) {
-        quads[x][y].vertex.z = is.readFloat();
+    for (auto& column : quads) {
+      for (Quad& quad : column) {
+        quad.vertex.z = is.readFloat();
       }
     }
 
     for (int x = 0; x < QUADS; ++x) {
       for (int y = 0; y < QUADS; ++y) {
-        if (x != QUADS && y != QUADS) {
-          const Point& a = quads[x    ][y    ].vertex;
-          const Point& b = quads[x + 1][y    ].vertex;
-          const Point& c = quads[x + 1][y + 1].vertex;
-          const Point& d = quads[x    ][y + 1].vertex;
+        const Point& a = quads[x    ][y    ].vertex;
+        const Point& b = quads[x + 1][y    ].vertex;
+        const Point& c = quads[x + 1][y + 1].vertex;
+        const Point& d = quads[x    ][y + 1].vertex;
 
-          quads[x][y].normals[0] = ~((c - b) ^ (a - b));
-          quads[x][y].normals[1] = ~((a - d) ^ (c - d));
-        }
+        quads[x][y].normals[0] = ~((c - b) ^ (a - b));
+        quads[x][y].normals[1] = ~((a - d) ^ (c - d));
       }
     }
 

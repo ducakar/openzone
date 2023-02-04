@@ -64,7 +64,7 @@ public:
   /**
    * No moving.
    */
-  SpinLock(SpinLock&&) noexcept = delete;
+  SpinLock(SpinLock&&) = delete;
 
   /**
    * No copying.
@@ -74,7 +74,7 @@ public:
   /**
    * No moving.
    */
-  SpinLock& operator=(SpinLock&&) noexcept = delete;
+  SpinLock& operator=(SpinLock&&) = delete;
 
   /**
    * Loop performing a lock operation until it succeeds.

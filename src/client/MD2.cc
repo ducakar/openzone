@@ -202,8 +202,8 @@ void MD2::AnimState::advance()
       frameFreq = float(nFrames) * stepInc / Timer::TICK_TIME;
     }
     else if ((inferredType == ANIM_ATTACK || inferredType == ANIM_CROUCH_ATTACK)) {
-      const Weapon* weapon = orbis.obj<const Weapon>(bot->weapon);
-      float         shotInterval;
+      const Weapon* weapon       = orbis.obj<const Weapon>(bot->weapon);
+      float         shotInterval = 0.0f;
 
       if (weapon == nullptr) {
         const BotClass* clazz = static_cast<const BotClass*>(bot->clazz);

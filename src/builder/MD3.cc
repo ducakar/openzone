@@ -31,7 +31,7 @@ void MD3::readAnimData()
 
   String realPath = animFile.realDirectory() + "/" + animFile;
 
-  FILE* fs = fopen(realPath, "r");
+  FILE* fs = fopen(realPath, "re");
   if (fs == nullptr) {
     OZ_ERROR("Reading animation data failed");
   }
@@ -182,18 +182,18 @@ void MD3::buildMesh(const char* name, int meshFrame)
     is.rewind();
     is.readSkip(surfaceStart + surface.offTriangles);
 
-    for (int j = 0; j < surfaceTriangles.size(); ++j) {
-      surfaceTriangles[j].vertices[0] = is.readInt();
-      surfaceTriangles[j].vertices[1] = is.readInt();
-      surfaceTriangles[j].vertices[2] = is.readInt();
+    for (MD3Triangle& surfaceTriangle : surfaceTriangles) {
+      surfaceTriangle.vertices[0] = is.readInt();
+      surfaceTriangle.vertices[1] = is.readInt();
+      surfaceTriangle.vertices[2] = is.readInt();
     }
 
     is.rewind();
     is.readSkip(surfaceStart + surface.offShaders);
 
-    for (int j = 0; j < surfaceShaders.size(); ++j) {
-      Arrays::copy(is.readSkip(64), 64, surfaceShaders[j].name);
-      surfaceShaders[j].index = is.readInt();
+    for (MD3Shader& surfaceShader : surfaceShaders) {
+      Arrays::copy(is.readSkip(64), 64, surfaceShader.name);
+      surfaceShader.index = is.readInt();
     }
 
     if (skin.isEmpty()) {
@@ -208,9 +208,9 @@ void MD3::buildMesh(const char* name, int meshFrame)
     is.rewind();
     is.readSkip(surfaceStart + surface.offTexCoords);
 
-    for (int j = 0; j < surfaceTexCoords.size(); ++j) {
-      surfaceTexCoords[j].u = is.readFloat();
-      surfaceTexCoords[j].v = 1.0f - is.readFloat();
+    for (TexCoord& surfaceTexCoord : surfaceTexCoords) {
+      surfaceTexCoord.u = is.readFloat();
+      surfaceTexCoord.v = 1.0f - is.readFloat();
     }
 
     is.rewind();
@@ -237,12 +237,11 @@ void MD3::buildMesh(const char* name, int meshFrame)
     compiler.texture(dir / texture);
     compiler.begin(Compiler::TRIANGLES);
 
-    for (int j = 0; j < surfaceTriangles.size(); ++j) {
-      for (int k = 0; k < 3; ++k) {
-        int l = surfaceTriangles[j].vertices[k];
-        int m = meshFrame == -1 ? l : meshFrame * surface.nVertices + l;
+    for (const MD3Triangle& surfaceTriangle : surfaceTriangles) {
+      for (int vertexIndex : surfaceTriangle.vertices) {
+         int m = meshFrame == -1 ? vertexIndex : meshFrame * surface.nVertices + vertexIndex;
 
-        compiler.texCoord(surfaceTexCoords[l]);
+        compiler.texCoord(surfaceTexCoords[vertexIndex]);
         compiler.normal(meshTransf * normals[m]);
         compiler.vertex(meshTransf * vertices[m]);
       }

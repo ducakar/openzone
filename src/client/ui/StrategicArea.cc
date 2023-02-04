@@ -161,7 +161,7 @@ void StrategicArea::collectHovers()
           if ((obj.flags & Object::SOLID_BIT) &&
               (obj.flags & (Object::BOT_BIT | Object::VEHICLE_BIT)))
           {
-            int  projX, projY;
+            int  projX = 0, projY = 0;
             bool hasProj = projectPoint(obj.p, &projX, &projY);
 
             if (hasProj && drag.minX <= projX && projX <= drag.maxX &&
@@ -188,7 +188,7 @@ void StrategicArea::drawHoverTitle(const Span& span, const char* title)
 
 void StrategicArea::drawHoverRect(const Span& span, const Struct* str, const Object* obj)
 {
-  float life;
+  float life     = 0.0f;
   float status   = -1.0f;
   int   barWidth = span.maxX - span.minX + 4;
 

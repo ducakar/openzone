@@ -41,8 +41,8 @@ void Caelum::build(const char* name)
   File dir = String::format("caelum/%s", name);
   dir.mkdir();
 
-  for (int i = 0; i < 6; ++i) {
-    File path = String::format("@caelum/%s/%s", name, client::Caelum::SKYBOX_FACES[i]);
+  for (const char* faceName : client::Caelum::SKYBOX_FACES) {
+    File path = String::format("@caelum/%s/%s", name, faceName);
 
     context.buildTexture(path, path.toNative(), false);
   }

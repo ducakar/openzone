@@ -62,7 +62,7 @@ int main(int, char**)
   bool      isAlive = true;
   SDL_Event event;
 
-  uint texId;
+  uint texId = 0;
   glGenTextures(1, &texId);
   glBindTexture(GL_TEXTURE_2D, texId);
 

@@ -78,7 +78,7 @@ public:
     /**
      * No moving.
      */
-    Read(Read&&) noexcept = delete;
+    Read(Read&&) = delete;
 
     /**
      * No copying.
@@ -88,7 +88,7 @@ public:
     /**
      * No moving.
      */
-    Read& operator=(Read&&) noexcept = delete;
+    Read& operator=(Read&&) = delete;
 
     /**
      * Wait until reader lock is acquired.
@@ -153,7 +153,7 @@ public:
     /**
      * No moving.
      */
-    Write(Write&&) noexcept = delete;
+    Write(Write&&) = delete;
 
     /**
      * No copying.
@@ -163,7 +163,7 @@ public:
     /**
      * No moving.
      */
-    Write& operator=(Write&&) noexcept = delete;
+    Write& operator=(Write&&) = delete;
 
     /**
      * Wait until writer lock is acquired.
@@ -224,7 +224,7 @@ public:
   /**
    * No moving.
    */
-  RWLock(RWLock&&) noexcept = delete;
+  RWLock(RWLock&&) = delete;
 
   /**
    * No copying.
@@ -234,7 +234,7 @@ public:
   /**
    * No moving.
    */
-  RWLock& operator=(RWLock&&) noexcept = delete;
+  RWLock& operator=(RWLock&&) = delete;
 
 };
 

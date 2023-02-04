@@ -150,18 +150,6 @@ Cursor::~Cursor()
   destroy();
 }
 
-Cursor::Cursor(Cursor&& other) noexcept
-  : Cursor()
-{
-  swap(*this, other);
-}
-
-Cursor& Cursor::operator=(Cursor&& other) noexcept
-{
-  swap(*this, other);
-  return *this;
-}
-
 void Cursor::reset()
 {
   frame_         = 0;

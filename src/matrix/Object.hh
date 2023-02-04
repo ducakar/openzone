@@ -258,8 +258,8 @@ public:
 
   virtual ~Object();
 
-  Object(const Object&) = delete;
-  Object& operator=(const Object&) = delete;
+  OZ_NO_COPY(Object)
+  OZ_NO_MOVE(Object)
 
   /**
    * Add an event to the object. Events can be used for reporting collisions, sounds etc.

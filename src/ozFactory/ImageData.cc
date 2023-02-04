@@ -35,16 +35,4 @@ ImageData::~ImageData()
   delete[] pixels_;
 }
 
-ImageData::ImageData(ImageData&& other) noexcept
-  : ImageData()
-{
-  swap(*this, other);
-}
-
-ImageData& ImageData::operator=(ImageData&& other) noexcept
-{
-  swap(*this, other);
-  return *this;
-}
-
 }

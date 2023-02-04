@@ -578,7 +578,7 @@ int Builder::main(int argc, char** argv)
   context.useFast     = false;
 
   optind = 1;
-  int opt;
+  int opt = 0;
   while ((opt = getopt(argc, argv, "lugctbeafpmsxkriARCFZ7h?")) >= 0) {
     switch (opt) {
       case 'l': {

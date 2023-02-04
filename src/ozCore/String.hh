@@ -115,7 +115,7 @@ public:
    * True iff the C string is empty.
    */
   OZ_ALWAYS_INLINE
-  static bool isEmpty(const char* s)
+  static bool isEmpty(const char* s) noexcept
   {
     return s[0] == '\0';
   }
@@ -210,7 +210,7 @@ public:
    * True iff character is an ASCII digit.
    */
   OZ_ALWAYS_INLINE
-  static bool isDigit(char c)
+  static bool isDigit(char c) noexcept
   {
     return '0' <= c && c <= '9';
   }
@@ -219,7 +219,7 @@ public:
    * True iff character is an ASCII letter.
    */
   OZ_ALWAYS_INLINE
-  static bool isLetter(char c)
+  static bool isLetter(char c) noexcept
   {
     return ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z');
   }
@@ -228,7 +228,7 @@ public:
    * True iff character is a space.
    */
   OZ_ALWAYS_INLINE
-  static bool isSpace(char c)
+  static bool isSpace(char c) noexcept
   {
     return c == ' ' || c == '\t';
   }
@@ -237,7 +237,7 @@ public:
    * True iff character is a space, horizontal tab or newline.
    */
   OZ_ALWAYS_INLINE
-  static bool isBlank(char c)
+  static bool isBlank(char c) noexcept
   {
     return c == ' ' || c == '\t' || c == '\n' || c == '\r';
   }

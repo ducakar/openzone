@@ -68,30 +68,14 @@ public:
    */
   Font(const File& file, int height);
 
-  /**
-   * No copying.
-   */
-  Font(const Font&) = delete;
-
-  /**
-   * Move constructor.
-   */
-  Font(Font&& other) noexcept;
-
-  /**
-   * No copying.
-   */
-  Font& operator=(const Font&) = delete;
-
-  /**
-   * Move operator.
-   */
-  Font& operator=(Font&& other) noexcept;
+  OZ_NO_COPY(Font)
+  OZ_GENERIC_MOVE(Font)
 
   /**
    * Height.
    */
-  int height() const
+  OZ_ALWAYS_INLINE
+  int height() const noexcept
   {
     return fontHeight_;
   }

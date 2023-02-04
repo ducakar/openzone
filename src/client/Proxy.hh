@@ -32,7 +32,11 @@ class Proxy
 {
 public:
 
+  Proxy()                              = default;
   virtual ~Proxy();
+
+  OZ_NO_COPY(Proxy)
+  OZ_NO_MOVE(Proxy)
 
   virtual void begin()                 = 0;
   virtual void end()                   = 0;

@@ -454,18 +454,6 @@ Lua::~Lua()
   destroy();
 }
 
-Lua::Lua(Lua&& other) noexcept
-  : Lua()
-{
-  swap(*this, other);
-}
-
-Lua& Lua::operator=(Lua&& other) noexcept
-{
-  swap(*this, other);
-  return *this;
-}
-
 Lua::Result Lua::operator()(const char* code) const
 {
   if (luaL_dostring(l_, code) != 0) {

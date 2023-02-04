@@ -81,7 +81,7 @@ void ModelField::onDraw()
   if (bsp != nullptr || model != -1) {
     BSPImago* bspModel = nullptr;
     Model*    objModel = nullptr;
-    float     dim;
+    float     dim      = 0.0f;
 
     if (bsp != nullptr) {
       bspModel = context.requestBSP(bsp);

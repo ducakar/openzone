@@ -59,6 +59,9 @@ public:
   explicit PartGen(Stream* is);
   ~PartGen();
 
+  OZ_NO_COPY(PartGen)
+  OZ_NO_MOVE(PartGen)
+
   void update();
   void schedule();
 

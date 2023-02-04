@@ -57,9 +57,15 @@ public:
   float           mass;
   float           elasticity;
 
-  // no copying
-  Frag(const Frag&) = delete;
-  Frag& operator=(const Frag&) = delete;
+public:
+
+  explicit Frag(const FragPool* pool_, int index_, const Point& p_, const Vec3& velocity_);
+  explicit Frag(const FragPool* pool_, Stream* is);
+
+  ~Frag() = default;
+
+  OZ_NO_COPY(Frag)
+  OZ_NO_MOVE(Frag)
 
   void damage(float damage)
   {
@@ -69,11 +75,6 @@ public:
       life = 0.0f;
     }
   }
-
-public:
-
-  explicit Frag(const FragPool* pool_, int index_, const Point& p_, const Vec3& velocity_);
-  explicit Frag(const FragPool* pool_, Stream* is);
 
   void write(Stream* os) const;
 

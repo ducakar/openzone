@@ -53,6 +53,9 @@ public:
   explicit FragPool(const oz::FragPool* pool_);
   ~FragPool();
 
+  OZ_NO_COPY(FragPool)
+  OZ_NO_MOVE(FragPool)
+
   void draw(const Frag* frag);
 
 };

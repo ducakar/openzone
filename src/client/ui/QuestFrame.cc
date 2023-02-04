@@ -40,7 +40,7 @@ void QuestFrame::updateTask()
       title.setText("%s", quest.title.c());
     }
     else {
-      const char* stateText;
+      const char* stateText = nullptr;
 
       if (quest.state == Quest::PENDING) {
         stateText = OZ_GETTEXT("in progress");

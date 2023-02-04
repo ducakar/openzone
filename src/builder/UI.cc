@@ -84,9 +84,9 @@ void UI::buildIcons()
     builtIcons.add(name);
   }
 
-  for (int i = 0; i < Arrays::size(ICON_NAMES); ++i) {
-    if (!builtIcons.contains(ICON_NAMES[i])) {
-      OZ_ERROR("Mission icon: %s", ICON_NAMES[i]);
+  for (const char* name : ICON_NAMES) {
+    if (!builtIcons.contains(name)) {
+      OZ_ERROR("Mission icon: %s", name);
     }
   }
 

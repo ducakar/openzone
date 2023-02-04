@@ -67,31 +67,14 @@ public:
    */
   ~ImageData();
 
-  /**
-   * No copying.
-   */
-  ImageData(const ImageData&) = delete;
-
-  /**
-   * Move constructor, moves pixel data.
-   */
-  ImageData(ImageData&& other) noexcept;
-
-  /**
-   * No copying.
-   */
-  ImageData& operator=(const ImageData&) = delete;
-
-  /**
-   * Move operator, moves pixel data.
-   */
-  ImageData& operator=(ImageData&& other) noexcept;
+  OZ_NO_COPY(ImageData)
+  OZ_GENERIC_MOVE(ImageData)
 
   /**
    * Width.
    */
   OZ_ALWAYS_INLINE
-  int width() const
+  int width() const noexcept
   {
     return width_;
   }
@@ -100,7 +83,7 @@ public:
    * Height.
    */
   OZ_ALWAYS_INLINE
-  int height() const
+  int height() const noexcept
   {
     return height_;
   }
@@ -109,7 +92,7 @@ public:
    * True iff it has transparency.
    */
   OZ_ALWAYS_INLINE
-  bool hasAlpha() const
+  bool hasAlpha() const noexcept
   {
     return flags_ & ALPHA_BIT;
   }
@@ -132,7 +115,7 @@ public:
    * Constant pixel data.
    */
   OZ_ALWAYS_INLINE
-  const char* pixels() const
+  const char* pixels() const noexcept
   {
     return pixels_;
   }
@@ -141,7 +124,7 @@ public:
    * Non-constant pixel data.
    */
   OZ_ALWAYS_INLINE
-  char* pixels()
+  char* pixels() noexcept
   {
     return pixels_;
   }
@@ -150,7 +133,7 @@ public:
    * True iff it holds no image data.
    */
   OZ_ALWAYS_INLINE
-  bool isEmpty() const
+  bool isEmpty() const noexcept
   {
     return pixels_ == nullptr;
   }
@@ -159,7 +142,7 @@ public:
    * Pixels size in bytes.
    */
   OZ_ALWAYS_INLINE
-  int size() const
+  int size() const noexcept
   {
     return width_ * height_ * 4;
   }

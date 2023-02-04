@@ -49,8 +49,8 @@ public:
   explicit BSPImago(const BSP* bsp);
   ~BSPImago();
 
-  BSPImago(const BSPImago&) = delete;
-  BSPImago& operator=(const BSPImago&) = delete;
+  OZ_NO_COPY(BSPImago)
+  OZ_NO_MOVE(BSPImago)
 
   Vec3 dim() const
   {

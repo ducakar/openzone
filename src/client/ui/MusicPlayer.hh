@@ -57,6 +57,9 @@ public:
   MusicPlayer();
   ~MusicPlayer() override;
 
+  OZ_NO_COPY(MusicPlayer)
+  OZ_NO_MOVE(MusicPlayer)
+
 };
 
 }

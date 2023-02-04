@@ -66,6 +66,9 @@ public:
   GalileoFrame();
   ~GalileoFrame() override;
 
+  OZ_NO_COPY(GalileoFrame)
+  OZ_NO_MOVE(GalileoFrame)
+
   void setMaximised(bool doMaximise);
 
 };

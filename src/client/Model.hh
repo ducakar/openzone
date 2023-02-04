@@ -245,6 +245,9 @@ public:
   explicit Model(const char* path_);
   ~Model();
 
+  OZ_NO_COPY(Model)
+  OZ_NO_MOVE(Model)
+
   bool isPreloaded() const
   {
     return preloadData != nullptr;

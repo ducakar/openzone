@@ -39,13 +39,16 @@ private:
 
   using Imago::Imago;
 
-  ~SMMImago() override;
-
 public:
 
   static Pool<SMMImago> pool;
 
   static Imago* create(const Object* obj_);
+
+  ~SMMImago() override;
+
+  OZ_NO_COPY(SMMImago)
+  OZ_NO_MOVE(SMMImago)
 
   void draw(const Imago* parent) override;
 

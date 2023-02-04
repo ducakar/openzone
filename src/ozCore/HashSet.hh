@@ -120,7 +120,7 @@ protected:
     /**
      * Advance to the next element.
      */
-    HashIterator& operator++() noexcept
+    HashIterator& operator++()
     {
       OZ_ASSERT(elem_ != nullptr);
 

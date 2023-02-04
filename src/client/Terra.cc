@@ -266,9 +266,9 @@ void Terra::unload()
   glDeleteBuffers(TILES * TILES, &vbos[0][0]);
 
   ibo = 0;
-  for (int i = 0; i < TILES; ++i) {
-    for (int j = 0; j < TILES; ++j) {
-      vbos[i][j] = 0;
+  for (auto& column : vbos) {
+    for (uint& quad : column) {
+      quad = 0;
     }
   }
 

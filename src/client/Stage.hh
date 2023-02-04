@@ -34,7 +34,11 @@ public:
 
   static Stage* nextStage;
 
+  Stage()                              = default;
   virtual ~Stage();
+
+  OZ_NO_COPY(Stage)
+  OZ_NO_MOVE(Stage)
 
   virtual bool update()                = 0;
   virtual void present(bool isFull)    = 0;

@@ -39,13 +39,16 @@ private:
 
   using Imago::Imago;
 
-  ~MD2WeaponImago() override;
-
 public:
 
   static Pool<MD2WeaponImago> pool;
 
   static Imago* create(const Object* obj_);
+
+  ~MD2WeaponImago() override;
+
+  OZ_NO_COPY(MD2WeaponImago)
+  OZ_NO_MOVE(MD2WeaponImago)
 
   void draw(const Imago* parent) override;
 

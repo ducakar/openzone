@@ -37,7 +37,7 @@ static noise::module::Turbulence  turbulence;
 static noise::module::Billow      noiseBase;
 static noise::module::ScaleBias   noiseFinal;
 static List<Vec4>                 gradientPoints;
-static bool                       isInitialised  = false;
+static bool                       isInitialised = false;
 
 static void ensureInitialised()
 {
@@ -313,7 +313,7 @@ ImageData TerraBuilder::generateImage(int width, int height)
 {
   ensureInitialised();
 
-  ImageData  image(width, height, false);
+  ImageData image(width, height, false);
   int    stride  = width * 4;
   double dWidth  = width;
   double dHeight = height;

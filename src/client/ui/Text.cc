@@ -46,6 +46,11 @@ void Text::realign()
   }
 }
 
+Text::~Text()
+{
+  clear();
+}
+
 Text::Text(int x_, int y_, int width_, int align_, Font* font_, const char* s, ...)
   : x(x_), y(y_), width(width_), align(align_), font(font_)
 {
@@ -53,23 +58,6 @@ Text::Text(int x_, int y_, int width_, int align_, Font* font_, const char* s, .
   va_start(ap, s);
   setTextv(s, ap);
   va_end(ap);
-}
-
-Text::~Text()
-{
-  clear();
-}
-
-Text::Text(Text&& other) noexcept
-  : Text()
-{
-  swap(*this, other);
-}
-
-Text& Text::operator=(Text&& other) noexcept
-{
-  swap(*this, other);
-  return *this;
 }
 
 void Text::setPosition(int x_, int y_)
@@ -126,8 +114,8 @@ void Text::setTextv(const char* s, va_list ap)
         }
 
         glBindTexture(GL_TEXTURE_2D, texId);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
         font->upload(buffer, &texWidth, &texHeight);
 

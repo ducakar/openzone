@@ -323,7 +323,8 @@ void Collider::trimAABBObj(const Object* sObj)
   }
 
   for (int i = firstPlane; i < 3; ++i) {
-    float startDist, endDist;
+    float startDist = 0.0f;
+    float endDist   = 0.0f;
 
     startDist = +relStartPos[i] - sumDim[i];
     endDist   = +relEndPos[i]   - sumDim[i];

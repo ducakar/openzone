@@ -55,12 +55,13 @@ public:
 public:
 
   Mind() = default;
-  explicit Mind(int bot_);
-  explicit Mind(int bot_, Stream* is);
   ~Mind();
 
-  Mind(Mind&& other) noexcept;
-  Mind& operator=(Mind&& other) noexcept;
+  explicit Mind(int bot_);
+  explicit Mind(int bot_, Stream* is);
+
+  OZ_NO_COPY(Mind)
+  OZ_GENERIC_MOVE(Mind)
 
   void update(bool doRegularUpdate);
 

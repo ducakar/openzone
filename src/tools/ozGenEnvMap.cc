@@ -42,7 +42,7 @@ int main(int argc, char** argv)
 
   int size = 32;
 
-  int opt;
+  int opt = 0;
   while ((opt = getopt(argc, argv, "CM")) >= 0) {
     switch (opt) {
       case 'C': {
@@ -66,8 +66,7 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
   else if (nArgs == 1) {
-    const char* end;
-
+    const char* end = nullptr;
     size = String::parseInt(argv[optind], &end);
 
     if (*end != '\0') {

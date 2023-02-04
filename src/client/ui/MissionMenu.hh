@@ -92,6 +92,9 @@ public:
   MissionMenu();
   ~MissionMenu() override;
 
+  OZ_NO_COPY(MissionMenu)
+  OZ_NO_MOVE(MissionMenu)
+
 };
 
 }

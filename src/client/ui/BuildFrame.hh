@@ -74,6 +74,9 @@ public:
   BuildFrame();
   ~BuildFrame() override;
 
+  OZ_NO_COPY(BuildFrame)
+  OZ_NO_MOVE(BuildFrame)
+
 };
 
 }

@@ -28,10 +28,16 @@ using namespace oz;
 
 #if 1
 # define VecX Vec3
-# define CreateVecX(x, y, z, w) Vec3(x, y, z)
+constexpr Vec3 CreateVecX(float x, float y, float z, float)
+{
+  return Vec3(x, y, z);
+}
 #else
 # define VecX Vec4
-# define CreateVecX(x, y, z, w) Vec4(x, y, z, w)
+constexpr Vec4 CreateVecX(float x, float y, float z, float)
+{
+  return Vec4(x, y, z, w);
+}
 #endif
 
 static constexpr int MAX = 10000;

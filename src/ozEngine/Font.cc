@@ -67,18 +67,6 @@ Font::~Font()
   close();
 }
 
-Font::Font(Font&& other) noexcept
-  : Font()
-{
-  swap(*this, other);
-}
-
-Font& Font::operator=(Font&& other) noexcept
-{
-  swap(*this, other);
-  return *this;
-}
-
 void Font::sizeOf(const char* s, int* width, int* height) const
 {
   TTF_Font* font = static_cast<TTF_Font*>(handle_);

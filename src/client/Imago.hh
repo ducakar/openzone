@@ -46,17 +46,20 @@ protected:
 
 public:
 
-  int flags;
+  int flags = 0;
 
 protected:
 
   explicit Imago(const Object* obj_)
-    : obj(obj_), clazz(obj_->clazz), flags(0)
+    : obj(obj_), clazz(obj_->clazz)
   {}
 
 public:
 
   virtual ~Imago();
+
+  OZ_NO_COPY(Imago)
+  OZ_NO_MOVE(Imago)
 
   virtual void draw(const Imago* parent) = 0;
 

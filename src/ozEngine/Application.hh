@@ -61,7 +61,7 @@ public:
     /**
      * No moving.
      */
-    Stage(Stage&&) noexcept = delete;
+    Stage(Stage&&) = delete;
 
     /**
      * No copying.
@@ -71,7 +71,7 @@ public:
     /**
      * No moving.
      */
-    Stage& operator=(Stage&&) noexcept = delete;
+    Stage& operator=(Stage&&) = delete;
 
     /**
      * Load stage, called after the previous stage was unloaded.

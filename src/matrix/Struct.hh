@@ -126,9 +126,10 @@ private:
 
 public:
 
-  // no copying
-  Struct(const Struct&) = delete;
-  Struct& operator=(const Struct&) = delete;
+  ~Struct() = default;
+
+  OZ_NO_COPY(Struct)
+  OZ_NO_MOVE(Struct)
 
   /**
    * Rotate vector from structure coordinate system to absolute coordinate system.

@@ -79,7 +79,7 @@ void Audio::playContSound(int sound, float volume, const Object* parent) const
 
   Context::ContSource* contSource = context.contSources.find(key);
   const Dynamic*       dynParent  = static_cast<const Dynamic*>(parent);
-  uint                 srcId;
+  uint                 srcId      = 0;
 
   if (contSource == nullptr) {
     Context::ContSource* newSource = context.addContSource(sound, key);
@@ -116,8 +116,8 @@ void Audio::playContSound(int sound, float volume, const Object* parent) const
 bool Audio::playSpeak(const char* text, float volume, const Object* parent) const
 {
   const Dynamic* dynParent = static_cast<const Dynamic*>(parent);
-  int            owner = context.speakSource.owner.load<RELAXED>();
-  uint           srcId;
+  int            owner     = context.speakSource.owner.load<RELAXED>();
+  uint           srcId     = 0;
 
   if (owner == -1) {
     if (text == nullptr) {
@@ -169,7 +169,7 @@ void Audio::playEngineSound(int sound, float volume, float pitch, const Object* 
   int key = veh->index * ObjectClass::MAX_SOUNDS + sound;
 
   Context::ContSource* contSource = context.contSources.find(key);
-  uint                 srcId;
+  uint                 srcId      = 0;
 
   if (contSource == nullptr) {
     Context::ContSource* newSource = context.addContSource(sound, key);

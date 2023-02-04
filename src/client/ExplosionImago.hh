@@ -42,13 +42,16 @@ private:
 
   using Imago::Imago;
 
-  ~ExplosionImago() override;
-
 public:
 
   static Pool<ExplosionImago> pool;
 
   static Imago* create(const Object* obj_);
+
+  ~ExplosionImago() override;
+
+  OZ_NO_COPY(ExplosionImago)
+  OZ_NO_MOVE(ExplosionImago)
 
   void draw(const Imago* parent) override;
 

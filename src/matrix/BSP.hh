@@ -180,20 +180,8 @@ public:
 
   explicit BSP(const char* name_, int id_);
 
-  BSP(const BSP&) = delete;
-  BSP& operator=(const BSP&) = delete;
-
-  BSP(BSP&& other) noexcept
-    : BSP()
-  {
-    swap(*this, other);
-  }
-
-  BSP& operator=(BSP&& other) noexcept
-  {
-    swap(*this, other);
-    return *this;
-  }
+  OZ_NO_COPY(BSP)
+  OZ_GENERIC_MOVE(BSP)
 
 };
 

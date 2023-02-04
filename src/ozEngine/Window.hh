@@ -109,7 +109,8 @@ public:
   /**
    * %Window width.
    */
-  static int width()
+  OZ_ALWAYS_INLINE
+  static int width() noexcept
   {
     return windowWidth;
   }
@@ -117,7 +118,8 @@ public:
   /**
    * %Window height.
    */
-  static int height()
+  OZ_ALWAYS_INLINE
+  static int height() noexcept
   {
     return windowHeight;
   }
@@ -125,7 +127,8 @@ public:
   /**
    * True iff in fullscreen mode.
    */
-  static Mode mode()
+  OZ_ALWAYS_INLINE
+  static Mode mode() noexcept
   {
     return windowMode;
   }
@@ -133,7 +136,8 @@ public:
   /**
    * True iff the window is shown (not minimised).
    */
-  static bool isActive()
+  OZ_ALWAYS_INLINE
+  static bool isActive() noexcept
   {
     return windowActive;
   }
@@ -141,7 +145,8 @@ public:
   /**
    * True iff the window has focus.
    */
-  static bool hasFocus()
+  OZ_ALWAYS_INLINE
+  static bool hasFocus() noexcept
   {
     return windowFocus;
   }
@@ -154,7 +159,8 @@ public:
   /**
    * True iff the window has input grab.
    */
-  static bool hasGrab()
+  OZ_ALWAYS_INLINE
+  static bool hasGrab() noexcept
   {
     return windowGrab;
   }

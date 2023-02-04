@@ -125,7 +125,7 @@ public:
    * True iff successfully opened.
    */
   OZ_ALWAYS_INLINE
-  bool isOpened() const
+  bool isOpened() const noexcept
   {
     return handle_ != nullptr;
   }

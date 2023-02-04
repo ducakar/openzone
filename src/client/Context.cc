@@ -105,13 +105,13 @@ int Context::speakCallback(int16* samples, int nSamples, void*)
       return 1;
     }
 
-    int nProcessed;
+    int nProcessed = 0;
     do {
       Thread::sleepFor(100_ms);
 
       speakSource.mutex.lock();
 
-      int state;
+      int state = 0;
       alGetSourcei(speakSource.id, AL_SOURCE_STATE, &state);
       alGetSourcei(speakSource.id, AL_BUFFERS_PROCESSED, &nProcessed);
 
@@ -129,7 +129,7 @@ int Context::speakCallback(int16* samples, int nSamples, void*)
 
     speakSource.mutex.lock();
 
-    ALuint buffer;
+    ALuint buffer = 0;
     alSourceUnqueueBuffers(speakSource.id, 1, &buffer);
     --speakSource.nQueuedBuffers;
 
@@ -175,7 +175,7 @@ Context::Source* Context::addSource(int sound)
 {
   OZ_ASSERT(sounds[sound].nUsers > 0);
 
-  uint srcId;
+  uint srcId = 0;
   alGenSources(1, &srcId);
 
   if (alGetError() != AL_NO_ERROR) {
@@ -207,7 +207,7 @@ Context::ContSource* Context::addContSource(int sound, int key)
 {
   OZ_ASSERT(sounds[sound].nUsers > 0);
 
-  uint srcId;
+  uint srcId = 0;
   alGenSources(1, &srcId);
 
   if (alGetError() != AL_NO_ERROR) {

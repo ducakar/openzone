@@ -65,6 +65,9 @@ public:
 
   virtual ~Audio();
 
+  OZ_NO_COPY(Audio)
+  OZ_NO_MOVE(Audio)
+
   virtual void play(const Object* playAt) = 0;
 
 };

@@ -325,29 +325,12 @@ public:
   public:
 
     /**
-     * No copying.
-     */
-    Field(const Field&) = delete;
-
-    /**
-     * No moving.
-     */
-    Field(Field&& other) = delete;
-
-    /**
      * Destruction, no-op.
      */
     ~Field() = default;
 
-    /**
-     * No copying.
-     */
-    Field& operator=(const Field&) = delete;
-
-    /**
-     * No moving.
-     */
-    Field& operator=(Field&& other) = delete;
+    OZ_NO_COPY(Field)
+    OZ_NO_MOVE(Field)
 
     /**
      * Assign first value of a function's result.
@@ -533,25 +516,8 @@ public:
    */
   ~Lua();
 
-  /**
-   * No copying.
-   */
-  Lua(const Lua&) = delete;
-
-  /**
-   * Move constructor.
-   */
-  Lua(Lua&& other) noexcept;
-
-  /**
-   * No copying.
-   */
-  Lua& operator=(const Lua& other) = delete;
-
-  /**
-   * Move operator.
-   */
-  Lua& operator=(Lua&& other) noexcept;
+  OZ_NO_COPY(Lua)
+  OZ_GENERIC_MOVE(Lua)
 
   /**
    * Execute a chunk of code.

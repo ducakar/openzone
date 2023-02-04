@@ -115,7 +115,7 @@ public:
      * True iff a stream is opened.
      */
     OZ_ALWAYS_INLINE
-    bool isValid() const
+    bool isValid() const noexcept
     {
       return stream_ != nullptr;
     }

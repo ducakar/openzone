@@ -92,7 +92,7 @@ void BSPAudio::playContSound(const Entity* entity, int sound) const
   Vec3          velocity = str->toAbsoluteCS(entity->velocity);
 
   Context::ContSource* contSource = context.contSources.find(key);
-  uint                 srcId;
+  uint                 srcId      = 0;
 
   if (contSource == nullptr) {
     contSource = context.addContSource(sound, key);

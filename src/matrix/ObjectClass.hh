@@ -88,7 +88,11 @@ public:
 
 public:
 
+  ObjectClass() = default;
   virtual ~ObjectClass();
+
+  OZ_NO_COPY(ObjectClass)
+  OZ_NO_MOVE(ObjectClass)
 
   static ObjectClass* createClass();
 

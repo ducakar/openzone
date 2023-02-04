@@ -312,21 +312,21 @@ void MD2::build(const File& path)
   is.rewind();
   is.readSkip(header.offTexCoords);
 
-  for (int i = 0; i < texCoords.size(); ++i) {
-    texCoords[i].u = float(is.readInt16()) / float(header.skinWidth);
-    texCoords[i].v = float(is.readInt16()) / float(header.skinHeight);
+  for (TexCoord& texCoord : texCoords) {
+    texCoord.u = float(is.readInt16()) / float(header.skinWidth);
+    texCoord.v = float(is.readInt16()) / float(header.skinHeight);
   }
 
   is.rewind();
   is.readSkip(header.offTriangles);
 
-  for (int i = 0; i < triangles.size(); ++i) {
-    triangles[i].vertices[0]  = is.readInt16();
-    triangles[i].vertices[1]  = is.readInt16();
-    triangles[i].vertices[2]  = is.readInt16();
-    triangles[i].texCoords[0] = is.readInt16();
-    triangles[i].texCoords[1] = is.readInt16();
-    triangles[i].texCoords[2] = is.readInt16();
+  for (MD2Triangle& triangle : triangles) {
+    triangle.vertices[0]  = is.readInt16();
+    triangle.vertices[1]  = is.readInt16();
+    triangle.vertices[2]  = is.readInt16();
+    triangle.texCoords[0] = is.readInt16();
+    triangle.texCoords[1] = is.readInt16();
+    triangle.texCoords[2] = is.readInt16();
   }
 
   compiler.beginModel();

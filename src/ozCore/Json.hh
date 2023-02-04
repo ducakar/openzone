@@ -310,7 +310,7 @@ public:
    * Type of value.
    */
   OZ_ALWAYS_INLINE
-  Type type() const
+  Type type() const noexcept
   {
     return type_;
   }
@@ -319,7 +319,7 @@ public:
    * True iff null.
    */
   OZ_ALWAYS_INLINE
-  bool isNull() const
+  bool isNull() const noexcept
   {
     return type_ == NIL;
   }

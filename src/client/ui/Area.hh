@@ -94,6 +94,9 @@ public:
   explicit Area(int width_, int height_);
   virtual ~Area();
 
+  OZ_NO_COPY(Area)
+  OZ_NO_MOVE(Area)
+
   OZ_ALWAYS_INLINE
   bool isEnabled() const
   {

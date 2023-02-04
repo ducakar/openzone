@@ -167,7 +167,7 @@ public:
    * True iff a joinable thread has been started but not yet joined or detached.
    */
   OZ_ALWAYS_INLINE
-  bool isValid() const
+  bool isValid() const noexcept
   {
     return descriptor_ != nullptr;
   }

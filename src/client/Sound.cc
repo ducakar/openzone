@@ -110,7 +110,7 @@ void Sound::updateMusic()
 
     alSourceStop(musicSource);
 
-    int nQueued;
+    int nQueued = 0;
     alGetSourcei(musicSource, AL_BUFFERS_QUEUED, &nQueued);
 
     if (nQueued != 0) {
@@ -126,14 +126,14 @@ void Sound::updateMusic()
   else {
     bool hasLoaded = false;
 
-    int nProcessed;
+    int nProcessed = 0;
     alGetSourcei(musicSource, AL_BUFFERS_PROCESSED, &nProcessed);
 
     if (nProcessed != 0) {
       if (hasStreamedBytes.load<ACQUIRE>()) {
         hasLoaded = true;
 
-        uint buffer;
+        uint buffer = 0;
         alSourceUnqueueBuffers(musicSource, 1, &buffer);
         musicDecoder.load(buffer);
         alSourceQueueBuffers(musicSource, 1, &buffer);
@@ -159,7 +159,7 @@ void Sound::updateMusic()
     }
 
     if (musicBuffersQueued != 0) {
-      ALint value;
+      ALint value = 0;
       alGetSourcei(musicSource, AL_SOURCE_STATE, &value);
 
       if (value == AL_STOPPED) {
@@ -315,7 +315,7 @@ void Sound::init()
   Log::println("OpenAL renderer: %s", alGetString(AL_RENDERER));
   Log::println("OpenAL version: %s", alGetString(AL_VERSION));
 
-  int nAttributes;
+  int nAttributes = 0;
   alcGetIntegerv(soundDevice, ALC_ATTRIBUTES_SIZE, 1, &nAttributes);
 
   List<int> attributes(nAttributes);

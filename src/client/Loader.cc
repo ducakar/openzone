@@ -110,7 +110,7 @@ void Loader::updateSound()
     while (src != nullptr) {
       Context::Source* next = src->next[0];
 
-      ALint value;
+      ALint value = 0;
       alGetSourcei(src->id, AL_SOURCE_STATE, &value);
 
       if (value != AL_PLAYING) {

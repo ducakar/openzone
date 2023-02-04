@@ -167,8 +167,7 @@ void Vehicle::mechHandler()
 
         float maxRaise = collider.hit.ratio * clazz->mech.stairMax;
 
-        for (float raise = clazz->mech.stairInc; raise <= maxRaise; raise += clazz->mech.stairInc)
-        {
+        for (float raise = clazz->mech.stairInc; raise <= maxRaise; raise += clazz->mech.stairInc) {
           p.z += clazz->mech.stairInc;
           collider.translate(this, desiredMove);
 

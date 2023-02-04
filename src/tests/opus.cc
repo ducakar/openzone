@@ -180,11 +180,11 @@ void MainStage::unload()
 
 void MainStage::update()
 {
-  ALint nProcessed;
+  ALint nProcessed = 0;
   alGetSourcei(source, AL_BUFFERS_PROCESSED, &nProcessed);
 
   if (nProcessed != 0) {
-    ALuint buffer;
+    ALuint buffer = 0;
     alSourceUnqueueBuffers(source, 1, &buffer);
 
     decodeMainSemaphore.wait();

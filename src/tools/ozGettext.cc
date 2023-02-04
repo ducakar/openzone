@@ -359,10 +359,10 @@ static void writePOT(const HashMap<String, String>* hs, const File& outFile)
         }
 
         if (&l == &stringLines.last()) {
-          s = String::format("\"%s\"", l.c());
+          s = String::format(R"("%s")", l.c());
         }
         else {
-          s = String::format("\"%s\\n\"", l.c());
+          s = String::format(R"("%s\n")", l.c());
         }
 
         os.writeLine(s);

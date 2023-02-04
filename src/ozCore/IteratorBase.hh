@@ -109,7 +109,7 @@ public:
   /**
    * Advance to the next element; should be implemented in derived classes.
    */
-  IteratorBase& operator++() noexcept = delete;
+  IteratorBase& operator++() = delete;
 
 };
 

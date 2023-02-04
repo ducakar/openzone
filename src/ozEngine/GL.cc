@@ -212,7 +212,7 @@ int GL::textureDataFromStream(Stream* is, int bias)
 
   is->seek(4 + 124);
 
-  GLenum format;
+  GLenum format = 0;
 
   if (pixelFlags & DDPF_FOURCC) {
     if (String::beginsWith(formatFourCC, "DXT1")) {

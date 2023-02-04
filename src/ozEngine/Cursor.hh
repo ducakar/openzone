@@ -113,30 +113,14 @@ public:
    */
   ~Cursor();
 
-  /**
-   * No copying.
-   */
-  Cursor(const Cursor&) = delete;
-
-  /**
-   * Move constructor.
-   */
-  Cursor(Cursor&& other) noexcept;
-
-  /**
-   * No copying.
-   */
-  Cursor& operator=(const Cursor&) = delete;
-
-  /**
-   * Move operator.
-   */
-  Cursor& operator=(Cursor&& other) noexcept;
+  OZ_NO_COPY(Cursor)
+  OZ_GENERIC_MOVE(Cursor)
 
   /**
    * True iff loaded.
    */
-  bool isValid() const
+  OZ_ALWAYS_INLINE
+  bool isValid() const noexcept
   {
     return !images_.isEmpty();
   }
@@ -144,7 +128,8 @@ public:
   /**
    * Hotspot offset from the left.
    */
-  int hotspotLeft() const
+  OZ_ALWAYS_INLINE
+  int hotspotLeft() const noexcept
   {
     return images_[frame_].hotspotLeft;
   }
@@ -152,7 +137,8 @@ public:
   /**
    * Hotspot offset from the top.
    */
-  int hotspotTop() const
+  OZ_ALWAYS_INLINE
+  int hotspotTop() const noexcept
   {
     return images_[frame_].hotspotTop;
   }
@@ -160,7 +146,8 @@ public:
   /**
    * Cursor image width.
    */
-  int width() const
+  OZ_ALWAYS_INLINE
+  int width() const noexcept
   {
     return images_[frame_].width;
   }
@@ -168,7 +155,8 @@ public:
   /**
    * Cursor image height.
    */
-  int height() const
+  OZ_ALWAYS_INLINE
+  int height() const noexcept
   {
     return images_[frame_].height;
   }
@@ -176,7 +164,8 @@ public:
   /**
    * GL texture id for the current frame.
    */
-  uint textureId() const
+  OZ_ALWAYS_INLINE
+  uint textureId() const noexcept
   {
     return mode_ == SYSTEM ? 0 : images_[frame_].textureId;
   }

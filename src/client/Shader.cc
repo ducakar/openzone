@@ -110,8 +110,8 @@ void Shader::compileShader(uint shaderId, const File& file) const
 
   const char* strings[] = {defines.begin(), is.begin()};
   int         lengths[] = {defines.length(), is.available()};
-  int         result;
-  int         logLength;
+  int         result    = 0;
+  int         logLength = 0;
 
   glShaderSource(shaderId, 2, strings, lengths);
   glCompileShader(shaderId);
@@ -180,10 +180,10 @@ void Shader::loadProgram(int id)
 
   glLinkProgram(programs[id].program);
 
-  int result;
+  int result = 0;
   glGetProgramiv(programs[id].program, GL_LINK_STATUS, &result);
 
-  int length;
+  int length = 0;
   glGetProgramInfoLog(programs[id].program, LOG_BUFFER_SIZE, &length, logBuffer);
   logBuffer[LOG_BUFFER_SIZE - 1] = '\0';
 

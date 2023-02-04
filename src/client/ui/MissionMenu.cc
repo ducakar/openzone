@@ -197,7 +197,7 @@ MissionMenu::MissionMenu()
 
     const char* missionTitle       = lingua.get(descriptionConfig["title"].get(missionName));
     const char* missionDescription = lingua.get(descriptionConfig["description"].get(""));
-    uint        missionImageId;
+    uint        missionImageId     = 0;
 
     MainCall() << [&]
     {

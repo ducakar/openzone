@@ -39,7 +39,7 @@ void Frustum::update()
   float fovX = Math::atan(camera.coeff * camera.mag * camera.aspect);
   float fovY = Math::atan(camera.coeff * camera.mag);
 
-  float sx, cx, sy, cy;
+  float sx = 0.0f, cx = 0.0f, sy = 0.0f, cy = 0.0f;
   Math::sincos(fovX, &sx, &cx);
   Math::sincos(fovY, &sy, &cy);
 

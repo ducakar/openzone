@@ -52,6 +52,9 @@ public:
 
   virtual ~Device();
 
+  OZ_NO_COPY(Device)
+  OZ_NO_MOVE(Device)
+
   virtual const char* type() const = 0;
   virtual const char* getMemo() const;
 

@@ -210,14 +210,8 @@ int Client::main()
         }
         case SDL_WINDOWEVENT: {
           switch (event.window.event) {
-            case SDL_WINDOWEVENT_FOCUS_GAINED: {
-              input.reset();
-              break;
-            }
-            case SDL_WINDOWEVENT_FOCUS_LOST: {
-              input.reset();
-              break;
-            }
+            case SDL_WINDOWEVENT_FOCUS_GAINED:
+            case SDL_WINDOWEVENT_FOCUS_LOST:
             case SDL_WINDOWEVENT_SIZE_CHANGED: {
               input.reset();
               break;
@@ -341,7 +335,7 @@ int Client::init(int argc, char** argv)
   }
 
   optind = 1;
-  int opt;
+  int opt = 0;
   while ((opt = getopt(argc, argv, "li:e:t:L:p:vhH?")) != -1) {
     switch (opt) {
       case 'l': {
@@ -357,7 +351,7 @@ int Client::init(int argc, char** argv)
         break;
       }
       case 't': {
-        const char* end;
+        const char* end = nullptr;
         benchmarkDuration = String::parseDouble(optarg, &end) * 1_s;
 
         if (end == optarg) {
@@ -595,7 +589,7 @@ int Client::init(int argc, char** argv)
 
   appConfig.include("seed", "TIME");
 
-  int seed;
+  int seed = 0;
 
   if (appConfig["seed"].type() == Json::STRING) {
     if (appConfig["seed"].get(String::EMPTY) != "TIME") {

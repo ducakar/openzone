@@ -78,47 +78,47 @@ void Context::buildTexture(const File& basePath, const File& destBasePath, bool 
 
   File diffuse, masks, specular, emission, normals;
 
-  for (int i = 0; i < Arrays::size(IMAGE_EXTENSIONS); ++i) {
+  for (const char* extension : IMAGE_EXTENSIONS) {
     if (diffuse.isEmpty() || !diffuse.exists()) {
-      diffuse = diffuseBasePath + IMAGE_EXTENSIONS[i];
+      diffuse = diffuseBasePath + extension;
     }
 
     if (allLayers) {
       if (masks.isEmpty() || !masks.exists()) {
-        masks = masksBasePath + IMAGE_EXTENSIONS[i];
+        masks = masksBasePath + extension;
       }
 
       if (specular.isEmpty() || !specular.exists()) {
-        specular = specular1BasePath + IMAGE_EXTENSIONS[i];
+        specular = specular1BasePath + extension;
       }
       if (!specular.exists()) {
-        specular = specular2BasePath + IMAGE_EXTENSIONS[i];
+        specular = specular2BasePath + extension;
       }
       if (!specular.exists()) {
-        specular = specular3BasePath + IMAGE_EXTENSIONS[i];
+        specular = specular3BasePath + extension;
       }
 
       if (emission.isEmpty() || !emission.exists()) {
-        emission = emission1BasePath + IMAGE_EXTENSIONS[i];
+        emission = emission1BasePath + extension;
       }
       if (!emission.exists()) {
-        emission = emission2BasePath + IMAGE_EXTENSIONS[i];
+        emission = emission2BasePath + extension;
       }
       if (!emission.exists()) {
-        emission = emission3BasePath + IMAGE_EXTENSIONS[i];
+        emission = emission3BasePath + extension;
       }
 
       if (normals.isEmpty() || !normals.exists()) {
-        normals = normals1BasePath + IMAGE_EXTENSIONS[i];
+        normals = normals1BasePath + extension;
       }
       if (!normals.exists()) {
-        normals = normals2BasePath + IMAGE_EXTENSIONS[i];
+        normals = normals2BasePath + extension;
       }
       if (!normals.exists()) {
-        normals = normals3BasePath + IMAGE_EXTENSIONS[i];
+        normals = normals3BasePath + extension;
       }
       if (!normals.exists()) {
-        normals = normals4BasePath + IMAGE_EXTENSIONS[i];
+        normals = normals4BasePath + extension;
       }
     }
   }

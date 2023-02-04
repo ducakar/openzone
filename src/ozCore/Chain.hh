@@ -116,7 +116,7 @@ protected:
      * Advance to the next element.
      */
     OZ_ALWAYS_INLINE
-    ChainIterator& operator++() noexcept
+    ChainIterator& operator++()
     {
       OZ_ASSERT(elem_ != nullptr);
 

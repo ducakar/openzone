@@ -205,7 +205,7 @@ public:
    * True iff writable.
    */
   OZ_ALWAYS_INLINE
-  bool isWritable() const
+  bool isWritable() const noexcept
   {
     return flags_ & WRITABLE;
   }
@@ -214,7 +214,7 @@ public:
    * True iff it has an internal buffer.
    */
   OZ_ALWAYS_INLINE
-  bool isBuffered() const
+  bool isBuffered() const noexcept
   {
     return flags_ & BUFFERED;
   }
@@ -223,7 +223,7 @@ public:
    * %Endian order.
    */
   OZ_ALWAYS_INLINE
-  Endian::Order order() const
+  Endian::Order order() const noexcept
   {
     return order_;
   }
@@ -263,7 +263,7 @@ public:
    * Offset of the current position from the beginning of the stream.
    */
   OZ_ALWAYS_INLINE
-  int tell() const
+  int tell() const noexcept
   {
     OZ_ASSERT(pos_ <= end_);
 

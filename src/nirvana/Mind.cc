@@ -55,18 +55,6 @@ Mind::~Mind()
   }
 }
 
-Mind::Mind(Mind&& other) noexcept
-  : Mind()
-{
-  swap(*this, other);
-}
-
-Mind& Mind::operator=(Mind&& other) noexcept
-{
-  swap(*this, other);
-  return *this;
-}
-
 void Mind::update(bool doRegularUpdate)
 {
   Bot* botObj = orbis.obj<Bot>(bot);

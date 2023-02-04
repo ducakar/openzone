@@ -52,13 +52,13 @@ private:
 public:
 
   Text() = default;
+  ~Text();
 
   OZ_PRINTF_FORMAT(7, 8)
   explicit Text(int x_, int y_, int width_, int align_, Font* font_, const char* s, ...);
 
-  ~Text();
-  Text(Text&& other) noexcept;
-  Text& operator=(Text&& other) noexcept;
+  OZ_NO_COPY(Text)
+  OZ_GENERIC_MOVE(Text)
 
   void setPosition(int x_, int y_);
   void setWidth(int width_);

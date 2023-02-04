@@ -30,35 +30,35 @@ const Quat Quat::ID   = Quat(0.0f, 0.0f, 0.0f, 1.0f);
 
 Quat Quat::rotationAxis(const Vec3& axis, float theta)
 {
-  float s, c;
+  float s = 0.0f, c = 0.0f;
   Math::sincos(theta * 0.5f, &s, &c);
   return Quat(s * axis.x, s * axis.y, s * axis.z, c);
 }
 
 Quat Quat::rotationX(float theta)
 {
-  float s, c;
+  float s = 0.0f, c = 0.0f;
   Math::sincos(theta * 0.5f, &s, &c);
   return Quat(s, 0.0f, 0.0f, c);
 }
 
 Quat Quat::rotationY(float theta)
 {
-  float s, c;
+  float s = 0.0f, c = 0.0f;
   Math::sincos(theta * 0.5f, &s, &c);
   return Quat(0.0f, s, 0.0f, c);
 }
 
 Quat Quat::rotationZ(float theta)
 {
-  float s, c;
+  float s = 0.0f, c = 0.0f;
   Math::sincos(theta * 0.5f, &s, &c);
   return Quat(0.0f, 0.0f, s, c);
 }
 
 Quat Quat::rotationZXZ(float heading, float pitch, float roll)
 {
-  float hs, hc, ps, pc, rs, rc;
+  float hs = 0.0f, hc = 0.0f, ps = 0.0f, pc = 0.0f, rs = 0.0f, rc = 0.0f;
 
   Math::sincos(heading * 0.5f, &hs, &hc);
   Math::sincos(pitch   * 0.5f, &ps, &pc);

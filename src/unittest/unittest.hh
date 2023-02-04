@@ -62,42 +62,43 @@ struct Foo : oz::DChainNode<Foo>
     : value(-1)
   {}
 
-  Foo(const Foo& f)
-    : value(f.value)
-  {
-    OZ_CHECK(allowCopy)
-  }
-
-  Foo(Foo&& f)
-    : value(f.value)
-  {
-    OZ_CHECK(allowMove)
-
-    f.value = -1;
-  }
-
   Foo(int i)
     : value(i)
   {}
 
-  Foo& operator=(const Foo& f)
+  ~Foo() = default;
+
+  Foo(const Foo& f)
+    : Foo()
   {
     OZ_CHECK(allowCopy)
 
-    if (this != &f) {
-      value = f.value;
+    value = f.value;
+  }
+
+  Foo(Foo&& other) noexcept
+    : Foo()
+  {
+    OZ_CHECK(allowMove)
+
+    swap(*this, other);
+  }
+
+  Foo& operator=(const Foo& other)
+  {
+    OZ_CHECK(allowCopy)
+
+    if (this != &other) {
+      value = other.value;
     }
     return *this;
   }
 
-  Foo& operator=(Foo&& f)
+  Foo& operator=(Foo&& other) noexcept
   {
     OZ_CHECK(allowMove)
 
-    if (this != &f) {
-      value = f.value;
-      f.value = -1;
-    }
+    swap(*this, other);
     return *this;
   }
 

@@ -101,6 +101,30 @@
 #define OZ_WEAK __attribute__((weak))
 
 /**
+ * @def OZ_NO_COPY
+ * Delete copy constructor and copy assignment operator.
+ */
+#define OZ_NO_COPY(Type) \
+  Type(const Type&)            = delete; \
+  Type& operator=(const Type&) = delete;
+
+/**
+ * @def OZ_NO_MOVE
+ * Delete move constructor and move assignment operator.
+ */
+#define OZ_NO_MOVE(Type) \
+  Type(Type&&)            = delete; \
+  Type& operator=(Type&&) = delete;
+
+/**
+ * @def OZ_GENERIC_MOVE(Type)
+ * Implement generic move constructor and move operator using `swap()`.
+ */
+#define OZ_GENERIC_MOVE(Type) \
+  Type(Type&& other) noexcept : Type()   { swap(*this, other); } \
+  Type& operator=(Type&& other) noexcept { swap(*this, other); return *this; }
+
+/**
  * Top-level OpenZone namespace.
  */
 namespace oz

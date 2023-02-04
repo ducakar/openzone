@@ -167,7 +167,7 @@ public:
    * Number of object slots per memory block.
    */
   OZ_ALWAYS_INLINE
-  int slotSize() const
+  int slotSize() const noexcept
   {
     return slotSize_;
   }
@@ -176,7 +176,7 @@ public:
    * Number of object slots per memory block.
    */
   OZ_ALWAYS_INLINE
-  int blockSlots() const
+  int blockSlots() const noexcept
   {
     return blockSlots_;
   }

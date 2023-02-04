@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 
   File file = argc < 2 ? "/usr/share/icons/OpenZone_Ice_Slim/cursors/wait" : argv[1];
 
-  uint texId;
+  uint texId = 0;
   glGenTextures(1, &texId);
   glBindTexture(GL_TEXTURE_2D, texId);
   GL::textureDataIdenticon(hash("Davorin"), 600, Vec4(0.20f, 0.30f, 0.25f, 1.00f));
@@ -40,8 +40,8 @@ int main(int argc, char** argv)
 
   Cursor cursor(file, Cursor::SYSTEM);
 
-  ALuint buffers[2];
-  ALuint source;
+  ALuint buffers[2] = {};
+  ALuint source     = 0;
 
   alGenBuffers(2, buffers);
   alGenSources(1, &source);
@@ -107,11 +107,11 @@ int main(int argc, char** argv)
     cursor.update(15_ms);
 
     if (decoder.isValid()) {
-      ALint nProcessed;
+      ALint nProcessed = 0;
       alGetSourcei(source, AL_BUFFERS_PROCESSED, &nProcessed);
 
       if (nProcessed != 0) {
-        ALuint buffer;
+        ALuint buffer = 0;
         alSourceUnqueueBuffers(source, 1, &buffer);
 
         if (decoder.decode()) {

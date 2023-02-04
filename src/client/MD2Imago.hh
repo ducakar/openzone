@@ -57,13 +57,16 @@ private:
     flags |= Imago::MD2MODEL_BIT;
   }
 
-  ~MD2Imago() override;
-
 public:
 
   static Pool<MD2Imago> pool;
 
   static Imago* create(const Object* obj_);
+
+  ~MD2Imago() override;
+
+  OZ_NO_COPY(MD2Imago)
+  OZ_NO_MOVE(MD2Imago)
 
   void draw(const Imago* parent) override;
 

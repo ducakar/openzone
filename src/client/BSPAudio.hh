@@ -45,6 +45,9 @@ public:
   explicit BSPAudio(const BSP* bsp_);
   ~BSPAudio();
 
+  OZ_NO_COPY(BSPAudio)
+  OZ_NO_MOVE(BSPAudio)
+
   void play(const Struct* str) const;
 
 };
