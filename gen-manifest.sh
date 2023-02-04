@@ -10,7 +10,7 @@ set -e
 
 cd share/openzone
 
-echo '{' > manifest.json
+echo '{' >manifest.json
 
 first=1
 
@@ -21,12 +21,12 @@ for pkg in *.zip; do
     if [[ -n $first ]]; then
       unset first
     else
-      echo ',' >> manifest.json
+      echo ',' >>manifest.json
     fi
-    echo -n "  \"$pkg\": $timestamp" >> manifest.json
+    echo -n "  \"$pkg\": $timestamp" >>manifest.json
   fi
 done
 
-echo -e '\n}' >> manifest.json
+echo -e '\n}' >>manifest.json
 
 cat manifest.json

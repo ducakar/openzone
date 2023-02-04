@@ -21,15 +21,13 @@ platforms=(
   Windows-x86_64
 )
 
-function clean()
-{
+function clean() {
   for platform in "${platforms[@]}"; do
     rm -rf "lib/$platform"
   done
 }
 
-function build()
-{
+function build() {
   for platform in "${platforms[@]}"; do
     if [[ "$platform" == "Linux-x86_64" ]]; then
       outDir="lib/$platform"
@@ -39,12 +37,12 @@ function build()
       mkdir -p "$outDir"
 
       cp "$prefix/libphysfs.so.1" \
-         "$prefix/libSDL2-2.0.so.0" \
-         "$prefix/libSDL2_ttf-2.0.so.0" \
-         "$prefix/libopenal.so.1" \
-         "$prefix/liblua.so.5.3" \
-         "$prefix/libpng16.so.16" \
-         "$outDir"
+        "$prefix/libSDL2-2.0.so.0" \
+        "$prefix/libSDL2_ttf-2.0.so.0" \
+        "$prefix/libopenal.so.1" \
+        "$prefix/liblua.so.5.3" \
+        "$prefix/libpng16.so.16" \
+        "$outDir"
 
       chmod +x "$outDir"/*
       strip "$outDir"/*
@@ -58,21 +56,21 @@ function build()
       mkdir -p "$outDir"
 
       cp "$prefix/libgcc_s_seh-1.dll" \
-         "$prefix/libstdc++-6.dll" \
-         "$prefix/libwinpthread-1.dll" \
-         "$prefix/zlib1.dll" \
-         "$prefix/libbz2-1.dll" \
-         "$prefix/libphysfs.dll" \
-         "$prefix/SDL2.dll" \
-         "$prefix/SDL2_ttf.dll" \
-         "$prefix/OpenAL32.dll" \
-         "$prefix/libpng16-16.dll" \
-         "$prefix/lua52.dll" \
-         "$prefix/libfreetype-6.dll" \
-         "$prefix/libogg-0.dll" \
-         "$prefix/libvorbis-0.dll" \
-         "$prefix/libvorbisfile-3.dll" \
-         "$outDir"
+        "$prefix/libstdc++-6.dll" \
+        "$prefix/libwinpthread-1.dll" \
+        "$prefix/zlib1.dll" \
+        "$prefix/libbz2-1.dll" \
+        "$prefix/libphysfs.dll" \
+        "$prefix/SDL2.dll" \
+        "$prefix/SDL2_ttf.dll" \
+        "$prefix/OpenAL32.dll" \
+        "$prefix/libpng16-16.dll" \
+        "$prefix/lua52.dll" \
+        "$prefix/libfreetype-6.dll" \
+        "$prefix/libogg-0.dll" \
+        "$prefix/libvorbis-0.dll" \
+        "$prefix/libvorbisfile-3.dll" \
+        "$outDir"
 
       chmod +x "$outDir"/*
       x86_64-w64-mingw32-strip "$outDir"/*
@@ -81,10 +79,10 @@ function build()
 }
 
 case $1 in
-  clean)
-    clean
-    ;;
-  *)
-    build
-    ;;
+clean)
+  clean
+  ;;
+*)
+  build
+  ;;
 esac

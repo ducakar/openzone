@@ -13,10 +13,9 @@ set -e
 
 defaultPlatform=Linux-x86_64-Clang-Debug
 
-function launchWine()
-{
+function launchWine() {
   cd build/Windows-x86_64
-  cmake -D CMAKE_INSTALL_PREFIX=. -P cmake_install.cmake
+  cmake --install -D CMAKE_INSTALL_PREFIX=.
   cp ../../lib/Windows-x86_64/* bin
 
   shift
@@ -24,10 +23,10 @@ function launchWine()
 }
 
 case $1 in
-  wine)
-    launchWine "$@"
-    ;;
-  *)
-    exec ./build/$defaultPlatform/src/tools/openzone -p . "$@"
-    ;;
+wine)
+  launchWine "$@"
+  ;;
+*)
+  exec ./build/$defaultPlatform/src/tools/openzone -p . "$@"
+  ;;
 esac

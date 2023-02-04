@@ -17,8 +17,7 @@ set -e
 
 chromium="/usr/bin/chromium"
 
-function run()
-{
+function run() {
   mkdir -p build/PNaCl/src/tools
 
   # Just create symlinks instead of copying.
@@ -36,19 +35,18 @@ function run()
   kill $serverPID
 }
 
-function manifest()
-{
+function manifest() {
   ./gen-manifest.sh
 }
 
 case $1 in
-  run)
-    run
-    ;;
-  debug)
-    debug
-    ;;
-  manifest)
-    manifest
-    ;;
+run)
+  run
+  ;;
+debug)
+  debug
+  ;;
+manifest)
+  manifest
+  ;;
 esac

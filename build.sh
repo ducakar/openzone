@@ -17,27 +17,25 @@ set -e
 
 buildType=Debug
 platforms=(
-#  Android14-i686
-#  Android14-ARMv7a
-#  Emscripten
+  # Android14-i686
+  # Android14-ARMv7a
+  # Emscripten
   Linux-x86_64
   Linux-x86_64-Clang
-#  PNaCl
-#  Windows-x86_64
+  # PNaCl
+  # Windows-x86_64
 )
 
 . etc/common.sh
 
-function clean()
-{
+function clean() {
   for platform in "${platforms[@]}"; do
     rm -rf "build/$platform-$buildType"
   done
   rm -rf build/{OpenZone-*,NaCl-test,Windows-test,Android,bundle}
 }
 
-function build()
-{
+function build() {
   for platform in "${platforms[@]}"; do
     if [[ "$platform" != "Emscripten" && ! -f "cmake/$platform.Toolchain.cmake" ]]; then
       echo "Unknown platform: $platform"
@@ -46,38 +44,36 @@ function build()
 
     header_msg "$platform-$buildType"
 
-    (( $1 )) && rm -rf "build/$platform-$buildType"
+    (($1)) && rm -rf "build/$platform-$buildType"
     if [[ ! -d "build/$platform-$buildType" ]]; then
       mkdir -p "build/$platform-$buildType"
       if [[ "$platform" == "Emscripten" ]]; then
-        ( cd "build/$platform-$buildType" && emcmake cmake -Wdev --warn-uninitialized \
+        emcmake cmake -B "build/$platform-$buildType" -Wdev --warn-uninitialized \
           -G Ninja \
-          -D CMAKE_BUILD_TYPE="$buildType" \
-          ../.. )
+          -D CMAKE_BUILD_TYPE="$buildType"
       else
-        ( cd "build/$platform-$buildType" && cmake -Wdev --warn-uninitialized \
+        cmake -B "build/$platform-$buildType" -Wdev --warn-uninitialized \
           -G Ninja \
           -D CMAKE_TOOLCHAIN_FILE="../../cmake/$platform.Toolchain.cmake" \
           -D CMAKE_BUILD_TYPE="$buildType" \
-          -D OZ_TOOLS=ON \
-          ../.. )
+          -D OZ_TOOLS=ON
       fi
     fi
-    (( $1 )) || ( cd "build/$platform-$buildType" && time ninja )
+    (($1)) || time cmake --build "build/$platform-$buildType"
   done
 }
 
 case $1 in
-  clean)
-    if [[ -n $2 ]]; then platforms=("$2"); fi
-    clean
-    ;;
-  conf)
-    if [[ -n $2 ]]; then platforms=("$2"); fi
-    build 1
-    ;;
-  *)
-    if [[ -n $1 ]]; then platforms=("$1"); fi
-    build 0
-    ;;
+clean)
+  if [[ -n $2 ]]; then platforms=("$2"); fi
+  clean
+  ;;
+conf)
+  if [[ -n $2 ]]; then platforms=("$2"); fi
+  build 1
+  ;;
+*)
+  if [[ -n $1 ]]; then platforms=("$1"); fi
+  build 0
+  ;;
 esac

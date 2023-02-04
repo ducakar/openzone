@@ -18,8 +18,8 @@
 set -e
 
 platforms=(
-#  Android14-i686
-#  Android14-ARMv7a
+  #  Android14-i686
+  #  Android14-ARMv7a
   Emscripten
 )
 
@@ -37,10 +37,8 @@ ndkARMPlatform="$ANDROID_NDK/platforms/android-14/arch-arm"
 
 . etc/common.sh
 
-function setup_ndk_i686()
-{
+function setup_ndk_i686() {
   platform="Android14-i686"                               # Platform name.
-
   buildDir="$topDir/$platform"                            # Build and install directory.
   triplet="i686-linux-android"                            # Platform triplet (tools prefix).
   hostTriplet="$triplet"                                  # Host triplet for autotools configure.
@@ -69,8 +67,7 @@ function setup_ndk_i686()
   return 1
 }
 
-function setup_ndk_ARMv7a()
-{
+function setup_ndk_ARMv7a() {
   platform="Android14-ARMv7a"                             # Platform name.
   buildDir="$topDir/$platform"                            # Build and install directory.
   triplet="arm-linux-androideabi"                         # Platform triplet (tools prefix).
@@ -100,8 +97,7 @@ function setup_ndk_ARMv7a()
   return 1
 }
 
-function setup_emscripten()
-{
+function setup_emscripten() {
   platform="Emscripten"
   buildDir="$topDir/$platform"
 
@@ -126,15 +122,13 @@ function setup_emscripten()
   return 1
 }
 
-function clean()
-{
+function clean() {
   for platform in "${platforms[@]}"; do
     rm -rf "${topDir:?}/$platform"
   done
 }
 
-function buildclean()
-{
+function buildclean() {
   for platform in "${platforms[@]}"; do
     for subDir in "$topDir/$platform"/*; do
       [[ $subDir == */usr ]] || rm -rf "$subDir"
@@ -146,14 +140,12 @@ function buildclean()
   done
 }
 
-function download()
-{
+function download() {
   mkdir -p "$topDir/archives"
   wget -c -nc -P "$topDir/archives" "$@"
 }
 
-function fetch()
-{
+function fetch() {
   # zlib
   download 'http://zlib.net/zlib-1.2.8.tar.xz'
 
@@ -188,8 +180,7 @@ function fetch()
   download 'http://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.12.tar.gz'
 }
 
-function prepare()
-{
+function prepare() {
   [[ -d "$buildDir/$1" ]] && return 1
 
   header_msg "$1 @ $platform"
@@ -204,15 +195,13 @@ function prepare()
   cd "$buildDir/$1"
 }
 
-function applyPatches()
-{
+function applyPatches() {
   for patchFile in "$@"; do
-    patch -p1 < "$projectDir/etc/patches/$patchFile" || exit 1
+    patch -p1 <"$projectDir/etc/patches/$patchFile" || exit 1
   done
 }
 
-function cmakeBuild()
-{
+function cmakeBuild() {
   mkdir -p build && cd build
 
   if [[ $platform == Emscripten ]]; then
@@ -239,8 +228,7 @@ function cmakeBuild()
   cmake -DCMAKE_INSTALL_PREFIX="$buildDir/usr" -P cmake_install.cmake
 }
 
-function autotoolsBuild()
-{
+function autotoolsBuild() {
   if [[ $platform == Emscripten ]]; then
     emconfigure ./configure --prefix=/usr "$@" || exit 1
   else
@@ -251,8 +239,7 @@ function autotoolsBuild()
   make install DESTDIR="$buildDir"
 }
 
-function finish()
-{
+function finish() {
   [[ -d "$buildDir"/usr/lib/pkgconfig ]] || return
 
   # Fix paths in pkg-config files.
@@ -261,8 +248,7 @@ function finish()
   done
 }
 
-function build_zlib()
-{
+function build_zlib() {
   prepare zlib-1.2.8 zlib-1.2.8.tar.xz || return
 
   autotoolsBuild --static
@@ -272,19 +258,17 @@ function build_zlib()
   finish
 }
 
-function build_libpng()
-{
+function build_libpng() {
   prepare libpng-1.6.16 libpng-1.6.16.tar.xz || return
 
   cmakeBuild -D PNG_SHARED=0 \
-             -D ZLIB_INCLUDE_DIR="$buildDir/usr/include" \
-             -D ZLIB_LIBRARY="$buildDir/usr/lib/libz.a"
+    -D ZLIB_INCLUDE_DIR="$buildDir/usr/include" \
+    -D ZLIB_LIBRARY="$buildDir/usr/lib/libz.a"
 
   finish
 }
 
-function build_jpeglib()
-{
+function build_jpeglib() {
   prepare jpeg-9a jpegsrc.v9a.tar.gz || return
 
   autotoolsBuild --disable-shared
@@ -292,8 +276,7 @@ function build_jpeglib()
   finish
 }
 
-function build_libogg()
-{
+function build_libogg() {
   prepare libogg-1.3.2 libogg-1.3.2.tar.xz || return
   applyPatches libogg-1.3.2.patch
 
@@ -302,8 +285,7 @@ function build_libogg()
   finish
 }
 
-function build_libvorbis()
-{
+function build_libvorbis() {
   prepare libvorbis-1.3.5 libvorbis-1.3.5.tar.xz || return
 
   autotoolsBuild --disable-shared --with-ogg="$buildDir/usr"
@@ -311,8 +293,7 @@ function build_libvorbis()
   finish
 }
 
-function build_freetype()
-{
+function build_freetype() {
   prepare freetype-2.5.5 freetype-2.5.5.tar.bz2 || return
 
   autotoolsBuild --without-bzip2 --without-png --disable-shared
@@ -320,18 +301,16 @@ function build_freetype()
   finish
 }
 
-function build_physfs()
-{
+function build_physfs() {
   prepare physfs-2.0.3 physfs-2.0.3.tar.bz2 || return
 
   cmakeBuild -D PHYSFS_BUILD_SHARED=0 -D PHYSFS_BUILD_TEST=0 \
-	     -D ZLIB_INCLUDE_DIR="$buildDir/usr/include" -D ZLIB_LIBRARY="$buildDir/usr/lib/zlib.a"
+    -D ZLIB_INCLUDE_DIR="$buildDir/usr/include" -D ZLIB_LIBRARY="$buildDir/usr/lib/zlib.a"
 
   finish
 }
 
-function build_lua()
-{
+function build_lua() {
   prepare lua-5.3.1 lua-5.3.1.tar.gz || return
   #applyPatches lua-5.3.0.patch
 
@@ -346,8 +325,7 @@ function build_lua()
   finish
 }
 
-function build_openal()
-{
+function build_openal() {
   prepare openal-soft-1.16.0 openal-soft-1.16.0.tar.bz2 || return
 
   cmakeBuild -D ALSOFT_UTILS=0 -D ALSOFT_EXAMPLES=0 -D LIBTYPE="STATIC"
@@ -355,8 +333,7 @@ function build_openal()
   finish
 }
 
-function build_sdl2()
-{
+function build_sdl2() {
   prepare SDL2-2.0.3 SDL2-2.0.3.tar.gz || return
   applyPatches SDL2-2.0.3.patch
 
@@ -365,8 +342,7 @@ function build_sdl2()
   finish
 }
 
-function build_sdl2_ttf()
-{
+function build_sdl2_ttf() {
   prepare SDL2_ttf-2.0.12 SDL2_ttf-2.0.12.tar.gz || return
   applyPatches SDL2_ttf-2.0.12.patch
 
@@ -379,66 +355,65 @@ function build_sdl2_ttf()
   finish
 }
 
-function build()
-{
+function build() {
   # zlib
-  setup_emscripten  && build_zlib
+  setup_emscripten && build_zlib
 
   # libpng
-  setup_ndk_i686    && build_libpng
-  setup_ndk_ARMv7a  && build_libpng
+  setup_ndk_i686 && build_libpng
+  setup_ndk_ARMv7a && build_libpng
 
   # jpeglib
-  setup_emscripten  && build_jpeglib
+  setup_emscripten && build_jpeglib
 
   # libogg
-  setup_ndk_i686    && build_libogg
-  setup_ndk_ARMv7a  && build_libogg
-  setup_emscripten  && build_libogg
+  setup_ndk_i686 && build_libogg
+  setup_ndk_ARMv7a && build_libogg
+  setup_emscripten && build_libogg
 
   # libvorbis
-  setup_ndk_i686    && build_libvorbis
-  setup_ndk_ARMv7a  && build_libvorbis
-  setup_emscripten  && build_libvorbis
+  setup_ndk_i686 && build_libvorbis
+  setup_ndk_ARMv7a && build_libvorbis
+  setup_emscripten && build_libvorbis
 
   # FreeType
-  setup_ndk_i686    && build_freetype
-  setup_ndk_ARMv7a  && build_freetype
+  setup_ndk_i686 && build_freetype
+  setup_ndk_ARMv7a && build_freetype
 
   # PhysicsFS
-  setup_ndk_i686    && build_physfs
-  setup_ndk_ARMv7a  && build_physfs
-  setup_emscripten  && build_physfs
+  setup_ndk_i686 && build_physfs
+  setup_ndk_ARMv7a && build_physfs
+  setup_emscripten && build_physfs
 
   # Lua
-  setup_ndk_i686    && build_lua
-  setup_ndk_ARMv7a  && build_lua
-  setup_emscripten  && build_lua
+  setup_ndk_i686 && build_lua
+  setup_ndk_ARMv7a && build_lua
+  setup_emscripten && build_lua
 
   # OpenAL Soft
-  setup_ndk_i686    && build_openal
-  setup_ndk_ARMv7a  && build_openal
+  setup_ndk_i686 && build_openal
+  setup_ndk_ARMv7a && build_openal
 
   # SDL
-  setup_ndk_i686    && build_sdl2
-  setup_ndk_ARMv7a  && build_sdl2
+  setup_ndk_i686 && build_sdl2
+  setup_ndk_ARMv7a && build_sdl2
 
   # SDL_ttf
-  setup_ndk_i686    && build_sdl2_ttf
-  setup_ndk_ARMv7a  && build_sdl2_ttf
+  setup_ndk_i686 && build_sdl2_ttf
+  setup_ndk_ARMv7a && build_sdl2_ttf
 }
 
 case $1 in
-  clean)
-    clean
-    ;;
-  buildclean)
-    buildclean
-    ;;
-  fetch)
-    fetch
-    ;;
-  *)
-    build
-    ;;
+clean)
+  clean
+  ;;
+buildclean)
+  buildclean
+  ;;
+fetch)
+  fetch
+  ;;
+*)
+  build
+  ;;
 esac

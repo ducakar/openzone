@@ -12,5 +12,5 @@ outFile="data/ozBase/lingua/internal.pot"
 
 echo "Extracting strings to $outFile"
 
-echo > "$outFile"
-xgettext --omit-header -C -s -kOZ_GETTEXT -o - src/*/*.{hh,cc} src/*/*/*.{hh,cc} >> "$outFile"
+echo >"$outFile"
+xgettext --omit-header -C -s -kOZ_GETTEXT -o - src/*/*.{hh,cc} src/*/*/*.{hh,cc} >>"$outFile"

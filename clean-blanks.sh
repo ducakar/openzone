@@ -17,7 +17,7 @@ files="$files $(find data -name '*.lua' -o -name '*.vert' -o -name '*.frag')"
 
 for file in $files; do
   # Add two blank lines to the end of each file.
-  printf '\n\n' >> "$file"
+  printf '\n\n' >>"$file"
   # Remove trailing blanks and then remove duplicated empty lines.
   sed -E 's|[ \t]*$||; /./,/^$/ !d' -i "$file"
   # Delete the last (always blank) line.

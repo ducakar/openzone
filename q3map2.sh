@@ -14,7 +14,7 @@ if [[ -z $1 ]]; then
 fi
 
 radiantHome=/opt/gtkradiant
-#radiantHome=/usr/bin
+# radiantHome=/usr/bin
 basePath=$(echo "$1" | sed -E 's|(.*)/baseq3/maps/.*|\1|')
 
 "$radiantHome"/q3map2 -fs_basepath "$basePath" -meta -v "$1"

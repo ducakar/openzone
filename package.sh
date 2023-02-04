@@ -28,54 +28,54 @@ files="$files share/applications share/pixmaps"
 . etc/common.sh
 
 case $1 in
-  src)
-    echo "Packing openzone-src-$version.tar.xz"
-    tar Jcvf "openzone-src-$version.tar.xz" --owner=0 --group=0 --xform "s|^|openzone-$version/|" \
-        "${files[@]}"
-    ;;
-  data)
-    echo "Packing openzone-data-$version.tar.xz"
-    tar Jcvf "openzone-data-$version.tar.xz" --owner=0 --group=0 --xform "s|^|openzone-$version/|" \
-        share/openzone/*.zip
-    ;;
-  datasrc)
-    echo "Packing openzone-datasrc-$version.tar.xz"
-    tar Jcvf "openzone-data-src-$version.tar.xz" --owner=0 --group=0 --exclude=DISABLED \
-        --xform "s|^|openzone-$version/|" data
-    ;;
-  bundle)
-    echo "Packing multi-platform OpenZone-$version.zip bundle"
+src)
+  echo "Packing openzone-src-$version.tar.xz"
+  tar Jcvf "openzone-src-$version.tar.xz" --owner=0 --group=0 --xform "s|^|openzone-$version/|" \
+    "${files[@]}"
+  ;;
+data)
+  echo "Packing openzone-data-$version.tar.xz"
+  tar Jcvf "openzone-data-$version.tar.xz" --owner=0 --group=0 --xform "s|^|openzone-$version/|" \
+    share/openzone/*.zip
+  ;;
+datasrc)
+  echo "Packing openzone-datasrc-$version.tar.xz"
+  tar Jcvf "openzone-data-src-$version.tar.xz" --owner=0 --group=0 --exclude=DISABLED \
+    --xform "s|^|openzone-$version/|" data
+  ;;
+bundle)
+  echo "Packing multi-platform OpenZone-$version.zip bundle"
 
-    mkdir -p build/bundle && cd build/bundle
-    rm -rf "OpenZone-$version" "../../OpenZone-$version-bundle.zip"
+  mkdir -p build/bundle && cd build/bundle
+  rm -rf "OpenZone-$version" "../../OpenZone-$version-bundle.zip"
 
-    for platform in "${platforms[@]}"; do
-      mkdir -p "$platform" && cd "$platform"
+  for platform in "${platforms[@]}"; do
+    mkdir -p "$platform" && cd "$platform"
 
-      header_msg "$platform"
+    header_msg "$platform"
 
-      cmake \
-        -G Ninja \
-        -D CMAKE_TOOLCHAIN_FILE="../../../cmake/$platform.Toolchain.cmake" \
-        -D CMAKE_BUILD_TYPE=Release \
-        -D OZ_BUNDLE=ON \
-        ../../..
-      ninja
-      cmake -DCMAKE_INSTALL_PREFIX="../OpenZone-$version" -P cmake_install.cmake
+    cmake \
+      -G Ninja \
+      -D CMAKE_TOOLCHAIN_FILE="../../../cmake/$platform.Toolchain.cmake" \
+      -D CMAKE_BUILD_TYPE=Release \
+      -D OZ_BUNDLE=ON \
+      ../../..
+    ninja
+    cmake -DCMAKE_INSTALL_PREFIX="../OpenZone-$version" -P cmake_install.cmake
 
-      cd ..
-    done
+    cd ..
+  done
 
-    header_msg "Packaging ..."
+  header_msg "Packaging ..."
 
-    rm -rf "OpenZone-$version"/{include,lib}
-    zip -9r "../../OpenZone-$version-bundle.zip" "OpenZone-$version"
-    cd ../..
-    rm -rf build/bundle
+  rm -rf "OpenZone-$version"/{include,lib}
+  zip -9r "../../OpenZone-$version-bundle.zip" "OpenZone-$version"
+  cd ../..
+  rm -rf build/bundle
 
-    ls -hl --color=always "OpenZone-$version-bundle.zip"
-    ;;
-  *)
-    echo "Usage: $0 {src | data | datasrc | bundle}"
-    ;;
+  ls -hl --color=always "OpenZone-$version-bundle.zip"
+  ;;
+*)
+  echo "Usage: $0 {src | data | datasrc | bundle}"
+  ;;
 esac

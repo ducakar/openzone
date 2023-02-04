@@ -11,8 +11,17 @@
 
 set -e
 
-components=(src/ozCore src/ozEngine src/ozFactory src/unittest
-            src/common src/matrix src/nirvana src/client src/builder)
+components=(
+  src/ozCore
+  src/ozEngine
+  src/ozFactory
+  src/unittest
+  src/common
+  src/matrix
+  src/nirvana
+  src/client
+  src/builder
+)
 version=$(sed -E '/^project\(/ !d; s|.* VERSION "([^"]*)".*|\1|' CMakeLists.txt)
 
 # Generate CMakeLists.txt files.
@@ -23,7 +32,7 @@ for component in "${components[@]}"; do
   sources=$(cd "$component" && git ls-files '*.hh' '*.cc' | paste -s | sed -E 's|\t|\\n  |g')
   # Insert source file list between "#BEGIN SOURCES" and "#END SOURCES" tags in CMakeLists.txt.
   sed -E '/^#BEGIN SOURCES$/,/^#END SOURCES$/ c\#BEGIN SOURCES\n  '"$sources"'\n#END SOURCES' \
-      -i "$component/CMakeLists.txt"
+    -i "$component/CMakeLists.txt"
 done
 
 # Fix version numbers.
