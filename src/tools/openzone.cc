@@ -39,7 +39,7 @@ static void crashHandler()
 
 #if defined(__ANDROID__)
 int javaMain(int argc, char** argv)
-#elif defined(__native_client__) || defined(_WIN32)
+#elif defined(__native_client__)
 int SDL_main(int argc, char** argv)
 #else
 int main(int argc, char** argv)

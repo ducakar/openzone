@@ -100,7 +100,7 @@ elseif(NACL)
 elseif(WIN32)
   target_link_libraries(ozCore -lwinmm)
 else()
-  target_link_libraries(ozCore -ldl -lpthread)
+  target_link_libraries(ozCore -ldl Threads::Threads)
 endif()
 
 set_target_properties(ozCore PROPERTIES VERSION ${CMAKE_PROJECT_VERSION} SOVERSION 0)

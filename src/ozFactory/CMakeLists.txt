@@ -20,8 +20,8 @@ add_library(ozFactory
 )
 
 target_compile_options(ozFactory PRIVATE -fexceptions)
-target_link_libraries(ozFactory ozCore ${ASSIMP_LIBRARIES} ${FREEIMAGE_LIBRARY} ${NOISE_LIBRARY})
-target_link_libraries(ozFactory ${SQUISH_LIBRARY})
+target_link_libraries(ozFactory ozCore assimp::assimp ${FREEIMAGE_LIBRARY} ${NOISE_LIBRARY}
+                                ${SQUISH_LIBRARY})
 
 set_target_properties(ozFactory PROPERTIES VERSION ${CMAKE_PROJECT_VERSION} SOVERSION 0)
 

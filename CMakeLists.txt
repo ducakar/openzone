@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.18)
 
 project(openzone VERSION "0.3.95")
 
@@ -65,12 +65,24 @@ elseif(NACL)
   set(ENV{PKG_CONFIG_PATH} ${CMAKE_FIND_ROOT_PATH}/usr/lib/pkgconfig)
 elseif(WIN32)
   set(ENV{PKG_CONFIG_PATH} ${CMAKE_FIND_ROOT_PATH}/lib/pkgconfig)
+  mark_as_advanced(MINGW32_LIBRARY)
 else()
+  find_package(Threads REQUIRED)
   pkg_check_modules(PULSE_SIMPLE REQUIRED libpulse-simple)
 endif()
 
 find_package(ZLIB REQUIRED)
 find_package(PhysFS REQUIRED)
+find_package(SDL2 REQUIRED)
+find_package(SDL2_ttf REQUIRED)
+find_package(OpenAL REQUIRED)
+find_package(PNG REQUIRED)
+find_package(Ogg REQUIRED)
+
+pkg_check_modules(OPUS REQUIRED opus)
+pkg_check_modules(OPUSFILE REQUIRED opusfile)
+pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
+include_directories(SYSTEM ${OPUSFILE_INCLUDE_DIRS})
 
 if(OZ_LUAJIT)
   pkg_check_modules(LUAJIT REQUIRED luajit)
@@ -80,9 +92,6 @@ else()
   find_package(Lua REQUIRED)
   include_directories(SYSTEM ${LUA_INCLUDE_DIR})
 endif()
-
-find_package(SDL2 REQUIRED)
-find_package(SDL2_ttf REQUIRED)
 
 if(OZ_GL_ES)
   # On embedded platforms, GLES is part of system libraries and is guaranteed to exist in toolchain
@@ -97,19 +106,9 @@ if(OZ_GL_ES)
     pkg_check_modules(GL REQUIRED glesv2)
   endif()
 else()
-  set(OpenGL_GL_PREFERENCE GLVND)
   find_package(OpenGL REQUIRED)
   set(GL_LIBRARIES OpenGL::GL)
 endif()
-
-find_package(OpenAL REQUIRED)
-find_package(PNG REQUIRED)
-find_package(Ogg REQUIRED)
-pkg_check_modules(OPUS REQUIRED opus)
-pkg_check_modules(OPUSFILE REQUIRED opusfile)
-pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
-
-include_directories(SYSTEM ${OPUSFILE_INCLUDE_DIRS})
 
 # On embedded platforms, linking is mostly static, so indirect dependencies must be linked too.
 if(PLATFORM_EMBEDDED)
@@ -117,32 +116,16 @@ if(PLATFORM_EMBEDDED)
   if(NOT EMSCRIPTEN)
     find_package(BZip2 REQUIRED)    # Required by FreeType.
     find_package(Freetype REQUIRED) # Required by SDL_ttf.
-
-    list(APPEND SDL_TTF_LIBRARIES ${FREETYPE_LIBRARIES} ${BZIP2_LIBRARIES} ${PNG_LIBRARIES})
+    list(APPEND SDL_TTF_LIBRARIES Freetype::Freetype BZip2::BZip2 PNG::PNG)
   endif()
 endif()
 
 if(OZ_TOOLS)
-  pkg_check_modules(ASSIMP REQUIRED assimp)
-
-  find_library(FREEIMAGE_LIBRARY NAMES freeimage FreeImage)
-  find_library(NOISE_LIBRARY noise)
-  find_library(SQUISH_LIBRARY squish)
-
-  if(NOT FREEIMAGE_LIBRARY)
-    message(FATAL_ERROR "FreeImage library is missing")
-  endif()
-  if(NOT NOISE_LIBRARY)
-    message(FATAL_ERROR "libnoise library is missing")
-  endif()
-  if(NOT SQUISH_LIBRARY)
-    message(FATAL_ERROR "libsquish library is missing")
-  endif()
-
-  mark_as_advanced(FREEIMAGE_LIBRARY NOISE_LIBRARY SQUISH_LIBRARY)
+  find_package(assimp REQUIRED)
+  find_library(FREEIMAGE_LIBRARY NAMES freeimage FreeImage REQUIRED)
+  find_library(NOISE_LIBRARY noise REQUIRED)
+  find_library(SQUISH_LIBRARY squish REQUIRED)
 endif()
-
-mark_as_advanced(MINGW32_LIBRARY)
 
 #
 # Compiler flags.
@@ -156,23 +139,19 @@ include_directories(SYSTEM ext/espeak)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_compile_options(-fsized-deallocation -fstrict-enums -ffast-math -fno-exceptions -fno-rtti)
 
-if(BUILD_SHARED_LIBS)
-  set(flags "${flags} -fPIC")
-endif()
+add_compile_options(-fPIC -fsized-deallocation -fstrict-enums -fno-rtti -fno-exceptions -ffast-math)
 
 # Static analyser.
-#add_compile_options(-Qunused-arguments --analyze)
-# Address sanitizer.
-add_compile_options(-fsanitize=address,leak)
-add_link_options(-fsanitize=address,leak)
+# add_compile_options(-Qunused-arguments --analyze)
+# Address sanitizer and undefined behaviour sanitizers.
+# add_compile_options(-fsanitize=address,leak,undefined)
+# add_link_options(-fsanitize=address,leak,undefined)
 # Thread sanitizer.
-#add_compile_options(-fsanitize=thread -fpie -fPIC)
-# Undefined behaviour sanitizer.
-#add_compile_options(-fsanitize=undefined)
+# add_compile_options(-fsanitize=thread,undefined)
+# add_link_options(-fsanitize=thread,undefined)
 
-# Additional flags.
+# Warnings.
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   add_compile_options(-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic)
   add_compile_options(-Wno-exit-time-destructors -Wno-global-constructors)
@@ -193,6 +172,7 @@ string(STRIP "${compileOptions} ${CMAKE_CXX_FLAGS} ${${OZ_COMPILE_OPTIONS}}" OZ_
 site_name(OZ_HOSTNAME)
 mark_as_advanced(OZ_HOSTNAME)
 
+# Enable unittests.
 enable_testing()
 
 #
