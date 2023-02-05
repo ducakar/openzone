@@ -32,13 +32,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#if defined(__ANDROID__)
-# include <android/log.h>
-# include <pthread.h>
-# include <SLES/OpenSLES.h>
-# include <unistd.h>
-# define _Exit(c) _exit(c)
-#elif defined(__EMSCRIPTEN__)
+#if defined(__EMSCRIPTEN__)
 # include <pthread.h>
 # include <SDL2/SDL.h>
 #elif defined(__native_client__)
@@ -97,10 +91,6 @@ static void signalHandler(int sigNum)
   Log::printTrace(StackTrace::current(1));
   Log::println();
 
-#ifdef __ANDROID__
-  __android_log_print(ANDROID_LOG_FATAL, "oz", "Signal %d\n", sigNum);
-#endif
-
   System::bell();
   abort((initFlags & System::HALT_BIT) && sigNum != SIGINT);
 }
@@ -150,72 +140,7 @@ static void generateBellSamples(int16* buffer, int nSamples, int rate, int fromS
   }
 }
 
-#if defined(__ANDROID__)
-
-static void* bellMain(void*)
-{
-  pthread_mutex_lock(&bellMutex);
-
-  static_cast<void>(genBellSamples);
-
-  SLObjectItf    engine;
-  SLEngineOption engineOptions[] = {SL_ENGINEOPTION_THREADSAFE, true};
-  slCreateEngine(&engine, 1, engineOptions, 0, nullptr, nullptr);
-  (*engine)->Realize(engine, false);
-
-  SLEngineItf iEngine;
-  (*engine)->GetInterface(engine, SL_IID_ENGINE, &iEngine);
-
-  SLObjectItf outputMix;
-  (*iEngine)->CreateOutputMix(iEngine, &outputMix, 0, nullptr, nullptr);
-  (*outputMix)->Realize(outputMix, false);
-
-  SLObjectItf               player;
-  SLDataFormat_PCM          pcmFormat          = {SL_DATAFORMAT_PCM, 2, SL_SAMPLINGRATE_48,
-                                                  SL_PCMSAMPLEFORMAT_FIXED_16, 16,
-                                                  SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT,
-                                                  SL_BYTEORDER_LITTLEENDIAN
-                                                 };
-  SLDataLocator_BufferQueue bufferQueueLocator = {SL_DATALOCATOR_BUFFERQUEUE, 1};
-  SLDataLocator_OutputMix   outputMixLocator   = {SL_DATALOCATOR_OUTPUTMIX, outputMix};
-  SLDataSource              audioSource        = {&bufferQueueLocator, &pcmFormat};
-  SLDataSink                audioSink          = {&outputMixLocator, nullptr};
-
-  (*iEngine)->CreateAudioPlayer(iEngine, &player, &audioSource, &audioSink, 0, nullptr, nullptr);
-  (*player)->Realize(player, false);
-
-  SLPlayItf iPlay;
-  (*player)->GetInterface(player, SL_IID_PLAY, &iPlay);
-
-  SLBufferQueueItf iBufferQueue;
-  (*player)->GetInterface(player, SL_IID_BUFFERQUEUE, &iBufferQueue);
-
-  int    size    = BELL_SAMPLES * 2 * sizeof(int16);
-  int16* samples = static_cast<int16*>(alloca(size));
-
-  generateBellSamples(samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
-  (*iBufferQueue)->Enqueue(iBufferQueue, samples, size);
-  (*iPlay)->SetPlayState(iPlay, SL_PLAYSTATE_PLAYING);
-
-  SLBufferQueueState state;
-  do {
-    Time::sleep(10);
-    (*iBufferQueue)->GetState(iBufferQueue, &state);
-  }
-  while (state.count != 0);
-  (*iPlay)->SetPlayState(iPlay, SL_PLAYSTATE_STOPPED);
-
-  (*player)->Destroy(player);
-  (*outputMix)->Destroy(outputMix);
-  (*engine)->Destroy(engine);
-
-  hasBellThread.store<RELEASE>(false);
-  pthread_cond_signal(&bellCond);
-  pthread_mutex_unlock(&bellMutex);
-  return nullptr;
-}
-
-#elif defined(__EMSCRIPTEN__)
+#if defined(__EMSCRIPTEN__)
 
 static void* bellMain(void*)
 {
@@ -438,10 +363,6 @@ static void abort(bool doHalt)
     crashHandler();
   }
 
-#ifdef __ANDROID__
-  __android_log_write(ANDROID_LOG_FATAL, "liboz", doHalt ? "HALTED\n" : "ABORTED\n");
-#endif
-
   fflush(stdout);
   fputs(doHalt ? "Halted. Attach a debugger or press Enter to abort ... " : "ABORTED\n", stderr);
   fflush(stderr);
@@ -488,11 +409,6 @@ void System::error(const char* function, const char* file, int line, int nSkippe
 
   va_list ap;
   va_start(ap, message);
-
-#ifdef __ANDROID__
-  __android_log_vprint(ANDROID_LOG_FATAL, "oz", msg, ap);
-  __android_log_print(ANDROID_LOG_FATAL, "oz", "  in %s\n  at %s:%d\n", function, file, line);
-#endif
 
   Log::verboseMode = false;
 

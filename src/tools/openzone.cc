@@ -37,9 +37,7 @@ static void crashHandler()
   SDL_Quit();
 }
 
-#if defined(__ANDROID__)
-int javaMain(int argc, char** argv)
-#elif defined(__native_client__)
+#if defined(__native_client__)
 int SDL_main(int argc, char** argv)
 #else
 int main(int argc, char** argv)
@@ -86,4 +84,3 @@ int main(int argc, char** argv)
 #ifdef __native_client__
 PSMainFunc_t PSUserMainGet() { return SDL_main; }
 #endif
-OZ_JAVA_ENTRY_POINT(Java_com_github_ducakar_openzone_SDLActivity_nativeInit)

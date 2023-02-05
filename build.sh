@@ -4,8 +4,7 @@
 #
 # This script configures and/or builds OpenZone in the `build` directory for a specified platform or
 # all supported platforms uncommented in the beginning of this script if `<platform>` parameter is
-# omitted. `ANDROID_NDK` and `NACL_SDK_ROOT` environment variables must be set for Android and NaCl
-# builds respectively.
+# omitted. `NACL_SDK_ROOT` environment variable must be set for the NaCl build.
 #
 # The following commands may be given:
 #
@@ -17,8 +16,6 @@ set -e
 
 buildType=Debug
 platforms=(
-  # Android14-i686
-  # Android14-ARMv7a
   # Emscripten
   Linux-x86_64
   Linux-x86_64-Clang
@@ -32,7 +29,7 @@ function clean() {
   for platform in "${platforms[@]}"; do
     rm -rf "build/$platform-$buildType"
   done
-  rm -rf build/{OpenZone-*,NaCl-test,Windows-test,Android,bundle}
+  rm -rf build/{OpenZone-*,NaCl-test,Windows-test,bundle}
 }
 
 function build() {

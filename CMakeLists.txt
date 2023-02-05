@@ -60,7 +60,6 @@ include(FindPkgConfig)
 # Set-up include and library directories for different toolchains.
 if(EMSCRIPTEN)
   set(ENV{PKG_CONFIG_PATH} ${PLATFORM_PORTS_PREFIX}/lib/pkgconfig)
-elseif(ANDROID)
 elseif(NACL)
   set(ENV{PKG_CONFIG_PATH} ${CMAKE_FIND_ROOT_PATH}/usr/lib/pkgconfig)
 elseif(WIN32)
@@ -96,9 +95,7 @@ endif()
 if(OZ_GL_ES)
   # On embedded platforms, GLES is part of system libraries and is guaranteed to exist in toolchain
   # or platform directory, no need to explicitly check existence or to detect library names.
-  if(ANDROID)
-    set(GL_LIBRARIES GLESv2)
-  elseif(EMSCRIPTEN)
+  if(EMSCRIPTEN)
     set(GL_LIBRARIES "")
   elseif(NACL)
     set(GL_LIBRARIES ppapi_gles2)
@@ -206,18 +203,4 @@ if(OZ_BUNDLE)
   install(DIRECTORY doc/licences DESTINATION .)
 
   install(DIRECTORY lib/${OZ_PLATFORM_NAME} DESTINATION bin USE_SOURCE_PERMISSIONS)
-endif()
-
-#
-# Android project.
-#
-
-if(ANDROID)
-  file(GLOB dataFiles share/openzone/*.7z)
-
-  add_custom_command(OUTPUT ../Android
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/etc/android-project ../Android
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/share/openzone
-            ../Android/assets/share/openzone)
-  add_custom_target(android_project ALL DEPENDS ${CMAKE_BINARY_DIR}/../Android)
 endif()

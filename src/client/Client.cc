@@ -402,15 +402,6 @@ int Client::init(int argc, char** argv)
 
   File::init(argv[0]);
 
-#ifdef __ANDROID__
-
-  File configDir   = OZ_ANDROID_ROOT "/config";
-  File dataDir     = OZ_ANDROID_ROOT "/data";
-  File picturesDir = "";
-  File musicDir    = "";
-
-#else
-
   File::CONFIG.mkdir();
   File::DATA.mkdir();
 
@@ -418,8 +409,6 @@ int Client::init(int argc, char** argv)
   File dataDir     = File::DATA / "openzone";
   File musicDir    = File::MUSIC.isEmpty() ? File::MUSIC : File::MUSIC / "OpenZone";
   File picturesDir = File::PICTURES.isEmpty() ? File::PICTURES : File::PICTURES / "OpenZone";
-
-#endif
 
   configDir.mkdir();
   dataDir.mkdir();
@@ -526,7 +515,7 @@ int Client::init(int argc, char** argv)
   Log::println("Content search path {");
   Log::indent();
 
-#if !defined(__ANDROID__) && !defined(__native_client__)
+#ifndef __native_client__
 
   File globalDataDir = appConfig["dir.prefix"].get(String::EMPTY) + "/share/openzone";
   File userMusicDir  = appConfig["dir.music"].get(File::MUSIC);
@@ -549,7 +538,7 @@ int Client::init(int argc, char** argv)
     }
   }
 
-#if !defined(__ANDROID__) && !defined(__native_client__)
+#ifndef __native_client__
 
   if (globalDataDir.mountAt(nullptr, true)) {
     Log::println("%s", globalDataDir.c());

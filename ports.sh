@@ -3,8 +3,7 @@
 # ports.sh [clean | fetch | build]
 #
 # This script is used to build libraries required by OpenZone for some platforms. Currently it
-# builds all required libraries for NaCl and Android configurations that are not provided by SDKs.
-# `ANDROID_NDK` and `NACL_SDK_ROOT` environment variables must be set to use this script.
+# builds all required libraries for the Emscripten configuration that are not provided by SDKs.
 #
 # The following commands may be given (`build` is assumed if none):
 #
@@ -18,8 +17,6 @@
 set -e
 
 platforms=(
-  #  Android14-i686
-  #  Android14-ARMv7a
   Emscripten
 )
 
@@ -29,73 +26,7 @@ projectDir=$(pwd)
 topDir="$projectDir/ports"
 originalPath="$PATH"
 
-ndkX86Tools="$ANDROID_NDK/toolchains/x86-4.9/prebuilt/linux-x86_64"
-ndkX86Platform="$ANDROID_NDK/platforms/android-14/arch-x86"
-
-ndkARMTools="$ANDROID_NDK/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64"
-ndkARMPlatform="$ANDROID_NDK/platforms/android-14/arch-arm"
-
 . etc/common.sh
-
-function setup_ndk_i686() {
-  platform="Android14-i686"                               # Platform name.
-  buildDir="$topDir/$platform"                            # Build and install directory.
-  triplet="i686-linux-android"                            # Platform triplet (tools prefix).
-  hostTriplet="$triplet"                                  # Host triplet for autotools configure.
-  toolsroot="$ndkX86Tools"                                # SDK tool root.
-  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
-  sysroot="$ndkX86Platform"                               # SDK sysroot.
-
-  export CPP="$toolsroot/bin/$triplet-cpp"
-  export CC="$toolsroot/bin/$triplet-gcc"
-  export CXX="$toolsroot/bin/$triplet-g++"
-  export AR="$toolsroot/bin/$triplet-ar"
-  export RANLIB="$toolsroot/bin/$triplet-ranlib"
-  export STRIP="$toolsroot/bin/$triplet-strip"
-  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
-  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$originalPath"
-
-  export CPPFLAGS="--sysroot=$sysroot -isystem $buildDir/usr/include"
-  export CFLAGS="-Ofast -fPIC -march=i686 -msse3 -mfpmath=sse"
-  export CXXFLAGS="-Ofast -fPIC -march=i686 -msse3 -mfpmath=sse"
-  export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib"
-
-  for p in "${platforms[@]}"; do
-    [[ $p == "$platform" ]] && return 0
-  done
-  return 1
-}
-
-function setup_ndk_ARMv7a() {
-  platform="Android14-ARMv7a"                             # Platform name.
-  buildDir="$topDir/$platform"                            # Build and install directory.
-  triplet="arm-linux-androideabi"                         # Platform triplet (tools prefix).
-  hostTriplet="$triplet"                                  # Host triplet for autotools configure.
-  toolsroot="$ndkARMTools"                                # SDK tool root.
-  toolchain="$projectDir/cmake/$platform.Toolchain.cmake" # CMake toolchain.
-  sysroot="$ndkARMPlatform"                               # SDK sysroot.
-
-  export CPP="$toolsroot/bin/$triplet-cpp"
-  export CC="$toolsroot/bin/$triplet-gcc"
-  export CXX="$toolsroot/bin/$triplet-g++"
-  export AR="$toolsroot/bin/$triplet-ar"
-  export RANLIB="$toolsroot/bin/$triplet-ranlib"
-  export STRIP="$toolsroot/bin/$triplet-strip"
-  export PKG_CONFIG_PATH="$buildDir/usr/lib/pkgconfig"
-  export PKG_CONFIG_LIBDIR="$buildDir/usr/lib"
-  export PATH="$toolsroot/bin:$originalPath"
-
-  export CPPFLAGS="--sysroot=$sysroot -isystem $buildDir/usr/include"
-  export CFLAGS="-Ofast -fPIC -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wno-psabi"
-  export CXXFLAGS="-Ofast -fPIC -march=armv7-a -mfloat-abi=softfp -mfpu=neon -Wno-psabi"
-  export LDFLAGS="--sysroot=$sysroot -L$buildDir/usr/lib -Wl,--fix-cortex-a8"
-
-  for p in "${platforms[@]}"; do
-    [[ $p == "$platform" ]] && return 0
-  done
-  return 1
-}
 
 function setup_emscripten() {
   platform="Emscripten"
@@ -312,7 +243,6 @@ function build_physfs() {
 
 function build_lua() {
   prepare lua-5.3.1 lua-5.3.1.tar.gz || return
-  #applyPatches lua-5.3.0.patch
 
   if [[ $platform == Emscripten ]]; then
     emmake make -j4 CFLAGS="$CFLAGS" PLAT="generic" MYLIBS="$LDFLAGS"
@@ -335,7 +265,6 @@ function build_openal() {
 
 function build_sdl2() {
   prepare SDL2-2.0.3 SDL2-2.0.3.tar.gz || return
-  applyPatches SDL2-2.0.3.patch
 
   cmakeBuild
 
@@ -360,25 +289,17 @@ function build() {
   setup_emscripten && build_zlib
 
   # libpng
-  setup_ndk_i686 && build_libpng
-  setup_ndk_ARMv7a && build_libpng
 
   # jpeglib
   setup_emscripten && build_jpeglib
 
   # libogg
-  setup_ndk_i686 && build_libogg
-  setup_ndk_ARMv7a && build_libogg
   setup_emscripten && build_libogg
 
   # libvorbis
-  setup_ndk_i686 && build_libvorbis
-  setup_ndk_ARMv7a && build_libvorbis
   setup_emscripten && build_libvorbis
 
   # FreeType
-  setup_ndk_i686 && build_freetype
-  setup_ndk_ARMv7a && build_freetype
 
   # PhysicsFS
   setup_ndk_i686 && build_physfs
@@ -389,18 +310,6 @@ function build() {
   setup_ndk_i686 && build_lua
   setup_ndk_ARMv7a && build_lua
   setup_emscripten && build_lua
-
-  # OpenAL Soft
-  setup_ndk_i686 && build_openal
-  setup_ndk_ARMv7a && build_openal
-
-  # SDL
-  setup_ndk_i686 && build_sdl2
-  setup_ndk_ARMv7a && build_sdl2
-
-  # SDL_ttf
-  setup_ndk_i686 && build_sdl2_ttf
-  setup_ndk_ARMv7a && build_sdl2_ttf
 }
 
 case $1 in

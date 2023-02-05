@@ -41,7 +41,6 @@
   * removed `Mutex` class, replaced by a new `Monitor` class representing a mutex + condition
     variable pair
   * new `Monitor` class
-  * OpenSL (Android) back-end for `System::bell()`
   * linear algebra classes added as primitives to streams, `Log` and `Json`
   * `InputStream`, `OutputStream` and `BufferStream` merged into `Stream`
   * `Buffer` extends `List<char>`, supports zlib compression

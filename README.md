@@ -13,8 +13,7 @@ For standalone packages, run `bin/<platform>/openzone` executable to start the g
 ## Building ##
 
 Building is currently only supported under Linux. You can build Linux/Unix, Windows (MinGW) and
-Native Client ports. Android port in still under development. See `cmake/*.Toolchain.cmake` files
-for all supported platforms/toolchains.
+Native Client ports. See `cmake/*.Toolchain.cmake` files for all supported platforms/toolchains.
 GCC >= 5 and LLVM/Clang >= 3.4 are the only supported compilers.
 
 ### Dependencies ###
@@ -75,10 +74,10 @@ After that the game is prepared for a test run:
 ### Long Build Instructions ###
 
 For building all supported configurations you can use `ports.sh` and `build.sh` scripts. `ports.sh`
-(see Tools section) downloads and builds all required libraries for NaCl and Android platforms
-(NaCL SDK and Android SDK + NDK are required for this, of course), while `build.sh` builds OpenZone
-for all platforms. You can change variables at top of both scripts to change the list of enabled
-platforms and whether you want to make debug or a release build.
+(see Tools section) downloads and builds all required libraries for Emscripten and NaCl platforms
+(NaCL or Emscripten SDK is required for this, of course), while `build.sh` builds OpenZone for all
+platforms. You can change variables at top of both scripts to change the list of enabled platforms
+and whether you want to make debug or a release build.
 
 Build scripts use Ninja as low-level build system instead of Make which is the default for CMake.
 
@@ -95,7 +94,7 @@ You may also want to adjust several options when configuring CMake build system:
   `OFF` by default.
 
 - `OZ_GL_ES`: Use OpenGL ES 2.0 instead of OpenGL 2.1.
-  `OFF` by default, forced to `ON` on Android and NaCl.
+  `OFF` by default, forced to `ON` on NaCl.
 
 - `OZ_LUAJIT`: Use LuaJIT instead of the official Lua library. Lua scripts execute much faster but
   LuaJIT is written in assembler and supported only on x86 desktop platforms.
@@ -166,8 +165,7 @@ Additionally this scripts updates version numbers in various files.
 
 This script configures and/or builds OpenZone in the `build` directory for a specified platform or
 all supported platforms uncommented in the beginning of this script if `<platform>` parameter is
-omitted. `ANDROID_NDK` and `NACL_SDK_ROOT` environment variables must be set for Android and NaCl
-builds respectively.
+omitted. `NACL_SDK_ROOT` environment variable must be set for the NaCl build.
 
 The following commands may be given:
 
@@ -244,8 +242,7 @@ One of the following commands must be given:
 ### `ports.sh [clean | buildclean | fetch]` ###
 
 This script is used to build libraries required by OpenZone for some platforms. Currently it builds
-all required libraries for NaCl and Android configurations that are not provided by SDKs.
-`ANDROID_NDK` and `NACL_SDK_ROOT` environment variables must be set to use this script.
+all required libraries for the Emscripten configuration that are not provided by SDKs.
 
 The following commands may be given (`build` is assumed if none):
 

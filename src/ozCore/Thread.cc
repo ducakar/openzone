@@ -23,19 +23,11 @@
 #include "Thread.hh"
 
 #include "SpinLock.hh"
-#include "Java.hh"
 #include "Pepper.hh"
 
 #include <cstring>
-
-#if defined(__ANDROID__)
-# include <ctime>
-# include <jni.h>
-# include <pthread.h>
-#else
-# include <ctime>
-# include <pthread.h>
-#endif
+#include <ctime>
+#include <pthread.h>
 
 namespace oz
 {
@@ -76,31 +68,12 @@ void* Thread::Descriptor::mainWrapper(void* handle)
 
   threadName = &name;
 
-#if defined(__ANDROID__)
-
-  JavaVM* javaVM = Java::vm();
-
-  if (javaVM != nullptr) {
-    JNIEnv* jniEnv = nullptr;
-    javaVM->AttachCurrentThread(&jniEnv, nullptr);
-  }
-
-#elif defined(__native_client__)
-
+#if defined(__native_client__)
   Semaphore localSemaphore;
   MainCall::localSemaphore_ = &localSemaphore;
-
 #endif
 
-  void* result = main(data);
-
-#ifdef __ANDROID__
-  if (javaVM != nullptr) {
-    javaVM->DetachCurrentThread();
-  }
-#endif
-
-  return result;
+  return main(data);
 }
 
 void Thread::create(const char* name, Main* main, void* data)

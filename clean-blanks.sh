@@ -12,7 +12,7 @@
 
 set -e
 
-files=$(git ls-files | grep -Ev '^doc/licences/|^etc/android-project/|^ext/|\.patch$')
+files=$(git ls-files | grep -Ev '^doc/licences/|^ext/|\.patch$')
 files="$files $(find data -name '*.lua' -o -name '*.vert' -o -name '*.frag')"
 
 for file in $files; do

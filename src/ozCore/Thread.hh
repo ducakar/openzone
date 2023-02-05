@@ -104,10 +104,6 @@ public:
    * should be called later to ensure thread's termination and to release its resources or
    * `detach()` to detach the thread and automatically release its resources upon finishing.
    *
-   * @note
-   * On Android, the thread is registered at VM if `Java::vm()` returns a valid handle (i.e.
-   * `JavaVM::AttachCurrentThread()` and `JavaVM::DetachCurrentThread()` are invoked).
-   *
    * @param name thread name (copied to an internal buffer).
    * @param main pointer to the thread's main function.
    * @param data pointer to user data, passed to the thread's main function.

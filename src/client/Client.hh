@@ -27,8 +27,6 @@
 
 #include <client/Stage.hh>
 
-#define OZ_ANDROID_ROOT "/data/data/com.github.ducakar/openzone"
-
 namespace oz::client
 {
 

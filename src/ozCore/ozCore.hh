@@ -132,5 +132,4 @@
 /*
  * Platform support.
  */
-#include "Java.hh"
 #include "Pepper.hh"
