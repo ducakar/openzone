@@ -67,7 +67,7 @@ elseif(WIN32)
   mark_as_advanced(MINGW32_LIBRARY)
 else()
   find_package(Threads REQUIRED)
-  pkg_check_modules(PULSE_SIMPLE REQUIRED libpulse-simple)
+  find_package(ALSA REQUIRED)
 endif()
 
 find_package(ZLIB REQUIRED)

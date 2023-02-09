@@ -23,7 +23,6 @@
 #include "System.hh"
 
 #include "Atomic.hh"
-#include "SharedLib.hh"
 #include "Log.hh"
 #include "Pepper.hh"
 
@@ -47,7 +46,7 @@
 # include <windows.h>
 # include <mmsystem.h>
 #else
-# include <pulse/simple.h>
+# include <alsa/asoundlib.h>
 # include <pthread.h>
 #endif
 
@@ -57,7 +56,6 @@ namespace oz
 static constexpr float BELL_TIME       = 0.30f;
 static constexpr float BELL_FREQUENCY  = 1000.0f;
 static constexpr int   BELL_RATE       = 44100;
-static constexpr int   BELL_SAMPLES    = int(BELL_TIME * float(BELL_RATE));
 static constexpr int   INITIALISED_BIT = 0x80;
 
 enum BellState
@@ -149,6 +147,8 @@ static void* bellMain(void*)
 
 #elif defined(__native_client__)
 
+static constexpr int BELL_SAMPLES = int(BELL_TIME * float(BELL_RATE));
+
 struct SampleInfo
 {
   PP_AudioSampleRate rate;
@@ -213,6 +213,8 @@ static void* bellMain(void*)
 
 #elif defined(_WIN32)
 
+static constexpr int BELL_SAMPLES = int(BELL_TIME * float(BELL_RATE));
+
 struct Wave
 {
   char  chunkId[4];
@@ -237,38 +239,27 @@ static void* bellMain(void*)
 {
   pthread_mutex_lock(&bellMutex);
 
-  Wave* wave = static_cast<Wave*>(alloca(sizeof(Wave)));
+  Wave wave = {
+    {'R', 'I', 'F', 'F'},
+    36 + sizeof(wave.samples),
+    {'W', 'A', 'V', 'E'},
 
-  wave->chunkId[0]     = 'R';
-  wave->chunkId[1]     = 'I';
-  wave->chunkId[2]     = 'F';
-  wave->chunkId[3]     = 'F';
-  wave->chunkSize      = 36 + sizeof(wave->samples);
-  wave->format[0]      = 'W';
-  wave->format[1]      = 'A';
-  wave->format[2]      = 'V';
-  wave->format[3]      = 'E';
+    {'f', 'm', 't', ' '},
+    16,
+    1,
+    2,
+    BELL_RATE,
+    BELL_RATE * 2 * sizeof(int16),
+    int16(2 * sizeof(int16)),
+    int16(sizeof(int16) * 8),
 
-  wave->subchunk1Id[0] = 'f';
-  wave->subchunk1Id[1] = 'm';
-  wave->subchunk1Id[2] = 't';
-  wave->subchunk1Id[3] = ' ';
-  wave->subchunk1Size  = 16;
-  wave->audioFormat    = 1;
-  wave->nChannels      = 2;
-  wave->sampleRate     = BELL_RATE;
-  wave->byteRate       = BELL_RATE * 2 * sizeof(int16);
-  wave->blockAlign     = int16(2 * sizeof(int16));
-  wave->bitsPerSample  = int16(sizeof(int16) * 8);
+    {'d', 'a', 't', 'a'},
+    sizeof(wave.samples),
+    {}
+  };
 
-  wave->subchunk2Id[0] = 'd';
-  wave->subchunk2Id[1] = 'a';
-  wave->subchunk2Id[2] = 't';
-  wave->subchunk2Id[3] = 'a';
-  wave->subchunk2Size  = sizeof(wave->samples);
-
-  generateBellSamples(wave->samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
-  PlaySound(reinterpret_cast<LPCSTR>(wave), nullptr, SND_MEMORY | SND_SYNC);
+  generateBellSamples(wave.samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
+  PlaySound(reinterpret_cast<LPCSTR>(&wave), nullptr, SND_MEMORY | SND_SYNC);
 
   hasBellThread.store<RELEASE>(false);
   pthread_cond_signal(&bellCond);
@@ -278,58 +269,41 @@ static void* bellMain(void*)
 
 #else
 
-enum PulseStatus
-{
-  NOT_INITIALISED,
-  INITIALISED,
-  INITIALISATION_FAILED
-};
-
-static PulseStatus pulseStatus                = NOT_INITIALISED;
-static int16       bellData[BELL_SAMPLES * 2] = {};
-
-static OZ_DL_DEFINE(pa_simple_new)
-static OZ_DL_DEFINE(pa_simple_free)
-static OZ_DL_DEFINE(pa_simple_write)
-static OZ_DL_DEFINE(pa_simple_drain)
-
-static void initialisePulse()
-{
-  SharedLib libPulseSimple("libpulse-simple.so.0");
-
-  if (libPulseSimple.isOpened()) {
-    generateBellSamples(bellData, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
-
-    OZ_DL_LOAD(libPulseSimple, pa_simple_new)
-    OZ_DL_LOAD(libPulseSimple, pa_simple_free)
-    OZ_DL_LOAD(libPulseSimple, pa_simple_write)
-    OZ_DL_LOAD(libPulseSimple, pa_simple_drain)
-
-    pulseStatus = INITIALISED;
-  }
-  else {
-    pulseStatus = INITIALISATION_FAILED;
-  }
-}
-
 static void* bellMain(void*)
 {
   pthread_mutex_lock(&bellMutex);
 
-  if (pulseStatus == NOT_INITIALISED) {
-    initialisePulse();
-  }
+  snd_pcm_t* alsa = nullptr;
+  if (snd_pcm_open(&alsa, "default", SND_PCM_STREAM_PLAYBACK, 0) == 0) {
+    snd_pcm_hw_params_t* params = nullptr;
+    if (snd_pcm_hw_params_malloc(&params) == 0) {
+      snd_pcm_hw_params_any(alsa, params);
 
-  if (pulseStatus == INITIALISED) {
-    pa_sample_spec sampleSpec = {PA_SAMPLE_S16NE, BELL_RATE, 2};
-    pa_simple*     pa         = pa_simple_new(nullptr, "liboz", PA_STREAM_PLAYBACK, nullptr, "bell",
-                                              &sampleSpec, nullptr, nullptr, nullptr);
+      uint rate = BELL_RATE;
+      if (snd_pcm_hw_params_set_access(alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED) == 0 &&
+          snd_pcm_hw_params_set_format(alsa, params, SND_PCM_FORMAT_S16) == 0 &&
+          snd_pcm_hw_params_set_channels(alsa, params, 2) == 0 &&
+          snd_pcm_hw_params_set_rate_resample(alsa, params, 0) == 0 &&
+          snd_pcm_hw_params_set_rate_near(alsa, params, &rate, nullptr) == 0 &&
+          snd_pcm_hw_params(alsa, params) == 0 &&
+          snd_pcm_prepare(alsa) == 0)
+      {
+        int    nSamples = int(BELL_TIME * float(rate));
+        int16* bellData = static_cast<int16*>(malloc(nSamples * 2 * sizeof(int16)));
 
-    if (pa != nullptr) {
-      pa_simple_write(pa, bellData, sizeof(bellData), nullptr);
-      pa_simple_drain(pa, nullptr);
-      pa_simple_free(pa);
+        if (bellData != nullptr) {
+          generateBellSamples(bellData, nSamples, rate, 0, nSamples);
+          snd_pcm_writei(alsa, bellData, snd_pcm_uframes_t(nSamples));
+          snd_pcm_drain(alsa);
+
+          free(bellData);
+        }
+      }
+
+      snd_pcm_hw_params_free(params);
     }
+
+    snd_pcm_close(alsa);
   }
 
   hasBellThread.store<RELEASE>(false);
