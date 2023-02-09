@@ -9,8 +9,8 @@
 #   in `share/openzone` directory are included.
 # - `datasrc`: Create source data archive `openzone-datasrc-<version>.tar.xz`. All source data
 #   packages found in `data` directory are included.
-# - `bundle`: Create a 7zip archive that contains Linux-x86_64, Linux-i686 and Windows-i686
-#   standalone builds and compiled game data packages found in `share/openzone`.
+# - `bundle`: Create a 7zip archive that contains Linux-x86_64 and Windows-x86_64 standalone builds
+#   and compiled game data packages found in `share/openzone`.
 #
 
 set -e

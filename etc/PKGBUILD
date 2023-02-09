@@ -6,7 +6,7 @@ pkgver=0.3.95
 pkgrel=1
 url="http://ducakar.github.com/openzone/"
 license=('GPL3')
-arch=('i686' 'x86_64')
+arch=('x86_64')
 makedepends=('cmake' 'gcc-libs' 'alsa-lib' 'physfs' 'lua' 'mesa' 'sdl2_ttf' 'libvorbis' 'openal')
 source=("https://github.com/downloads/ducakar/openzone/${pkgbase}-src-${pkgver}.tar.xz"
         "https://github.com/downloads/ducakar/openzone/${pkgbase}-data-${pkgver}.tar.xz")

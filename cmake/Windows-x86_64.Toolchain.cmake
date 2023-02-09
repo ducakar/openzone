@@ -10,8 +10,8 @@ set(CMAKE_RC_COMPILER           "/usr/bin/${PLATFORM_TRIPLET}-windres" CACHE STR
 set(CMAKE_STRIP                 "/usr/bin/${PLATFORM_TRIPLET}-strip" CACHE STRING "")
 set(CMAKE_C_COMPILER            "/usr/bin/${PLATFORM_TRIPLET}-gcc")
 set(CMAKE_CXX_COMPILER          "/usr/bin/${PLATFORM_TRIPLET}-g++")
-set(CMAKE_C_FLAGS               "-march=x86-64 -m64 -msse3" CACHE STRING "")
-set(CMAKE_CXX_FLAGS             "-march=x86-64 -m64 -msse3" CACHE STRING "")
+set(CMAKE_C_FLAGS               "-march=x86-64-v2 -m64 -msse3" CACHE STRING "")
+set(CMAKE_CXX_FLAGS             "-march=x86-64-v2 -m64 -msse3" CACHE STRING "")
 # FIXME Enable "-flto" when fixed.
 set(CMAKE_C_FLAGS_RELEASE       "-Ofast" CACHE STRING "")
 set(CMAKE_CXX_FLAGS_RELEASE     "-Ofast" CACHE STRING "")
