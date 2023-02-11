@@ -103,7 +103,6 @@
   * layout files, can be edited in built-in editor (`-e` option) or loaded by missions
   * camera flash and shake effects, camera has an auxiliary thread for event extraction
   * switching weapons with number keys
-  * text-to-speech using eSpeak library
   * `.ozState` file compression
   * `ozPersistent` table in Lua scripts for persistence across missions and load/save
 - builder

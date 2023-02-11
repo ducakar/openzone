@@ -39,8 +39,6 @@ private:
   static constexpr int   MUSIC_INPUT_BUFFER_SIZE = 64 * 1024;
   static constexpr float SOUND_DISTANCE          = 192.0f;
 
-  SharedLib                   libeSpeak;
-
   SBitset<Orbis::MAX_STRUCTS> playedStructs;
   float                       volume_;
 
@@ -103,8 +101,6 @@ public:
 
   void init();
   void destroy();
-
-  void initLibs();
 
 };
 

@@ -32,8 +32,6 @@
 #include <client/BotAudio.hh>
 #include <client/VehicleAudio.hh>
 
-#include <client/eSpeak.hh>
-
 #define OZ_REGISTER_IMAGOCLASS(name) \
   { \
     int id = liber.imagoIndex(#name); \
@@ -66,110 +64,6 @@ struct Context::SoundResource::PreloadData
 };
 
 Pool<Context::Source> Context::Source::pool;
-int                   Context::speakSampleRate;
-Context::SpeakSource  Context::speakSource;
-
-int Context::speakCallback(int16* samples, int nSamples, void*)
-{
-  if (nSamples != 0) {
-    int maxSamples = SpeakSource::BUFFER_SIZE - speakSource.nSamples;
-    if (nSamples > maxSamples) {
-      nSamples = maxSamples;
-      Log::printRaw("AL: Speak buffer overrun\n");
-    }
-
-    memcpy(speakSource.samples + speakSource.nSamples, samples, nSamples * sizeof(int16));
-    speakSource.nSamples += nSamples;
-
-    if (speakSource.nQueuedBuffers != 2) {
-      int i = speakSource.nQueuedBuffers;
-
-      speakSource.mutex.lock();
-
-      alBufferData(speakSource.bufferIds[i], AL_FORMAT_MONO16, speakSource.samples,
-                   speakSource.nSamples * sizeof(int16), speakSampleRate);
-      alSourceQueueBuffers(speakSource.id, 1, &speakSource.bufferIds[i]);
-      alSourcePlay(speakSource.id);
-
-      OZ_AL_CHECK_ERROR();
-      speakSource.mutex.unlock();
-
-      ++speakSource.nQueuedBuffers;
-      speakSource.nSamples = 0;
-      return 0;
-    }
-  }
-
-  do {
-    if (speakSource.nQueuedBuffers == 0) {
-      return 1;
-    }
-
-    int nProcessed = 0;
-    do {
-      Thread::sleepFor(100_ms);
-
-      speakSource.mutex.lock();
-
-      int state = 0;
-      alGetSourcei(speakSource.id, AL_SOURCE_STATE, &state);
-      alGetSourcei(speakSource.id, AL_BUFFERS_PROCESSED, &nProcessed);
-
-      if (nProcessed == 0 && state == AL_STOPPED) {
-        alSourcePlay(speakSource.id);
-      }
-
-      speakSource.mutex.unlock();
-
-      if (!speakSource.isAlive.load<RELAXED>()) {
-        return 1;
-      }
-    }
-    while (nProcessed == 0);
-
-    speakSource.mutex.lock();
-
-    ALuint buffer = 0;
-    alSourceUnqueueBuffers(speakSource.id, 1, &buffer);
-    --speakSource.nQueuedBuffers;
-
-    if (speakSource.nSamples != 0) {
-      alBufferData(buffer, AL_FORMAT_MONO16, speakSource.samples,
-                   speakSource.nSamples * sizeof(int16), speakSampleRate);
-      alSourceQueueBuffers(speakSource.id, 1, &buffer);
-
-      ++speakSource.nQueuedBuffers;
-      speakSource.nSamples = 0;
-    }
-
-    OZ_AL_CHECK_ERROR();
-    speakSource.mutex.unlock();
-  }
-  while (nSamples == 0);
-
-  return 0;
-}
-
-void* Context::speakMain(void*)
-{
-  espeak_Synth(speakSource.text, speakSource.text.length(), 0, POS_CHARACTER, 0, espeakCHARS_UTF8,
-               nullptr, nullptr);
-
-  int value = AL_PLAYING;
-  while (speakSource.isAlive.load<RELAXED>() && value != AL_STOPPED) {
-    Thread::sleepFor(100_ms);
-
-    speakSource.mutex.lock();
-    alGetSourcei(speakSource.id, AL_SOURCE_STATE, &value);
-    OZ_AL_CHECK_ERROR();
-    speakSource.mutex.unlock();
-  }
-
-  speakSource.owner.store<RELAXED>(-1);
-  speakSource.isAlive.store<RELAXED>(false);
-
-  return nullptr;
-}
 
 Context::Source* Context::addSource(int sound)
 {
@@ -230,30 +124,6 @@ void Context::removeContSource(ContSource* contSource, int key)
 
   --sounds[sound].nUsers;
   contSources.exclude(key);
-}
-
-Context::SpeakSource* Context::requestSpeakSource(const char* text, int owner)
-{
-  if (espeak_Synth == nullptr || speakSource.thread.isValid()) {
-    return nullptr;
-  }
-
-  speakSource.nQueuedBuffers = 0;
-  speakSource.nSamples       = 0;
-  speakSource.owner.value    = owner;
-  speakSource.isAlive.value  = true;
-  speakSource.text           = text;
-
-  speakSource.thread = Thread("speak", speakMain);
-  return &speakSource;
-}
-
-void Context::releaseSpeakSource()
-{
-  OZ_ASSERT(speakSource.thread.isValid());
-
-  speakSource.isAlive.store<RELAXED>(false);
-  speakSource.thread.join();
 }
 
 Texture Context::loadTexture(const File& albedoFile, const File& masksFile, const File& normalsFile)
@@ -657,14 +527,6 @@ void Context::load()
 {
   OZ_NACL_IS_MAIN(true);
 
-  speakSource.owner.store<RELAXED>(-1);
-
-  alGenBuffers(2, speakSource.bufferIds);
-  alGenSources(1, &speakSource.id);
-  if (alGetError() != AL_NO_ERROR) {
-    OZ_ERROR("Failed to create speak source");
-  }
-
   maxImagines           = 0;
   maxAudios             = 0;
   maxSources            = 0;
@@ -712,16 +574,6 @@ void Context::unload()
   Log::println("%6d  Vehicle audios",      maxVehicleAudios);
   Log::unindent();
   Log::println("}");
-
-  // Speak source must be destroyed before anything else using OpenAL since it calls OpenAL
-  // functions from its own thread.
-  if (speakSource.thread.isValid()) {
-    releaseSpeakSource();
-  }
-  OZ_AL_CHECK_ERROR();
-
-  alDeleteSources(1, &speakSource.id);
-  alDeleteBuffers(2, speakSource.bufferIds);
 
   imagines.free();
   imagines.trim();

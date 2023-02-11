@@ -88,28 +88,7 @@ private:
     bool isUpdated;
   };
 
-  struct SpeakSource
-  {
-    static constexpr int BUFFER_SIZE = 44100;
-
-    uint         id;
-    uint         bufferIds[2];
-    int          nQueuedBuffers;
-    int          nSamples;
-
-    Atomic<int>  owner;
-    Atomic<bool> isAlive;              // Set to false to terminate source before it finishes.
-    Monitor      mutex;
-    Thread       thread;
-
-    String       text;
-    int16        samples[BUFFER_SIZE];
-  };
-
 private:
-
-  static int               speakSampleRate;       // Set from Sound class.
-  static SpeakSource       speakSource;
 
   Imago::CreateFunc**      imagoClasses = nullptr;
   Audio::CreateFunc**      audioClasses = nullptr;
@@ -155,17 +134,11 @@ public:
 
 private:
 
-  static int speakCallback(int16* samples, int nSamples, void*);
-  static void* speakMain(void*);
-
   Source* addSource(int sound);
   void removeSource(Source* source, Source* prev);
 
   ContSource* addContSource(int sound, int key);
   void removeContSource(ContSource* contSource, int key);
-
-  SpeakSource* requestSpeakSource(const char* text, int owner);
-  void releaseSpeakSource();
 
   PartGen* addPartGen();
   void removePartGen(PartGen* partGen);

@@ -132,7 +132,6 @@ endif()
 if(UNIX AND NOT PLATFORM_EMBEDDED)
   include_directories(SYSTEM ext/gamemode/lib)
 endif()
-include_directories(SYSTEM ext/espeak)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

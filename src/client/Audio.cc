@@ -113,47 +113,6 @@ void Audio::playContSound(int sound, float volume, const Object* parent) const
   OZ_AL_CHECK_ERROR();
 }
 
-bool Audio::playSpeak(const char* text, float volume, const Object* parent) const
-{
-  const Dynamic* dynParent = static_cast<const Dynamic*>(parent);
-  int            owner     = context.speakSource.owner.load<RELAXED>();
-  uint           srcId     = 0;
-
-  if (owner == -1) {
-    if (text == nullptr) {
-      return false;
-    }
-
-    Context::SpeakSource* speakSource = context.requestSpeakSource(text, obj->index);
-    if (speakSource == nullptr) {
-      return false;
-    }
-
-    srcId = speakSource->id;
-
-    alSourcef(srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR);
-  }
-  else if (owner == obj->index) {
-    srcId = context.speakSource.id;
-  }
-  else {
-    return false;
-  }
-
-  collider.translate(camera.p, parent->p - camera.p, parent);
-  bool isObstructed = collider.hit.ratio != 1.0f;
-
-  alSourcef(srcId, AL_GAIN, isObstructed ? volume / 2.0f : volume);
-  alSourcefv(srcId, AL_POSITION, parent->p);
-  if (parent->flags & Object::DYNAMIC_BIT) {
-    alSourcefv(srcId, AL_VELOCITY, dynParent->velocity);
-  }
-
-  OZ_AL_CHECK_ERROR();
-
-  return true;
-}
-
 void Audio::playEngineSound(int sound, float volume, float pitch, const Object* parent) const
 {
   OZ_ASSERT(uint(sound) < uint(liber.sounds.size()));

@@ -600,8 +600,6 @@ int Client::init(int argc, char** argv)
 
   Log::println("Random generator seed set to: %u", seed);
 
-  sound.initLibs();
-
   initFlags |= INIT_LIBRARY;
   liber.init(appConfig["dir.music"].get(""));
 

@@ -60,8 +60,7 @@ function package_openzone()
 {
   pkgdesc='Simple cross-platform FPS/RTS game engine'
   depends=('liboz' 'lua' 'openzone-data')
-  optdepends=('espeak: speech synthesis'
-              'libmad: MP3 streaming'
+  optdepends=('libmad: MP3 streaming'
               'faad2: AAC streaming'
               'zip: building ZIP game data archives'
               'p7zip: building 7zip game data archives')

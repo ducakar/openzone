@@ -136,17 +136,6 @@ void Loader::updateSound()
     }
   }
 
-  // Stop speaker if owner has been removed.
-  int speaker = context.speakSource.owner.load<RELAXED>();
-  if (speaker == -1) {
-    if (context.speakSource.thread.isValid()) {
-      context.releaseSpeakSource();
-    }
-  }
-  else if (orbis.obj(speaker) == nullptr) {
-    context.speakSource.isAlive.store<RELAXED>(false);
-  }
-
   OZ_AL_CHECK_ERROR();
 }
 

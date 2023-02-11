@@ -89,8 +89,6 @@ add_library(client STATIC
   VehicleAudio.hh
   common.cc
   common.hh
-  eSpeak.cc
-  eSpeak.hh
   luaapi.cc
   luaapi.hh
   ui/Area.cc

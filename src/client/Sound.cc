@@ -21,7 +21,6 @@
 
 #include <client/Context.hh>
 #include <client/Camera.hh>
-#include <client/eSpeak.hh>
 
 #include <SDL2/SDL.h>
 
@@ -267,14 +266,12 @@ void Sound::suspend() const
 
 void Sound::play()
 {
-  context.speakSource.mutex.lock();
   soundAuxSemaphore.post();
 }
 
 void Sound::sync()
 {
   soundMainSemaphore.wait();
-  context.speakSource.mutex.unlock();
 }
 
 void Sound::load()
@@ -383,15 +380,6 @@ void Sound::init()
   setVolume(appConfig.include("sound.volume", 1.0f).get(0.0f));
   setMusicVolume(0.5f);
 
-  String speaker = appConfig.include("sound.speaker", "en").get("");
-
-  if (espeak_Initialize != nullptr) {
-    context.speakSampleRate = espeak_Initialize(AUDIO_OUTPUT_SYNCHRONOUS, 500, nullptr, 0);
-    espeak_SetParameter(espeakRATE, 150, 0);
-    espeak_SetVoiceByName(speaker);
-    espeak_SetSynthCallback(reinterpret_cast<t_espeak_callback*>(&Context::speakCallback));
-  }
-
   isMusicAlive.store<RELAXED>(true);
   isSoundAlive.store<RELAXED>(true);
 
@@ -407,10 +395,6 @@ void Sound::init()
 void Sound::destroy()
 {
   Log::print("Destroying Sound ...");
-
-  if (espeak_Terminate != nullptr) {
-    espeak_Terminate();
-  }
 
   isSoundAlive.store<RELAXED>(false);
   isMusicAlive.store<RELAXED>(false);
@@ -429,41 +413,7 @@ void Sound::destroy()
 
   OZ_AL_CHECK_ERROR();
 
-#ifndef __native_client__
-  libeSpeak.close();
-#endif
-
   Log::printEnd(" OK");
-}
-
-void Sound::initLibs()
-{
-#ifdef __native_client__
-  static_cast<void>(libeSpeak);
-#else
-# ifdef _WIN32
-  const char* libeSpeakName = "libespeak.dll";
-# else
-  const char* libeSpeakName = "libespeak.so.1";
-# endif
-
-  Log::print("Linking eSpeak library '%s' ...", libeSpeakName);
-
-  libeSpeak = SharedLib(libeSpeakName);
-  if (!libeSpeak.isOpened()) {
-    Log::printEnd(" Not found, speech synthesis not supported");
-  }
-  else {
-    OZ_DL_LOAD(libeSpeak, espeak_Initialize)
-    OZ_DL_LOAD(libeSpeak, espeak_Terminate)
-    OZ_DL_LOAD(libeSpeak, espeak_SetParameter)
-    OZ_DL_LOAD(libeSpeak, espeak_SetVoiceByName)
-    OZ_DL_LOAD(libeSpeak, espeak_SetSynthCallback)
-    OZ_DL_LOAD(libeSpeak, espeak_Synth)
-
-    Log::printEnd(" OK, speech synthesis supported");
-  }
-#endif
 }
 
 Sound sound;
