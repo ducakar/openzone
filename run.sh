@@ -1,8 +1,9 @@
 #!/bin/bash
 #
-# run.sh [wine | wine64] [<openzoneOptions>]
+# run.sh [wine] [<ptions>]
 #
-# Linux-x86_64-Clang client is launched by default. <options> are passed to the client command line.
+# Linux-x86_64-Clang client is launched by default. `<options>`` are passed to the client command
+# line.
 #
 # The following alternative launches are available:
 #
@@ -14,10 +15,8 @@ set -e
 defaultPlatform=Linux-x86_64-Clang-Debug
 
 function launchWine() {
-  cd build/Windows-x86_64
-  cmake --install -D CMAKE_INSTALL_PREFIX=.
-  cp ../../lib/Windows-x86_64/* bin
-
+  cd build/Windows-x86_64-Debug
+  cmake --install . --prefix .
   shift
   exec wine bin/openzone.exe -p ../.. "$@"
 }

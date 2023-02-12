@@ -25,8 +25,11 @@ add_library(ozEngine
 #END SOURCES
 )
 
-target_link_libraries(ozEngine SDL2::SDL2 SDL2_ttf::SDL2_ttf ${GL_LIBRARIES} OpenAL::OpenAL
-                      PNG::PNG ${OPUSFILE_LIBRARIES} ${VORBISFILE_LIBRARIES} ${LUA_LIBRARIES})
+target_link_libraries(ozEngine $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+                               $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
+                               ${GL_LIBRARIES} OpenAL::OpenAL PNG::PNG
+                               ${OPUSFILE_LIBRARIES} ${OPUS_LIBRARIES} ${VORBISFILE_LIBRARIES}
+                               ${LUA_LIBRARIES})
 
 target_link_libraries(ozEngine ozCore)
 

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "dependencies": [
+    {
+      "name": "alsa",
+      "platform": "linux"
+    },
+    {
+      "name": "zlib",
+      "platform": "!emscripten"
+    },
+    {
+      "name": "physfs"
+    },
+    {
+      "name": "sdl2",
+      "platform": "!emscripten"
+    },
+    {
+      "name": "sdl2-ttf",
+      "platform": "!emscripten"
+    },
+    {
+      "name": "openal-soft"
+    },
+    {
+      "name": "libpng",
+      "platform": "!emscripten"
+    },
+    {
+      "name": "libogg"
+    },
+    {
+      "name": "opusfile"
+    },
+    {
+      "name": "libvorbis"
+    },
+    {
+      "name": "lua"
+    }
+  ]
+}

@@ -201,20 +201,6 @@ Cleans up temporary, intermediate and backup files from a game source data direc
 Extracts internal strings for localisation from OpenZone source code and appends them to
 `<data_dir>/lingua/<data_dir_basename>.pot`.
 
-### `lib.sh [clean]` ###
-
-Copy all libraries OpenZone depends on to `lib/<platform>` directories (currently Linux-x86_64 and
-Windows-x86_64). Those are required to create standalone build (see `OZ_BUNDLE` cmake option) that
-can be distributed in a ZIP archive (i.e. no installation required, all dependencies included).
-
-This script is currently Arch Linux-specific and assumes one has both Linux and MinGW versions of
-all necessary libraries installed. Many of those packages must be built from AUR.
-
-The following commands may be given (`build` is assumed if none):
-
-- `clean`: Delete directories for all platforms.
-- (none): Copy libraries for selected platforms into corresponding directories.
-
 ### `nacl.sh [run | finalise]` ###
 
 `NACL_SDK_ROOT` environment variable must be set to use this script.
@@ -239,25 +225,12 @@ One of the following commands must be given:
 - `bundle`: Create a 7zip archive that contains Linux-x86_64, Windows-x86_64 standalone builds and
   compiled game data packages found in `share/openzone`.
 
-### `ports.sh [clean | buildclean | fetch]` ###
-
-This script is used to build libraries required by OpenZone for some platforms. Currently it builds
-all required libraries for the Emscripten configuration that are not provided by SDKs.
-
-The following commands may be given (`build` is assumed if none):
-
-- `clean`: Delete everything in `ports` directory except downloaded sources.
-- `buildclean`: Delete build directories. Downloaded sources and installed libraries are left
-  intact.
-- `fetch`: Download sources into `ports/archives` directory.
-- (none): Builds all libraries for all platforms.
-
 ### `q3map2.sh <map_file>` ###
 
 Proxy script for invoking `q3map2` BSP compiler from GtkRadiant in with appropriate parameters to
 compile a BSP structures for OpenZone.
 
-### `run.sh [wine | wine64] [<openzoneOptions>]` ###
+### `run.sh [wine] [<options>]` ###
 
 Linux-x86_64-Clang client is launched by default. `<options>` are passed to the client command line.
 The following alternative launches are available:

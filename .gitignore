@@ -4,10 +4,9 @@
 
 /build
 /doc/doxygen*
-/lib
-/ports
 /share/openzone
 /share/pixmaps
+/vcpkg_installed
 
 /*log
 /*.patch

@@ -12,6 +12,12 @@ option(OZ_LUAJIT "Use use LuaJIT instead of official Lua." OFF)
 option(OZ_TOOLS "Build engine tools required for game data creation." OFF)
 option(OZ_BUNDLE "Adjust installation for OpenZone multi-platform bundle ZIP." OFF)
 
+# get_cmake_property(_variableNames VARIABLES)
+# list (SORT _variableNames)
+# foreach (_variableName ${_variableNames})
+#     message(STATUS "${_variableName}=${${_variableName}}")
+# endforeach()
+
 #
 # Internal configuration.
 #
@@ -57,14 +63,24 @@ include(FindPkgConfig)
 # Libraries.
 #
 
+# Silence a warning in SDL2_TTF CMake config file.
+if (NOT DEFINED CMAKE_MODULE_PATH)
+  set(CMAKE_MODULE_PATH "")
+endif()
+
 # Set-up include and library directories for different toolchains.
 if(EMSCRIPTEN)
   set(ENV{PKG_CONFIG_PATH} ${PLATFORM_PORTS_PREFIX}/lib/pkgconfig)
 elseif(NACL)
   set(ENV{PKG_CONFIG_PATH} ${CMAKE_FIND_ROOT_PATH}/usr/lib/pkgconfig)
 elseif(WIN32)
-  set(ENV{PKG_CONFIG_PATH} ${CMAKE_FIND_ROOT_PATH}/lib/pkgconfig)
-  mark_as_advanced(MINGW32_LIBRARY)
+  if(DEFINED VCPKG_INSTALLED_DIR)
+    link_directories("${VCPKG_INSTALLED_DIR}/x64-windows/lib")
+    link_libraries(-lssp)
+  else()
+    set(CMAKE_FIND_ROOT_PATH /usr/x86_64-w64-mingw32)
+    set(ENV{PKG_CONFIG_PATH} ${CMAKE_FIND_ROOT_PATH}/lib/pkgconfig)
+  endif()
 else()
   find_package(Threads REQUIRED)
   find_package(ALSA REQUIRED)
@@ -74,7 +90,7 @@ find_package(ZLIB REQUIRED)
 find_package(PhysFS REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_ttf REQUIRED)
-find_package(OpenAL REQUIRED)
+find_package(OpenAL CONFIG REQUIRED)
 find_package(PNG REQUIRED)
 find_package(Ogg REQUIRED)
 

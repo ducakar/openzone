@@ -15,6 +15,7 @@
 set -e
 
 buildType=Debug
+vcpkg=0
 platforms=(
   # Emscripten
   Linux-x86_64
@@ -29,33 +30,55 @@ function clean() {
   for platform in "${platforms[@]}"; do
     rm -rf "build/$platform-$buildType"
   done
-  rm -rf build/{OpenZone-*,NaCl-test,Windows-test,bundle}
+  rm -rf build/{OpenZone-*,bundle}
 }
 
 function build() {
   for platform in "${platforms[@]}"; do
-    if [[ "$platform" != "Emscripten" && ! -f "cmake/$platform.Toolchain.cmake" ]]; then
-      echo "Unknown platform: $platform"
-      continue
-    fi
-
     header_msg "$platform-$buildType"
 
-    (($1)) && rm -rf "build/$platform-$buildType"
-    if [[ ! -d "build/$platform-$buildType" ]]; then
-      mkdir -p "build/$platform-$buildType"
-      if [[ "$platform" == "Emscripten" ]]; then
-        emcmake cmake -B "build/$platform-$buildType" -Wdev --warn-uninitialized \
-          -G Ninja \
-          -D CMAKE_BUILD_TYPE="$buildType"
-      else
-        cmake -B "build/$platform-$buildType" -Wdev --warn-uninitialized \
-          -G Ninja \
-          -D CMAKE_TOOLCHAIN_FILE="../../cmake/$platform.Toolchain.cmake" \
-          -D CMAKE_BUILD_TYPE="$buildType" \
-          -D OZ_TOOLS=ON
-      fi
+    if [[ "$platform" == "Emscripten" ]]; then
+      toolchain_file="/usr/lib/emscripten/cmake/Modules/Platform/Emscripten.cmake"
+      enable_tools=OFF
+    else
+      toolchain_file="$PWD/cmake/$platform.Toolchain.cmake"
+      enable_tools=ON
     fi
+    if [[ ! -f "$toolchain_file" ]]; then
+      echo "Missing toolchain file: $platform"
+      exit 1
+    fi
+
+    cmake_cmd="cmake -Wdev --warn-uninitialized -B build/$platform-$buildType -G Ninja"
+    cmake_cmd="$cmake_cmd -D CMAKE_BUILD_TYPE=$buildType"
+
+    case $platform in
+    Emscripten)
+      vcpkg_triplet="wasm32-emscripten"
+      cmake_cmd="emcmake $cmake_cmd"
+      ;;
+    Windows-x86_64)
+      vcpkg_triplet="x64-windows"
+      ;;
+    *)
+      vcpkg_triplet="x64-linux"
+      ;;
+    esac
+
+    if ((vcpkg)); then
+      cmake_cmd="$cmake_cmd -D CMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+      cmake_cmd="$cmake_cmd -D VCPKG_CHAINLOAD_TOOLCHAIN_FILE=$toolchain_file"
+      cmake_cmd="$cmake_cmd -D VCPKG_TARGET_TRIPLET=$vcpkg_triplet"
+      cmake_cmd="$cmake_cmd -D VCPKG_OVERLAY_TRIPLETS=cmake/vcpkg"
+      cmake_cmd="$cmake_cmd -D OZ_TOOLS=OFF"
+    else
+      cmake_cmd="$cmake_cmd -D CMAKE_TOOLCHAIN_FILE=$toolchain_file"
+      cmake_cmd="$cmake_cmd -D OZ_TOOLS=$enable_tools"
+    fi
+
+    (($1)) && rm -rf "build/$platform-$buildType"
+    echo -e "\e[1m$cmake_cmd\e[0m"
+    OZ_SOURCE_DIR=$PWD $cmake_cmd
     (($1)) || time cmake --build "build/$platform-$buildType"
   done
 }
