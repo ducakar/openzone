@@ -24,7 +24,6 @@
 
 #include "Atomic.hh"
 #include "Log.hh"
-#include "Pepper.hh"
 
 #include <csignal>
 #include <cstdio>
@@ -33,14 +32,8 @@
 
 #if defined(__EMSCRIPTEN__)
 # include <pthread.h>
-# include <SDL2/SDL.h>
-#elif defined(__native_client__)
-# include <ppapi/cpp/audio.h>
-# include <ppapi/cpp/completion_callback.h>
-# include <ppapi/cpp/core.h>
-# include <ppapi_simple/ps.h>
-# include <ppapi_simple/ps_interface.h>
-# include <pthread.h>
+# include <AL/al.h>
+# include <AL/alc.h>
 #elif defined(_WIN32)
 # include <pthread.h>
 # include <windows.h>
@@ -54,7 +47,8 @@ namespace oz
 {
 
 static constexpr float BELL_TIME       = 0.30f;
-static constexpr float BELL_FREQUENCY  = 1000.0f;
+static constexpr float BELL_AMPLITUDE  = 0.30f;
+static constexpr float BELL_FREQUENCY  = 500.0f;
 static constexpr int   BELL_RATE       = 44100;
 static constexpr int   INITIALISED_BIT = 0x80;
 
@@ -119,91 +113,52 @@ static void catchSignals()
 }
 
 // Buffer should contain space for (nSamples * 2) 16-bit samples.
-static void generateBellSamples(int16* buffer, int nSamples, int rate, int fromSample, int toSample)
+static void generateBellSamples(float* buffer, int nSamples, int rate)
 {
-  float length   = float(nSamples);
-  float quotient = BELL_FREQUENCY / float(rate) * Math::TAU;
+  for (int i = 0; i < nSamples; ++i) {
+    float theta  = float(i) / float(rate) * BELL_FREQUENCY * Math::TAU;
+    float sample = BELL_AMPLITUDE * Math::sin(theta);
 
-  for (; fromSample < toSample; ++fromSample) {
-    float i = float(fromSample);
-
-    float amplitude = 0.8f * Math::fastSqrt(max<float>(0.0f, (length - i) / length));
-    float theta     = i * quotient;
-    float value     = amplitude * Math::sin(theta);
-    int16 sample    = int16(Math::lround(value * SHRT_MAX));
-
-    buffer[0] = sample;
-    buffer[1] = sample;
-    buffer   += 2;
+    *buffer++ = sample;
   }
 }
 
 #if defined(__EMSCRIPTEN__)
 
-static void* bellMain(void*)
-{
-  return nullptr;
-}
-
-#elif defined(__native_client__)
-
-static constexpr int BELL_SAMPLES = int(BELL_TIME * float(BELL_RATE));
-
-struct SampleInfo
-{
-  PP_AudioSampleRate rate;
-  int                nFrameSamples;
-  int                nSamples;
-  int                offset;
-  pthread_mutex_t    finishMutex   = PTHREAD_MUTEX_INITIALIZER;
-  pthread_cond_t     finishCond    = PTHREAD_COND_INITIALIZER;
-  bool               isFinished    = false;
-};
-
-static void bellCallback(void* buffer, uint, void* info_)
-{
-  SampleInfo* info    = static_cast<SampleInfo*>(info_);
-  int16*      samples = static_cast<int16*>(buffer);
-
-  if (info->offset >= info->nSamples) {
-    pthread_mutex_lock(&info.finishMutex);
-    info->isFinished = true;
-    pthread_mutex_unlock(&info.finishMutex);
-    pthread_cond_signal(&info.finishCond);
-  }
-  else {
-    generateBellSamples(samples, info->nSamples, info->rate, info->offset,
-                        info->offset + info->nFrameSamples);
-    info->offset += info->nFrameSamples;
-  }
-}
+static constexpr ALenum FORMAT_MONO_FLOAT32 = 0x10010;
+static constexpr int    BELL_SAMPLES        = int(BELL_TIME * float(BELL_RATE));
 
 static void* bellMain(void*)
 {
   pthread_mutex_lock(&bellMutex);
 
-  pp::InstanceHandle ppInstance(PSGetInstanceId());
-  PP_AudioSampleRate rate = pp::AudioConfig::RecommendSampleRate(ppInstance);
+  float data[BELL_SAMPLES];
+  generateBellSamples(data, BELL_SAMPLES, BELL_RATE);
 
-  int nFrameSamples = pp::AudioConfig::RecommendSampleFrameCount(ppInstance, rate, 4096);
-  int nSamples      = min<int>(int(BELL_TIME * float(rate)), 2 * BELL_SAMPLES);
+  ALCdevice* device = alcOpenDevice(nullptr);
+  if (device != nullptr) {
+    ALCcontext* context = alcCreateContext(device, nullptr);
+    if (context != nullptr) {
+      alcMakeContextCurrent(context);
 
-  SampleInfo      info = {rate, nFrameSamples, nSamples, 0, false};
-  pp::AudioConfig config(ppInstance, rate, nFrameSamples);
-  pp::Audio       audio(ppInstance, config, bellCallback, &info);
+      ALuint buffer = 0, source = 0;
+      alGenBuffers(1, &buffer);
+      alGenSources(1, &source);
 
-  if (audio.StartPlayback() == PP_TRUE) {
-    pthread_mutex_lock(&info.finishMutex);
-    while (!info.isFinished) {
-      pthread_cond_wait(&info.finishCond, &info.finishMutex);
+      alBufferData(buffer, FORMAT_MONO_FLOAT32, data, sizeof(data), BELL_RATE);
+      alSourcei(source, AL_BUFFER, buffer);
+      alSourcePlay(source);
+      Thread::sleepFor(BELL_TIME * 1.5_s);
+      alSourceStop(source);
+
+      alDeleteSources(1, &source);
+      alDeleteBuffers(1, &buffer);
+
+      alcDestroyContext(context);
     }
-    pthread_mutex_unlock(&info.finishMutex);
 
-    audio.StopPlayback();
+    alcCloseDevice(device);
   }
-
-  pthread_cond_destroy(&info.finishCond);
-  pthread_mutex_destroy(&info.finishMutex);
 
   hasBellThread.store<RELEASE>(false);
   pthread_cond_signal(&bellCond);
@@ -232,7 +187,7 @@ struct Wave
 
   char  subchunk2Id[4];
   int   subchunk2Size;
-  int16 samples[BELL_SAMPLES * 2];
+  float samples[BELL_SAMPLES];
 };
 
 static void* bellMain(void*)
@@ -246,19 +201,19 @@ static void* bellMain(void*)
 
     {'f', 'm', 't', ' '},
     16,
+    3,
     1,
-    2,
     BELL_RATE,
-    BELL_RATE * 2 * sizeof(int16),
-    int16(2 * sizeof(int16)),
-    int16(sizeof(int16) * 8),
+    BELL_RATE * sizeof(float),
+    int16(sizeof(float)),
+    int16(sizeof(float) * 8),
 
     {'d', 'a', 't', 'a'},
     sizeof(wave.samples),
     {}
   };
 
-  generateBellSamples(wave.samples, BELL_SAMPLES, BELL_RATE, 0, BELL_SAMPLES);
+  generateBellSamples(wave.samples, BELL_SAMPLES, BELL_RATE);
   PlaySound(reinterpret_cast<LPCSTR>(&wave), nullptr, SND_MEMORY | SND_SYNC);
 
   hasBellThread.store<RELEASE>(false);
@@ -281,18 +236,18 @@ static void* bellMain(void*)
 
       uint rate = BELL_RATE;
       if (snd_pcm_hw_params_set_access(alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED) == 0 &&
-          snd_pcm_hw_params_set_format(alsa, params, SND_PCM_FORMAT_S16) == 0 &&
-          snd_pcm_hw_params_set_channels(alsa, params, 2) == 0 &&
+          snd_pcm_hw_params_set_format(alsa, params, SND_PCM_FORMAT_FLOAT) == 0 &&
+          snd_pcm_hw_params_set_channels(alsa, params, 1) == 0 &&
           snd_pcm_hw_params_set_rate_resample(alsa, params, 0) == 0 &&
           snd_pcm_hw_params_set_rate_near(alsa, params, &rate, nullptr) == 0 &&
           snd_pcm_hw_params(alsa, params) == 0 &&
           snd_pcm_prepare(alsa) == 0)
       {
         int    nSamples = int(BELL_TIME * float(rate));
-        int16* bellData = static_cast<int16*>(malloc(nSamples * 2 * sizeof(int16)));
+        float* bellData = static_cast<float*>(malloc(nSamples * sizeof(float)));
 
         if (bellData != nullptr) {
-          generateBellSamples(bellData, nSamples, rate, 0, nSamples);
+          generateBellSamples(bellData, nSamples, rate);
           snd_pcm_writei(alsa, bellData, snd_pcm_uframes_t(nSamples));
           snd_pcm_drain(alsa);
 
@@ -316,12 +271,6 @@ static void* bellMain(void*)
 
 static void waitBell()
 {
-#ifdef __native_client__
-  if (pp::Module::Get()->core()->IsMainThread()) {
-    return;
-  }
-#endif
-
   pthread_mutex_lock(&bellMutex);
   while (hasBellThread.load<RELAXED>()) {
     pthread_cond_wait(&bellCond, &bellMutex);
@@ -409,10 +358,6 @@ void System::init(int flags, CrashHandler* handler)
   if (initFlags & HANDLER_BIT) {
     catchSignals();
   }
-
-#ifdef __native_client__
-  PSInterfaceInit();
-#endif
 }
 
 }
