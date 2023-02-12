@@ -22,31 +22,18 @@ option(OZ_BUNDLE "Adjust installation for OpenZone multi-platform bundle ZIP." O
 # Internal configuration.
 #
 
-# Emscripten uses stock toolchain file, we have to set these things manually.
-if(EMSCRIPTEN)
-  set(PLATFORM_NAME         "Emscripten")
-  set(PLATFORM_EMBEDDED     ON)
-  set(PLATFORM_PORTS_PREFIX ${CMAKE_SOURCE_DIR}/ports/Emscripten/usr)
-
-  set(CMAKE_FIND_ROOT_PATH  ${CMAKE_FIND_ROOT_PATH};${PLATFORM_PORTS_PREFIX})
-  set(CMAKE_INCLUDE_PATH    ${PLATFORM_PORTS_PREFIX}/include)
-  set(CMAKE_LIBRARY_PATH    ${PLATFORM_PORTS_PREFIX}/lib)
-  set(CMAKE_CXX_FLAGS       "${CMAKE_CXX_FLAGS} -s USE_PTHREADS=1 -Wno-disabled-macro-expansion")
-
-  set(ZLIB_ROOT             ${PLATFORM_PORTS_PREFIX})
-  set(LUA_MATH_LIBRARY      "-lm")
-
-  # For QtCreator to find headers.
-  include_directories(SYSTEM /usr/lib/emscripten/system/include/libcxx)
-  include_directories(SYSTEM /usr/lib/emscripten/system/include/compat)
-  add_definitions(-D__EMSCRIPTEN__)
-endif()
-
 set(OZ_PLATFORM_NAME ${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR})
 
-if(PLATFORM_EMBEDDED)
-  set(OZ_GL_ES ON)
-  set(OZ_TOOLS OFF)
+# Emscripten uses stock toolchain file, we have to set these things manually.
+if(EMSCRIPTEN)
+  set(CMAKE_EXECUTABLE_SUFFIX ".html")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sPROXY_TO_PTHREAD=1 -sPTHREAD_POOL_SIZE=8")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sUSE_ZLIB=1 -sUSE_SDL=2 -sUSE_SDL_TTF=2 -sUSE_LIBPNG=1")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sUSE_OGG=1 -sUSE_VORBIS=1")
+  add_compile_options(-Wno-unused-command-line-argument -Wno-disabled-macro-expansion)
+  add_compile_options(-Wno-unsafe-buffer-usage)
+  # For clangd.
+  add_definitions(-D__EMSCRIPTEN__)
 endif()
 
 if(OZ_BUNDLE)
@@ -70,9 +57,9 @@ endif()
 
 # Set-up include and library directories for different toolchains.
 if(EMSCRIPTEN)
-  set(ENV{PKG_CONFIG_PATH} ${PLATFORM_PORTS_PREFIX}/lib/pkgconfig)
-elseif(NACL)
-  set(ENV{PKG_CONFIG_PATH} ${CMAKE_FIND_ROOT_PATH}/usr/lib/pkgconfig)
+  if(DEFINED VCPKG_INSTALLED_DIR)
+    link_directories("${VCPKG_INSTALLED_DIR}/wasm32-emscripten/lib")
+  endif()
 elseif(WIN32)
   if(DEFINED VCPKG_INSTALLED_DIR)
     link_directories("${VCPKG_INSTALLED_DIR}/x64-windows/lib")
@@ -86,18 +73,23 @@ else()
   find_package(ALSA REQUIRED)
 endif()
 
-find_package(ZLIB REQUIRED)
 find_package(PhysFS REQUIRED)
-find_package(SDL2 REQUIRED)
-find_package(SDL2_ttf REQUIRED)
-find_package(OpenAL CONFIG REQUIRED)
-find_package(PNG REQUIRED)
-find_package(Ogg REQUIRED)
+
+if(EMSCRIPTEN)
+  find_library(OPUSFILE_LIBRARIES opusfile REQUIRED)
+else()
+  find_package(OpenAL CONFIG REQUIRED)
+  find_package(ZLIB REQUIRED)
+  find_package(SDL2 REQUIRED)
+  find_package(SDL2_ttf REQUIRED)
+  find_package(PNG REQUIRED)
+  find_package(Ogg REQUIRED)
+  pkg_check_modules(OPUSFILE REQUIRED opusfile)
+  pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
+endif()
 
 pkg_check_modules(OPUS REQUIRED opus)
-pkg_check_modules(OPUSFILE REQUIRED opusfile)
-pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
-include_directories(SYSTEM ${OPUSFILE_INCLUDE_DIRS})
+include_directories(SYSTEM ${OPUS_INCLUDE_DIRS})
 
 if(OZ_LUAJIT)
   pkg_check_modules(LUAJIT REQUIRED luajit)
@@ -108,28 +100,14 @@ else()
   include_directories(SYSTEM ${LUA_INCLUDE_DIR})
 endif()
 
-if(OZ_GL_ES)
-  # On embedded platforms, GLES is part of system libraries and is guaranteed to exist in toolchain
-  # or platform directory, no need to explicitly check existence or to detect library names.
-  if(EMSCRIPTEN)
-    set(GL_LIBRARIES "")
-  elseif(NACL)
-    set(GL_LIBRARIES ppapi_gles2)
-  else()
+if(NOT EMSCRIPTEN)
+  if(OZ_GL_ES)
+    # On embedded platforms, GLES is part of system libraries and is guaranteed to exist in toolchain
+    # or platform directory, no need to explicitly check existence or to detect library names.
     pkg_check_modules(GL REQUIRED glesv2)
-  endif()
-else()
-  find_package(OpenGL REQUIRED)
-  set(GL_LIBRARIES OpenGL::GL)
-endif()
-
-# On embedded platforms, linking is mostly static, so indirect dependencies must be linked too.
-if(PLATFORM_EMBEDDED)
-  # Emscripten has SDL_ttf built-in and doesn't need Freetype.
-  if(NOT EMSCRIPTEN)
-    find_package(BZip2 REQUIRED)    # Required by FreeType.
-    find_package(Freetype REQUIRED) # Required by SDL_ttf.
-    list(APPEND SDL_TTF_LIBRARIES Freetype::Freetype BZip2::BZip2 PNG::PNG)
+  else()
+    find_package(OpenGL REQUIRED)
+    set(GL_LIBRARIES OpenGL::GL)
   endif()
 endif()
 
@@ -145,7 +123,7 @@ endif()
 #
 
 # External library headers.
-if(UNIX AND NOT PLATFORM_EMBEDDED)
+if(UNIX)
   include_directories(SYSTEM ext/gamemode/lib)
 endif()
 

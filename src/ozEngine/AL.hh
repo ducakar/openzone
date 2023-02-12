@@ -52,6 +52,9 @@ class AL
 {
 public:
 
+  static constexpr ALenum FORMAT_MONO_FLOAT32   = 0x10010;
+  static constexpr ALenum FORMAT_STEREO_FLOAT32 = 0x10011;
+
   /**
    * Buffer with decoded audio data.
    */

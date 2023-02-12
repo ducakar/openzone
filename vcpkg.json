@@ -21,7 +21,8 @@
       "platform": "!emscripten"
     },
     {
-      "name": "openal-soft"
+      "name": "openal-soft",
+      "platform": "!emscripten"
     },
     {
       "name": "libpng",
@@ -38,6 +39,22 @@
     },
     {
       "name": "lua"
+    },
+    {
+      "name": "assimp",
+      "platform": "linux"
+    },
+    {
+      "name": "freeimage",
+      "platform": "linux"
+    },
+    {
+      "name": "libnoise",
+      "platform": "linux"
+    },
+    {
+      "name": "libsquish",
+      "platform": "linux"
     }
   ]
 }

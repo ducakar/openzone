@@ -481,7 +481,7 @@ bool File::read(char* buffer, int64* size) const
       return false;
     }
 
-    int64 result = ::read(fd, buffer, *size);
+    int64 result = ::read(fd, buffer, size_t(*size));
     close(fd);
 
     if (result != *size) {
@@ -531,7 +531,7 @@ bool File::write(const char* buffer, int64 size) const
       return false;
     }
 
-    int64 result = ::write(fd, buffer, size);
+    int64 result = ::write(fd, buffer, size_t(size));
     close(fd);
 
     return result == size;

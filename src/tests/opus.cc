@@ -22,7 +22,6 @@
 
 #include <ogg/ogg.h>
 #include <opus/opus.h>
-#include <AL/alext.h>
 
 using namespace oz;
 
@@ -149,7 +148,7 @@ void MainStage::load()
     Application::setStage(nullptr);
   }
   else {
-    alBufferData(buffers[0], AL_FORMAT_STEREO_FLOAT32, samples.begin(), nSamples * 4, 48000);
+    alBufferData(buffers[0], AL::FORMAT_STEREO_FLOAT32, samples.begin(), nSamples * 4, 48000);
 
     decodeThreadSemaphore.post();
     decodeMainSemaphore.wait();
@@ -158,7 +157,7 @@ void MainStage::load()
       Application::setStage(nullptr);
     }
     else {
-      alBufferData(buffers[1], AL_FORMAT_STEREO_FLOAT32, samples.begin(), nSamples * 4, 48000);
+      alBufferData(buffers[1], AL::FORMAT_STEREO_FLOAT32, samples.begin(), nSamples * 4, 48000);
       alSourceQueueBuffers(source, 2, buffers);
       alSourcePlay(source);
 
@@ -194,7 +193,7 @@ void MainStage::update()
     }
     else {
       Log() << nSamples;
-      alBufferData(buffer, AL_FORMAT_STEREO_FLOAT32, samples.begin(), nSamples * 4, 48000);
+      alBufferData(buffer, AL::FORMAT_STEREO_FLOAT32, samples.begin(), nSamples * 4, 48000);
       alSourceQueueBuffers(source, 1, &buffer);
 
       OZ_AL_CHECK_ERROR();

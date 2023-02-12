@@ -25,7 +25,6 @@
 // We don't use those callbacks anywhere and they don't compile on MinGW.
 #define OV_EXCLUDE_STATIC_CALLBACKS
 
-#include <AL/alext.h>
 #include <cstring>
 #include <opus/opusfile.h>
 #include <vorbis/vorbisfile.h>
@@ -137,7 +136,7 @@ public:
                file.c());
     }
 
-    decoder->format_   = nChannels == 2 ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_MONO_FLOAT32;
+    decoder->format_   = nChannels == 2 ? FORMAT_STEREO_FLOAT32 : FORMAT_MONO_FLOAT32;
     decoder->rate_     = rate;
     decoder->capacity_ = size / sampleSize_;
     decoder->samples_  = new float[decoder->capacity_];
@@ -247,7 +246,7 @@ public:
       OZ_ERROR("oz::AL::Decoder: Only mono and stereo Opus supported `%s'", file.c());
     }
 
-    decoder->format_   = nChannels == 2 ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_MONO_FLOAT32;
+    decoder->format_   = nChannels == 2 ? FORMAT_STEREO_FLOAT32 : FORMAT_MONO_FLOAT32;
     decoder->rate_     = 48000;
     decoder->capacity_ = isStreaming ? FRAME_SIZE * nChannels : nSamples * nChannels;
     decoder->samples_  = new float[decoder->capacity_];
@@ -270,7 +269,7 @@ public:
     do {
       int result = 0;
 
-      if (decoder->format_ == AL_FORMAT_STEREO_FLOAT32) {
+      if (decoder->format_ == FORMAT_STEREO_FLOAT32) {
         result = op_read_float_stereo(opFile_, decoder->samples_ + decoder->size_,
                                       decoder->capacity_ - decoder->size_) * 2;
       }
@@ -329,7 +328,7 @@ public:
       OZ_ERROR("oz::AL::Decoder: Only mono and stereo Vorbis supported `%s'", file.c());
     }
 
-    decoder->format_   = nChannels == 2 ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_MONO_FLOAT32;
+    decoder->format_   = nChannels == 2 ? FORMAT_STEREO_FLOAT32 : FORMAT_MONO_FLOAT32;
     decoder->rate_     = rate;
     decoder->capacity_ = isStreaming ? frameSize * nChannels : nSamples * nChannels;
     decoder->samples_  = new float[decoder->capacity_];
@@ -347,7 +346,7 @@ public:
   OZ_INTERNAL
   bool decode(AL::Decoder* decoder) override
   {
-    int stereo = decoder->format_ == AL_FORMAT_STEREO_FLOAT32;
+    int stereo = decoder->format_ == FORMAT_STEREO_FLOAT32;
 
     decoder->size_ = 0;
 

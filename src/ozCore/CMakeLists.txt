@@ -89,14 +89,12 @@ add_library(ozCore
 #END SOURCES
 )
 
-target_link_libraries(ozCore ${PHYSFS_LIBRARY} ZLIB::ZLIB)
 if(EMSCRIPTEN)
-elseif(NACL)
-  target_link_libraries(ozCore -lppapi_simple_cpp -lnacl_io -lppapi_cpp -lppapi -lpthread)
+  target_link_libraries(ozCore ${PHYSFS_LIBRARY})
 elseif(WIN32)
-  target_link_libraries(ozCore -lwinmm)
+  target_link_libraries(ozCore ${PHYSFS_LIBRARY} ZLIB::ZLIB -lwinmm)
 else()
-  target_link_libraries(ozCore -ldl ALSA::ALSA Threads::Threads)
+  target_link_libraries(ozCore ${PHYSFS_LIBRARY} ZLIB::ZLIB -ldl ALSA::ALSA Threads::Threads)
 endif()
 
 set_target_properties(ozCore PROPERTIES VERSION ${CMAKE_PROJECT_VERSION} SOVERSION 0)

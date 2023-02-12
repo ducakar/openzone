@@ -26,6 +26,10 @@
 
 #include <SDL2/SDL_ttf.h>
 
+#ifndef GL_UNPACK_ROW_LENGTH
+# define GL_UNPACK_ROW_LENGTH GL_UNPACK_ROW_LENGTH_EXT
+#endif
+
 namespace oz
 {
 

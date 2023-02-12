@@ -37,44 +37,42 @@ function build() {
   for platform in "${platforms[@]}"; do
     header_msg "$platform-$buildType"
 
-    if [[ "$platform" == "Emscripten" ]]; then
-      toolchain_file="/usr/lib/emscripten/cmake/Modules/Platform/Emscripten.cmake"
-      enable_tools=OFF
-    else
-      toolchain_file="$PWD/cmake/$platform.Toolchain.cmake"
-      enable_tools=ON
-    fi
+    toolchain_file="$PWD/cmake/$platform.Toolchain.cmake"
     if [[ ! -f "$toolchain_file" ]]; then
       echo "Missing toolchain file: $platform"
       exit 1
     fi
 
-    cmake_cmd="cmake -Wdev --warn-uninitialized -B build/$platform-$buildType -G Ninja"
-    cmake_cmd="$cmake_cmd -D CMAKE_BUILD_TYPE=$buildType"
-
     case $platform in
     Emscripten)
       vcpkg_triplet="wasm32-emscripten"
-      cmake_cmd="emcmake $cmake_cmd"
+      enable_gles=ON
+      enable_tools=OFF
       ;;
     Windows-x86_64)
       vcpkg_triplet="x64-windows"
+      enable_gles=OFF
+      enable_tools=OFF
       ;;
     *)
       vcpkg_triplet="x64-linux"
+      enable_gles=OFF
+      enable_tools=ON
       ;;
     esac
 
+    cmake_cmd="cmake -Wdev --warn-uninitialized -B build/$platform-$buildType -G Ninja"
+    cmake_cmd="$cmake_cmd -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D CMAKE_BUILD_TYPE=$buildType"
     if ((vcpkg)); then
       cmake_cmd="$cmake_cmd -D CMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
       cmake_cmd="$cmake_cmd -D VCPKG_CHAINLOAD_TOOLCHAIN_FILE=$toolchain_file"
       cmake_cmd="$cmake_cmd -D VCPKG_TARGET_TRIPLET=$vcpkg_triplet"
       cmake_cmd="$cmake_cmd -D VCPKG_OVERLAY_TRIPLETS=cmake/vcpkg"
-      cmake_cmd="$cmake_cmd -D OZ_TOOLS=OFF"
     else
       cmake_cmd="$cmake_cmd -D CMAKE_TOOLCHAIN_FILE=$toolchain_file"
-      cmake_cmd="$cmake_cmd -D OZ_TOOLS=$enable_tools"
     fi
+    cmake_cmd="$cmake_cmd -D OZ_GL_ES=$enable_gles"
+    cmake_cmd="$cmake_cmd -D OZ_TOOLS=$enable_tools"
 
     (($1)) && rm -rf "build/$platform-$buildType"
     echo -e "\e[1m$cmake_cmd\e[0m"

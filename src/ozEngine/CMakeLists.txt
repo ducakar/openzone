@@ -25,13 +25,15 @@ add_library(ozEngine
 #END SOURCES
 )
 
-target_link_libraries(ozEngine $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
-                               $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
-                               ${GL_LIBRARIES} OpenAL::OpenAL PNG::PNG
-                               ${OPUSFILE_LIBRARIES} ${OPUS_LIBRARIES} ${VORBISFILE_LIBRARIES}
-                               ${LUA_LIBRARIES})
-
-target_link_libraries(ozEngine ozCore)
+if(EMSCRIPTEN)
+  target_link_libraries(ozEngine ${OPUSFILE_LIBRARIES} ${OPUS_LIBRARIES})
+else()
+  target_link_libraries(ozEngine $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+                                 $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
+                                 ${GL_LIBRARIES} OpenAL::OpenAL PNG::PNG
+                                 ${OPUSFILE_LIBRARIES} ${OPUS_LIBRARIES} ${VORBISFILE_LIBRARIES})
+endif()
+target_link_libraries(ozEngine ${LUA_LIBRARIES} ozCore)
 
 set_target_properties(ozEngine PROPERTIES VERSION ${CMAKE_PROJECT_VERSION} SOVERSION 0)
 

@@ -15,7 +15,10 @@ if(NOT OZ_GL_ES AND OZ_TOOLS)
 endif()
 
 add_executable(opustest opus.cc)
-target_link_libraries(opustest ozEngine ozCore ${OPUS_LIBRARIES} Ogg::ogg)
+target_link_libraries(opustest ozEngine ozCore ${OPUS_LIBRARIES})
+if(NOT EMSCRIPTEN)
+  target_link_libraries(opustest Ogg::ogg)
+endif()
 
 add_executable(quicksort quicksort.cc)
 target_link_libraries(quicksort ozCore)
