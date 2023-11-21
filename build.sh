@@ -20,7 +20,6 @@ platforms=(
   # Emscripten
   Linux-x86_64
   Linux-x86_64-Clang
-  # PNaCl
   # Windows-x86_64
 )
 
@@ -62,7 +61,9 @@ function build() {
     esac
 
     cmake_cmd="cmake -Wdev --warn-uninitialized -B build/$platform-$buildType -G Ninja"
-    cmake_cmd="$cmake_cmd -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D CMAKE_BUILD_TYPE=$buildType"
+    cmake_cmd="$cmake_cmd -D CMAKE_EXPORT_COMPILE_COMMANDS=ON"
+    cmake_cmd="$cmake_cmd -D CMAKE_COLOR_DIAGNOSTICS=ON"
+    cmake_cmd="$cmake_cmd -D CMAKE_BUILD_TYPE=$buildType"
     if ((vcpkg)); then
       cmake_cmd="$cmake_cmd -D CMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
       cmake_cmd="$cmake_cmd -D VCPKG_CHAINLOAD_TOOLCHAIN_FILE=$toolchain_file"
