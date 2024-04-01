@@ -39,19 +39,24 @@ extern "C" void NACL_SetScreenResolution(int width, int height, Uint32 format);
 namespace oz
 {
 
-static const EnumMap<Window::Mode> WINDOW_MODES = {
+namespace
+{
+
+const EnumMap<Window::Mode> WINDOW_MODES = {
   {Window::WINDOWED, "WINDOWED"},
   {Window::DESKTOP, "DESKTOP"},
   {Window::EXCLUSIVE, "EXCLUSIVE"}
 };
 
-static Application::Stage*   currentStage       = nullptr;
-static Application::Stage*   nextStage          = nullptr;
-static File                  configDir;
-static File                  dataDir;
+Application::Stage*   currentStage       = nullptr;
+Application::Stage*   nextStage          = nullptr;
+File                  configDir;
+File                  dataDir;
 #ifdef __native_client__
-static const PPB_InputEvent* ppbInputEvent      = nullptr;
+const PPB_InputEvent* ppbInputEvent      = nullptr;
 #endif
+
+}
 
 Application::Stage::~Stage() = default;
 

@@ -143,10 +143,10 @@ add_compile_options(-fPIC -fsized-deallocation -fstrict-enums -fno-rtti -fno-exc
 
 # Warnings.
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-  add_compile_options(-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic)
-  add_compile_options(-Wno-exit-time-destructors -Wno-global-constructors)
-  add_compile_options(-Wno-date-time -Wno-padded -Wno-switch-enum -Wno-sign-conversion)
-  add_compile_options(-Wno-float-equal -Wno-double-promotion -Wno-zero-as-null-pointer-constant)
+  add_compile_options(-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-date-time)
+  add_compile_options(-Wno-exit-time-destructors -Wno-global-constructors -Wno-unsafe-buffer-usage)
+  add_compile_options(-Wno-padded -Wno-switch-enum -Wno-zero-as-null-pointer-constant)
+  add_compile_options(-Wno-sign-conversion -Wno-float-equal -Wno-double-promotion )
 else()
   add_compile_options(-Wall -Wextra -Wcast-align -Winit-self -Wlogical-op -Wundef -Winvalid-pch)
   add_compile_options(-Wmissing-declarations -Wnon-virtual-dtor -Woverloaded-virtual -Wformat=2)

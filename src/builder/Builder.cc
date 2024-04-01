@@ -35,7 +35,12 @@
 namespace oz::builder
 {
 
-static bool skipReferences = false;
+namespace
+{
+
+bool skipReferences = false;
+
+}
 
 void Builder::printUsage()
 {

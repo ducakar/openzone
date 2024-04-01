@@ -32,11 +32,14 @@
 namespace oz
 {
 
+namespace
+{
+
 /*
  * Vorbis stream reader callbacks.
  */
 
-static size_t vorbisRead(void* buffer, size_t size, size_t n, void* handle)
+size_t vorbisRead(void* buffer, size_t size, size_t n, void* handle)
 {
   Stream* is = static_cast<Stream*>(handle);
 
@@ -47,7 +50,7 @@ static size_t vorbisRead(void* buffer, size_t size, size_t n, void* handle)
   return nBlocks;
 }
 
-static int vorbisSeek(void* handle, ogg_int64_t offset, int whence)
+int vorbisSeek(void* handle, ogg_int64_t offset, int whence)
 {
   Stream* is = static_cast<Stream*>(handle);
 
@@ -57,14 +60,16 @@ static int vorbisSeek(void* handle, ogg_int64_t offset, int whence)
   return 0;
 }
 
-static long vorbisTell(void* handle)
+long vorbisTell(void* handle)
 {
   Stream* is = static_cast<Stream*>(handle);
 
   return is->tell();
 }
 
-static ov_callbacks VORBIS_CALLBACKS = {vorbisRead, vorbisSeek, nullptr, vorbisTell};
+ov_callbacks VORBIS_CALLBACKS = {vorbisRead, vorbisSeek, nullptr, vorbisTell};
+
+}
 
 /*
  * Class members.
@@ -266,7 +271,7 @@ public:
   {
     decoder->size_ = 0;
 
-    do {
+    while (decoder->size_ != decoder->capacity_) {
       int result = 0;
 
       if (decoder->format_ == FORMAT_STEREO_FLOAT32) {
@@ -284,7 +289,6 @@ public:
 
       decoder->size_ += result;
     }
-    while (decoder->size_ != decoder->capacity_);
 
     return true;
   }
@@ -350,7 +354,7 @@ public:
 
     decoder->size_ = 0;
 
-    do {
+    while (decoder->size_ != decoder->capacity_) {
       float** samples = nullptr;
       int     section = 0;
       long    result  = ov_read_float(&ovFile_, &samples,
@@ -374,7 +378,6 @@ public:
 
       decoder->size_ += result;
     }
-    while (decoder->size_ != decoder->capacity_);
 
     return true;
   }

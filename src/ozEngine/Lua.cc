@@ -22,7 +22,6 @@
 
 #include "Lua.hh"
 
-#include <cstring>
 #include <lua.hpp>
 
 #if LUA_VERSION_NUM < 502

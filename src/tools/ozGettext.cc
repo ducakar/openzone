@@ -20,9 +20,11 @@
 #include <ozCore/ozCore.hh>
 
 #include <cstdlib>
-#include <cstdio>
 
 using namespace oz;
+
+namespace
+{
 
 enum LuaSyntaxState
 {
@@ -33,9 +35,9 @@ enum LuaSyntaxState
   MULTILINE_COMMENT
 };
 
-static HashMap<String, String> messages;
+HashMap<String, String> messages;
 
-static void printUsage()
+void printUsage()
 {
   Log::printRaw(
     "Usage: ozGettext <data_dir>\n"
@@ -43,7 +45,7 @@ static void printUsage()
     "              files will be written into <data_dir>/lingua.\n\n");
 }
 
-static void readLuaChunk(const char* begin, int size, const char* path)
+void readLuaChunk(const char* begin, int size, const char* path)
 {
   Stream is(begin, begin + size);
 
@@ -143,7 +145,7 @@ static void readLuaChunk(const char* begin, int size, const char* path)
   }
 }
 
-static void readLua(const File& file)
+void readLua(const File& file)
 {
   Stream buffer(0);
   if (!file.read(&buffer)) {
@@ -152,7 +154,7 @@ static void readLua(const File& file)
   readLuaChunk(buffer.begin(), buffer.available(), file);
 }
 
-static void readBSP(const File& file)
+void readBSP(const File& file)
 {
   Json config;
 
@@ -191,7 +193,7 @@ static void readBSP(const File& file)
   config.clear();
 }
 
-static void readClass(const File& file)
+void readClass(const File& file)
 {
   Json config;
 
@@ -223,7 +225,7 @@ static void readClass(const File& file)
   }
 }
 
-static void readNirvana(const File& dir)
+void readNirvana(const File& dir)
 {
   File techFile = dir / "techGraph.json";
   Json techConfig;
@@ -274,7 +276,7 @@ static void readNirvana(const File& dir)
   }
 }
 
-static void readCredits(const File& file)
+void readCredits(const File& file)
 {
   Stream is(0);
   String contents;
@@ -290,7 +292,7 @@ static void readCredits(const File& file)
   messages.include(contents, file);
 }
 
-static void readSequence(const File& file)
+void readSequence(const File& file)
 {
   Json sequence(file);
 
@@ -306,7 +308,7 @@ static void readSequence(const File& file)
   }
 }
 
-static void readDescription(const File& file)
+void readDescription(const File& file)
 {
   Json descriptionConfig(file);
 
@@ -321,7 +323,7 @@ static void readDescription(const File& file)
   }
 }
 
-static void writePOT(const HashMap<String, String>* hs, const File& outFile)
+void writePOT(const HashMap<String, String>* hs, const File& outFile)
 {
   Stream os(0);
   String s;
@@ -375,6 +377,8 @@ static void writePOT(const HashMap<String, String>* hs, const File& outFile)
   if (!outFile.write(os)) {
     OZ_ERROR("Failed to write '%s'", outFile.c());
   }
+}
+
 }
 
 int main(int argc, char** argv)

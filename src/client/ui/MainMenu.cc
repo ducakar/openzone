@@ -41,39 +41,42 @@
 namespace oz::client::ui
 {
 
-static void loadAutosaved(Button*)
+namespace
+{
+
+void loadAutosaved(Button*)
 {
   Stage::nextStage = &gameStage;
   gameStage.stateFile = gameStage.autosaveFile;
   gameStage.mission = "";
 }
 
-static void loadQuicksaved(Button*)
+void loadQuicksaved(Button*)
 {
   Stage::nextStage = &gameStage;
   gameStage.stateFile = gameStage.quicksaveFile;
   gameStage.mission = "";
 }
 
-static void openMissions(Button* sender)
+void openMissions(Button* sender)
 {
   MainMenu* mainMenu = static_cast<MainMenu*>(sender->parent);
   mainMenu->add(new MissionMenu(), 0, 0);
 }
 
-static void openSettings(Button* sender)
+void openSettings(Button* sender)
 {
   MainMenu* mainMenu = static_cast<MainMenu*>(sender->parent);
   mainMenu->add(new SettingsMenu(), 0, 0);
 }
 
-static void openCredits(Button* sender)
+void openCredits(Button* sender)
 {
   MainMenu* mainMenu = static_cast<MainMenu*>(sender->parent);
   mainMenu->add(new CreditsMenu(), 0, 0);
 }
 
-static void openWeb(Button*)
+void openWeb(Button*)
 {
 #if defined(__native_client__)
   Pepper::post("http://ducakar.github.io/openzone/");
@@ -90,9 +93,11 @@ static void openWeb(Button*)
   Window::minimise();
 }
 
-static void quit(Button*)
+void quit(Button*)
 {
   menuStage.doExit = true;
+}
+
 }
 
 void MainMenu::onRealign()

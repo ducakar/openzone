@@ -28,13 +28,18 @@
 namespace oz
 {
 
-static constexpr const char* ENV_VARS[]    = {"LC_ALL", "LC_MESSAGES", "LANG"};
-static constexpr uint        GETTEXT_MAGIC = 0x950412de;
-static constexpr int         MAX_MESSAGES  = 1 << 16;
+namespace
+{
 
-static inline uint bucketIndex(const char* message, int size)
+constexpr const char* ENV_VARS[]    = {"LC_ALL", "LC_MESSAGES", "LANG"};
+constexpr uint        GETTEXT_MAGIC = 0x950412de;
+constexpr int         MAX_MESSAGES  = 1 << 16;
+
+inline uint bucketIndex(const char* message, int size)
 {
   return Hash<const char*>()(message) % uint(size);
+}
+
 }
 
 const char* Gettext::systemLanguage(const char* fallback)

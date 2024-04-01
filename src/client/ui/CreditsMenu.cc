@@ -29,10 +29,15 @@
 namespace oz::client::ui
 {
 
-static void back(Button* sender)
+namespace
+{
+
+void back(Button* sender)
 {
   CreditsMenu* creditsMenu = static_cast<CreditsMenu*>(sender->parent);
   creditsMenu->parent->remove(creditsMenu);
+}
+
 }
 
 void CreditsMenu::onRealign()

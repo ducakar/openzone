@@ -24,13 +24,18 @@
 
 using namespace oz;
 
-static void printUsage()
+namespace
+{
+
+void printUsage()
 {
   Log::printRaw(
     "Usage: ozGenEnvMap [-C] [-M] [<size>]\n"
     "  <size>  Texture size, 32 by default\n"
     "  -C      Use S3 texture compression\n"
     "  -M      Generate mipmaps\n\n");
+}
+
 }
 
 int main(int argc, char** argv)

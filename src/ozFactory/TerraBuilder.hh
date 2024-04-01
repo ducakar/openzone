@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "ImageBuilder.hh"
+#include "ImageData.hh"
 
 namespace oz
 {

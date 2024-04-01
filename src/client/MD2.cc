@@ -231,7 +231,7 @@ void MD2::AnimState::advance()
     nextType  = inferredType;
     currFrame = nextFrame;
 
-    do {
+    while (frameRatio >= 1.0f) {
       frameRatio -= 1.0f;
 
       if (inferredType != currType) {
@@ -255,7 +255,6 @@ void MD2::AnimState::advance()
         }
       }
     }
-    while (frameRatio >= 1.0f);
   }
 
   OZ_ASSERT(0.0f <= frameRatio && frameRatio < 1.0f);

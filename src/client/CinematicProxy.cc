@@ -88,10 +88,7 @@ void CinematicProxy::executeSequence(const File& file, const Lingua* missionLing
     const Json& titleConfig = stepConfig["title"];
     const String& title = titleConfig.get(String::EMPTY);
 
-    if (titleConfig.isNull()) {
-      step.title = "";
-    }
-    else if (title.isEmpty()) {
+    if (titleConfig.isNull() || title.isEmpty()) {
       step.title = "";
     }
     else {

@@ -29,47 +29,50 @@
 namespace oz
 {
 
-static constexpr uint DDSD_CAPS                          = 0x00000001;
-static constexpr uint DDSD_HEIGHT                        = 0x00000002;
-static constexpr uint DDSD_WIDTH                         = 0x00000004;
-static constexpr uint DDSD_PITCH                         = 0x00000008;
-static constexpr uint DDSD_PIXELFORMAT                   = 0x00001000;
-static constexpr uint DDSD_MIPMAPCOUNT                   = 0x00020000;
-static constexpr uint DDSD_LINEARSIZE                    = 0x00080000;
+namespace
+{
 
-static constexpr uint DDSCAPS_COMPLEX                    = 0x00000008;
-static constexpr uint DDSCAPS_MIPMAP                     = 0x00400000;
-static constexpr uint DDSCAPS_TEXTURE                    = 0x00001000;
+constexpr uint DDSD_CAPS                          = 0x00000001;
+constexpr uint DDSD_HEIGHT                        = 0x00000002;
+constexpr uint DDSD_WIDTH                         = 0x00000004;
+constexpr uint DDSD_PITCH                         = 0x00000008;
+constexpr uint DDSD_PIXELFORMAT                   = 0x00001000;
+constexpr uint DDSD_MIPMAPCOUNT                   = 0x00020000;
+constexpr uint DDSD_LINEARSIZE                    = 0x00080000;
 
-static constexpr uint DDSCAPS2_CUBEMAP                   = 0x00000200;
-static constexpr uint DDSCAPS2_CUBEMAP_POSITIVEX         = 0x00000400;
-static constexpr uint DDSCAPS2_CUBEMAP_NEGITIVEX         = 0x00000800;
-static constexpr uint DDSCAPS2_CUBEMAP_POSITIVEY         = 0x00001000;
-static constexpr uint DDSCAPS2_CUBEMAP_NEGITIVEY         = 0x00002000;
-static constexpr uint DDSCAPS2_CUBEMAP_POSITIVEZ         = 0x00004000;
-static constexpr uint DDSCAPS2_CUBEMAP_NEGITIVEZ         = 0x00008000;
+constexpr uint DDSCAPS_COMPLEX                    = 0x00000008;
+constexpr uint DDSCAPS_MIPMAP                     = 0x00400000;
+constexpr uint DDSCAPS_TEXTURE                    = 0x00001000;
 
-static constexpr uint DDPF_ALPHAPIXELS                   = 0x00000001;
-static constexpr uint DDPF_FOURCC                        = 0x00000004;
-static constexpr uint DDPF_RGB                           = 0x00000040;
-static constexpr uint DDPF_NORMAL                        = 0x80000000;
+constexpr uint DDSCAPS2_CUBEMAP                   = 0x00000200;
+constexpr uint DDSCAPS2_CUBEMAP_POSITIVEX         = 0x00000400;
+constexpr uint DDSCAPS2_CUBEMAP_NEGITIVEX         = 0x00000800;
+constexpr uint DDSCAPS2_CUBEMAP_POSITIVEY         = 0x00001000;
+constexpr uint DDSCAPS2_CUBEMAP_NEGITIVEY         = 0x00002000;
+constexpr uint DDSCAPS2_CUBEMAP_POSITIVEZ         = 0x00004000;
+constexpr uint DDSCAPS2_CUBEMAP_NEGITIVEZ         = 0x00008000;
 
-static constexpr uint DXGI_FORMAT_R8G8B8A8_UNORM         = 28;
-static constexpr uint DXGI_FORMAT_BC1_UNORM              = 71;
-static constexpr uint DXGI_FORMAT_BC3_UNORM              = 77;
+constexpr uint DDPF_ALPHAPIXELS                   = 0x00000001;
+constexpr uint DDPF_FOURCC                        = 0x00000004;
+constexpr uint DDPF_RGB                           = 0x00000040;
+constexpr uint DDPF_NORMAL                        = 0x80000000;
 
-static constexpr uint D3D10_RESOURCE_DIMENSION_TEXTURE2D = 3;
+constexpr uint DXGI_FORMAT_R8G8B8A8_UNORM         = 28;
+constexpr uint DXGI_FORMAT_BC1_UNORM              = 71;
+constexpr uint DXGI_FORMAT_BC3_UNORM              = 77;
 
-static constexpr int ERROR_LENGTH                        = 1024;
+constexpr uint D3D10_RESOURCE_DIMENSION_TEXTURE2D = 3;
 
-static char errorBuffer[ERROR_LENGTH]                    = {};
+constexpr int ERROR_LENGTH                        = 1024;
 
-static void printError(FREE_IMAGE_FORMAT fif, const char* message)
+char errorBuffer[ERROR_LENGTH]                    = {};
+
+void printError(FREE_IMAGE_FORMAT fif, const char* message)
 {
   Log::println("FreeImage(%s): %s", FreeImage_GetFormatFromFIF(fif), message);
 }
 
-static FIBITMAP* createBitmap(const ImageData& image)
+FIBITMAP* createBitmap(const ImageData& image)
 {
   ubyte*    originalPixels = reinterpret_cast<ubyte*>(const_cast<char*>(image.pixels()));
   FIBITMAP* dib            = FreeImage_ConvertFromRawBits(originalPixels,
@@ -91,7 +94,7 @@ static FIBITMAP* createBitmap(const ImageData& image)
   return dib;
 }
 
-static FIBITMAP* loadBitmap(const File& file)
+FIBITMAP* loadBitmap(const File& file)
 {
   Stream is(0);
   if (!file.read(&is)) {
@@ -135,7 +138,7 @@ static FIBITMAP* loadBitmap(const File& file)
   return dib;
 }
 
-static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
+bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
 {
   OZ_ASSERT(nFaces > 0);
 
@@ -351,6 +354,8 @@ static bool buildDDS(const ImageData* faces, int nFaces, const File& destFile)
     return false;
   }
   return true;
+}
+
 }
 
 int   ImageBuilder::options = 0;

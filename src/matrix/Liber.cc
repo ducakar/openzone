@@ -27,22 +27,27 @@
 namespace oz
 {
 
-static HashMap<String, ObjectClass::CreateFunc*> baseClasses;
+namespace
+{
 
-static HashMap<String, int>                      shaderIndices;
-static HashMap<String, int>                      textureIndices;
-static HashMap<String, int>                      soundIndices;
-static HashMap<String, int>                      musicTrackIndices;
-static HashMap<String, int>                      caelumIndices;
-static HashMap<String, int>                      terraIndices;
-static HashMap<String, int>                      partIndices;
-static HashMap<String, int>                      modelIndices;
+HashMap<String, ObjectClass::CreateFunc*> baseClasses;
 
-static HashMap<String, BSP>                      bspMap;
-static HashMap<String, ObjectClass*>             objClassMap;
-static HashMap<String, FragPool>                 fragPoolMap;
+HashMap<String, int>                      shaderIndices;
+HashMap<String, int>                      textureIndices;
+HashMap<String, int>                      soundIndices;
+HashMap<String, int>                      musicTrackIndices;
+HashMap<String, int>                      caelumIndices;
+HashMap<String, int>                      terraIndices;
+HashMap<String, int>                      partIndices;
+HashMap<String, int>                      modelIndices;
 
-static HashMap<String, int>                      mindIndices;
+HashMap<String, BSP>                      bspMap;
+HashMap<String, ObjectClass*>             objClassMap;
+HashMap<String, FragPool>                 fragPoolMap;
+
+HashMap<String, int>                      mindIndices;
+
+}
 
 int Liber::shaderIndex(const char* name) const
 {

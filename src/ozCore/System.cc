@@ -28,7 +28,6 @@
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 
 #if defined(__EMSCRIPTEN__)
 # include <pthread.h>
@@ -46,11 +45,14 @@
 namespace oz
 {
 
-static constexpr float BELL_TIME       = 0.30f;
-static constexpr float BELL_AMPLITUDE  = 0.30f;
-static constexpr float BELL_FREQUENCY  = 500.0f;
-static constexpr int   BELL_RATE       = 44100;
-static constexpr int   INITIALISED_BIT = 0x80;
+namespace
+{
+
+constexpr float BELL_TIME       = 0.30f;
+constexpr float BELL_AMPLITUDE  = 0.30f;
+constexpr float BELL_FREQUENCY  = 500.0f;
+constexpr int   BELL_RATE       = 44100;
+constexpr int   INITIALISED_BIT = 0x80;
 
 enum BellState
 {
@@ -59,17 +61,17 @@ enum BellState
   FINISHED
 };
 
-static pthread_mutex_t       bellMutex     = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t        bellCond      = PTHREAD_COND_INITIALIZER;
-static Atomic<bool>          hasBellThread = {false};
-static System::CrashHandler* crashHandler  = nullptr;
-static int                   initFlags     = 0;
+pthread_mutex_t       bellMutex     = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t        bellCond      = PTHREAD_COND_INITIALIZER;
+Atomic<bool>          hasBellThread = {false};
+System::CrashHandler* crashHandler  = nullptr;
+int                   initFlags     = 0;
 
 OZ_NORETURN
-static void abort(bool doHalt);
+void abort(bool doHalt);
 
 OZ_NORETURN
-static void signalHandler(int sigNum)
+void signalHandler(int sigNum)
 {
   Log::verboseMode = false;
 
@@ -87,7 +89,7 @@ static void signalHandler(int sigNum)
   abort((initFlags & System::HALT_BIT) && sigNum != SIGINT);
 }
 
-static void resetSignals()
+void resetSignals()
 {
   signal(SIGILL,  SIG_DFL);
   signal(SIGABRT, SIG_DFL);
@@ -99,7 +101,7 @@ static void resetSignals()
 #endif
 }
 
-static void catchSignals()
+void catchSignals()
 {
   signal(SIGILL,  signalHandler);
   signal(SIGABRT, signalHandler);
@@ -113,7 +115,7 @@ static void catchSignals()
 }
 
 // Buffer should contain space for (nSamples * 2) 16-bit samples.
-static void generateBellSamples(float* buffer, int nSamples, int rate)
+void generateBellSamples(float* buffer, int nSamples, int rate)
 {
   for (int i = 0; i < nSamples; ++i) {
     float theta  = float(i) / float(rate) * BELL_FREQUENCY * Math::TAU;
@@ -125,10 +127,10 @@ static void generateBellSamples(float* buffer, int nSamples, int rate)
 
 #if defined(__EMSCRIPTEN__)
 
-static constexpr ALenum FORMAT_MONO_FLOAT32 = 0x10010;
-static constexpr int    BELL_SAMPLES        = int(BELL_TIME * float(BELL_RATE));
+constexpr ALenum FORMAT_MONO_FLOAT32 = 0x10010;
+constexpr int    BELL_SAMPLES        = int(BELL_TIME * float(BELL_RATE));
 
-static void* bellMain(void*)
+void* bellMain(void*)
 {
   pthread_mutex_lock(&bellMutex);
 
@@ -168,7 +170,7 @@ static void* bellMain(void*)
 
 #elif defined(_WIN32)
 
-static constexpr int BELL_SAMPLES = int(BELL_TIME * float(BELL_RATE));
+constexpr int BELL_SAMPLES = int(BELL_TIME * float(BELL_RATE));
 
 struct Wave
 {
@@ -190,7 +192,7 @@ struct Wave
   float samples[BELL_SAMPLES];
 };
 
-static void* bellMain(void*)
+void* bellMain(void*)
 {
   pthread_mutex_lock(&bellMutex);
 
@@ -224,7 +226,7 @@ static void* bellMain(void*)
 
 #else
 
-static void* bellMain(void*)
+void* bellMain(void*)
 {
   pthread_mutex_lock(&bellMutex);
 
@@ -269,7 +271,7 @@ static void* bellMain(void*)
 
 #endif
 
-static void waitBell()
+void waitBell()
 {
   pthread_mutex_lock(&bellMutex);
   while (hasBellThread.load<RELAXED>()) {
@@ -278,7 +280,7 @@ static void waitBell()
   pthread_mutex_unlock(&bellMutex);
 }
 
-static void abort(bool doHalt)
+void abort(bool doHalt)
 {
   resetSignals();
 
@@ -296,6 +298,8 @@ static void abort(bool doHalt)
 
   waitBell();
   _Exit(EXIT_FAILURE);
+}
+
 }
 
 void System::trap()

@@ -80,7 +80,7 @@ private:
 
       swap<Elem>(*pivot, *last);
 
-      do {
+      while (true) {
         while (!LessFunc()(pivotValue, *top) && top <= bottom) {
           ++top;
         }
@@ -94,7 +94,6 @@ private:
 
         swap<Elem>(*top, *bottom);
       }
-      while (true);
 
       if (top != last) {
         swap<Elem>(*top, *last);

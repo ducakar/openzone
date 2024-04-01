@@ -25,7 +25,6 @@
 #include "Profiler.hh"
 
 #include <cstdio>
-#include <cstdlib>
 
 #ifdef __GLIBC__
 # include <execinfo.h>
@@ -49,25 +48,30 @@
 namespace oz
 {
 
-static constexpr int  OUT_BUFFER_SIZE      = 4096;
-static constexpr int  INDENT_SPACES        = 2;
-static constexpr char INDENT_BUFFER[49]    = "                                                ";
-static constexpr int  INDENT_BUFFER_LENGTH = sizeof(INDENT_BUFFER) - 1;
+namespace
+{
 
-static File  logFile;
-static FILE* logFileStream = nullptr;
-static int   indentLevel   = 0;
+constexpr int  OUT_BUFFER_SIZE      = 4096;
+constexpr int  INDENT_SPACES        = 2;
+constexpr char INDENT_BUFFER[49]    = "                                                ";
+constexpr int  INDENT_BUFFER_LENGTH = sizeof(INDENT_BUFFER) - 1;
 
-bool Log::showVerbose = false;
-bool Log::verboseMode = false;
+File  logFile;
+FILE* logFileStream = nullptr;
+int   indentLevel   = 0;
 
-static inline const char* getIndent()
+inline const char* getIndent()
 {
   OZ_ASSERT(indentLevel >= 0);
 
   int bias = max<int>(INDENT_BUFFER_LENGTH - indentLevel * INDENT_SPACES, 0);
   return &INDENT_BUFFER[bias];
 }
+
+}
+
+bool Log::showVerbose = false;
+bool Log::verboseMode = false;
 
 Log::Log()
 {

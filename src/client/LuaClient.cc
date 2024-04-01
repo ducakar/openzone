@@ -25,7 +25,12 @@
 namespace oz::client
 {
 
-static LuaClient& lua = luaClient;
+namespace
+{
+
+LuaClient& lua = luaClient;
+
+}
 
 void LuaClient::staticCall(const char* functionName)
 {

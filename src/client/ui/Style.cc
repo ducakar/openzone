@@ -64,6 +64,9 @@
 namespace oz::client::ui
 {
 
+namespace
+{
+
 struct FontInfo
 {
   const char* key;
@@ -71,13 +74,15 @@ struct FontInfo
   int         height;
 };
 
-static Font loadFont(const char* name, const Json& fontsConfig)
+Font loadFont(const char* name, const Json& fontsConfig)
 {
   const Json& config = fontsConfig[name];
   File        file   = "@ui/font/" + config["name"].get(String::EMPTY) + ".ttf";
   int         height = config["height"].get(10);
 
   return Font(file, height);
+}
+
 }
 
 void Style::init()

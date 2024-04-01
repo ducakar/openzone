@@ -27,19 +27,22 @@
 namespace oz
 {
 
-static noise::module::Billow      plainsBase;
-static noise::module::ScaleBias   plainsFinal;
-static noise::module::RidgedMulti mountainsBase;
-static noise::module::ScaleBias   mountainsFinal;
-static noise::module::Perlin      terrainType;
-static noise::module::Select      combiner;
-static noise::module::Turbulence  turbulence;
-static noise::module::Billow      noiseBase;
-static noise::module::ScaleBias   noiseFinal;
-static List<Vec4>                 gradientPoints;
-static bool                       isInitialised = false;
+namespace
+{
 
-static void ensureInitialised()
+noise::module::Billow      plainsBase;
+noise::module::ScaleBias   plainsFinal;
+noise::module::RidgedMulti mountainsBase;
+noise::module::ScaleBias   mountainsFinal;
+noise::module::Perlin      terrainType;
+noise::module::Select      combiner;
+noise::module::Turbulence  turbulence;
+noise::module::Billow      noiseBase;
+noise::module::ScaleBias   noiseFinal;
+List<Vec4>                 gradientPoints;
+bool                       isInitialised = false;
+
+void ensureInitialised()
 {
   if (isInitialised) {
     return;
@@ -59,13 +62,13 @@ static void ensureInitialised()
   isInitialised = true;
 }
 
-static float genHeight(double x, double y)
+float genHeight(double x, double y)
 {
   double height = combiner.GetValue(x, y, 1.0);
   return float(height);
 }
 
-static uint getColour(double x, double y)
+uint getColour(double x, double y)
 {
   float height = float(turbulence.GetValue(x, y, 1.0));
   float detail = float(noiseFinal.GetValue(x, y, 1.0));
@@ -100,6 +103,8 @@ static uint getColour(double x, double y)
   uint blue  = uint(255.0f * colour.z);
 
   return 0xff000000 | red | (green << 8) | (blue << 16);
+}
+
 }
 
 bool TerraBuilder::setBounds(Module module, float bottomHeight, float topHeight)

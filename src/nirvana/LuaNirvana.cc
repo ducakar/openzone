@@ -24,8 +24,13 @@
 namespace oz
 {
 
+namespace
+{
+
 // For IMPORT_FUNC()/IGNORE_FUNC() macros.
-static LuaNirvana& lua = luaNirvana;
+LuaNirvana& lua = luaNirvana;
+
+}
 
 void LuaNirvana::mindCall(const char* functionName, Mind* mind, Bot* self)
 {

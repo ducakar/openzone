@@ -272,7 +272,7 @@ Vec3 Physics::handleObjMove()
   float leftRatio   = 1.0f;
 
   int traceSplits = 0;
-  do {
+  while (true) {
     collider.translate(dyn, move);
 
     Vec3 partialMove = collider.hit.ratio * move;
@@ -347,7 +347,6 @@ Vec3 Physics::handleObjMove()
       }
     }
   }
-  while (true);
 
   orbis.reposition(dyn);
 
@@ -413,7 +412,7 @@ void Physics::handleFragMove()
   float leftRatio = 1.0f;
 
   int traceSplits = 0;
-  do {
+  while (true) {
     collider.translate(frag->p, move);
     frag->p += collider.hit.ratio * move;
     leftRatio -= leftRatio * collider.hit.ratio;
@@ -434,7 +433,6 @@ void Physics::handleFragMove()
     move *= 1.0f - collider.hit.ratio;
     move -= (move * collider.hit.normal - MOVE_BOUNCE) * collider.hit.normal;
   }
-  while (true);
 
   orbis.reposition(frag);
 }

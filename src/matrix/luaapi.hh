@@ -68,6 +68,11 @@ struct MatrixLuaState
 
 static MatrixLuaState ms;
 
+#ifdef __clang__
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunused-function"
+#endif
+
 /// @addtogroup luaapi
 /// @{
 
@@ -2756,6 +2761,10 @@ static int ozFragIsVisibleFromSelfEye(lua_State* l)
 }
 
 /// @}
+
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 /**
  * Register matrix-specific Lua constants with a given Lua VM.

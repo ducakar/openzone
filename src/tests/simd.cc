@@ -20,11 +20,12 @@
 // #define OZ_SIMD
 #include <ozCore/ozCore.hh>
 
-#include <cstdio>
-
 using float4 = float __attribute__((vector_size(16)));
 
 using namespace oz;
+
+namespace
+{
 
 #if 1
 # define VecX Vec3
@@ -40,17 +41,19 @@ constexpr Vec4 CreateVecX(float x, float y, float z, float)
 }
 #endif
 
-static constexpr int MAX = 10000;
+constexpr int MAX = 10000;
 
-static VecX a[MAX];
-static VecX b[MAX];
-static VecX c[MAX];
-static VecX d[MAX];
-static VecX e[MAX];
+VecX a[MAX];
+VecX b[MAX];
+VecX c[MAX];
+VecX d[MAX];
+VecX e[MAX];
 
-static Mat4 ma[MAX];
-static Mat4 mb[MAX];
-static Mat4 mc[MAX];
+Mat4 ma[MAX];
+Mat4 mb[MAX];
+Mat4 mc[MAX];
+
+}
 
 int main()
 {

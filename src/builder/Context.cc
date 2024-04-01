@@ -31,7 +31,10 @@
 namespace oz::builder
 {
 
-const char* const IMAGE_EXTENSIONS[] = {
+namespace
+{
+
+static const char* const IMAGE_EXTENSIONS[] = {
   ".dds",
   ".png",
   ".jpeg",
@@ -40,6 +43,8 @@ const char* const IMAGE_EXTENSIONS[] = {
   ".tga",
   ".tiff"
 };
+
+}
 
 bool Context::isBaseTexture(const String& name)
 {
@@ -63,18 +68,18 @@ void Context::buildTexture(const File& basePath, const File& destBasePath, bool 
     ImageBuilder::options |= ImageBuilder::FAST_BIT;
   }
 
-  File diffuseBasePath   = basePath;
-  File masksBasePath     = basePath + "_m";
-  File specular1BasePath = basePath + "_s";
-  File specular2BasePath = basePath + "_spec";
-  File specular3BasePath = basePath + "_h";
-  File emission1BasePath = basePath + "_g";
-  File emission2BasePath = basePath + "_glow";
-  File emission3BasePath = basePath + ".blend";
-  File normals1BasePath  = basePath + "_n";
-  File normals2BasePath  = basePath + "_nm";
-  File normals3BasePath  = basePath + "_normal";
-  File normals4BasePath  = basePath + "_local";
+  const File& diffuseBasePath   = basePath;
+  File        masksBasePath     = basePath + "_m";
+  File        specular1BasePath = basePath + "_s";
+  File        specular2BasePath = basePath + "_spec";
+  File        specular3BasePath = basePath + "_h";
+  File        emission1BasePath = basePath + "_g";
+  File        emission2BasePath = basePath + "_glow";
+  File        emission3BasePath = basePath + ".blend";
+  File        normals1BasePath  = basePath + "_n";
+  File        normals2BasePath  = basePath + "_nm";
+  File        normals3BasePath  = basePath + "_normal";
+  File        normals4BasePath  = basePath + "_local";
 
   File diffuse, masks, specular, emission, normals;
 

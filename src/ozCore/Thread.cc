@@ -25,24 +25,28 @@
 #include "SpinLock.hh"
 #include "Pepper.hh"
 
-#include <cstring>
 #include <ctime>
 #include <pthread.h>
 
 namespace oz
 {
 
-static const String               UNKNOWN_NAME = "UNKNOWN";
-static const String               MAIN_NAME    = "MAIN";
-static const pthread_t            MAIN_THREAD  = pthread_self();
-static thread_local const String* threadName   = &UNKNOWN_NAME;
+namespace
+{
 
-static timespec toTimespec(Duration duration)
+const String               UNKNOWN_NAME = "UNKNOWN";
+const String               MAIN_NAME    = "MAIN";
+const pthread_t            MAIN_THREAD  = pthread_self();
+thread_local const String* threadName   = &UNKNOWN_NAME;
+
+timespec toTimespec(Duration duration)
 {
   int64 ns = duration.ns() % 1000000000 + 1000000000;
   int64 s  = duration.ns() / 1000000000 - 1;
 
   return timespec{s + ns / 1000000000, long(ns % 1000000000)};
+}
+
 }
 
 struct Thread::Descriptor

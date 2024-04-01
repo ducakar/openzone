@@ -96,7 +96,7 @@ int Client::main()
   Log::indent();
 
   // THE MAGNIFICENT MAIN LOOP
-  do {
+  while (isAlive) {
     // read input & events
     input.prepare();
 
@@ -305,7 +305,6 @@ int Client::main()
     }
     timeLast += timer.realTickDuration;
   }
-  while (isAlive);
 
   Log::unindent();
   Log::println("}");

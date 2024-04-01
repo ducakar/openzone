@@ -24,7 +24,10 @@
 namespace oz::client
 {
 
-static const char* const KEY_NAMES[] = {
+namespace
+{
+
+const char* const KEY_NAMES[] = {
   "None",
 
   "Alternate UI action",
@@ -97,19 +100,21 @@ static const char* const KEY_NAMES[] = {
   "Quit"
 };
 
-static SDL_Scancode modifier0;
-static SDL_Scancode modifier1;
+SDL_Scancode modifier0;
+SDL_Scancode modifier1;
 
-static ubyte        sdlKeys[SDL_NUM_SCANCODES];
-static ubyte        sdlOldKeys[SDL_NUM_SCANCODES];
-static ubyte        sdlCurrKeys[SDL_NUM_SCANCODES];
+ubyte        sdlKeys[SDL_NUM_SCANCODES];
+ubyte        sdlOldKeys[SDL_NUM_SCANCODES];
+ubyte        sdlCurrKeys[SDL_NUM_SCANCODES];
 
-static int          keyMap[Input::KEY_MAX][2];
-static bool         configExists = false;
+int          keyMap[Input::KEY_MAX][2];
+bool         configExists = false;
 
-static int mouseEventFilter(void*, SDL_Event* event)
+int mouseEventFilter(void*, SDL_Event* event)
 {
   return event->type != SDL_MOUSEMOTION;
+}
+
 }
 
 void Input::loadDefaultKeyMap()

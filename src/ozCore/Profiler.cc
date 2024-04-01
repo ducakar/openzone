@@ -25,7 +25,12 @@
 namespace oz
 {
 
-static HashMap<String, Duration> profileTimes;
+namespace
+{
+
+HashMap<String, Duration> profileTimes;
+
+}
 
 Profiler::CRange Profiler::crange() noexcept
 {

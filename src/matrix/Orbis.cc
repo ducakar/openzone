@@ -26,6 +26,9 @@
 namespace oz
 {
 
+namespace
+{
+
 static_assert(Orbis::CELLS * Cell::SIZE == Terra::QUADS * Terra::Quad::SIZE,
               "oz::Orbis and terrain size mismatch");
 
@@ -42,16 +45,18 @@ static_assert(Orbis::CELLS * Cell::SIZE == Terra::QUADS * Terra::Quad::SIZE,
  * reused again.
  */
 
-static int freeing = 0;
-static int waiting = 1;
+int freeing = 0;
+int waiting = 1;
 
-static int lastStructIndex = -1;
-static int lastObjectIndex = -1;
-static int lastFragIndex   = -1;
+int lastStructIndex = -1;
+int lastObjectIndex = -1;
+int lastFragIndex   = -1;
 
-static SBitset<Orbis::MAX_STRUCTS> pendingStructs[2];
-static SBitset<Orbis::MAX_OBJECTS> pendingObjects[2];
-static SBitset<Orbis::MAX_FRAGS>   pendingFrags[2];
+SBitset<Orbis::MAX_STRUCTS> pendingStructs[2];
+SBitset<Orbis::MAX_OBJECTS> pendingObjects[2];
+SBitset<Orbis::MAX_FRAGS>   pendingFrags[2];
+
+}
 
 int Orbis::allocStrIndex() const
 {

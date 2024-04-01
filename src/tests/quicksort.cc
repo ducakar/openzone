@@ -19,10 +19,10 @@
 
 #include <ozCore/ozCore.hh>
 
-#include <cstdlib>
-#include <cstdio>
-
 using namespace oz;
+
+namespace
+{
 
 template <typename Type, int STACK_SIZE>
 inline void aSort(Type* array, int count)
@@ -35,7 +35,7 @@ inline void aSort(Type* array, int count)
   *(++sp) = first;
   *(++sp) = last;
 
-  do {
+  while (sp != stack) {
     last = *(--sp);
     first = *(--sp);
 
@@ -45,7 +45,7 @@ inline void aSort(Type* array, int count)
         Type* top = first;
         Type* bottom = last - 1;
 
-        do {
+        while (true) {
           while (top <= bottom && *top <= pivotValue) {
             ++top;
           }
@@ -57,7 +57,6 @@ inline void aSort(Type* array, int count)
           }
           swap(*top, *bottom);
         }
-        while (true);
 
         swap(*top, *last);
 
@@ -83,7 +82,6 @@ inline void aSort(Type* array, int count)
       }
     }
   }
-  while (sp != stack);
 }
 
 template <typename Type>
@@ -95,7 +93,7 @@ inline void arSort(Type* first, Type* last)
       Type* top = first;
       Type* bottom = last - 1;
 
-      do {
+      while (true) {
         while (top <= bottom && *top <= pivotValue) {
           ++top;
         }
@@ -107,7 +105,6 @@ inline void arSort(Type* first, Type* last)
         }
         swap(*top, *bottom);
       }
-      while (true);
 
       swap(*top, *last);
 
@@ -137,7 +134,7 @@ inline void oaSort(Type* array, int begin, int end)
       int top        = first;
       int bottom     = last - 1;
 
-      do {
+      while (true) {
         while (top <= bottom && array[top] <= pivotValue) {
           ++top;
         }
@@ -151,7 +148,6 @@ inline void oaSort(Type* array, int begin, int end)
           break;
         }
       }
-      while (true);
 
       swap(array[top], array[last]);
       oaSort(array, begin, top);
@@ -160,8 +156,10 @@ inline void oaSort(Type* array, int begin, int end)
   }
 }
 
-static constexpr int MAX   = 10000;
-static constexpr int TESTS = 2000;
+constexpr int MAX   = 10000;
+constexpr int TESTS = 2000;
+
+}
 
 int main()
 {
@@ -178,9 +176,9 @@ int main()
     }
 
     Arrays::sort(list.begin(), MAX);
-    //aSort<int, 100>(list.begin(), MAX);
-    //arSort(list.begin(), list.begin() + MAX - 1);
-    //oaSort<int>(list.begin(), 0, MAX);
+    aSort<int, 100>(list.begin(), MAX);
+    arSort(list.begin(), list.begin() + MAX - 1);
+    oaSort<int>(list.begin(), 0, MAX);
   }
 
   Log() << (Instant<STEADY>::now() - t0).ms() << " ms";

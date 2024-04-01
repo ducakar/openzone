@@ -30,10 +30,15 @@
 namespace oz::client::ui
 {
 
-static void back(Button* sender)
+namespace
+{
+
+void back(Button* sender)
 {
   MissionMenu* missionMenu = static_cast<MissionMenu*>(sender->parent);
   missionMenu->parent->remove(missionMenu);
+}
+
 }
 
 bool MissionButton::onMouseEvent()

@@ -25,8 +25,6 @@
 #include "SList.hh"
 #include "Log.hh"
 
-#include <cstring>
-
 #define OZ_PARSE_ERROR(charBias, message) \
   OZ_ERROR("oz::Json: " message " at %s:%d:%d", path_, line_, column_ + (charBias))
 
@@ -103,7 +101,7 @@ private:
     char       ch1 = 0;
     char       ch2 = 0;
 
-    do {
+    while (true) {
       do {
         ch2 = readChar();
       }
@@ -149,7 +147,6 @@ private:
       }
       return ch2;
     }
-    while (true);
   }
 
   OZ_INTERNAL

@@ -27,21 +27,26 @@
 namespace oz
 {
 
+namespace
+{
+
 // Char type is used to map actions, so no more than 256 are possible.
 static_assert(Input::MAX_ACTIONS <= 256, "MAX_ACTIONS must be <= 256");
 
-static ubyte                       keyMaps[4][SDL_NUM_SCANCODES];
-static ubyte                       buttonMaps[4][8];
-static SBitset<Input::MAX_ACTIONS> previousActions;
-static SBitset<Input::MAX_ACTIONS> currentActions;
-static Input::ModKey               modKey = Input::NONE;
+ubyte                       keyMaps[4][SDL_NUM_SCANCODES];
+ubyte                       buttonMaps[4][8];
+SBitset<Input::MAX_ACTIONS> previousActions;
+SBitset<Input::MAX_ACTIONS> currentActions;
+Input::ModKey               modKey = Input::NONE;
 
-static inline void updateModKey(uint16 modMask)
+inline void updateModKey(uint16 modMask)
 {
   modKey = modMask & KMOD_ALT     ? Input::ALT
            : modMask & KMOD_CTRL  ? Input::CONTROL
            : modMask & KMOD_SHIFT ? Input::SHIFT
                                   : Input::NONE;
+}
+
 }
 
 SBitset<Input::MAX_ACTIONS> Input::downActions_;

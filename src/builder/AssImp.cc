@@ -29,6 +29,9 @@
 namespace oz::builder
 {
 
+namespace
+{
+
 struct Anim
 {
   enum Behaviour
@@ -53,11 +56,11 @@ struct Anim
   Mat4 interpolate(float time) const;
 };
 
-static List<Material>   materials;
-static List<Anim::Key>  animKeys;
-static List<Anim>       anims;
-static Assimp::Importer importer;
-static const aiScene*   scene;
+List<Material>   materials;
+List<Anim::Key>  animKeys;
+List<Anim>       anims;
+Assimp::Importer importer;
+const aiScene*   scene;
 
 inline Vec3 fromAiVector(const aiVector3D& aiVector)
 {
@@ -72,7 +75,7 @@ inline Mat4 fromAiMatrix(const aiMatrix4x4& aiMatrix)
               aiMatrix.a4, aiMatrix.b4, aiMatrix.c4, aiMatrix.d4);
 }
 
-static void readNode(const aiNode* node)
+void readNode(const aiNode* node)
 {
   if (String::equals(node->mName.C_Str(), "Armature")) {
     return;
@@ -117,6 +120,8 @@ static void readNode(const aiNode* node)
   compiler.endNode();
 
   Log::unindent();
+}
+
 }
 
 void AssImp::build(const File& path)

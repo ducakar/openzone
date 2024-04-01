@@ -28,6 +28,3 @@ target_link_libraries(scratch ozCore)
 
 add_executable(simd simd.cc)
 target_link_libraries(simd ozCore)
-
-add_executable(timespec timespec.cc)
-target_link_libraries(timespec ozCore)

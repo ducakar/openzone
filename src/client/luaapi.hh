@@ -45,6 +45,11 @@ struct ClientLuaState
 
 static ClientLuaState cs;
 
+#ifdef __clang__
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunused-function"
+#endif
+
 /// @addtogroup luaapi
 /// @{
 
@@ -368,6 +373,10 @@ static int ozUIBuildFrame(lua_State* l)
 }
 
 /// @}
+
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 /**
  * Register client-specific Lua constants with a given Lua VM.

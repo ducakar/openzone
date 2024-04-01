@@ -32,9 +32,14 @@ extern "C" void NACL_SetScreenResolution(int width, int height, Uint32 format);
 
 using namespace oz;
 
-static void crashHandler()
+namespace
+{
+
+void crashHandler()
 {
   SDL_Quit();
+}
+
 }
 
 #if defined(__native_client__)

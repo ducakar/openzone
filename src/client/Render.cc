@@ -671,11 +671,11 @@ void Render::init()
   Log::println("Initialising Render {");
   Log::indent();
 
-  const char* vendor;
-  const char* renderer;
-  const char* version;
-  const char* glslVersion;
-  const char* sExtensions;
+  const char* vendor      = nullptr;
+  const char* renderer    = nullptr;
+  const char* version     = nullptr;
+  const char* glslVersion = nullptr;
+  const char* sExtensions = nullptr;
 
   MainCall() << [&]
   {

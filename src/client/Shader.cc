@@ -30,10 +30,15 @@
 namespace oz::client
 {
 
-static constexpr int LOG_BUFFER_SIZE = 8192;
+namespace
+{
 
-static char   logBuffer[LOG_BUFFER_SIZE];
-static String defines;
+constexpr int LOG_BUFFER_SIZE = 8192;
+
+char   logBuffer[LOG_BUFFER_SIZE];
+String defines;
+
+}
 
 Uniform uniform;
 

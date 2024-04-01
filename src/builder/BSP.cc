@@ -637,8 +637,8 @@ void BSP::optimise()
   // collapse unnecessary nodes
   Log::print("Collapsing nodes ");
 
-  bool hasCollapsed = false;
-  do {
+  bool hasCollapsed = true;
+  while (hasCollapsed) {
     hasCollapsed = false;
 
     for (int i = 0; i < nodes.size();) {
@@ -711,7 +711,6 @@ void BSP::optimise()
       hasCollapsed = true;
     }
   }
-  while (hasCollapsed);
 
   Log::printEnd(" OK");
 

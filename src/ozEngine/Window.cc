@@ -44,6 +44,9 @@ extern "C" void alSetPpapiInfo(PP_Instance instance, PPB_GetInterface getInterfa
 namespace oz
 {
 
+namespace
+{
+
 struct ScreenshotInfo
 {
   String basePath;
@@ -53,29 +56,29 @@ struct ScreenshotInfo
 };
 
 #ifdef __native_client__
-static const PPB_Fullscreen* ppbFullscreen      = nullptr;
-static const PPB_MouseLock*  ppbMouseLock       = nullptr;
-static pp::Graphics3D*       glContext          = nullptr;
-static Semaphore             flushSemaphore;
-static Semaphore             mouseLockSemaphore;
+const PPB_Fullscreen* ppbFullscreen      = nullptr;
+const PPB_MouseLock*  ppbMouseLock       = nullptr;
+pp::Graphics3D*       glContext          = nullptr;
+Semaphore             flushSemaphore;
+Semaphore             mouseLockSemaphore;
 #else
-static SDL_GLContext         glContext          = nullptr;
+SDL_GLContext         glContext          = nullptr;
 #endif
-static ALCdevice*            alDevice           = nullptr;
-static ALCcontext*           alContext          = nullptr;
-static SDL_Window*           window             = nullptr;
-static Thread                screenshotThread;
+ALCdevice*            alDevice           = nullptr;
+ALCcontext*           alContext          = nullptr;
+SDL_Window*           window             = nullptr;
+Thread                screenshotThread;
 
 #ifdef __native_client__
 
-static void onFlushComplete(void*, int)
+void onFlushComplete(void*, int)
 {
   flushSemaphore.post();
 }
 
 #endif
 
-static void* screenshotMain(void* data)
+void* screenshotMain(void* data)
 {
   const ScreenshotInfo* info = static_cast<const ScreenshotInfo*>(data);
 
@@ -107,6 +110,8 @@ static void* screenshotMain(void* data)
   delete info;
 
   return nullptr;
+}
+
 }
 
 int          Window::screenWidth  = 0;

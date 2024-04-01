@@ -26,6 +26,9 @@ using oz::client::Animation;
 namespace oz::builder
 {
 
+namespace
+{
+
 struct Node;
 
 enum Environment
@@ -153,36 +156,36 @@ struct Node
   OZ_STATIC_POOL_ALLOC(pool)
 };
 
-Pool<Node>                Node::pool;
+Pool<Node>         Node::pool;
 
-static List<Point>        positions;
-static List<Vec3>         normals;
-static List<Vertex>       vertices;
-static List<Mesh>         meshes;
-static List<Light>        lights;
-static List<Node*>        nodes;
-static List<Animation>    animations;
+List<Point>        positions;
+List<Vec3>         normals;
+List<Vertex>       vertices;
+List<Mesh>         meshes;
+List<Light>        lights;
+List<Node*>        nodes;
+List<Animation>    animations;
 
-static Bounds             bounds;
+Bounds             bounds;
 
-static Vertex             currentVert;
-static Mesh               currentMesh;
-static Light              currentLlight;
-static Node               root;
-static Node*              currentNode;
-static Animation::Channel currentChannel;
-static Animation          animation;
+Vertex             currentVert;
+Mesh               currentMesh;
+Light              currentLlight;
+Node               root;
+Node*              currentNode;
+Animation::Channel currentChannel;
+Animation          animation;
 
-static Environment        environment;
-static int                caps;
-static String             shaderName;
-static int                nFrames;
-static int                nFramePositions;
-static Compiler::PolyMode mode;
-static int                vertNum;
-static List<uint16>       polyIndices;
+Environment        environment;
+int                caps;
+String             shaderName;
+int                nFrames;
+int                nFramePositions;
+Compiler::PolyMode mode;
+int                vertNum;
+List<uint16>       polyIndices;
 
-static void calculateBounds(const Node* node, const Mat4& parentTransf)
+void calculateBounds(const Node* node, const Mat4& parentTransf)
 {
   Mat4 transf = parentTransf ^ node->transf;
 
@@ -208,7 +211,7 @@ static void calculateBounds(const Node* node, const Mat4& parentTransf)
   }
 }
 
-static void storeNode(Node* node, int depth)
+void storeNode(Node* node, int depth)
 {
   if (depth != 0) {
     for (Node* child : node->children) {
@@ -221,6 +224,8 @@ static void storeNode(Node* node, int depth)
 
     nodes.addAll(node->children.begin(), node->children.size());
   }
+}
+
 }
 
 void Compiler::enable(Capability cap)

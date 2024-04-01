@@ -25,20 +25,23 @@
 
 using namespace oz;
 
-static constexpr int FRAME_SIZE = 120 * 48;
-static constexpr int OGG_BUFFER = 4 * 1024;
+namespace
+{
 
-static List<float>   samples;
-static int           nSamples = 0;
+constexpr int FRAME_SIZE = 120 * 48;
+constexpr int OGG_BUFFER = 4 * 1024;
 
-static ALuint        buffers[2];
-static ALuint        source;
-static Semaphore     decodeMainSemaphore;
-static Semaphore     decodeThreadSemaphore;
-static Thread        decodeThread;
-static Atomic<bool>  isDecoderAlive = {true};
+List<float>   samples;
+int           nSamples = 0;
 
-static void* decoderMain(void*)
+ALuint        buffers[2];
+ALuint        source;
+Semaphore     decodeMainSemaphore;
+Semaphore     decodeThreadSemaphore;
+Thread        decodeThread;
+Atomic<bool>  isDecoderAlive = {true};
+
+void* decoderMain(void*)
 {
   Stream is(0);
   File("/home/davorin/Glasba/Whatever1.opus").read(&is);
@@ -213,7 +216,9 @@ void MainStage::present(bool)
 //  }
 }
 
-static MainStage mainStage;
+MainStage mainStage;
+
+}
 
 int main()
 {

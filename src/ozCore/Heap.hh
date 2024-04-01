@@ -178,7 +178,7 @@ public:
     data_[0] = static_cast<Elem&&>(data_[size_]);
 
     int parent = 0;
-    do {
+    while (true) {
       int index = parent;
       int left  = 2 * parent + 1;
       int right = left + 1;
@@ -196,7 +196,6 @@ public:
       swap(data_[parent], data_[index]);
       parent = index;
     }
-    while (true);
   }
 
 };

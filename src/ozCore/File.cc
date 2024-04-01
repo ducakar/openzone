@@ -40,6 +40,9 @@
 namespace oz
 {
 
+namespace
+{
+
 struct Stat
 {
   enum Type
@@ -53,7 +56,6 @@ struct Stat
   int64 size = -1;
   int64 time = 0;
 
-  OZ_INTERNAL
   explicit Stat(const char* path)
   {
     if (path[0] == '@') {
@@ -91,11 +93,11 @@ struct Stat
   }
 };
 
-static File specialFiles[10];
+File specialFiles[10];
 
 #ifdef __native_client__
 
-static void initSpecialFiles()
+void initSpecialFiles()
 {
   specialFiles[0] = "/";
   specialFiles[1] = "/config";
@@ -108,7 +110,7 @@ static void initSpecialFiles()
 
 #elif defined(_WIN32)
 
-static void setSpecialDir(int id, int csidl)
+void setSpecialDir(int id, int csidl)
 {
   char path[MAX_PATH];
   path[0] = '\0';
@@ -118,7 +120,7 @@ static void setSpecialDir(int id, int csidl)
   specialFiles[id] = String(path).replace('\\', '/');
 }
 
-static void initSpecialFiles()
+void initSpecialFiles()
 {
   setSpecialDir(0, CSIDL_PROFILE);
   setSpecialDir(1, CSIDL_APPDATA);
@@ -142,7 +144,7 @@ static void initSpecialFiles()
 
 #else
 
-static void setSpecialDir(Map<String, File>* vars, int id, const char* name, const File& defValue)
+void setSpecialDir(Map<String, File>* vars, int id, const char* name, const File& defValue)
 {
   const char* value = getenv(name);
 
@@ -156,7 +158,7 @@ static void setSpecialDir(Map<String, File>* vars, int id, const char* name, con
   }
 }
 
-static void loadXDGSettings(Map<String, File>* vars, const File& file)
+void loadXDGSettings(Map<String, File>* vars, const File& file)
 {
   Stream is(0);
   if (!file.read(&is)) {
@@ -193,7 +195,7 @@ static void loadXDGSettings(Map<String, File>* vars, const File& file)
   }
 }
 
-static void initSpecialFiles()
+void initSpecialFiles()
 {
   Map<String, File> vars;
 
@@ -235,6 +237,8 @@ static void initSpecialFiles()
 }
 
 #endif
+
+}
 
 const File& File::HOME       = specialFiles[0];
 const File& File::CONFIG     = specialFiles[1];

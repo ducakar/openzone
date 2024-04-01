@@ -24,8 +24,13 @@
 namespace oz
 {
 
+namespace
+{
+
 // For IMPORT_FUNC()/IGNORE_FUNC() macros.
-static LuaMatrix& lua = luaMatrix;
+LuaMatrix& lua = luaMatrix;
+
+}
 
 String LuaMatrix::nameGenCall(const char* functionName)
 {

@@ -23,7 +23,6 @@
 #include <matrix/WeaponClass.hh>
 
 #include <cstdlib>
-#include <cwchar>
 #include <cwctype>
 
 namespace oz::client
