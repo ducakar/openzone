@@ -132,7 +132,7 @@ void StrategicProxy::update()
 
     float speed = (isFreeFast ? FREE_HIGH_SPEED : FREE_LOW_SPEED) * Timer::TICK_TIME;
 
-    if (!Math::isNaN(ui::ui.galileoFrame->clickX)) {
+    if (ui::ui.galileoFrame->hasClick) {
       desiredPos.x = ui::ui.galileoFrame->clickX;
       desiredPos.y = ui::ui.galileoFrame->clickY;
     }
@@ -162,7 +162,7 @@ void StrategicProxy::update()
     float logHeight = Math::log(height);
     float speed = (isRTSFast ? RTS_HIGH_SPEED : RTS_LOW_SPEED) * Timer::TICK_TIME * logHeight;
 
-    if (!Math::isNaN(ui::ui.galileoFrame->clickX)) {
+    if (ui::ui.galileoFrame->hasClick) {
       desiredPos.x = ui::ui.galileoFrame->clickX;
       desiredPos.y = ui::ui.galileoFrame->clickY;
     }

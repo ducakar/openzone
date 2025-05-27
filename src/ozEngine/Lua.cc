@@ -758,7 +758,7 @@ void Lua::init(const char* libs)
   }
   if (String::index(libs, 'm') >= 0) {
     luaL_requiref(l_, LUA_MATHLIBNAME, luaopen_math, true);
-    luaL_dostring(l_, String::format("math.random(%u)", randomSeed));
+    luaL_dostring(l_, String::format("math.random(%d)", randomSeed));
   }
   if (String::index(libs, 'd') >= 0) {
     luaL_requiref(l_, LUA_DBLIBNAME, luaopen_debug, true);

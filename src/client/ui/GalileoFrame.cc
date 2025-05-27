@@ -48,16 +48,14 @@ void GalileoFrame::onRealign()
 
   setMaximised(isMaximised);
 
-  clickX = Math::NaN;
-  clickY = Math::NaN;
+  hasClick = false;
 }
 
 void GalileoFrame::onUpdate()
 {
   const Bot* bot = camera.botObj;
 
-  clickX = Math::NaN;
-  clickY = Math::NaN;
+  hasClick = false;
 
   if (orbis.terra.id == -1 ||
       (camera.state == Camera::UNIT &&
@@ -75,8 +73,9 @@ void GalileoFrame::onUpdate()
 bool GalileoFrame::onMouseEvent()
 {
   if (input.buttons) {
-    clickX = -Orbis::DIM + float(mouse.x - x) / float(width ) * 2.0f * Orbis::DIM;
-    clickY = -Orbis::DIM + float(mouse.y - y) / float(height) * 2.0f * Orbis::DIM;
+    clickX  = -Orbis::DIM + float(mouse.x - x) / float(width ) * 2.0f * Orbis::DIM;
+    clickY  = -Orbis::DIM + float(mouse.y - y) / float(height) * 2.0f * Orbis::DIM;
+    hasClick = true;
   }
   return true;
 }
@@ -141,7 +140,7 @@ void GalileoFrame::onDraw()
 
 GalileoFrame::GalileoFrame()
   : Frame(240, 232 - HEADER_SIZE, ""),  colour(style.colours.galileoNormal),
-    clickX(Math::NaN), clickY(Math::NaN)
+    hasClick(false)
 {
   flags |= UPDATE_BIT | PINNED_BIT;
 

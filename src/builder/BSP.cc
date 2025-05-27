@@ -118,8 +118,8 @@ void BSP::load()
 
     Log::println("Texture '%s' flags %x type %x",
                  texture.name.c(),
-                 texture.flags,
-                 texture.type);
+                 uint(texture.flags),
+                 uint(texture.type));
   }
 
   planes.resize(lumps[QBSPLump::PLANES].length / sizeof(QBSPPlane));

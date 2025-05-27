@@ -51,6 +51,7 @@ public:
   // World coordinate of a mouse click, NaN if no click.
   float clickX;
   float clickY;
+  bool  hasClick;
 
   bool  isMaximised = false;
 

@@ -597,7 +597,7 @@ int Client::init(int argc, char** argv)
   Math::seed(seed);
   Lua::randomSeed = seed;
 
-  Log::println("Random generator seed set to: %u", seed);
+  Log::println("Random generator seed set to: %d", seed);
 
   initFlags |= INIT_LIBRARY;
   liber.init(appConfig["dir.music"].get(""));

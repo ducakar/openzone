@@ -43,9 +43,6 @@ public:
   /// Floating point epsilon.
   static constexpr float FLOAT_EPS = __FLT_EPSILON__;
 
-  /// Not a number.
-  static constexpr float NaN = __builtin_nanf("");
-
   /// \f$ +\infty \f$.
   static constexpr float INF = __builtin_inff();
 
@@ -334,10 +331,6 @@ public:
 #endif
   }
 
-  /**
-   * True iff the number is NaN.
-   */
-  OZ_ALWAYS_INLINE
   static bool isNaN(float x)
   {
 #if __FINITE_MATH_ONLY__
